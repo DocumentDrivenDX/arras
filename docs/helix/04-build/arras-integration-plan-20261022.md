@@ -150,22 +150,23 @@ integration cut and must remain explicit in capabilities and completion reports.
 
 **P0 is the scoped Arras release; P1 is official UMF adoption; P2 is the Ashlar
 reader/integration lane.** Earlier default/UI/native/installed receipts remain
-historical checkpoints. The final frozen 07b wheel and c29 npm have reviewed
-installed SDK, example and full packed themed UI evidence. Public Truss
+historical checkpoints. The current 0.5.1 frozen 598 wheel and 460 npm have reviewed
+installed SDK, example and ordinary full packed themed UI evidence. Historical
+capture approvals remain bound to the unchanged reviewed baselines. Public Truss
 0.0.48/Weft 0.4.51 adoption is committed and passes all 199 source native tests on
-Linux. Mac installed-native and final source/sdist parity also pass; actual evidence
-assembly and public delivery remain open. The eight extensibility seams do not establish full official UMF or
+Linux. Mac installed-native, final source/sdist parity and actual safe evidence
+assembly also pass; final review/source CI and public delivery remain open. The eight extensibility seams do not establish full official UMF or
 an Ashlar adapter; release notes name the supported legacy semantic profiles.
 
 | Release-critical owner | Current state / dependency | Smallest closing gate |
 | --- | --- | --- |
-| P0-1 — release Sol/main Luna, coordinated in `01a16384-78eb-7b30-82e1-c1f1feacc383` | Typed per-host telemetry is implemented and Sol-reviewed across effective ADR-019 config, direct/MCP/ASGI/devhost and worker boundaries. The exact 07b wheel passes all 20 installed doctor cases, eight SDK phases and three false-pass controls, with independent identity review. | Repeat the unchanged verifier on exact-tag/public-download artifacts; preserve separate SDK/native runtime cohorts. |
-| P0-2 — packaged example/doctor Luna under the release owner | Public config/launcher, module/seed/graph composition and four fresh installed example tests pass on 07b; all 72 applicable memory corpus cases pass, seven replica-only cases are inapplicable. | Repeat installed consumer/doctor checks against tagged and publicly downloaded bytes. |
-| P0-3 — UI testkit Sol/shared-suite Luna | Public Node testkit and browser host carry all 17 canonical specs and 83 verified resources. Both full packed themed capture and ordinary comparison pass 272/272; all 67 individually reviewed baselines remain unchanged, four route comparisons and four negative controls pass. | Exact-tag Linux nonvisual suite and fresh public-download repetition; keep Darwin visual evidence distinct. |
-| P0-4 — Weft/Truss owner `01a16023-fabd-7fa3-9abf-44d42e7fd673`, then Arras adoption lane `01a163ae-137a-7e13-9220-4f23c2e43bbf` | Public Truss 0.0.48/Weft 0.4.51 identities, Arras pins/lock/index, platform cohort templates and reported limits agree. Hosted Linux and local Mac source suites each pass all 199 native tests. The fresh exact-07b Darwin installed verifier passes with seven selected distribution payloads checked and corpus64passes/eight exact declared limits/seven inapplicable cases, independently reviewed. | Exact-tag Linux native gates and public delivery. Preserve 64 native corpus passes/eight expected limits/seven replica-only inapplicable cases separately from memory evidence. |
+| P0-1 — release Sol/main Luna, coordinated in `01a16384-78eb-7b30-82e1-c1f1feacc383` | Typed per-host telemetry is implemented and Sol-reviewed across effective ADR-019 config, direct/MCP/ASGI/devhost and worker boundaries. The exact 0.5.1 598 wheel passes all 20 installed doctor cases, eight SDK phases and three false-pass controls, with independent identity review. | Repeat the unchanged verifier on exact-tag/public-download artifacts; preserve separate SDK/native runtime cohorts. |
+| P0-2 — packaged example/doctor Luna under the release owner | Public config/launcher, module/seed/graph composition and four fresh installed example tests pass on 0.5.1 598; all 72 applicable memory corpus cases pass, seven replica-only cases are inapplicable. | Repeat installed consumer/doctor checks against tagged and publicly downloaded bytes. |
+| P0-3 — UI testkit Sol/shared-suite Luna | Public Node testkit and browser host carry all 17 canonical specs and 83 verified resources. The current full packed themed ordinary comparison passes 272/272; historical capture approvals are retained; all 67 individually reviewed baselines remain unchanged, four route comparisons and four negative controls pass. | Exact-tag Linux nonvisual suite and fresh public-download repetition; keep Darwin visual evidence distinct. |
+| P0-4 — Weft/Truss owner `01a16023-fabd-7fa3-9abf-44d42e7fd673`, then Arras adoption lane `01a163ae-137a-7e13-9220-4f23c2e43bbf` | Public Truss 0.0.48/Weft 0.4.51 identities, Arras pins/lock/index, platform cohort templates and reported limits agree. Current hosted Linux passes 199 native tests; historical Mac 199-test source evidence is retained by explicit equivalence. The fresh exact-0.5.1 Darwin installed verifier passes with seven selected distribution payloads checked and corpus64passes/eight exact declared limits/seven inapplicable cases, independently reviewed. | Exact-tag Linux native gates and public delivery. Preserve 64 native corpus passes/eight expected limits/seven replica-only inapplicable cases separately from memory evidence. |
 | P0-5 — final release owner, after P0-1–4 | Generic design/docs and actual-shape release evidence checker are Sol-approved; final source/artifact convergence and publication remain open. GitHub assets are mandatory; registry access remains unavailable and explicitly deferrable. | Final source/sdist-rebuilt-wheel parity, actual safe bundle assembly and Sol review, final source CI, authorized merge/tag and exact-tag release gates; publish GitHub assets, then qualify fresh public downloads. Record registry deferral without claiming delivery. |
 
-The immediate tranche is actual evidence assembly and exact-tag/public delivery,
+The immediate tranche is final review/source CI and exact-tag/public delivery,
 following successful Mac native and final source/sdist parity qualification. The shared Mac slot is
 coordinated explicitly with the dependency owners; no competing build/browser or
 native campaign runs during the selected native timing window. Official UMF
@@ -1176,6 +1177,133 @@ immutably. Final coherent source archive, actual corrected assembly/public-check
 execution, full hosted CI and tag/public-download gates remain required. No
 runtime library, wheel/npm payload, SDK, UI or native proof changed in this repair.
 
+### Immutable first tag failure and 0.5.1 fix forward
+
+The reviewed source head `5269986f35834229daffe7a07f97b6c17c98d52c` passed
+[all four source CI jobs](https://github.com/DocumentDrivenDX/arras/actions/runs/39867960866).
+PR #1 merged at `33aa9973e1daeb0ac15c31dbcbcb5010c0120aed` with the same tree.
+The immutable `v0.5.0` tag then started
+[release run 39869369841](https://github.com/DocumentDrivenDX/arras/actions/runs/39869369841).
+Its Linux native job passed all 199 tests, but the build stopped before artifact
+creation: the Truss-extra environment activated a stale CLI-refusal assertion.
+The parser correctly exited 2 with `--truss-url is refused`; no backend or server
+started. The tag produced no release assets and is not a delivered release.
+
+The coordinated patch changes only that assertion and regular Python CI's extra
+selection before a 0.5.1 version bump. The assertion checks the bounded diagnostic,
+exit status, credential non-disclosure and zero startup effects. Source native
+behavior and the selected Truss 0.0.48/Weft 0.4.51 cohort remain unchanged.
+The other session's Sol approved the repair. Its focused devhost pair passes 37
+tests; an interrupted full attempt is supporting evidence, not a full pass. The
+interrupted manifest case separately passes after the run is terminal.
+
+Every exact-artifact gate must rerun on the new wheel: SDK doctor, fresh example,
+installed native corpus, full packed UI ordinary comparison, source/sdist parity
+and final safe assembly. Existing visual approvals carry forward only by unchanged
+baseline image hashes. A machine-checked native-source delta may retain the prior
+Mac 199-test source evidence; new source CI and exact-tag Linux native gates remain
+mandatory. Historical receipts and hashes above stay bound to their old artifacts.
+The version bump exposed current-runtime UI test fixtures that hard-coded 0.5.0:
+a scoped run reported 23 failures and 74 passes, all failures refusing the stale
+fixture manifest before serving a page. Those current-cohort fixtures now derive
+the installed version; deliberate incompatible-cohort controls remain intact.
+The doctor-request fixture provenance digest is refreshed for its new pin.
+The [378-file source-delta attestation](evidence/arras-0.5.1-native-source-delta-20261022.json)
+records unchanged native production/conformance sources and normalized dependency
+identities, with the metadata, test and CI exceptions reviewed by Sol.
+No 0.5.0 tag or artifact bytes are replaced. Real registry publishing remains
+explicitly deferred; GitHub delivery and fresh anonymous download checks are required.
+
+### Fresh 0.5.1 component qualification
+
+Frozen wheel SHA-256 is
+`59827644e2e423980afed1047f75c7130dc5d8c542778df4b62a9e2244cdc24c`;
+its only carried npm tarball is `documentdrivendx-arras-ui-0.5.1.tgz`, SHA-256
+`460e1b1037d4965d17af8b3e689c364c22b51a09cc9d3d64c8ddf0296e34c943`.
+Source [CI 39871984841](https://github.com/DocumentDrivenDX/arras/actions/runs/39871984841)
+passes all four jobs at `ad67ed48515325da2cbbc598512e97a51a1d3fb2`: Python
+2,907 passes/199 native deselected; native 199 passes/2,907 deselected; UI 205
+nonvisual passes; lint/types/build passes. Affected local fixtures/verifiers pass
+106 tests after the version-coupled fixture repair.
+
+The [fresh SDK/example review](evidence/arras-0.5.1-sdk-example-review-20261022.json)
+checks actual receipts, exit statuses, driver/probe identities and artifact bytes.
+Doctor receipt `baa9334e26936908bc1fabe6e6e6b3e630c92e1bd9cede907ceb1a6341527b2f`
+passes all 20 cases, eight phases and three false-pass controls on Darwin arm64,
+Python 3.13.16 and OpenTelemetry 1.45.1. The separate example receipt
+`f997f651181ef6e5221dedd2faa6e36d7b618c335b49c62f6fdb3764ca892890`
+passes four fresh installed tests and all 72 applicable memory corpus cases,
+with seven replica-only cases inapplicable, on Python 3.11.17. Its consumer wheel
+is `fe4c419114045ba9ccb393dc2a931eb4bb34cafa96a5c46b94cb4c62476dbd03`.
+These component runtimes are not merged into an invented single-platform claim.
+
+The [fresh ordinary UI review](evidence/arras-0.5.1-ui-review-20261022.json)
+checks receipt `2538efc8242bec4390865953e6d575b00439fff7134bc566f07a880374071b78`:
+272 passed (132 Chromium/3 schema-admin/70 browser/67 visual), no failures/skips,
+four compared routes and four successful negative controls. All 67 canonical
+and eight narrow reviewed baseline hashes are unchanged. New theme hash is
+`f5248a8774512ef722ea76046fa550797b0eaa510649db622fd750e0e008e086`;
+public checker hash remains
+`67633a3dcfbc5e1130e1135d7c3192f612370078882ac98e247c732f03f753b9`.
+The outer private driver has its own version-default change. Output screenshots
+may differ within the existing masks/tolerances; baseline identity and successful
+ordinary comparison are the acceptance evidence. All owned UI hosts/ports and
+temporary directories were confirmed cleaned before native execution began.
+
+The [distribution checkpoint review](evidence/arras-0.5.1-distribution-checkpoint-review-20261022.json)
+records sdist `7962d91e0f0d8f122fc1b79e9253d5a9ae1904ebf1ef72f587ba99aa443d5b1c`
+and receipt `6b99e81874b8435a6d6a8ebf5230ef6bca21b3ec23a1d25a2858b865c75ac340`.
+The source and sdist-rebuilt wheels are byte-identical to 598, and both installed
+consumers pass operations/schema callbacks/public npm exports. Python dependencies
+are fresh; JavaScript dependencies in this verifier are workspace-linked. The
+UI proof above separately installs its public JavaScript peers into a fresh host.
+The final CHANGELOG and current evidence require a final archive/parity refresh;
+this checkpoint is not relabelled as that final archive.
+
+Fresh 0.5.1 installed-native receipt
+`026a935e4bb39323db13e56dff0ce4837e0062675497efb8e9b677d4ad43ca72`
+passes with 64 corpus cases, eight exact declared limits and seven replica-only
+cases inapplicable, no failures/harness errors/host-specific outcomes. All seven
+selected native distributions and 92 runtime payload files match verified inputs.
+Bound cohort SHA-256 is
+`1185171ddda8bc2014a99fed70c0f68e9d022fa0a624e9a9640b72163bf03ba1`;
+binding receipt is
+`f50f02a8176a3991a2d75629666a83b1ab741cbf0e1e68227649b140c22d3c91`.
+[Sol independently accepted the installed result](evidence/arras-0.5.1-installed-native-review-20261022.json).
+The runtime records CPython 3.11/Darwin/arm64 only; no Python patch/OS-release or
+system dynamic-link audit is inferred. Actual terminal exit is 0 and scoped owned
+PostgreSQL process count is zero. No duplicate local Mac 199-test campaign ran.
+The [final source-delta attestation](evidence/arras-0.5.1-native-source-final-delta-20261022.json)
+retains the original attestation and adds exactly three generated UI-evidence
+exceptions, with all 75 reviewed baseline hashes unchanged.
+
+The [final archive review](evidence/arras-0.5.1-final-archive-review-20261022.json)
+qualifies sdist `e8c8636d43a1392fa5f30c2b1adf86cff9e1c0e999be88008a8aa1f13994864d`
+and receipt `8a64e1a7ed81fc225c2ea9132d56d269f6114d3516ee8da9d1ea90bf64896721`.
+Source and rebuilt wheels remain byte-identical to 598/npm460. The finalized
+CHANGELOG, current UI evidence, release scripts and tests match the sealed archive.
+HELIX docs are excluded from the sdist; later documentation reconciliation does
+not replace the sealed archive. Both installed consumers pass and temporary
+environments are cleaned. Final safe-bundle review, final source CI, tag delivery
+and actual anonymous public-download checks remain distinct pending gates.
+
+Actual 0.5.1 safe assembly exits 0 with exactly 16 files, 15 SHA256SUMS entries
+and all 11 published component hashes verified. Aggregate SHA-256 is
+`831283c8f3b2921c0d8e9d36971a0bdbe1f5135103a827cdf658528c55cdc79f`;
+public SUMS SHA-256 is
+`c2ce264eded6c84482fcabbc96bcb096f02384254e2680acf684b75c1e3d85a7`.
+The typed public doctor/distribution projections have hashes
+`13ffb6b749ef1050d9b427c350e92c3b5ddae45427c09333d8afe5924ea993b5`
+and `1855ee66180e29de554a458becf37353bde363a530fb3e0629ddb2e1220180c8`;
+they preserve original raw receipt hashes without publishing local diagnostics.
+The JSON/HTML privacy scan passes. Actual public-checker plan and verify commands
+both exit 0 against separate offline local copies, validating all 15 assets and
+the exact wheel-carried npm bytes. Verification receipt SHA-256 is
+`00b85d529862c6fc9fd1ff2492d6cfd0604f256b0af6caf1e84c1482bd2e6f88`.
+These are local prepublication checks; no anonymous download is claimed. Final
+safe-bundle Sol review, final source CI, tag and actual public-download gates
+remain required before the P0 release closes.
+
 ## Validation Plan
 
 - A0: focused `tests/test_umf.py` and `tests/test_core.py`; existing module/host
@@ -1240,5 +1368,7 @@ gates above are reviewable. It does not establish integration completion.
 - [ ] Current Arras request snapshots are reconciled with HF-01–HF-07 dispositions;
   no stale ask or candidate result is counted as release delivery.
 - [ ] Canonical contracts/test scenarios, evidence and Sol review agree with the
-  delivered subset. Downstream application migration, Ashlar feed, actual Lakebase qualification,
-  merge and publication remain outside this plan's completion claims.
+  delivered subset. Downstream application migration, Ashlar feed and actual Lakebase qualification
+  remain outside the scoped P0 release. P0 publication closes only on actual
+  exact-tag and fresh public-download evidence; remaining A2–A7 semantic work
+  stays separately open.

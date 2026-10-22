@@ -1,0 +1,51 @@
+{
+  "schema": "arras.distribution.independent-review.v1",
+  "status": "approved-final-0.5.1-archive",
+  "receipt_sha256": "8a64e1a7ed81fc225c2ea9132d56d269f6114d3516ee8da9d1ea90bf64896721",
+  "sdist": {
+    "file": "arras-0.5.1.tar.gz",
+    "sha256": "e8c8636d43a1392fa5f30c2b1adf86cff9e1c0e999be88008a8aa1f13994864d"
+  },
+  "wheel": {
+    "file": "arras-0.5.1-py3-none-any.whl",
+    "sha256": "59827644e2e423980afed1047f75c7130dc5d8c542778df4b62a9e2244cdc24c"
+  },
+  "npm": {
+    "exact_between_wheels": true,
+    "file": "documentdrivendx-arras-ui-0.5.1.tgz",
+    "sha256": "460e1b1037d4965d17af8b3e689c364c22b51a09cc9d3d64c8ddf0296e34c943"
+  },
+  "retained_source_head": "ad67ed48515325da2cbbc598512e97a51a1d3fb2",
+  "checked_current_archive_bytes": {
+    "CHANGELOG.md": "6c222ce69a02eb2297d28718ff4edeb6d3d7f916300bd499282a2e9a74361912",
+    "tests/downstream/evidence/darwin/qualification-darwin.json": "2538efc8242bec4390865953e6d575b00439fff7134bc566f07a880374071b78",
+    "tests/downstream/evidence/darwin/external-theme-prebuilt-page-browser-dark-darwin.png": "991502fcecab3c60e3c932cd3a13beadd39d03b337e50088e695bba51595202c",
+    "tests/downstream/evidence/darwin/external-theme-prebuilt-page-browser-light-darwin.png": "5161161ecc19810661f6c333d8a8b42fc82b8cc726a3b882d3223dff313f9756",
+    ".github/scripts/assemble_release_evidence.py": "5db60bccb5b9f7ea2c22097ce203be1217525a5b611bee4f7b4c035b50604f54",
+    ".github/scripts/_release_evidence_public.py": "bacf73015a5a1e23d538e17612700dc3844bae9670c3524ff15702e9575bd6e7",
+    ".github/scripts/verify_public_release_assets.py": "73dcad3a9e80632111731d9c87d2224c8e02cf112aaa15793070a101f95ce421",
+    "tests/test_release_evidence.py": "2501a3d5fa42a1bc575503ac792dd31cc5868b64cdc1e2934ea3974364fd64ef",
+    "tests/test_release_public_download.py": "c6bb5ad90e31203a509cceb28c30573e5a987216ce0365ca2248a45eea98442e"
+  },
+  "driver_sha256": "f56ede969d302ab8e407d31631c26d24cb23588339596cced22674333dce2d7f",
+  "verify_log_sha256": "3095cd318ced7e469fd8eb0feb7af9861e2bd0c4e0730e6fa4a3ff5c851f8c7b",
+  "exit_statuses": {
+    "sdist_build": 0,
+    "verification": 0
+  },
+  "runtime": {
+    "python": "3.11.17",
+    "platform": "macOS-27.0.1-arm64-arm-64bit"
+  },
+  "consumers": {
+    "source_wheel": "memory operation/schema callback/packednpmexports passed",
+    "sdist_rebuilt_wheel": "memory operation/schema callback/packednpmexports passed"
+  },
+  "qualifications": [
+    "FinalpackagedCHANGELOG+currentUIevidence frozenbytes verified; HELIXdocs excluded.",
+    "SourceHEADad67 plusrecordedcurrentpackagedchanges, not immutablead67archive.",
+    "JSdependencies workspace-linked; freshSDK/UI/nativeproofs separate.",
+    "Rebuiltwheelbyteequality supported by retainedsuccessfulverifier; no duplicatebuild executed by reviewer.",
+    "No publication/tag/publicdownload claim."
+  ]
+}

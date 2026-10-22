@@ -1,6 +1,23 @@
 # Changelog
 
-## 0.5.0 — 2026-10-22
+## 0.5.1 — 2026-10-22
+
+This patch preserves the generic downstream interfaces described below. It
+corrects a CLI-refusal test to check the bounded parser diagnostic, exit status,
+credential redaction and absence of startup effects. Regular Python CI now uses
+the same Truss-extra dependency environment as the release build.
+
+The immutable `v0.5.0` tag failed its build gate before any release assets were
+published. Version 0.5.1 is a fresh artifact cohort. Its SDK/doctor, fresh consumer and
+ordinary themed checks pass independently on the new wheel; all 75 reviewed
+baseline hashes are unchanged. The release requires its own installed-native,
+exact-tag and anonymous public-download gates before completion. The release
+notes and receipts distinguish component runtimes and delivery results.
+
+## 0.5.0 — failed unpublished tag, 2026-10-22
+
+The following records the qualified candidate feature scope. The tag workflow
+stopped before artifact creation or publication; it did not deliver a release.
 
 The first public distribution supplies generic Python/UI seams and installed
 consumer qualification. The [release notes](docs/helix/05-deploy/release-notes.md)

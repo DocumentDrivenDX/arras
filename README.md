@@ -17,10 +17,10 @@ Beta (`0.x`). The in-memory and Truss adapters are implemented. Their qualified 
 ## Install
 
 Install the wheel from the selected GitHub Release after verifying the attached
-`SHA256SUMS`. For example, with the verified 0.5.0 wheel in the current directory:
+`SHA256SUMS`. For example, with the verified 0.5.1 wheel in the current directory:
 
 ```bash
-pip install ./arras-0.5.0-py3-none-any.whl
+pip install ./arras-0.5.1-py3-none-any.whl
 ```
 
 [Release notes](docs/helix/05-deploy/release-notes.md) record publication status and

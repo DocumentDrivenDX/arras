@@ -2,19 +2,19 @@
   "schema": "arras.ui.downstream-qualification.v1",
   "cohort": {
     "wheel": {
-      "file": "arras-0.5.0-py3-none-any.whl",
-      "sha256": "07b3e867bd4ca48b4cd43ad5f13449076e3939f4194c06c297d1ca0171764ed1",
-      "version": "0.5.0"
+      "file": "arras-0.5.1-py3-none-any.whl",
+      "sha256": "59827644e2e423980afed1047f75c7130dc5d8c542778df4b62a9e2244cdc24c",
+      "version": "0.5.1"
     },
     "npm": {
-      "file": "documentdrivendx-arras-ui-0.5.0.tgz",
-      "sha256": "c29a9f151d9a6a42cce55325e927634cc5713763c0485cc6e02cb63006c78307",
-      "version": "0.5.0"
+      "file": "documentdrivendx-arras-ui-0.5.1.tgz",
+      "sha256": "460e1b1037d4965d17af8b3e689c364c22b51a09cc9d3d64c8ddf0296e34c943",
+      "version": "0.5.1"
     },
     "theme": {
       "name": "@arras-fixtures/neutral-theme",
       "version": "1.0.0",
-      "sha256": "27ce95cfbc5ec907561bf853ef2cc4d456c2efdf671c63e483f16ebdbc6e32dc"
+      "sha256": "f5248a8774512ef722ea76046fa550797b0eaa510649db622fd750e0e008e086"
     },
     "runner": {
       "sha256": "67633a3dcfbc5e1130e1135d7c3192f612370078882ac98e247c732f03f753b9"
@@ -87,9 +87,9 @@
       "controlledFailure": "exit-1"
     },
     "cohort": {
-      "wheelSha256": "07b3e867bd4ca48b4cd43ad5f13449076e3939f4194c06c297d1ca0171764ed1",
-      "npmSha256": "c29a9f151d9a6a42cce55325e927634cc5713763c0485cc6e02cb63006c78307",
-      "themeSha256": "27ce95cfbc5ec907561bf853ef2cc4d456c2efdf671c63e483f16ebdbc6e32dc",
+      "wheelSha256": "59827644e2e423980afed1047f75c7130dc5d8c542778df4b62a9e2244cdc24c",
+      "npmSha256": "460e1b1037d4965d17af8b3e689c364c22b51a09cc9d3d64c8ddf0296e34c943",
+      "themeSha256": "f5248a8774512ef722ea76046fa550797b0eaa510649db622fd750e0e008e086",
       "runnerSha256": "67633a3dcfbc5e1130e1135d7c3192f612370078882ac98e247c732f03f753b9"
     }
   },

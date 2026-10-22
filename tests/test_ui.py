@@ -8,6 +8,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import html
+import importlib.metadata
 import json
 import os
 import re
@@ -22,6 +23,7 @@ from arras.sandbox import Sandbox
 from arras.ui.assets import load_manifest
 
 BASE = "/ontology"
+UI_VERSION = importlib.metadata.version("arras")
 
 
 def refresh_page_manifest(root: Path) -> None:
@@ -64,7 +66,7 @@ def static(tmp_path: Path) -> Path:
                 "format": "arras.ui.assets",
                 "version": 1,
                 "kind": "page",
-                "package": {"name": "@documentdrivendx/arras-ui", "version": "0.5.0"},
+                "package": {"name": "@documentdrivendx/arras-ui", "version": UI_VERSION},
                 "contracts": {"console": 2, "operate": 2, "schema": 1, "browser": 1},
                 "schema_browser": {
                     "name": "@documentdrivendx/umf-schema-browser",
@@ -203,7 +205,7 @@ def test_external_theme_is_digest_served_same_origin_and_version_pinned(
                 "kind": "theme",
                 "package": {"name": "neutral-theme", "version": "1"},
                 "contracts": {"console": 2, "operate": 2, "schema": 1, "browser": 1},
-                "ui_versions": ["0.5.0"],
+                "ui_versions": [UI_VERSION],
                 "entry": {
                     "stylesheet": "theme.css",
                     "fonts": ["font.woff2"],
@@ -289,7 +291,7 @@ def test_asset_manifest_rejects_bool_version_and_exposes_immutable_entry(static:
         "kind": "theme",
         "package": {"name": "theme", "version": "1"},
         "contracts": {"console": 2, "operate": 2, "schema": 1, "browser": 1},
-        "ui_versions": ["0.5.0"],
+        "ui_versions": [UI_VERSION],
         "entry": {"stylesheet": "theme.css", "fonts": ["font.woff2"]},
         "files": {},
     }

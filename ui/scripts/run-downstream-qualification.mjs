@@ -22,7 +22,7 @@ import { fileURLToPath } from "node:url";
 
 const ui = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const repo = resolve(ui, "..");
-const wheel = resolve(process.argv[2] ?? join(repo, "dist/arras-0.5.0-py3-none-any.whl"));
+const wheel = resolve(process.argv[2] ?? join(repo, "dist/arras-0.5.1-py3-none-any.whl"));
 for (const arg of process.argv.slice(3))
   assert.ok(
     ["--update-baselines", "--update-canonical-baselines", "--narrow-only"].includes(arg),
