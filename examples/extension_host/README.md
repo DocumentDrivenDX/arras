@@ -105,16 +105,16 @@ provisioning or persistent attachment.
 `arras[truss]` supplies the adapter's selected native/query toolkit dependencies;
 it does **not** supply the local server runtime. The source-checkpoint cohort is
 `truss-toolkit==0.0.48`, `weft-sql==0.4.51`, with the toolkit's `local` extra and
-its selected `pgserver-pg18` wheel. This is the selected public source tuple;
-Arras's native qualification against it is pending. Earlier source-checkpoint
+its selected `pgserver-pg18` wheel. This public source tuple passed all 199 native tests on Linux x86_64; final
+macOS source and fresh installed-native qualification remain pending. Earlier source-checkpoint
 smoke evidence used `truss-toolkit==0.0.45` and `weft-sql==0.4.49`; that evidence
 is historical and does not qualify the current tuple. The repository's
 `truss-test` dependency group is not a published Arras extra. An installed
 consumer must provision the matching public, digest-verified toolkit/local-server
 cohort explicitly, using its published platform wheels; a source checkout's
 virtual environment is not that proof. Record the Python/OS/architecture/PostgreSQL
-and all installed versions with the corpus result. Current selected source
-smoke evidence is not a full installed-native or Linux qualification.
+and all installed versions with the corpus result. Linux source evidence does not qualify the fresh installed helper or other
+platform/interpreter cohorts.
 
 ## Production backend factory
 

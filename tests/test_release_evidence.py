@@ -416,7 +416,13 @@ def make_inputs(root: Path) -> dict[str, Any]:
         "playwright-summary-neutral-theme.json": summary_raw,
     }
     ui_value = ui_receipt(wheel_sha, npm_sha, sidecars)
-    ui_value["acceptance_suite"]["cohort"] = ui_value["cohort"]
+    outer_cohort = ui_value["cohort"]
+    ui_value["acceptance_suite"]["cohort"] = {
+        "wheelSha256": outer_cohort["wheel"]["sha256"],
+        "npmSha256": outer_cohort["npm"]["sha256"],
+        "themeSha256": outer_cohort["theme"]["sha256"],
+        "runnerSha256": outer_cohort["runner"]["sha256"],
+    }
     write_json(ui_path, ui_value)
     consumer_path = root / "consumer.json"
     write_json(consumer_path, consumer_receipt(wheel_sha))
@@ -650,6 +656,33 @@ def test_ui_requires_full_suite_and_exact_cohort(tmp_path: Path) -> None:
         sidecars["acceptance-resources-neutral-theme.json"],
     )
     assert passed["status"] == "passed"
+    outer_cohort = ui["cohort"]
+    suite_cohort = ui["acceptance_suite"]["cohort"]
+    malformed_cohorts = [
+        outer_cohort,
+        {**suite_cohort, "extra": "0" * 64},
+        {key: value for key, value in suite_cohort.items() if key != "runnerSha256"},
+        {**suite_cohort, "wheelSha256": 1},
+        {**suite_cohort, "npmSha256": True},
+        {**suite_cohort, "themeSha256": "not-a-digest"},
+        {**suite_cohort, "wheelSha256": "0" * 64},
+        {**suite_cohort, "npmSha256": "0" * 64},
+        {**suite_cohort, "themeSha256": "0" * 64},
+        {**suite_cohort, "runnerSha256": "0" * 64},
+    ]
+    for malformed_cohort in malformed_cohorts:
+        altered_ui = json.loads(json.dumps(ui))
+        altered_ui["acceptance_suite"]["cohort"] = malformed_cohort
+        with pytest.raises(assembler.AssemblyError):
+            assembler._validate_ui(
+                altered_ui,
+                inputs["ui_path"],
+                WHEEL_NAME,
+                inputs["wheel_sha"],
+                inputs["npm_sha"],
+                VERSION,
+                sidecars["acceptance-resources-neutral-theme.json"],
+            )
     summary_path = inputs["ui_path"].parent / "playwright-summary-neutral-theme.json"
     summary = json.loads(sidecars["playwright-summary-neutral-theme.json"])
     for target in ("summary", "project"):

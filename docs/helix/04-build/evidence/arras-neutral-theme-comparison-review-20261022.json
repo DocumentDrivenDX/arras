@@ -1,0 +1,82 @@
+{
+  "schema": "arras.ui.independent-comparison-review.v1",
+  "status": "approved-recorded-comparison",
+  "receipt": "tests/downstream/evidence/darwin/qualification-darwin.json",
+  "receiptSha256": "91f1a5af1c2b78b187d1726d66c96a3682251e189abd2834f9c2531beb17a819",
+  "sidecars": {
+    "acceptance-inventory-neutral-theme.json": "925019da1651937a72a20b91a7a032f1101c2af024ae96c51ef423aa67bbe14c",
+    "acceptance-resources-neutral-theme.json": "bfb6ed43ff0accdb170b60cc7095365f2a7cc287a66b7dfcab31918106042f78",
+    "playwright-summary-neutral-theme.json": "9eb4ce63e6c9ddeced890fcb4a0af978b95c38b98b6419254e2f65f1e26e4371"
+  },
+  "baselineReview": "docs/helix/04-build/evidence/arras-neutral-theme-67-visual-review-20261022.json",
+  "all67ReviewedBaselineHashesUnchanged": true,
+  "visual": {
+    "status": "compared",
+    "comparedScreenshots": 67
+  },
+  "projects": [
+    {
+      "name": "chromium",
+      "expected": 132,
+      "discovered": 132,
+      "passed": 132,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "schema-admin",
+      "expected": 3,
+      "discovered": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "browser",
+      "expected": 70,
+      "discovered": 70,
+      "passed": 70,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "visual",
+      "expected": 67,
+      "discovered": 67,
+      "passed": 67,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "routesCompared": 4,
+  "negativeControls": {
+    "missingResource": "refused",
+    "tamperedResource": "refused",
+    "invalidOptions": "refused",
+    "controlledFailure": "exit-1"
+  },
+  "cohort": {
+    "wheel": {
+      "file": "arras-0.5.0-py3-none-any.whl",
+      "sha256": "07b3e867bd4ca48b4cd43ad5f13449076e3939f4194c06c297d1ca0171764ed1",
+      "version": "0.5.0"
+    },
+    "npm": {
+      "file": "documentdrivendx-arras-ui-0.5.0.tgz",
+      "sha256": "c29a9f151d9a6a42cce55325e927634cc5713763c0485cc6e02cb63006c78307",
+      "version": "0.5.0"
+    },
+    "theme": {
+      "name": "@arras-fixtures/neutral-theme",
+      "version": "1.0.0",
+      "sha256": "27ce95cfbc5ec907561bf853ef2cc4d456c2efdf671c63e483f16ebdbc6e32dc"
+    },
+    "runner": {
+      "sha256": "67633a3dcfbc5e1130e1135d7c3192f612370078882ac98e247c732f03f753b9"
+    }
+  },
+  "limitations": [
+    "Mechanical receipt/sidecar/baseline identity review; image visual review retained separately.",
+    "No native, other platform, tagged or publicly downloaded qualification implied."
+  ]
+}

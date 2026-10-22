@@ -25,15 +25,17 @@ Truss follow-up work. It records the current cohort, owners, first bounded chang
 and remaining native qualification; planned integration is not delivered support.
 Its separate EX queue tracks the generic
 [downstream extensibility design](02-design/downstream-extensibility.md). The
-implemented candidate includes credential/grant safety, schema authorization, the
-public package/design-system surface and most generic downstream seams.
-A final requirement audit reopened telemetry namespace configuration and the
-packaged example configuration file; delivery of the existing full UI suite through
-a portable testkit also remains open. Existing integrated source checks pass;
-these remaining changes, final native/artifact qualification and public release
-are still pending. The [release checklist](05-deploy/deployment-checklist.md)
-and [candidate release notes](05-deploy/release-notes.md) distinguish these gates
-from completed source evidence.
+implemented candidate includes credential/grant safety, schema authorization,
+public distribution/catalog, typed naming and policy, explicit consumer content,
+external theme assets and the portable canonical testkit. The final 07b wheel
+passes the installed doctor/SDK and fresh example proofs. Its packed themed
+capture and ordinary comparison each pass all 272 cases; all 67 canonical images
+and eight narrow route images have Sol review. Earlier failures and exact scoped
+receipts remain in the build plan. Final Mac native, source/sdist parity, exact-tag
+GitHub assets and public-download gates remain open in the
+[release checklist](05-deploy/deployment-checklist.md). Real registry uploads may
+be explicitly deferred; no downstream migration or general official-UMF execution
+is implied by this release work.
 
 Raw incoming material goes in `docs/intake/`, outside HELIX. Author artifacts
 through the HELIX skill (`/helix`).

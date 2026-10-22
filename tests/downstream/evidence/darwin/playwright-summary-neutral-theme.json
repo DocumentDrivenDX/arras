@@ -1,0 +1,41 @@
+{
+  "schema": "arras.ui.canonical-playwright-summary.v1",
+  "status": "passed",
+  "platform": "darwin",
+  "projects": [
+    {
+      "name": "chromium",
+      "expected": 132,
+      "discovered": 132,
+      "passed": 132,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "schema-admin",
+      "expected": 3,
+      "discovered": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "browser",
+      "expected": 70,
+      "discovered": 70,
+      "passed": 70,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "visual",
+      "expected": 67,
+      "discovered": 67,
+      "passed": 67,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "expectedTestCount": 272,
+  "unexpectedSkips": 0
+}

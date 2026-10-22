@@ -48,12 +48,12 @@ also forwards the host's schema-authorization callback.
 | Seam | Consumer-visible behavior |
 | --- | --- |
 | Distribution | Public Python/UI exports, contracts, configuration, CSS roles and tooling are catalogued and checked. The wheel carries the verified page and exact npm tarball. Source/sdist-rebuilt wheels and installed consumers are compared. |
-| Naming | Immutable Brand and DistributionConfig compose host presentation; public MCP/development launchers support a thin shim. Explicit environment aliases preserve canonical fallback and refuse credential conflicts before choosing identity. Canonical wire/CSS identities and default instrumentation names remain stable. Typed scoped telemetry projection is implemented and source-reviewed. A corrected temporary installed consumer passes 20 doctor cases and eight telemetry phases, with independent no-op/snapshot controls; the frozen release wheel must repeat that qualification. |
+| Naming | Immutable Brand and DistributionConfig compose host presentation; public MCP/development launchers support a thin shim. Explicit environment aliases preserve canonical fallback and refuse credential conflicts before choosing identity. Canonical wire/CSS identities and default instrumentation names remain stable. Typed scoped telemetry projection passes 20 installed doctor cases, eight telemetry phases and three false-pass controls on the final candidate wheel, preserving host separation and provider failure isolation. |
 | Theme | A compiled host replaces six design-system slots including Mark with one React. A prebuilt page accepts verified CSS/font/favicon assets at runtime. The packed checker tests tokens, contrast, axe, internal controls and keyboard behavior; macOS visual comparison is separate from Linux checks. |
 | Operator and policy | Host callbacks retain operator, role, schema and Operate ownership. PolicyBackend checks immutable resolved requests as the current person; policy refusals use existing error envelopes. Annotation-aware providers must commit annotations with the write or refuse before effects. |
 | Content | The downstream owns its modules, seeds and graph files and chooses registration explicitly. Demo modules are not discovered automatically. The view vocabulary remains closed; adding a vocabulary item requires an upstream extension. |
 | Backend/deployment | Backend factories and connections remain host-owned. A lazy public Truss conformance harness owns only a throwaway local database. Stable credential storage supports multiple persistent development hosts. |
-| Testing | The packaged corpus and public UI checker can be run without the upstream test tree. Reusable CI installs an exact digest-qualified wheel and the consumer's selected test targets. Generic import-origin and fixture-provenance gates protect the public source. Delivery and packed-theme execution of the existing full Playwright suite remains an open release blocker; the narrower checker is not that evidence. |
+| Testing | The packaged corpus and public UI checker can be run without the upstream test tree. Reusable CI installs an exact digest-qualified wheel and the consumer's selected test targets. Generic import-origin and fixture-provenance gates protect the public source. Public Node-only `./testkit` and browser-only `./testkit/host` carry the shared 17-spec, 83-resource suite. The actual installed themed capture and ordinary comparison each pass 272 cases, including 67 reviewed visual baselines; The Linux profile selects 205 nonvisual cases. |
 | Upgrade | The offline doctor checks installed identities, contracts/exports, config/naming, role-token names, manifests and declared document profiles. Reports distinguish incompatibility, malformed requests and unavailable proof. It does not read ambient credentials or contact hosts. |
 
 ## Required actions and compatibility
@@ -73,13 +73,20 @@ silently changing passwords. This release does not migrate a live database.
 
 ## Qualified scope and known limits
 
-The expanded source checkpoint passed 2,797 default Python tests and strict type/lint/format
-checks on the existing Truss 0.0.45/Weft 0.4.49 pins. Its 199 native deselections do
-not qualify native execution. The full product UI source checks passed unit,
-integration and 272 browser tests on macOS; packed consumer evidence separately
-covers runtime and compiled themes. These are pre-freeze checkpoints, not final
-release-artifact evidence. The exact final compatibility matrix and downloaded
-artifact identities must be recorded here before the candidate is marked shipped.
+The [compatibility matrix](../02-design/downstream-extensibility.md#compatibility-and-qualification-matrix)
+separates actual component cohorts from version declarations. The selected native
+versions are public Truss 0.0.48, Weft 0.4.51 and PostgreSQL 18.6.1; source Linux
+qualification passes all 199 native tests. Final Mac and installed-native gates
+remain in the release checklist. The final candidate's fresh installed example
+passes four tests and all 72 applicable memory corpus cases, with seven
+replica-only cases inapplicable.
+
+On Darwin arm64, the frozen wheel passes the 20-case doctor/SDK check on Python
+3.13.16/OpenTelemetry 1.45.1. The packed themed browser suite passes both capture
+and ordinary comparison with 272 cases and no failures/skips; all 67 reviewed
+baselines compare unchanged. It uses React 19.3.0, Vite 8.3.2, Playwright 1.63.0,
+axe 4.13.0 and Chromium 153.0.8010.12. These are prepublication component results;
+exact tagged assets and fresh public-download consumers still gate delivery.
 
 The supported document profile is the selected legacy Arras subset. General
 official-UMF admission/execution, arbitrary view components, managed deployment,

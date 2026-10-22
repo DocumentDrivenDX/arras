@@ -29,8 +29,9 @@ protocol names and default instrumentation identifiers remain stable. `Telemetry
 `TelemetryContext` provide typed per-host event/attribute/log projection and
 validated host-owned service Resources. Awaited ASGI/MCP/worker operations preserve
 the selected context; failures do not mutate global providers or business results.
-Focused source tests and Sol review pass; corrected installed receiver and final
-release-artifact checks remain required.
+Focused source tests and Sol review pass. The frozen candidate passes 20
+installed doctor cases, eight SDK phases and three false-pass controls; exact-tag
+and public-download checks remain separate.
 
 ### UI assets and theming
 
@@ -40,7 +41,10 @@ CSS/font/favicon theme manifest. Same-origin digest routes validate exact paths,
 MIME, sizes, hashes and UI cohorts. Arbitrary widget replacement uses the compiled
 route. The packed `arras-ui-qualify` tool checks an explicit host URL with optional
 public test-tool peers, retained reports and separate macOS visual baselines.
-It never installs peers or downloads browsers implicitly.
+It never installs peers or downloads browsers implicitly. Node-only `./testkit`
+and browser-only `./testkit/host` share the canonical 17-spec suite and 83 verified
+resources. The actual packed themed capture and ordinary comparison each pass
+272 cases, with all 67 reviewed baselines unchanged and negative controls intact.
 
 ### Operators, policy and audit
 

@@ -77,8 +77,8 @@
       "sha256": "9eb4ce63e6c9ddeced890fcb4a0af978b95c38b98b6419254e2f65f1e26e4371"
     },
     "visual": {
-      "status": "updated-unreviewed",
-      "updatedScreenshots": 67
+      "status": "compared",
+      "comparedScreenshots": 67
     },
     "negativeControls": {
       "missingResource": "refused",

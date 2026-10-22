@@ -1061,6 +1061,32 @@ The doctor's conservative candidate/native-pin boilerplate does not establish
 native behavior: the selected public 48/51 tuple requires its separate native
 receipts. Final source/sdist parity, Mac native and tag/download gates remain.
 
+The ordinary packed comparison subsequently passed **272/272 cases with zero
+failures or skips**, with baseline updates disabled. All 67 individually reviewed
+baseline hashes remained unchanged; the receipt reports `compared` with 67
+screenshots. All four narrow routes compared, and all four missing/tampered
+resource, unsafe-option and actual controlled-failure checks passed. Receipt
+SHA-256 is `91f1a5af1c2b78b187d1726d66c96a3682251e189abd2834f9c2531beb17a819`;
+[Sol's comparison review](evidence/arras-neutral-theme-comparison-review-20261022.json)
+independently verifies the receipt, three resource/report sidecars, exact wheel,
+carried npm, theme and current driver identities. All owned browser/UI ports
+closed after the run. This closes the local ordinary-comparison gate; native,
+source/sdist and tagged/public-download gates remain separate.
+
+Hosted [CI run 39860182771](https://github.com/DocumentDrivenDX/arras/actions/runs/39860182771)
+passed all four source Python, check/build/installed-consumer, native and UI jobs
+on commit `6136e288a64af510a94fd4837655b47f745b5414`. Subsequent changes record
+reviewed baselines/evidence and final documentation, plus an evidence-assembler
+correction for the producer's closed four-digest cohort shape. Final source CI
+must run again; the earlier green run is not a final-tag result.
+
+The evidence-assembler correction then passed 11 focused tests, Ruff/format and
+strict Pyright. Sol independently accepted the unchanged final SDK and UI receipts
+against the actual closed flat four-digest producer shape. Nested, extra/missing,
+non-digest and each mismatched identity remain refused. The correction changes
+only evidence validation; it does not normalize receipts, relax cohort matching
+or require another UI run. Full bundle assembly remains a separate actual gate.
+
 ## Validation Plan
 
 - A0: focused `tests/test_umf.py` and `tests/test_core.py`; existing module/host

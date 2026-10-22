@@ -46,33 +46,27 @@ and a published artifact are separate facts.
 
 Distribution, typed naming, runtime assets, policy and external-consumer work now
 have binding interfaces in [CONTRACT-005](contracts/CONTRACT-005-embedding-and-lifecycle.md).
-The policy source has completed scoped Sol review; the optional annotation proof
-is a synthetic payload transaction, not native Truss durability or general action
-execution. The packed theme/provider and public qualification runner have completed
-scoped review and local macOS browser qualification from their recorded exact
-artifacts. The latest [expanded source checkpoint](../04-build/evidence/arras-source-gate-expanded-20261022.json)
-records 2,797 default Python passes, 199 native deselections and zero failures in
-74.39 seconds on CPython 3.11.17/macOS arm64; whole-repository strict Pyright reports
-zero errors and Ruff/format pass across 236 files. The retained 926-line ceiling,
-private qualification splits and narrow catalog/boundary controls remain enforced.
-The [earlier 2,774-test checkpoint](../04-build/evidence/arras-source-gate-20261022.json)
-remains historical evidence. Both checkpoints use the old Truss 0.0.45/Weft 0.4.49
-pins and establish no native execution or final artifacts. The final release
-cohort, repeated installed doctor/launcher probes on that frozen cohort and
-actual Arras tag/Linux/public download gates remain pending.
+The policy source has scoped Sol review; optional annotation atomicity uses a
+synthetic transaction and does not establish native annotation durability. The
+frozen candidate wheel is
+`07b3e867bd4ca48b4cd43ad5f13449076e3939f4194c06c297d1ca0171764ed1`, carrying npm
+`c29a9f151d9a6a42cce55325e927634cc5713763c0485cc6e02cb63006c78307`.
+It passed 20 installed doctor cases, eight SDK phases and three false-pass
+controls, plus four fresh installed example tests and 72 applicable memory corpus
+cases (seven replica-only cases inapplicable). Its portable themed capture passed
+272 cases with no failures/skips; Sol approved all 67 canonical images and all
+eight narrower route images. The subsequent ordinary run passed all 272 cases with updates disabled and all 67 approved baselines unchanged.
 
-The [build plan](../04-build/arras-integration-plan-20261022.md) records execution.
-The [earlier distribution receipt](../04-build/evidence/arras-distribution-20261022.json)
-qualifies its exact Python 3.11.17/macOS arm64 snapshot, not the expanded current
-working tree. Rebuild and requalify after final source freeze. The
-[naming inventory](naming-surfaces.md) classifies canonical versus host-visible
-identity; the [release checklist](../05-deploy/deployment-checklist.md) requires
-exact-tag gates, GitHub assets and fresh downloaded-artifact consumers. The
-[candidate release notes](../05-deploy/release-notes.md) and root
-[changelog](../../../CHANGELOG.md) describe per-seam changes and limits; both remain
-subject to the final release record. No row in this note declares all eight
-requirements released. Registry uploads may be
-explicitly deferred under the human's instruction; GitHub delivery remains required.
+The [build plan](../04-build/arras-integration-plan-20261022.md) records exact
+receipts, source reviews, failed candidates and remaining final native, source/sdist and public-delivery gates. The
+[naming inventory](naming-surfaces.md) distinguishes stable identity from host
+presentation. The [release checklist](../05-deploy/deployment-checklist.md)
+requires exact-tag GitHub assets and fresh public-download consumers. Earlier
+[source](../04-build/evidence/arras-source-gate-expanded-20261022.json) and
+[distribution](../04-build/evidence/arras-distribution-20261022.json) checkpoints
+retain their original Python/platform and old native-pin scope; they do not
+qualify this frozen artifact. Real PyPI/npm uploads are explicitly deferred if
+existing access is unavailable; GitHub delivery remains mandatory.
 
 Governing sources: [Architecture](architecture.md), [embedding CONTRACT-005](contracts/CONTRACT-005-embedding-and-lifecycle.md),
 [typed configuration ADR-019](adr/ADR-019-the-mcp-process-reads-one-typed-configuration.md),
@@ -86,18 +80,35 @@ Exact new interfaces belong in the affected contracts before implementation.
 | Concern | Queue / governing specification | Implemented or bound subset | Remaining acceptance gap |
 | --- | --- | --- | --- |
 | Distribution | EX-01; CONTRACT-005/public catalog | Reviewed catalog including launch-only imports, asset loader/result and lazy native harness; artifact/dependency parity and exact carried npm bytes | Final expanded cohort, mandatory exact-tag gates, GitHub assets and downloaded consumers; registry delivery separately qualified/deferred |
-| Naming | EX-02; ADR-018/019, CONTRACT-005/007/008 | Reviewed Brand/tool/env/human launchers and implemented scoped TelemetryNames/TelemetryContext/effective-config provider factory; 150 focused source tests independently pass; packaged ADR-019 config and corrected 20-case temporary installed consumer with eight SDK phases | Final frozen-cohort configuration/SDK/launcher repetition and delivery; corrected temporary installed consumer is qualified separately |
-| Theming/UI split | EX-03; ADR-027/029, CONTRACT-005 | Reviewed packed provider/theme/checker; two routes qualified on recorded macOS cohort | Required portable delivery of the existing full Playwright a11y/e2e suite against a theme overlay, then final-cohort/tag/public delivery gates |
+| Naming | EX-02; ADR-018/019, CONTRACT-005/007/008 | Reviewed Brand/tool/env/human launchers and implemented scoped TelemetryNames/TelemetryContext/effective-config provider factory; 150 focused source tests independently pass; packaged ADR-019 config and 20-case frozen-wheel installed consumer with eight SDK phases and three false-pass controls | Exact-tag and fresh-download repetition; native evidence remains separate |
+| Theming/UI split | EX-03; ADR-027/029, CONTRACT-005 | Public Node testkit/browser host, 17 shared specs and 83 resources; packed themed capture 272/272; all 67 canonical and eight narrow images reviewed | Ordinary full comparison passed; exact-tag and public-download delivery remain |
 | Operator/policy | EX-04; CONTRACT-005/007/009/010/011, ADR-005 | Existing callbacks, composed schema forwarding, PolicyBackend, safe PolicyRefused, optional annotation protocol with synthetic transaction proof | Final installed/cross-surface gates; native annotation support explicitly unavailable until qualified |
-| Modules/content | EX-05; CONTRACT-002/003/010, ADR-022 | Explicit custom resource example and no-default composition; declared legacy document/action subset | Final installed example and separately owned official-profile/native qualification; no general UMF claim |
+| Modules/content | EX-05; CONTRACT-002/003/010, ADR-022 | Explicit custom resource example and no-default composition; final installed example four tests plus memory corpus 72/7 | Tag/download delivery; official-profile/native qualification remains separately scoped |
 | Backends/deployment | EX-06/07, A7; CONTRACT-004/005 | Host factories/connections, repaired stable credentials; reviewed packaged harness/verifier source with 17 offline controls | Final installed native harness/cohort proof and deployment guidance |
-| Downstream CI | EX-07; TP-001/architecture | External Python/theme fixtures, generic public-content gate, reusable workflow and narrower packed theme checker | Existing full UI acceptance suite remains checkout-bound; portable no-copy testkit and actual themed execution required, plus final integrated installed/tag gates |
-| Upgrades | EX-08; CONTRACT-005/catalog | Reviewed offline doctor/report/CLI implementation and compatibility/deprecation policy | Final frozen-wheel positive/breaking/no-I/O and launcher controls; finalize candidate per-seam release record |
+| Downstream CI | EX-07; TP-001/architecture | External Python/theme fixtures, generic public-content gate, reusable workflow, portable no-copy canonical testkit and actual packed themed capture | Ordinary full comparison passed; final integrated exact-tag/download jobs remain |
+| Upgrades | EX-08; CONTRACT-005/catalog | Reviewed offline doctor/report/CLI implementation and compatibility/deprecation policy | Frozen-wheel 20-case positive/breaking/no-I/O and launcher controls pass; finalize per-seam delivery record and repeat on public downloads |
 
 The contracts specify the new callable/value/asset/runner seams before code.
 Unfinished qualification is not an unbound API proposal. In-flight source is
 nevertheless unavailable to a pinned consumer until it is packed, delivered and
 verified from that exact artifact.
+
+## Compatibility and qualification matrix
+
+Version declarations define candidate compatibility; the evidence column limits
+what is actually qualified. The exact release bundle will bind its own wheel,
+platform and native cohort rather than merge these component runtimes.
+
+| Component/cohort | Selected versions | Evidence and limit |
+| --- | --- | --- |
+| Arras Python/UI | `0.5.0`; Python requirement `>=3.11`, declared 3.11/3.12/3.13 | Frozen 07b wheel and c29 npm qualified as named below; declarations alone do not prove every interpreter/platform |
+| Native Linux x86_64 | Truss `0.0.48`, Weft `0.4.51`, PostgreSQL `18.6.1`, CPython 3.11 | Actual source suite 199 passes; fresh installed/tagged native gates remain separate |
+| Native macOS arm64 | Same public native tuple; CPython 3.11.17 | Focused original seven failures corrected and passing; final full 199 plus fresh installed harness pending |
+| Native distribution floors | Linux x86_64 glibc `2.27`; macOS arm64 `14` | Static maximum dependency floors, not execution on those OS minima; exact seven-archive inputs live under `tests/downstream/native-cohorts/` |
+| Installed Python/SDK macOS arm64 | Python `3.13.16`, OpenTelemetry API/SDK `1.45.1`, graphql-core `3.3.0` | Doctor 20 cases/eight phases/three controls and four fresh example tests; memory corpus 72 passes/seven replica-only cases inapplicable; no native inference |
+| UI macOS arm64 | Node `26.12.1`, React/ReactDOM `19.3.0`, TypeScript `6.0.3`, Vite `8.3.2`, Playwright `1.63.0`, axe `4.13.0`, Chromium `153.0.8010.12` | Packed themed capture and ordinary comparison each 272 passes; all 67 approved baselines unchanged |
+| UI Linux x86_64 | Node 24 and lock-pinned Playwright/Chromium | Nonvisual source/tagged installed suites are separate gates; visual project excluded |
+| Document/view/rendering profiles | Selected legacy Arras document/action subset; `arras.view` `0.1.0`; schema-browser npm `2.0.0` | Original bytes retained and explicit profile refusal; official core `0.10.0` (`umf-v0.5.4`) has A1 source-validity evidence only; A2 admission/projection is separately gated |
 
 ## 1. Distribution — partial
 
@@ -170,8 +181,8 @@ development internals are not promoted.
 | `.arras-root`, component classes and eighteen `--arras-*` tokens | (a) Stable namespace | Host supplies values/widgets; renaming is a breaking upstream change |
 | Titles, wordmark, tagline, Mark and product-bearing UI text | (b) Host presentation | Shared Brand and escaped runtime injection; no page rebuild |
 | MCP server display name and exposed tool prefix | (b)/(c) Explicit typed presentation/alias | Canonical qualified actions/version meanings remain unchanged |
-| Telemetry Resource `service.name` | (b) Typed host-owned attribution | Source-reviewed TelemetryNames + explicit matching host provider Resource; corrected temporary installed receiver proof passes; final cohort pending |
-| Event/attribute/log namespace prefixes | (b) Explicit host-scoped projection | Source-reviewed per-context output aliases after default-deny validation; corrected temporary installed witnesses pass; canonical definitions/origin keys/defaults preserved; final cohort pending |
+| Telemetry Resource `service.name` | (b) Typed host-owned attribution | Source-reviewed TelemetryNames + explicit matching host provider Resource; final 07b installed receiver proof passes; exact-tag/download repetition pending |
+| Event/attribute/log namespace prefixes | (b) Explicit host-scoped projection | Source-reviewed per-context output aliases after default-deny validation; final 07b installed witnesses pass; canonical definitions/origin keys/defaults preserved; exact-tag/download repetition pending |
 | Tracer instrumentation scope | (a) Canonical library identity | `arras` scope unchanged; host provider owns service Resource and exporters |
 | Human error/help/banner product label | (b) Host presentation | Bootstrap Brand before config, effective Brand after load; printable/redacted; canonical invocation/dependency names remain truthful |
 | Downstream docs and package display metadata | (b) Consumer-owned | Upstream docs and actual npm/Python identities stay canonical |
@@ -185,58 +196,33 @@ identity or import path from a display name. The [naming census](naming-surfaces
 records source locations and qualified snapshot counts; token counts are not API
 compatibility tests.
 
-**Required remaining gap/cost:** small/medium installed qualification and delivery.
-Canonical-only telemetry does not fulfill the original request for attribute/log/
-event namespaces. The newly implemented, source-reviewed CONTRACT-005/008 and
-ADR-018/019 seam supplies immutable `TelemetryNames` in DistributionConfig, public
+**Gate/cost:** small remaining exact-tag/public-download delivery. The implemented
+CONTRACT-005/008 and ADR-018/019 seam supplies immutable `TelemetryNames`, public
 `TelemetryContext.activate`/`wrap_asgi`, and a launcher provider factory receiving
-validated effective configuration. Explicit service names require an exact matching
-host-owned provider Resource; no global provider mutation or span-attribute
-substitute. Seven diagnostic logger sites plus telemetry receive scoped routing,
-existing raw exception/detail diagnostics become class-only, and Arras-owned
-executor submissions carry fresh copied context. Independent actual SDK receivers
-must prove concurrent/nested host separation, entry-to-finish snapshots, default
-compatibility, default-deny redaction and failure isolation through direct, MCP and
-worker-backed ASGI paths. No new exporter stack, service identity or data attributes
-are introduced. The [scoped source review](../04-build/evidence/arras-telemetry-source-review-20261022.json)
-independently ran all eight affected test files: 150 passed in 12.68 seconds on CPython 3.11.17/macOS arm64 with OTel API
-and SDK 1.45.1. This includes actual worker, cancellation, callback, privacy and
-no-fallback controls; it is not final installed qualification. The superseding temporary installed consumer qualifies wheel
-`cdc7ec0d7b5c907ef079ed9f41f60aa07656951dea60be685a8ff049764c8261`
-on CPython 3.13.16/macOS arm64 with OTel API/SDK 1.45.1: 20 cases and eight
-SDK phases cover direct, MCP, worker-backed console/operator, concurrency,
-nested restoration, finish-time snapshots and provider faults. Verifier source
-SHA-256 is `356fe79ed6ea060ae48a9e90af33d16bd20a884b580ac937bec579a4e6c317c4`;
+validated effective configuration. Explicit service names require an exactly
+matching host-owned provider Resource. Existing allowlists/redaction precede
+projection; no global provider mutation or fallback is permitted. Executor
+submissions carry fresh copied context and diagnostics retain class-only errors.
+
+The [frozen-wheel SDK review](../04-build/evidence/arras-sdk-07b-review-20261022.json)
+qualifies the 07b wheel on Darwin arm64/27.0.0, Python 3.13.16 and OpenTelemetry
+API/SDK 1.45.1: 20 cases, eight phases and three false-pass controls. The phases
+cover direct calls, MCP, worker-backed console/Operate, concurrent/nested hosts,
+nested restoration, finish-time snapshots and provider faults. Current verifier
+SHA-256 is `9aa379d1f2b333f855aa9886da7b6e93dcf930bc789a3721e0862ee174c08455`;
 generated probe SHA-256 is
 `2dd054ff5b832f279195d8e644027474181ff247d29d6b59ee0e8c2889836e0f`.
-The [independent SDK review](../04-build/evidence/arras-sdk-source-review-20261022.json)
-checks those exact source/probe/wheel identities against the fresh receipt.
-Independent controls on the extracted same candidate, copied consumer and existing
-CPython 3.11/OTel 1.45.1 dependencies pass honestly and reject successful MCP/HTTP
-200 no-ops separately for MCP, operator and console, plus ambient-context
-finish-time misrouting. This control execution does not replace the owner's fresh
-installed run. Phase `events` counts selected structured operation/query witnesses
-(`arras_event`), not SDK `Span.events`; the fault phase counts its observed
-structured records. The earlier aggregate-only receipt is superseded. This is a
-temporary candidate with historical native pins, not final-cohort or publication
-qualification.
+Selected structured operation/query records witness phase events; they are not
+SDK `Span.events`. Earlier temporary SDK receipts remain historical.
 
-The existing installed-wrapper proof remains scoped to earlier human naming. A
-real inert packaged ADR-019 `config/default.toml` now exists, with temporary
-installed resource-origin and public doctor/launch selection evidence. The corrected
-temporary installed probe now exercises this packaged configuration/SDK integration; final frozen-cohort repetition remains required;
-`arras.mcp.config.Config` remains private. Preserve default behavior, canonical
-CSS and default instrumentation, help-before-I/O, alias insertion-order
-and overlapping-prefix controls, cross-namespace token conflicts and dynamic-tool
-collision/refusal tests. Development-specific credential flags remain a separate
-explicit namespace rather than silently becoming MCP aliases.
-The installed verifier now calls public MCP/development launchers from a thin
-shim in a fresh environment, checking custom help/refusal and the selected alias
-rules for its recorded temporary candidate wheel. Reviewed source ordering keeps
-help/refusal before credential/native/server work. Mocked development-server
-forwarding/banner checks qualify callable wiring, not live server or database
-behavior, and do not promise development argparse value redaction. Repeat those
-probes on the final frozen wheel; candidate success alone does not close delivery.
+The same installed proof exercises packaged ADR-019 `config/default.toml` and
+public MCP/development launcher selection, custom help/refusal, alias fallback,
+override and credential-conflict controls. The fresh four-test example separately
+proves public launcher/config/module composition. `arras.mcp.config.Config`
+remains private. Mocked development forwarding/banner checks qualify wiring,
+not live server/native behavior or development argparse value redaction. The
+SDK receipt's conservative historical native-pin boilerplate establishes no
+native behavior; the public 48/51 native tuple has separate qualification.
 
 ## 3. UI split and theming — partial
 
@@ -262,36 +248,35 @@ Widgets must preserve labels, descriptions, refs, busy/disabled/error and keyboa
 props. One host React/ReactDOM serves the package and theme; an upstream private
 design-system dependency is unnecessary. CSS/token identifiers stay canonical.
 
-**Gap/cost:** medium required test delivery plus final-cohort work. The original
-request includes running the existing Playwright accessibility/end-to-end suite
-against a themed overlay without copying upstream tests. The current packed
-checker qualifies a narrower route/widget/palette/axe/token/focus subset; it does
-not deliver `ui/e2e/a11y.spec.ts` or the full canonical e2e suite. Those tests still
-use checkout-relative resources, fixed fixture origins and development toolbar/
-control assumptions. A portable opt-in acceptance testkit must share the canonical
-tests, expose explicit standard/schema fixture URLs and artifact-local resources,
-and retain the assertions. The host may apply its theme to the standard synthetic
-acceptance fixture; its own application data is not required. No browser install
-or arbitrary document-driven test/selector language is needed. Exact public
-subpaths/fixture interfaces must be bound before implementation, then an actual
-packed themed full-suite run and per-theme/platform baseline review qualify it.
-The narrower checker remains useful and its recorded success remains valid.
+**Gate/cost:** small remaining exact-tag/public-download delivery work.
+The public Node-only `./testkit` exports `createAcceptanceConfig`; browser-only
+`./testkit/host` exports `AcceptanceHost`. They share all 17 canonical specs and
+83 hash-verified resources with upstream source. Explicit standard/schema URLs,
+expected Brand/surfaces, output and per-theme baseline directories remove checkout
+and fixed-origin assumptions. Neither Arras nor the checker requires a private
+theme registry, application data, copied tests or implicit browser installation.
 
-The [real theme package](../../../tests/downstream/theme-package/package.json) exports
-compiled JS/declarations and CSS/favicon; both runtime assets and the external
-host use its packed bytes. The [browser fixture](../../../tests/downstream/README.md)
-has recorded Explore/Operate light/dark, app-owned palette Button/TextField,
-Mark, six-widget showcase, token/contrast/axe/keyboard and eight unchanged macOS
-visual comparisons. The [qualification receipt](../../../tests/downstream/evidence/darwin/qualification-darwin.json)
-identifies the exact wheel, npm, theme and public runner bytes, interpreter/Node/
-browser versions and clean temporary npm registry installation. The packed
-`arras-ui-qualify` bin/support resources were invoked outside the checkout with
-explicit test peers; the runner source hash matches the receipt. Its focus
-controls cover translucent-background composition and reject ancestor opacity.
-This is recorded macOS/Node 26 evidence, not unrun Node 24/Linux or final release
-proof. Requalify after the final source freeze. Keep reviewed per-theme/platform baselines;
-Linux runs nonvisual checks and reports visual comparison skipped. No-baseline
-screenshots and baseline generation are not reviewed visual comparison.
+The [real theme package](../../../tests/downstream/theme-package/package.json)
+exports compiled JS/declarations, CSS and favicon. The two installed routes use
+its exact packed bytes with one React. On the 07b wheel, all four narrower
+Explore/Operate routes compare against eight
+[reviewed macOS images](../04-build/evidence/arras-narrow-eight-visual-review-20261022.json).
+Their token/contrast/axe/focus/provider/palette controls remain intact. The full
+portable capture then passed 272/272 (132 Chromium, three schema-administration,
+70 browser, 67 visual), with zero failures/skips and four successful negative
+controls. Sol [reviewed all 67 canonical images](../04-build/evidence/arras-neutral-theme-67-visual-review-20261022.json).
+The capture receipt reports `updated-unreviewed`. After review, the ordinary run
+with updates disabled passed 272/272 and compared all 67 unchanged baselines; its
+receipt SHA-256 is `91f1a5af1c2b78b187d1726d66c96a3682251e189abd2834f9c2531beb17a819`. Existing volatile-content masks
+qualify the visual review's coverage.
+
+Recorded tools are Node 26.12.1, React/ReactDOM 19.3.0, TypeScript 6.0.3,
+Vite 8.3.2, Playwright 1.63.0, axe 4.13.0 and Chromium 153.0.8010.12 on Darwin
+arm64. The acceptance host owns its viewport geometry and targets Chrome 123 CSS
+or newer to preserve native `light-dark()` role values during minification.
+That fixture target is not a general browser-support promise. Linux retains the
+205 nonvisual cases and skips the visual project. Canonical CSS identifiers,
+accessibility behavior and assertion thresholds remain unchanged.
 
 ## 4. Operator and policy configuration — partial
 
@@ -344,17 +329,17 @@ unknown-meaning preservation and additional native semantics remain separately
 owned A1/A2 gates. Equal version strings are not conformance. Shared view terms
 need upstream vocabulary versioning; independent host screens remain host-owned.
 
-**Gate/cost:** small remaining final-cohort and public-delivery proof;
-medium/high official semantic work is separate. The
-[fresh installed-consumer receipt](../04-build/evidence/ex05-ex07-20261022/fresh-installed-consumer.json)
-records explicit public-index dependency resolution in an isolated fresh venv,
-three installed consumer tests and 72 memory-store corpus passes. Its
-[profile note](../04-build/evidence/ex05-ex07-20261022/fresh-and-native-profile.json)
-distinguishes that later proof from the retained earlier reused-dependency run;
-the temporary wheel predates later helper/workflow changes and is not the final
-release artifact. Repeat the example with the final clean installed cohort. Preserve
-no-default loading, explicit attribution, unsupported-profile refusal and
-consumer-owned seed/graph provenance. No downstream data enters Arras.
+**Gate/cost:** small remaining exact-tag/public-download delivery; official
+semantic adoption is a separate medium/high-cost workstream. The final 07b
+[installed example proof](../04-build/arras-integration-plan-20261022.md)
+passed four tests including the public launcher, custom graph/seed console
+composition and all 72 applicable memory corpus cases, with seven replica-only
+cases inapplicable and no limits/errors. Dependencies came from the public index
+in a new venv; imports were isolated outside the checkout, with no shared site or
+source-referencing PTH files. Earlier
+[consumer receipts](../04-build/evidence/ex05-ex07-20261022/fresh-installed-consumer.json)
+retain their older snapshot scope. Preserve explicit attribution, no-default demo
+loading, unsupported-profile refusal and consumer-owned resource provenance.
 
 ## 6. Backends and deployment — partial
 
@@ -366,8 +351,10 @@ corpus/runner and explicit memory/native conformance helpers now have source;
 installed native helper/cohort proof is tracked by EX-07/A7.
 The [installed native verifier](../../../tools/verify_native.py) has completed
 source review and 17 offline controls. Those controls qualify verifier preparation
-and failure/report behavior only: they run no actual native cohort and establish
-no public Truss 0.0.48/Weft 0.4.51 adoption, hosted Linux result or release artifact.
+and failure/report behavior only. Separate actual Linux source runs pass all
+199 native tests on public Truss 0.0.48/Weft 0.4.51/PostgreSQL 18.6.1. Final Mac
+source and fresh installed-native helper receipts remain required; source tests
+do not qualify the installed helper or a released artifact.
 
 **Resolved defect:** persistent LocalTruss uses an explicit shared stable
 credential source. Existing-role lookup cannot mint a replacement credential;
@@ -404,9 +391,9 @@ corresponding release claims.
 **Decision/seam:** consumers run pinned wheel/import/config/corpus jobs and
 explicit native/theme profiles without copying repository tests. The packaged
 `arras-ui-qualify` CLI supports external themed URLs; its host-build probe contract
-and optional test peers are documented. It does not yet replace checkout-bound
-canonical Playwright a11y/e2e suite delivery; that explicit no-copy overlay
-requirement remains open as described under Theming. The reusable workflow reports selected
+and optional test peers are documented. The public `./testkit` and `./testkit/host` share the
+canonical suite and resources without copying tests; the actual 272-case themed
+capture and complete image review are described under Theming. The ordinary full comparison passed; tagged/downloaded consumers remain separate gates. The reusable workflow reports selected
 consumer test outcomes, not blanket native/rendered certification. The host owns
 its setup scripts and explicit test targets. Link HELIX authority and author
 local decisions rather than copying methodology or downstream source upstream.
@@ -416,23 +403,20 @@ provenance review. A mocked workflow, source-only runner, dependency reuse or
 unexecuted optional job cannot close the corresponding release claim. Verify the
 exact tagged cohort, retain outputs and make skip/unsupported states explicit.
 
-## 8. Upgrades — partial; final-wheel doctor qualification pending
+## 8. Upgrades — partial; public-delivery qualification pending
 
 **Current state:** version/deprecation rules and the deliberate catalog exist.
 The exact `arras.doctor` request/report/CLI contract is bound in CONTRACT-005.
 Its implementation completed scoped source review and is included in the
 integrated default-source checkpoint above, including strict input, bounded
-regular-file reads, redacted CLI errors and unavailable-capability controls. An
-[earlier installed doctor receipt](../../../tests/downstream/evidence/doctor-installed.json)
-records positive function/CLI and breaking/no-I/O controls for its exact temporary
-candidate wheel `3e7e2b2384fed3f450328bf9edc0985390c006630d2ef16f4b96eb2e60496bb9`.
-Its 19 cases now include public launcher custom Brand/help/refusal, environment
-blank fallback/override/identical-value/conflict checks, and mocked development
-banner/server forwarding with exact DistributionConfig identity. The receipt
-precedes the private doctor refactor and uses the old native pins; it does not
-qualify the final source or a live server/native execution. Development argparse
-value redaction is not promised by this probe. Rerun all affected installed checks
-from the frozen release wheel before advertising it as shipped.
+regular-file reads, redacted CLI errors and unavailable-capability controls. The final 07b installed doctor proof passes 20 cases, including positive function/
+CLI, breaking/no-I/O, public launcher help/refusal, alias blank fallback/override/
+identical-value/conflict and mocked development forwarding/banner controls.
+[Sol's review](../04-build/evidence/arras-sdk-07b-review-20261022.json) binds the
+current verifier, generated probe, wheel and carried npm hashes. Earlier
+[19-case receipts](../../../tests/downstream/evidence/doctor-installed.json) remain
+historical. Static checks and mocked forwarding do not qualify live servers,
+native writes or development argparse value redaction.
 
 **Decision/seam:** one offline typed `DoctorRequest` / `check` / `DoctorReport`
 and `python -m arras.doctor --request <path>` use existing catalog/config/Brand/
@@ -443,7 +427,7 @@ Names-only environment checks make no credential identity claim. Legacy document
 checks are legacy subset/readability only; missing official or native-write proof
 is unsupported with no fallback.
 
-**Gate/cost:** small remaining installed acceptance and aggregate gates. Final release
+**Gate/cost:** small remaining exact-tag/public-download installed repetition and aggregate gates. Final release
 notes must record changes/action/deprecations per Python/contract/config/env/
 Brand/theme/UMF/backend/runner seam. A static doctor cannot qualify rendered
 a11y, native semantics or compatibility merely from matching version integers.
@@ -484,11 +468,11 @@ delivered API inferred from this design.
 | Priority | Queue / work | Current disposition and acceptance |
 | --- | --- | --- |
 | 1 | EX-01 delivery | Rebuild final wheel/sdist/npm; mandatory exact-tag gates, GitHub bundle and fresh downloaded consumers; registry proof/defer explicit |
-| 2 | EX-02 naming/config | Scoped telemetry implementation/source review and packaged ADR-019 config exist; corrected temporary 20-case/eight-phase installed SDK/config proof passes; repeat SDK and human launcher/alias checks on the final wheel |
-| 3 | EX-03 theme/assets/public runner | Deliver shared canonical Playwright a11y/e2e testkit and actual themed full-suite proof; retain scoped-qualified checker/two-route/macOS evidence and rerun final cohort |
+| 2 | EX-02 naming/config | Scoped telemetry implementation/source review and packaged ADR-019 config exist; frozen-wheel 20-case/eight-phase SDK/config and public launcher proof passes; exact-tag/download repetition remains |
+| 3 | EX-03 theme/assets/public runner | Portable shared testkit and actual themed 272-case capture exist; all images reviewed; ordinary comparison passed; finish exact-tag/download gates |
 | 4 | EX-05/07 skeleton/content/CI | Fresh installed example/memory proof, theme fixtures, reusable jobs and generic source gates exist; final integrated tag/downloaded artifact/native gates remain |
 | 5 | EX-04 policy/audit | Source-reviewed generic wrapper/safe reasons/optional synthetic transaction capability; final installed gates; native annotations unsupported |
-| 6 | EX-08 upgrades/doctor | Source-reviewed implementation and 19-case candidate installed proof exist; repeat final-wheel controls and finalize per-seam release record |
+| 6 | EX-08 upgrades/doctor | Source-reviewed implementation and frozen-wheel 20-case installed proof pass; finalize per-seam release record and public-download repetition |
 | Retained urgent subset | EX-06 host safety | Preserve native two-host/restart/expiry/grant regression; final exact cohort requalifies |
 | Parallel semantic dependency | A1/A2/A7 | Owning lane qualifies explicit UMF/profile and native cohort; no second interpreter or silent meaning loss |
 
@@ -520,7 +504,7 @@ example-distribution/
     dist/                        # compiled JS/declarations/assets
   ui/src/main.tsx                # bare UI + packed theme public imports
   runtime-theme.json             # generated v1 manifest from same packed theme
-  doctor-request.json            # EX08 request; candidate proof, final cohort pending
+  doctor-request.json            # EX08 request; frozen-wheel proof, delivery pending
   tests/                         # own overlay assertions + packaged corpus/CLI
   .github/workflows/verify.yml   # pinned reusable jobs / explicit native/theme targets
   docs/helix/                    # local decisions and upstream authority links
@@ -532,8 +516,8 @@ and [browser fixture](../../../tests/downstream/README.md) demonstrate packed
 appearance and the two UI routes. Together they define the integrated external
 proof target; separate successes do not establish a single released cohort.
 Runtime manifests are explicit UI arguments, not an invented TOML theme schema.
-The doctor entrypoint is implemented and source-reviewed; its installed candidate
-proof must be repeated against the final refactored/native-pin cohort.
+The doctor entrypoint is implemented, source-reviewed and qualified against the
+07b frozen wheel; exact-tag and public-download repetitions remain required.
 
 Acceptance pins exact wheel/npm/theme bytes, checks public shim imports, compiles
 theme/host against packed declarations with one React, qualifies actual internal
@@ -555,8 +539,8 @@ release downloads and record actual profile/tool/runtime/platform limits.
   exist.
 - Canonical CSS/import identities, signal definitions/origin keys and default
   telemetry output stay stable. Required scoped attribute/event/log projections
-  and typed host Resource naming have corrected temporary installed qualification;
-  final frozen-cohort qualification remains pending; canonical
+  and typed host Resource naming have frozen-wheel installed qualification;
+  exact-tag/public-download delivery remains pending; canonical
   instrumentation policy is not a waiver of the downstream naming requirement.
 - Native policy annotations remain unsupported. Synthetic transaction evidence
   is not production durability, native audit qualification or source entitlement.

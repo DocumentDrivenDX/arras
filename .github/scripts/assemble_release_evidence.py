@@ -36,6 +36,7 @@ _validate_cohort = _inputs._validate_cohort
 _wheel_identity = _inputs._wheel_identity
 _unique_ids = _inputs._unique_ids
 _validate_limits = _inputs._validate_limits
+_validate_ui_suite_cohort = _inputs.validate_ui_suite_cohort
 _digest = _inputs.digest
 _keys = _inputs.exact_object
 _fail = _inputs.fail
@@ -500,9 +501,6 @@ def _validate_ui(
     if suite.get("schema") != "arras.ui.portable-acceptance.v1" or suite.get("status") != "passed":
         _fail("UI receipt lacks a successful complete portable acceptance suite")
     cohort = _object(value.get("cohort"), "ui.cohort")
-    suite_cohort = _object(suite.get("cohort"), "ui.acceptance_suite.cohort")
-    if suite_cohort != cohort:
-        _fail("portable UI suite and outer receipt identify different cohorts")
     wheel = _object(cohort.get("wheel"), "ui.cohort.wheel")
     npm = _object(cohort.get("npm"), "ui.cohort.npm")
     if (
@@ -517,8 +515,11 @@ def _validate_ui(
     theme = _object(cohort.get("theme"), "ui.cohort.theme")
     if theme.get("name") != "@arras-fixtures/neutral-theme" or theme.get("version") != "1.0.0":
         _fail("UI receipt does not identify the reviewed neutral theme")
-    _digest(theme.get("sha256"), "UI theme SHA")
-    _digest(_object(cohort.get("runner"), "ui.cohort.runner").get("sha256"), "UI runner SHA")
+    theme_sha = _digest(theme.get("sha256"), "UI theme SHA")
+    runner_sha = _digest(
+        _object(cohort.get("runner"), "ui.cohort.runner").get("sha256"), "UI runner SHA"
+    )
+    _validate_ui_suite_cohort(suite.get("cohort"), wheel_sha, npm_sha, theme_sha, runner_sha)
     runtime = _object(value.get("runtime"), "UI runtime")
     sidecars = _read_ui_sidecars(receipt_path, suite)
     projects, inventory = _validate_ui_projects(suite, sidecars, runtime.get("platform"))
@@ -534,8 +535,8 @@ def _validate_ui(
         "cohort": {
             "wheelSha256": wheel_sha,
             "npmSha256": npm_sha,
-            "themeSha256": theme["sha256"],
-            "runnerSha256": cohort["runner"]["sha256"],
+            "themeSha256": theme_sha,
+            "runnerSha256": runner_sha,
         },
     }, sidecars
 

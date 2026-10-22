@@ -167,6 +167,22 @@ def exact_object(value: object, label: str, expected: set[str]) -> dict[str, Any
     return result
 
 
+def validate_ui_suite_cohort(
+    value: object, wheel_sha: str, npm_sha: str, theme_sha: str, runner_sha: str
+) -> None:
+    label = "UI acceptance suite cohort"
+    expected = {
+        "wheelSha256": wheel_sha,
+        "npmSha256": npm_sha,
+        "themeSha256": theme_sha,
+        "runnerSha256": runner_sha,
+    }
+    selected = exact_object(value, label, set(expected))
+    for name, expected_sha in expected.items():
+        if digest(selected.get(name), f"{label}.{name}") != expected_sha:
+            fail(f"{label}.{name} differs from the outer UI cohort")
+
+
 def read_bounded(path: Path, limit: int, label: str) -> bytes:
     flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
     try:
