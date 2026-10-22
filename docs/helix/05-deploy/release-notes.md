@@ -25,8 +25,8 @@ tarball through GitHub Release assets, with checksums and qualification receipts
 Operators use these notes for credential and configuration changes. This artifact
 release does not install or migrate a live customer database.
 
-PyPI/npm publishing access was unavailable during qualification, so those uploads
-are deferred under the release instruction. GitHub assets are the supported
+Registry access has not been established. PyPI/npm uploads are deferred under
+the release instruction. GitHub assets are the supported
 delivery route. The [release checklist](deployment-checklist.md) requires exact-tag
 checks before publication and fresh public-download qualification afterward.
 

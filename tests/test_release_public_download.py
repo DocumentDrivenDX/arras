@@ -115,9 +115,7 @@ def rewrite_trusted_aggregate(path: Path, mutate: Callable[[dict[str, Any]], Non
     aggregate = json.loads(aggregate_path.read_text(encoding="utf-8"))
     mutate(aggregate)
     aggregate_path.write_text(json.dumps(aggregate) + "\n", encoding="utf-8")
-    sums = "".join(
-        f"{sha((path / name).read_bytes())}  {name}\n" for name in sorted(ASSETS)
-    )
+    sums = "".join(f"{sha((path / name).read_bytes())}  {name}\n" for name in sorted(ASSETS))
     (path / "SHA256SUMS").write_text(sums, encoding="ascii")
     return sha(sums.encode())
 
@@ -162,9 +160,10 @@ def test_plan_and_verify_require_exact_trusted_public_bytes(tmp_path: Path) -> N
     aggregate = json.loads((trusted / "release-evidence.json").read_text(encoding="utf-8"))
     assert set(aggregate["release_artifacts"]) == {"wheel", "sdist", "npm"}
     assert set(aggregate["published_components"]) == PUBLISHED_COMPONENTS
-    assert aggregate["source_evidence_sha256"]["doctor-installed.json"] != aggregate[
-        "published_components"
-    ]["doctor-installed.json"]
+    assert (
+        aggregate["source_evidence_sha256"]["doctor-installed.json"]
+        != aggregate["published_components"]["doctor-installed.json"]
+    )
     public.mkdir()
     shutil.copyfile(trusted / "SHA256SUMS", public / "SHA256SUMS")
     plan = tmp_path / "plan.txt"

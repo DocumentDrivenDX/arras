@@ -175,7 +175,10 @@ def doctor_receipt(wheel_sha: str, npm_sha: str) -> dict[str, Any]:
                 "opentelemetry-api": "1.45.1",
                 "opentelemetry-sdk": "1.45.1",
             },
-            "extension_host_wheel": {"filename": "example_extension_host-0.1.0-py3-none-any.whl", "sha256": "b" * 64},
+            "extension_host_wheel": {
+                "filename": "example_extension_host-0.1.0-py3-none-any.whl",
+                "sha256": "b" * 64,
+            },
             "uv": "private local path /cannot/export",
             "theme_assets": "private path /cannot/export",
             "telemetry_sdk": {"opentelemetry-api": "1.45.1", "opentelemetry-sdk": "1.45.1"},
@@ -582,7 +585,9 @@ def test_assemble_links_exact_assets_and_regenerates_complete_sums(tmp_path: Pat
     raw_doctor = raw_receipts["doctor-installed.json"]
     raw_distribution = raw_receipts["distribution-verification.json"]
     assert (inputs["build_bundle"] / "doctor-installed.json").read_bytes() == raw_doctor
-    assert (inputs["build_bundle"] / "distribution-verification.json").read_bytes() == raw_distribution
+    assert (
+        inputs["build_bundle"] / "distribution-verification.json"
+    ).read_bytes() == raw_distribution
     assert aggregate["source_evidence_sha256"]["doctor-installed.json"] == sha(raw_doctor)
     assert aggregate["source_evidence_sha256"]["distribution-verification.json"] == sha(
         raw_distribution
@@ -613,7 +618,10 @@ def test_assemble_links_exact_assets_and_regenerates_complete_sums(tmp_path: Pat
     assert b"/private/secret" not in (output / "distribution-verification.json").read_bytes()
     assert b"secret raw log" not in (output / "doctor-installed.json").read_bytes()
     assert b"cannot/export" not in (output / "doctor-installed.json").read_bytes()
-    assert b"consumer private diagnostic" not in (output / "distribution-verification.json").read_bytes()
+    assert (
+        b"consumer private diagnostic"
+        not in (output / "distribution-verification.json").read_bytes()
+    )
     assert b'"package"' not in (output / "distribution-verification.json").read_bytes()
     assert b"secret raw log" not in (output / "native-qualification.json").read_bytes()
     lines = (output / "SHA256SUMS").read_text().splitlines()
@@ -939,7 +947,6 @@ def test_doctor_receipt_must_match_trusted_probe_builder(tmp_path: Path) -> None
             value, VERSION, WHEEL_NAME, inputs["wheel_sha"], inputs["npm_sha"]
         )
 
-
     path.write_text(json.dumps(doctor_receipt(inputs["wheel_sha"], inputs["npm_sha"])))
     value = json.loads(path.read_text())
     del value["telemetry_probes"]["phases"]["worker_backed_asgi_operate"]
@@ -985,7 +992,9 @@ def test_public_receipt_projections_cannot_be_reused_as_raw_qualification(tmp_pa
     distribution_public = assembler._public.distribution_projection(
         distribution_raw, sha(distribution_path.read_bytes())
     )
-    with pytest.raises(assembler.AssemblyError, match="unsupported installed-doctor receipt schema"):
+    with pytest.raises(
+        assembler.AssemblyError, match="unsupported installed-doctor receipt schema"
+    ):
         assembler._validate_doctor(
             doctor_public, VERSION, WHEEL_NAME, inputs["wheel_sha"], inputs["npm_sha"]
         )
@@ -1052,7 +1061,7 @@ def test_doctor_projection_retains_only_safe_installed_identities(tmp_path: Path
     controls.append((changed, "exactly"))
     changed = json.loads(json.dumps(raw))
     changed["versions"]["extension_host_wheel"]["filename"] = "../../secret.whl"
-    controls.append((changed, "unsafe public token"))
+    controls.append((changed, "not a safe public token"))
     changed = json.loads(json.dumps(raw))
     changed["versions"]["extension_host_wheel"]["sha256"] = "not-a-digest"
     controls.append((changed, "lowercase SHA-256"))

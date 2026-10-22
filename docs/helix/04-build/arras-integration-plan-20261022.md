@@ -1154,6 +1154,28 @@ and exercised before tag/publication. These are release reporting/integration
 blockers, not additional runtime feature scope. Final corrected assembly, review,
 source-archive coherence and tag/download gates remain open.
 
+The reporting repair was source-reviewed and pushed at `a28b93b` for remote CI
+while the shared Mac slot remained exclusive to other coordinated native work.
+That run correctly held release on the new doctor's function complexity/statement
+limits and two wording mismatches: an unsafe-token negative test's expected error
+text and the release-notes test's explicit registry-access phrase. Its default
+suite recorded 2,784 passes, 41 skips and 199 native deselections, with only those
+two failures. Luna split the reporting function into cohesive helpers without
+raising limits or adding ignores, corrected the negative's expected bounded error,
+and formatted the affected checker/test files. The release notes retain the
+accurate explicit phrase that registry access has not been established.
+
+After the quiet handoff, all **40 release-tool tests and the exact documentation
+test pass**; Ruff format/check and selected-interpreter Pyright pass across all
+six relevant assembler/input/public-projection/checker/test files. Sol independently
+approved the extraction's predicate/output equivalence. Safe doctor projection
+retains its five observed Python distribution versions and extension-host wheel
+identity, SDK versions/phases/controls and capture limits. It omits local diagnostic
+paths and explicitly omits unrelated tool/theme labels, preserving raw evidence
+immutably. Final coherent source archive, actual corrected assembly/public-checker
+execution, full hosted CI and tag/public-download gates remain required. No
+runtime library, wheel/npm payload, SDK, UI or native proof changed in this repair.
+
 ## Validation Plan
 
 - A0: focused `tests/test_umf.py` and `tests/test_core.py`; existing module/host

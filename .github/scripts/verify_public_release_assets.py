@@ -196,11 +196,7 @@ def _validate_trusted(
         _fail("trusted release aggregate has an invalid published-component inventory")
     for name in sorted(_PUBLISHED_COMPONENTS):
         digest = components[name]
-        if (
-            not isinstance(digest, str)
-            or not _DIGEST.fullmatch(digest)
-            or digest != entries[name]
-        ):
+        if not isinstance(digest, str) or not _DIGEST.fullmatch(digest) or digest != entries[name]:
             _fail(f"trusted published-component digest differs from its emitted asset: {name}")
     return sums_raw, entries
 

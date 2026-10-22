@@ -114,21 +114,14 @@ def binding_projection(value: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def doctor_projection(value: dict[str, Any], source_sha256: str) -> dict[str, Any]:
-    """Project validated doctor evidence without copying local diagnostics."""
-    platform = _keys(
-        value.get("platform"), "doctor.platform", {"os", "architecture", "release"}
-    )
-    wheel = _keys(
-        value.get("wheel"), "doctor.wheel", {"filename", "version", "sha256"}
-    )
-    cases_raw = value.get("cases")
+def _doctor_cases(value: object) -> list[dict[str, Any]]:
+    cases_raw = value
     if not isinstance(cases_raw, list):
         _fail("doctor.cases must be an array")
-    cases: list[dict[str, Any]] = []
     expected_cases = _inputs.DOCTOR_CASE_STATUSES
     if len(cases_raw) != len(expected_cases):
         _fail("doctor case projection is incomplete")
+    cases: list[dict[str, Any]] = []
     for index, raw in enumerate(cases_raw):
         row = _keys(raw, f"doctor.cases[{index}]", {"name", "status", "codes"})
         status = row.get("status")
@@ -140,91 +133,132 @@ def doctor_projection(value: dict[str, Any], source_sha256: str) -> dict[str, An
         codes = _string_list(row.get("codes"), f"doctor.cases[{index}].codes")
         if any(_CASE_CODE.fullmatch(code) is None for code in codes):
             _fail(f"doctor.cases[{index}].codes contains an unsafe diagnostic code")
-        cases.append(
-            {
-                "name": case_name,
-                "status": status,
-                "codes": codes,
-            }
-        )
+        cases.append({"name": case_name, "status": status, "codes": codes})
+    return cases
 
-    tripwire_raw = _keys(
-        value.get("tripwire_report"),
+
+def _doctor_tripwires(value: object) -> dict[str, Any]:
+    raw = _keys(
+        value,
         "doctor.tripwire_report",
         {"tripwires", "positive", "invalid_config", "unsupported"},
     )
-    tripwires = _text(tripwire_raw.get("tripwires"), "doctor.tripwire_report.tripwires")
-    if tripwires != "passed":
+    if _text(raw.get("tripwires"), "doctor.tripwire_report.tripwires") != "passed":
         _fail("doctor tripwire summary is not passed")
-    tripwires_public: dict[str, Any] = {"tripwires": tripwires}
-    for name in ("positive", "invalid_config", "unsupported"):
-        row = _object(tripwire_raw.get(name), f"doctor.tripwire_report.{name}")
-        ok = _boolean(row.get("ok"), f"doctor.tripwire_report.{name}.ok")
-        complete = _boolean(row.get("complete"), f"doctor.tripwire_report.{name}.complete")
-        if (ok, complete) != _TRIPWIRE_EXPECTED[name]:
+    result: dict[str, Any] = {"tripwires": "passed"}
+    for name, expected in _TRIPWIRE_EXPECTED.items():
+        item = _object(raw.get(name), f"doctor.tripwire_report.{name}")
+        observed = (
+            _boolean(item.get("ok"), f"doctor.tripwire_report.{name}.ok"),
+            _boolean(item.get("complete"), f"doctor.tripwire_report.{name}.complete"),
+        )
+        if observed != expected:
             _fail(f"doctor tripwire {name} differs from the reviewed outcome")
-        tripwires_public[name] = {"ok": ok, "complete": complete}
+        result[name] = {"ok": observed[0], "complete": observed[1]}
+    return result
 
-    launcher_raw = _object(value.get("launcher_probes"), "doctor.launcher_probes")
-    if set(launcher_raw) != set(_LAUNCHER_VALUES):
+
+def _doctor_launcher(value: object) -> dict[str, str]:
+    raw = _object(value, "doctor.launcher_probes")
+    if set(raw) != set(_LAUNCHER_VALUES):
         _fail("doctor launcher probes have an unsupported shape")
-    launcher = {
-        name: _text(launcher_raw[name], f"doctor.launcher_probes.{name}")
-        for name in _LAUNCHER_VALUES
-    }
-    if launcher != _LAUNCHER_VALUES:
+    result = {name: _text(raw[name], f"doctor.launcher_probes.{name}") for name in _LAUNCHER_VALUES}
+    if result != _LAUNCHER_VALUES:
         _fail("doctor launcher probe outcomes differ from the reviewed controls")
+    return result
 
-    telemetry_raw = _object(value.get("telemetry_probes"), "doctor.telemetry_probes")
+
+def _doctor_phases(value: object) -> dict[str, Any]:
+    raw = _keys(value, "doctor.telemetry_probes.phases", _PHASE_KEYS)
+    phases: dict[str, Any] = {}
+    for name, expected_service in _PHASE_SERVICES.items():
+        row = _keys(
+            raw[name],
+            f"doctor.telemetry_probes.phases.{name}",
+            {"spans", "events", "logs", "service_name"},
+        )
+        service = _text(
+            row.get("service_name"), f"doctor.telemetry_probes.phases.{name}.service_name"
+        )
+        if service != expected_service:
+            _fail(f"doctor telemetry phase {name} is misrouted")
+        phases[name] = {
+            field: _positive_count(row.get(field), f"doctor.telemetry_probes.phases.{name}.{field}")
+            for field in ("spans", "events", "logs")
+        }
+        phases[name]["service_name"] = service
+    return phases
+
+
+def _doctor_telemetry(value: object) -> dict[str, Any]:
+    raw = _object(value, "doctor.telemetry_probes")
     telemetry: dict[str, Any] = {}
     for name, expected in _TELEMETRY_VALUES.items():
-        observed = _text(telemetry_raw.get(name), f"doctor.telemetry_probes.{name}")
+        observed = _text(raw.get(name), f"doctor.telemetry_probes.{name}")
         if observed != expected:
             _fail(f"doctor telemetry probe {name} is not passed")
         telemetry[name] = observed
-    if telemetry_raw.get("status") != "passed":
+    if raw.get("status") != "passed":
         _fail("doctor telemetry status is not passed")
     telemetry["status"] = "passed"
     telemetry["generated_probe_sha256"] = _inputs.digest(
-        telemetry_raw.get("generated_probe_sha256"),
-        "doctor.telemetry_probes.generated_probe_sha256",
+        raw.get("generated_probe_sha256"), "doctor.telemetry_probes.generated_probe_sha256"
     )
-    telemetry["global_provider_unchanged"] = _boolean(
-        telemetry_raw.get("global_provider_unchanged"),
-        "doctor.telemetry_probes.global_provider_unchanged",
-    )
-    if telemetry["global_provider_unchanged"] is not True:
+    if not _boolean(
+        raw.get("global_provider_unchanged"), "doctor.telemetry_probes.global_provider_unchanged"
+    ):
         _fail("doctor telemetry global provider changed")
-    expected_resources = ["extension-alpha", "extension-beta"]
+    telemetry["global_provider_unchanged"] = True
     resources = _string_list(
-        telemetry_raw.get("sdk_resource_names"), "doctor.telemetry_probes.sdk_resource_names"
+        raw.get("sdk_resource_names"), "doctor.telemetry_probes.sdk_resource_names"
     )
-    if resources != expected_resources:
+    if resources != ["extension-alpha", "extension-beta"]:
         _fail("doctor SDK resource names differ from the reviewed pair")
     telemetry["sdk_resource_names"] = resources
-    names_raw = _keys(
-        telemetry_raw.get("launcher_effective_names"),
+    names = _keys(
+        raw.get("launcher_effective_names"),
         "doctor.telemetry_probes.launcher_effective_names",
         {"attribute_namespace", "log_prefix", "event_prefix"},
     )
-    names = {key: _text(names_raw[key], f"doctor.launcher_effective_names.{key}") for key in names_raw}
-    if names != {key: "extension_host" for key in names}:
+    projected_names = {
+        key: _text(names[key], f"doctor.launcher_effective_names.{key}") for key in names
+    }
+    if projected_names != {key: "extension_host" for key in projected_names}:
         _fail("doctor effective telemetry names differ from the reviewed namespace")
-    telemetry["launcher_effective_names"] = names
-    versions_raw = _keys(
-        telemetry_raw.get("versions"),
+    telemetry["launcher_effective_names"] = projected_names
+    versions = _keys(
+        raw.get("versions"),
         "doctor.telemetry_probes.versions",
         {"opentelemetry-api", "opentelemetry-sdk"},
     )
     telemetry["versions"] = {
-        key: _safe_token(versions_raw[key], f"doctor.telemetry_probes.versions.{key}")
-        for key in sorted(versions_raw)
+        key: _safe_token(versions[key], f"doctor.telemetry_probes.versions.{key}")
+        for key in sorted(versions)
     }
-    versions_raw = _object(value.get("versions"), "doctor.versions")
+    telemetry["phases"] = _doctor_phases(raw.get("phases"))
+    controls = _string_list(
+        raw.get("false_pass_controls"), "doctor.telemetry_probes.false_pass_controls"
+    )
+    if controls != _FALSE_PASS_CONTROLS:
+        _fail("doctor false-pass controls differ from reviewed controls")
+    telemetry["false_pass_controls"] = controls
+    return telemetry
+
+
+def _doctor_versions(
+    value: object, wheel_version: object, telemetry: dict[str, Any]
+) -> dict[str, Any]:
+    raw = _object(value, "doctor.versions")
     distributions_raw = _keys(
-        versions_raw.get("python_distributions"),
+        raw.get("python_distributions"),
         "doctor.versions.python_distributions",
-        {"arras", "example-extension-host", "graphql-core", "opentelemetry-api", "opentelemetry-sdk"},
+        {
+            "arras",
+            "example-extension-host",
+            "graphql-core",
+            "opentelemetry-api",
+            "opentelemetry-sdk",
+        },
     )
     distributions: dict[str, str] = {}
     for name, raw_version in distributions_raw.items():
@@ -234,59 +268,38 @@ def doctor_projection(value: dict[str, Any], source_sha256: str) -> dict[str, An
         if _VERSION_TOKEN.fullmatch(version) is None:
             _fail(f"doctor Python distribution version for {name} is unsafe")
         distributions[name] = version
-    if distributions["arras"] != wheel["version"] or any(
+    if distributions["arras"] != wheel_version or any(
         distributions[name] != telemetry["versions"][name]
         for name in ("opentelemetry-api", "opentelemetry-sdk")
     ):
         _fail("doctor installed distribution versions disagree with wheel or telemetry identity")
-    extension_wheel_raw = _keys(
-        versions_raw.get("extension_host_wheel"),
+    extension = _keys(
+        raw.get("extension_host_wheel"),
         "doctor.versions.extension_host_wheel",
         {"filename", "sha256"},
     )
-    extension_filename = _safe_token(
-        extension_wheel_raw["filename"], "doctor.versions.extension_host_wheel.filename"
-    )
-    expected_extension_filename = (
+    filename = _safe_token(extension["filename"], "doctor.versions.extension_host_wheel.filename")
+    expected_filename = (
         f"example_extension_host-{distributions['example-extension-host']}-py3-none-any.whl"
     )
-    if extension_filename != expected_extension_filename:
+    if filename != expected_filename:
         _fail("doctor extension-host wheel filename differs from its installed version")
-    extension_wheel = {
-        "filename": extension_filename,
-        "sha256": _inputs.digest(
-            extension_wheel_raw["sha256"], "doctor.versions.extension_host_wheel.sha256"
-        ),
+    return {
+        "python_distributions": distributions,
+        "extension_host_wheel": {
+            "filename": filename,
+            "sha256": _inputs.digest(
+                extension["sha256"], "doctor.versions.extension_host_wheel.sha256"
+            ),
+        },
     }
-    phases_raw = _keys(
-        telemetry_raw.get("phases"), "doctor.telemetry_probes.phases", _PHASE_KEYS
-    )
-    phases: dict[str, Any] = {}
-    for name, service in _PHASE_SERVICES.items():
-        row = _keys(
-            phases_raw[name],
-            f"doctor.telemetry_probes.phases.{name}",
-            {"spans", "events", "logs", "service_name"},
-        )
-        observed_service = _text(
-            row.get("service_name"), f"doctor.telemetry_probes.phases.{name}.service_name"
-        )
-        if observed_service != service:
-            _fail(f"doctor telemetry phase {name} is misrouted")
-        phases[name] = {
-            key: _positive_count(row.get(key), f"doctor.telemetry_probes.phases.{name}.{key}")
-            for key in ("spans", "events", "logs")
-        }
-        phases[name]["service_name"] = observed_service
-    telemetry["phases"] = phases
-    controls = _string_list(
-        telemetry_raw.get("false_pass_controls"),
-        "doctor.telemetry_probes.false_pass_controls",
-    )
-    if controls != _FALSE_PASS_CONTROLS:
-        _fail("doctor false-pass controls differ from reviewed controls")
-    telemetry["false_pass_controls"] = controls
 
+
+def doctor_projection(value: dict[str, Any], source_sha256: str) -> dict[str, Any]:
+    """Project validated doctor evidence without copying local diagnostics."""
+    platform = _keys(value.get("platform"), "doctor.platform", {"os", "architecture", "release"})
+    wheel = _keys(value.get("wheel"), "doctor.wheel", {"filename", "version", "sha256"})
+    telemetry = _doctor_telemetry(value.get("telemetry_probes"))
     return {
         "schema": "arras.ui.doctor-public-qualification.v1",
         "status": "passed",
@@ -303,19 +316,15 @@ def doctor_projection(value: dict[str, Any], source_sha256: str) -> dict[str, An
         },
         "python": _safe_token(value.get("python"), "doctor.python"),
         "wheel": {
-            key: _safe_token(wheel[key], f"doctor.wheel.{key}")
-            for key in ("filename", "version")
+            key: _safe_token(wheel[key], f"doctor.wheel.{key}") for key in ("filename", "version")
         }
         | {"sha256": _inputs.digest(wheel.get("sha256"), "doctor.wheel.sha256")},
         "npm_sha256": _inputs.digest(value.get("npm_sha256"), "doctor.npm_sha256"),
-        "cases": cases,
-        "tripwire_report": tripwires_public,
-        "launcher_probes": launcher,
+        "cases": _doctor_cases(value.get("cases")),
+        "tripwire_report": _doctor_tripwires(value.get("tripwire_report")),
+        "launcher_probes": _doctor_launcher(value.get("launcher_probes")),
         "telemetry_probes": telemetry,
-        "versions": {
-            "python_distributions": distributions,
-            "extension_host_wheel": extension_wheel,
-        },
+        "versions": _doctor_versions(value.get("versions"), wheel.get("version"), telemetry),
         "qualification_limits": list(_DOCTOR_LIMITS),
     }
 
@@ -345,8 +354,13 @@ def distribution_projection(value: dict[str, Any], source_sha256: str) -> dict[s
     }
     for name in ("platform", "python_interpreter", "qualified_python"):
         projected[name] = _safe_token(value.get(name), f"distribution.{name}")
-    cohort = _text(value.get("javascript_consumer_cohort"), "distribution.javascript_consumer_cohort")
-    if cohort != "workspace-linked UI dependencies; package itself extracted from each verified wheel":
+    cohort = _text(
+        value.get("javascript_consumer_cohort"), "distribution.javascript_consumer_cohort"
+    )
+    if (
+        cohort
+        != "workspace-linked UI dependencies; package itself extracted from each verified wheel"
+    ):
         _fail("distribution JavaScript consumer cohort is unrecognized")
     projected["javascript_consumer_cohort"] = cohort
     for name in ("declared_python", "qualification", "not_qualified_without_observation"):
@@ -384,8 +398,12 @@ def distribution_projection(value: dict[str, Any], source_sha256: str) -> dict[s
         raw = _object(consumers_raw[consumer_name], f"distribution.consumers.{consumer_name}")
         if not fields <= set(raw):
             _fail(f"distribution.consumers.{consumer_name} is incomplete")
-        expected_environment = "source-wheel" if consumer_name == "source_wheel" else "sdist-rebuilt-wheel"
-        environment = _text(raw["environment"], f"distribution.consumers.{consumer_name}.environment")
+        expected_environment = (
+            "source-wheel" if consumer_name == "source_wheel" else "sdist-rebuilt-wheel"
+        )
+        environment = _text(
+            raw["environment"], f"distribution.consumers.{consumer_name}.environment"
+        )
         if environment != expected_environment:
             _fail(f"distribution.consumers.{consumer_name} environment is unrecognized")
         packed_consumer = _text(
@@ -397,7 +415,9 @@ def distribution_projection(value: dict[str, Any], source_sha256: str) -> dict[s
         consumer: dict[str, Any] = {
             "environment": environment,
             "python": _safe_token(raw["python"], f"distribution.consumers.{consumer_name}.python"),
-            "platform": _safe_token(raw["platform"], f"distribution.consumers.{consumer_name}.platform"),
+            "platform": _safe_token(
+                raw["platform"], f"distribution.consumers.{consumer_name}.platform"
+            ),
             "graphql_core": _safe_token(
                 raw["graphql_core"], f"distribution.consumers.{consumer_name}.graphql_core"
             ),
@@ -408,7 +428,8 @@ def distribution_projection(value: dict[str, Any], source_sha256: str) -> dict[s
             f"distribution.consumers.{consumer_name}.graphql_core_inventory_sha256",
         )
         consumer["in_memory_operation"] = _boolean(
-            raw["in_memory_operation"], f"distribution.consumers.{consumer_name}.in_memory_operation"
+            raw["in_memory_operation"],
+            f"distribution.consumers.{consumer_name}.in_memory_operation",
         )
         consumer["schema_callback"] = _boolean(
             raw["schema_callback"], f"distribution.consumers.{consumer_name}.schema_callback"
