@@ -37,7 +37,7 @@ A person's request reaches Truss over a connection authenticated as that person,
 
 ## Problem Statement
 
-- **Current situation**: The catalog and praxis (the Databricks app Arras is embedded in) need role-based writes and user-scoped reads, and the two stores have different identity systems.
+- **Current situation**: The catalog and the embedding host need role-based writes and user-scoped reads, and the two stores have different identity systems.
 - **Pain points**: A shared identity makes the application the access control and lets a caller assert who made a change. An outage mistaken for not permitted, or the reverse, breaks fail-closed behavior. Cached decisions go stale.
 - **Desired outcome**: Backend-enforced access under the person's own token, authenticated attribution, distinguishable outcomes and nothing cached.
 

@@ -1,0 +1,51 @@
+{
+  "schema": "arras.scoped-source-review.v1",
+  "scope": "EX-02 scoped telemetry naming/provider/context/config/doctor/catalog and affected bindings",
+  "verdict": "approved_source_only",
+  "inventory_sha256": "32010999667ad2272d13fb0aff1cbc73b932f243a4811266bf432a10063cba83",
+  "files": {
+    "src/arras/_doctor_types.py": "2097d3e70770e9bf38c05565d997785aaeef92a957a913983104918298cbd7a2",
+    "src/arras/console/__init__.py": "2af94e7680cd64025251d8a0cdb5940665518596fb297f3dcd0bdb11fde71fef",
+    "src/arras/devhost.py": "dc3a42e432ae94fb553b1e451db5a933b5f376fc1d22ae620e96925dc9dc1382",
+    "src/arras/distribution.py": "595c7de280091ac54839ea02fd328d000e76f4d08aaaa079859a4919a92d8cd4",
+    "src/arras/doctor.py": "895ca0e0910df829adcf5adfc2c9129403348ddaf396169a1bd633c4727eb15b",
+    "src/arras/mcp/__init__.py": "c9d19614e961c4028737c3291fd733bc11364fff0ea6d965212c30f2d041acda",
+    "src/arras/mcp/config.py": "1d8d59f8b1042d0803a71836fe95a6f6cea748e1d0775cce7303ae21c0e03e92",
+    "src/arras/mcp/process.py": "151f3e8e4b3b358a2d958fdb06213f79a5dde97cf7f1051e585bb80b4d925c9e",
+    "src/arras/mcp/server.py": "4ea5d909006fc23c5c2c6356ee8812942e657730ad2dd02131bad0b46ff37337",
+    "src/arras/operate/__init__.py": "008cdf759bca1ab03fd70b5c78a1f4370b526aad9afd4291f95d04bdbde41858",
+    "src/arras/operate/schema_app.py": "cb18d4a1524e9513ec126454d2912d73fc7372b45a6772f795e96abfe708f71a",
+    "src/arras/operate/wire.py": "a45fdf18ead4b8bee653df3a2ee1f2a2655780663652ed6f9f881237fa36da59",
+    "src/arras/public-api.json": "ae36de69a0d2e4f2e6118409918e56bb466e9c524d9f65cf96089889a6b98165",
+    "src/arras/sandbox.py": "597677ee4ff6974c18c6adecca381168b22942741bb8955fc4f34b4943e18c92",
+    "src/arras/telemetry.py": "ab0926c2dfd9469ef17ae8763126de20d736a0f9473426f84a5713a9b3487df1",
+    "src/arras/ui/__init__.py": "78d3186614d7ab2392d3ef0661ad19af70a8246d6acd02622ffb8ca94f9ff9d2",
+    "tests/modules_check.py": "46057a55ba5845d8f1f4118f4d32b842e846cd64b106737676a7efe4d08b1227",
+    "tests/test_config.py": "84d15a95086b2d238d15d003276a6584e51c172297f1824fdc8812d36926b6f2",
+    "tests/test_devhost_main.py": "e5fd9215d6963aa98e8b983fae4e6c9dc4a8b1512fcae803865f6962406b7ffa",
+    "tests/test_doctor.py": "6886607be0ea7632f98ec5694feac1605eaf433b94aa56efb50e0588264e3855",
+    "tests/test_mcp_process.py": "ef2bb511f894016417ca4df2aac1161763e8c16271d07d1d9e53efa748b5a26d",
+    "tests/test_modules.py": "852c6efcc9e44b42beed934b079e56a8b37f4cb4a9ca2e33fbbe6291692976c1",
+    "tests/test_public_api_manifest.py": "3bb58dc88f65b14b88cd2fe5ad48a39e5ce66c26f3341936adfea57d7362c46d",
+    "tests/test_telemetry.py": "2addc6f198d2c626d1e94e9bd45cef668c9f090fb9bb030c0353a211a8175d1c",
+    "tests/test_telemetry_context.py": "ad218e44d8461872f51c06a513cc10035f76116246b52e618d0edd9d747f3dc8"
+  },
+  "independent_test_result": {
+    "passed": 150,
+    "failed": 0,
+    "seconds": 12.68,
+    "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -B -m pytest -p no:cacheprovider -q tests/test_telemetry_context.py tests/test_telemetry.py tests/test_mcp_process.py tests/test_devhost_main.py tests/test_config.py tests/test_public_api_manifest.py tests/test_modules.py tests/test_doctor.py"
+  },
+  "runtime": {
+    "python": "3.11.17",
+    "platform": "darwin",
+    "machine": "arm64",
+    "opentelemetry-api": "1.45.1",
+    "opentelemetry-sdk": "1.45.1"
+  },
+  "limits": [
+    "Source review and focused execution only; no final installed-wheel, native cohort, Linux, UI testkit or publication claim.",
+    "Previous cde2 wheel SDK receipt does not close current installed qualification; corrected per-path witnesses and rebuilt wheel remain required.",
+    "Owner-reported strict Pyright/Ruff/format pass not independently rerun here."
+  ]
+}

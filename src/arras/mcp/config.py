@@ -32,10 +32,12 @@ import os
 import re
 import tomllib
 from collections.abc import Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any, Literal, cast
 
+from arras.branding import Brand
+from arras.distribution import DistributionConfig
 from arras.model import Placement
 from arras.names import BACKEND_NAME
 
@@ -89,7 +91,7 @@ IGNORED_PREFIXES = ("ARRAS_ADMIN_", "ARRAS_REQUIRE_WEFT")
 
 # The keys of a committed file (layers 2 and 3). Anything else is an ops key or unknown.
 FILE_KEYS = frozenset(
-    {"log_level", "user_claims", "dev_sandbox", "dev_user", "placement", "modules"}
+    {"log_level", "user_claims", "dev_sandbox", "dev_user", "placement", "modules", "distribution"}
 )
 PLACEMENT_FILE_KEYS = frozenset({"record", "replicas", "providers"})
 # Spellings of what only ops may hold: refused in a committed file by name.
@@ -125,21 +127,20 @@ class Config:
     """The environment named by `ARRAS_ENV`, when there is one."""
     config_dir: str = DEFAULT_CONFIG_DIR
     sources: tuple[str, ...] = ()
+    distribution: DistributionConfig = field(default_factory=DistributionConfig)
     """The files actually read, lowest precedence first (for the startup diagnostic)."""
 
     @classmethod
-    def from_env(cls, env: Mapping[str, str] | None = None) -> Config:
+    def from_env(
+        cls, env: Mapping[str, str] | None = None, *, distribution: DistributionConfig | None = None
+    ) -> Config:
         """Build the configuration from the environment and the files it points at, or raise
         `ConfigError` naming every file and key that cannot be used."""
-        env = os.environ if env is None else env
-        problems = [
-            f"{k}: not an Arras key"
-            for k in sorted(env)
-            if k.startswith("ARRAS_")
-            and k not in NAMES
-            and not ENDPOINT_KEY.fullmatch(k)
-            and not k.startswith(IGNORED_PREFIXES)
-        ]
+        selected = distribution or DistributionConfig()
+        problems: list[str] = []
+        env = _normalize_environment(
+            os.environ if env is None else env, selected.env_prefix, problems
+        )
 
         def get(key: str) -> str | None:
             value = env.get(key, "").strip()
@@ -185,9 +186,9 @@ class Config:
         )
         if raw_sandbox not in (None, "0", "1"):
             problems.append("ARRAS_DEV_SANDBOX: 0 or 1")
-        if get("ARRAS_TOKEN") and get("ARRAS_TOKEN_FILE"):
-            problems.append("ARRAS_TOKEN: set it or ARRAS_TOKEN_FILE, not both")
-
+        effective_distribution = validate_distribution(
+            merged.get("distribution"), selected, problems
+        )
         default, placements = _placements(merged, origin, endpoints, sandbox, problems)
 
         claims_env = get("ARRAS_USER_CLAIM")
@@ -210,12 +211,25 @@ class Config:
             env=env_name,
             config_dir=config_dir,
             sources=tuple(sources),
+            distribution=effective_distribution,
         )
 
     def startup_line(self) -> str:
         """One line for stderr: which environment and which files, never a value."""
         files = ", ".join(self.sources) or "none"
-        return f"arras.mcp: env={self.env or 'none'} files={files}"
+        label = self.diagnostic_prefix(self.distribution)
+        return f"{label}: env={self.env or 'none'} files={files}"
+
+    @staticmethod
+    def diagnostic_prefix(distribution: DistributionConfig | None) -> str:
+        """A printable one-line human label; default diagnostics keep their established prefix."""
+        selected = distribution or DistributionConfig()
+        if selected.brand == Brand():
+            return "arras.mcp"
+        safe = " ".join(
+            "".join(char if char.isprintable() else " " for char in selected.brand.name).split()
+        )
+        return safe or "Arras"
 
     def configure_logging(self, stream: object) -> None:
         """Diagnostics go to `stream` (stderr): stdout carries protocol frames and nothing else."""
@@ -242,8 +256,8 @@ def _load_committed(
         if data is None:
             continue
         sources.append(str(path))
-        if _check_committed(str(path), data, problems):
-            _merge(merged, data, origin, str(path))
+        if validate_committed(str(path), data, problems):
+            merge_committed(merged, data, origin, str(path))
     return merged, origin, sources
 
 
@@ -283,6 +297,11 @@ def _backends_of(placed: Placement | None) -> list[str]:
     return [n for n in (*placed.readers, *placed.providers.values()) if n]
 
 
+def _parse_committed_document(raw: bytes) -> dict[str, Any]:
+    """Parse one already-bounded UTF-8 committed document without performing file I/O."""
+    return tomllib.loads(raw.decode("utf-8"))
+
+
 def _read_toml(
     path: Path, required: bool, problems: list[str], key: str | None = None
 ) -> dict[str, Any] | None:
@@ -302,7 +321,7 @@ def _read_toml(
         problems.append(f"{label}: cannot be read")
         return None
     try:
-        return tomllib.loads(text)
+        return _parse_committed_document(text.encode("utf-8"))
     except tomllib.TOMLDecodeError as e:
         line = re.search(r"line (\d+)", str(e))
         problems.append(f"{label}: not valid TOML" + (f" at line {line.group(1)}" if line else ""))
@@ -316,7 +335,143 @@ def _unknown(path: str, dotted: str, name: str) -> str:
     return f"{path}: {dotted}: unknown key"
 
 
-def _check_committed(path: str, data: dict[str, Any], problems: list[str]) -> bool:
+def _normalize_environment(
+    raw_env: Mapping[str, str], prefix: str, problems: list[str]
+) -> dict[str, str]:
+    """Normalize known canonical and selected-prefix aliases, retaining safe diagnostics."""
+    canonical_values: dict[str, list[tuple[str, str]]] = {}
+    normalized: dict[str, str] = {}
+    for original, raw_value in raw_env.items():
+        if prefix != "ARRAS" and original.startswith(prefix + "_"):
+            suffix, custom = original[len(prefix) + 1 :], True
+        elif original.startswith("ARRAS_"):
+            suffix, custom = original[6:], False
+        else:
+            continue
+        canonical = "ARRAS_" + suffix
+        known = canonical in NAMES or ENDPOINT_KEY.fullmatch(canonical) is not None
+        if not known and not canonical.startswith(IGNORED_PREFIXES):
+            problems.append(
+                f"{original}: not an Arras key"
+                if prefix == "ARRAS"
+                else f"{original}: unknown environment key"
+            )
+            continue
+        if canonical.startswith(IGNORED_PREFIXES):
+            continue
+        value = raw_value.strip()
+        canonical_values.setdefault(canonical, []).append((original, value))
+        if custom and value:
+            normalized[canonical] = value
+    for canonical, values in canonical_values.items():
+        if canonical not in normalized:
+            fallback = next((v for name, v in values if name == canonical and v), None)
+            if fallback is None:
+                fallback = next((v for _, v in values if v), None)
+            if fallback is not None:
+                normalized[canonical] = fallback
+        if (
+            canonical in ("ARRAS_TOKEN", "ARRAS_TOKEN_FILE")
+            and len({value for _, value in values if value}) > 1
+        ):
+            aliases = ", ".join(name for name, _ in values)
+            problems.append(f"{canonical}: conflicting aliases ({aliases})")
+    tokens = [(key, values) for key, values in canonical_values.items()]
+    has_token = any(
+        key == "ARRAS_TOKEN" and any(value for _, value in values) for key, values in tokens
+    )
+    has_file = any(
+        key == "ARRAS_TOKEN_FILE" and any(value for _, value in values) for key, values in tokens
+    )
+    if has_token and has_file:
+        token_name = next(
+            (name for name, value in canonical_values.get("ARRAS_TOKEN", []) if value),
+            "ARRAS_TOKEN",
+        )
+        problems.append(f"{token_name}: supply a token or token file, not both")
+    return normalized
+
+
+def _check_distribution_file(path: str, value: object, problems: list[str]) -> None:
+    if not isinstance(value, dict):
+        problems.append(f"{path}: distribution: a table")
+        return
+    table = cast("dict[str, object]", value)
+    allowed = {"mcp_server_name", "mcp_tool_prefix", "brand", "telemetry"}
+    for field_name, field_value in table.items():
+        if field_name not in allowed:
+            problems.append(f"{path}: distribution.{field_name}: unknown or launcher-only field")
+        elif field_name in {"mcp_server_name", "mcp_tool_prefix"} and not isinstance(
+            field_value, str
+        ):
+            problems.append(f"{path}: distribution.{field_name}: a string")
+        elif field_name == "brand":
+            names = {"name", "title", "wordmark", "tagline", "logo"}
+            brand_fields = (
+                cast("dict[object, object]", field_value) if isinstance(field_value, dict) else {}
+            )
+            if (
+                not isinstance(field_value, dict)
+                or not set(brand_fields) <= names
+                or not all(isinstance(v, str) for v in brand_fields.values())
+            ):
+                problems.append(f"{path}: distribution.brand: known string fields only")
+        elif field_name == "telemetry":
+            names = {"service_name", "attribute_namespace", "log_prefix", "event_prefix"}
+            values = (
+                cast("dict[object, object]", field_value) if isinstance(field_value, dict) else {}
+            )
+            if (
+                not isinstance(field_value, dict)
+                or not set(values) <= names
+                or not all(isinstance(v, str) for v in values.values())
+            ):
+                problems.append(f"{path}: distribution.telemetry: known string fields only")
+
+
+def validate_distribution(
+    value: object, selected: DistributionConfig, problems: list[str]
+) -> DistributionConfig:
+    """Apply presentation overrides from committed files; env_prefix remains launcher-owned."""
+    if not isinstance(value, dict):
+        return selected
+    table = cast("dict[str, object]", value)
+    brand = selected.brand
+    brand_values = table.get("brand", {})
+    if isinstance(brand_values, dict):
+        for field_name, field_value in cast("dict[str, object]", brand_values).items():
+            try:
+                brand = replace(brand, **{field_name: field_value})
+            except (TypeError, ValueError):
+                problems.append(f"distribution.brand.{field_name}: invalid value")
+    values: dict[str, object] = {"brand": brand}
+    for field_name in ("mcp_server_name", "mcp_tool_prefix"):
+        if field_name not in table:
+            continue
+        try:
+            candidate = replace(selected, **{field_name: table[field_name]})
+        except (TypeError, ValueError):
+            problems.append(f"distribution.{field_name}: invalid value")
+        else:
+            values[field_name] = getattr(candidate, field_name)
+    telemetry_values = table.get("telemetry")
+    if isinstance(telemetry_values, dict):
+        try:
+            values["telemetry"] = replace(
+                selected.telemetry,
+                **cast("dict[str, object]", telemetry_values),
+            )
+        except (TypeError, ValueError):
+            for field_name in cast("dict[object, object]", telemetry_values):
+                problems.append(f"distribution.telemetry.{field_name}: invalid value")
+    try:
+        return replace(selected, **values)
+    except (TypeError, ValueError):
+        problems.append("distribution: invalid settings")
+        return selected
+
+
+def validate_committed(path: str, data: dict[str, Any], problems: list[str]) -> bool:
     """Whether a committed file is well formed; each fault is a problem naming file and key."""
     before = len(problems)
     for key, value in data.items():
@@ -338,6 +493,8 @@ def _check_committed(path: str, data: dict[str, Any], problems: list[str]) -> bo
                 continue
             for module, table in cast("dict[str, object]", value).items():
                 _check_placement(path, f"modules.{module}", table, problems)
+        elif key == "distribution":
+            _check_distribution_file(path, value, problems)
     return len(problems) == before
 
 
@@ -394,7 +551,9 @@ def _check_ops_file(path: str, data: dict[str, Any], problems: list[str]) -> dic
     return found
 
 
-def _merge(into: dict[str, Any], data: dict[str, Any], origin: dict[str, str], path: str) -> None:
+def merge_committed(
+    into: dict[str, Any], data: dict[str, Any], origin: dict[str, str], path: str
+) -> None:
     """Layer `data` over `into`: scalars and lists replace, a placement table merges key by key."""
     for key, value in data.items():
         if key == "placement":
@@ -404,6 +563,16 @@ def _merge(into: dict[str, Any], data: dict[str, Any], origin: dict[str, str], p
             for module, table in value.items():
                 into.setdefault("modules", {}).setdefault(module, {}).update(table)
                 origin[f"modules.{module}"] = path
+        elif key == "distribution" and isinstance(value, dict):
+            target = into.setdefault("distribution", {})
+            distribution_values = cast("dict[str, Any]", value)
+            for field_name, field_value in distribution_values.items():
+                if field_name == "brand" and isinstance(field_value, dict):
+                    target.setdefault("brand", {}).update(field_value)
+                elif field_name == "telemetry" and isinstance(field_value, dict):
+                    target.setdefault("telemetry", {}).update(field_value)
+                else:
+                    target[field_name] = field_value
         else:
             into[key] = value
 

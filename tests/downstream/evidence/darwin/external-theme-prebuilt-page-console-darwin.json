@@ -1,0 +1,33 @@
+{
+  "schema": "arras.ui.qualification-receipt.v1",
+  "target": "http://127.0.0.1:8765/",
+  "route": "prebuilt-page",
+  "surface": "console",
+  "platform": "darwin",
+  "browser": "Chromium 153.0.8010.12",
+  "visual": "compared",
+  "screenshots": [
+    "external-theme-prebuilt-page-console-light-darwin.png",
+    "external-theme-prebuilt-page-console-dark-darwin.png"
+  ],
+  "checks": [
+    "axe-wcag21aa",
+    "theme-tokens",
+    "contrast",
+    "keyboard-focus"
+  ],
+  "focusMeasurements": [
+    {
+      "description": "light: host focus",
+      "indicator": "rgb(7, 89, 133)",
+      "background": "rgb(255, 255, 255)",
+      "contrast": 7.56
+    },
+    {
+      "description": "dark: host focus",
+      "indicator": "rgb(125, 211, 252)",
+      "background": "rgb(23, 32, 51)",
+      "contrast": 9.76
+    }
+  ]
+}

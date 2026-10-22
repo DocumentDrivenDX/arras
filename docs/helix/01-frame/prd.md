@@ -30,20 +30,20 @@ kind: product
 
 ## Summary
 
-Arras is the interface through which an organization's applications read and change the ontology. It is a Python library embedded in a host app such as praxis (an agent-harness app on Databricks), with a backend contract that two adapters implement.
+Arras is the interface through which an organization's applications read and change the ontology. It is a Python library embedded by a host application, with a backend contract that two adapters implement.
 
 Types are defined in UMF (the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions). Every read states a consistency level and how current its answer is. Every change is a named UMF action, attributed to a person and applied atomically by the provider the host's placement names for the action. Two stores sit behind the interface:
 
 - Truss, the open-source property-graph engine on Lakebase (Databricks managed Postgres). It holds the mutable types and is their system of record: a reader and provider.
 - Ashlar, the open-source toolkit for property-graph ontologies on a warehouse, running on Unity Catalog (Databricks' governance layer for data). It holds the full ontology and is a reader that serves as a replica, fed from the providers' stores. Arras names neither: it works over any number of named backends with the roles reader and provider, and ships an in-memory third adapter.
 
-Agents reach the same operations through an MCP server (MCP, the Model Context Protocol, is Anthropic's open protocol for agent tools). The first client is the product catalog (use cases, Solutions, products, findings), then the use case inventory and praxis. The top measures: every read states its freshness, every change names a person or a load, and the catalog meets its latency targets inside the praxis app.
+Agents reach the same operations through an MCP server (MCP, the Model Context Protocol, is Anthropic's open protocol for agent tools). The first client is the product catalog (use cases, Solutions, products, findings), then the use case inventory and a workflow client. The top measures: every read states its freshness, every change names a person or a load, and the catalog meets its latency targets inside the embedding application.
 
 ## Problem and Goals
 
 ### Problem
 
-The first module that needs durable, editable, audited knowledge, the catalog, has no store. Its use cases, products and findings exist as seed data that no application can correct. Praxis-harness (the repository that builds praxis) ADR-027 (ADR: architecture decision record) proposes a database for that one module. A second client would repeat the decisions about where data lives, how current a read is, and how a change is validated and attributed. The ontology itself will be served by stores of different size and freshness (today a hot mutable store and a warehouse, and there can be more); a client that talks to them directly takes on that complexity and breaks when any changes.
+The first module that needs durable, editable, audited knowledge, the catalog, has no store. Its use cases, products and findings exist as seed data that no application can correct. The original downstream intake proposed a database for that one module; Arras owns the reusable isolation decision in ADR-012 (an architecture decision record). A second client would repeat the decisions about where data lives, how current a read is, and how a change is validated and attributed. The ontology itself will be served by stores of different size and freshness (today a hot mutable store and a warehouse, and there can be more); a client that talks to them directly takes on that complexity and breaks when any changes.
 
 ### Goals
 
@@ -51,7 +51,7 @@ The first module that needs durable, editable, audited knowledge, the catalog, h
 2. Each answer says which backend served it and how current it is, and a client can ask for an answer at least as new as its own last change.
 3. Every change is a declared action, atomic, attributed to a person and recorded.
 4. Types and actions are defined once, in UMF, and every client discovers them.
-5. The catalog runs on the interface inside the praxis app, within the latency targets.
+5. The catalog runs on the interface inside the embedding application, within the latency targets.
 
 ### Success Metrics
 
@@ -63,7 +63,7 @@ The first module that needs durable, editable, audited knowledge, the catalog, h
 | Use case list | p95 ≤ 1 s | The 30-record demonstration catalog at the host |
 | Reads that state their freshness | 100% | Contract tests over every read operation |
 | Changes attributed to a named person or a load | 100% | Audit reconciliation over all action paths |
-| Host integration | Praxis starts and serves with Arras embedded, with either backend unavailable | Startup tests in the host |
+| Host integration | The embedding host starts and serves with Arras embedded, with either backend unavailable | Startup tests in the host |
 
 *All targets are proposed. They are not yet validated on Unity Catalog through the host. Truss's embedded-PostgreSQL measurements (200,000 objects) put reads on its layout at about 0.02 ms, so the targets leave headroom for the network round trip.*
 
@@ -83,21 +83,21 @@ The first module that needs durable, editable, audited knowledge, the catalog, h
 
 ### Primary Persona: Host developer
 
-**Role**: Developer of a host application or module that uses the ontology; first the catalog, then the use case inventory and praxis.
+**Role**: Developer of a host application or module that uses the ontology; first the catalog, then the use case inventory and a workflow client.
 **Goals**: Declare types and actions, read with a stated freshness, invoke actions, import seed records, and ship it all inside the host app.
-**Pain Points**: Must decide where each kind of data lives, how fresh a read is, and how a change is validated and audited. *(Inferred from ADR-027; not interview-validated.)*
+**Pain Points**: Must decide where each kind of data lives, how fresh a read is, and how a change is validated and audited. *(Inferred from the original reference-host intake; not interview-validated.)*
 
 ### Secondary Persona: Administrator
 
 **Role**: Owner of the Databricks deployment, its database resources and Unity Catalog access.
 **Goals**: Grant read and write access with ordinary database roles and Unity Catalog grants, see who changed what, and browse what the ontology holds.
-**Pain Points**: Per-module databases multiply grants, migrations and startup risk in a shared app. *(From ADR-027's risks.)*
+**Pain Points**: Per-module databases multiply grants, migrations and startup risk in a shared app. *(From the original host-integration risk assessment.)*
 
 ### Tertiary Persona: Catalog editor (through a client)
 
 **Role**: Maintains catalog knowledge through the catalog screens.
 **Goals**: Correct a record once and see it at once, attributed to them.
-**Pain Points**: Records live in seed data that cannot be edited. *(From praxis-harness FEAT-007.)*
+**Pain Points**: Records live in seed data that cannot be edited. *(The catalog workload is retained as FR-38; the original downstream feature remains downstream-owned.)*
 
 ### Quaternary Persona: Analyst (through a client)
 
@@ -136,7 +136,7 @@ The first module that needs durable, editable, audited knowledge, the catalog, h
 7. A backend contract, a Truss adapter that serves reads and actions, and an Ashlar adapter with visible replica positions (Backends).
 8. Map callers to each backend's access controls, and tell empty, not permitted and unavailable apart (Access).
 9. Embed in a host application with host-supplied connections, an install of its own store and safe startup (Embedding and Lifecycle).
-10. Serve the product catalog as the first client within the latency targets, with the use case inventory and praxis as further clients (Reference Clients).
+10. Serve the product catalog as the first client within the latency targets, with the use case inventory and a workflow client as further clients (Reference Clients).
 
 ### Should Have (P1)
 
@@ -242,7 +242,7 @@ The first module that needs durable, editable, audited knowledge, the catalog, h
 - **FR-56** — A node page lists every relationship of the entity grouped by relationship name, and each related entity is a link that opens it, including an entity of another module that the viewer may read; an entity the viewer may not read shows as unavailable without saying why. *(P1)*
 - **FR-57** — A node page shows a picture of the entity and its neighbours, bounded in size, in which selecting a neighbour opens its node page, styled with the same declared view. *(P1)*
 - **FR-58** — A module declares its view in a UMF extension that Arras checks when the module is registered: a closed vocabulary of data (label, summary, sections, formats, icons, tones, search properties), never script or markup. A reference to a property or relationship that does not exist is refused at registration. *(P1)*
-- **FR-60** — One interface offers Explore (the Graph Browser) and Operate (the Operator Console) with a switch between them; Operate is offered only to the people the host names as operators (module builders and administrators), is absent, not disabled, for everyone else, and the operator surface refuses a non-operator on the server. Arras decides nothing about who is an operator: in praxis the host names them as the members of its `admins` group and its `builders` group. *(P1)*
+- **FR-60** — One interface offers Explore (the Graph Browser) and Operate (the Operator Console) with a switch between them; Operate is offered only to the people the host names as operators (module builders and administrators), is absent, not disabled, for everyone else, and the operator surface refuses a non-operator on the server. The host decides who is an operator; `admins` and `builders` are example host group names, not universal role semantics. *(P1)*
 - **FR-59** — The Graph Browser holds no credential, runs every call as the viewer's principal, writes only by validating and invoking a declared action as the viewer, where the host offers Operate (an edit, a link, a new entity, a retirement or an entity action: FR-64, FR-65, FR-67, FR-68, FR-70), states the freshness of what it shows, and gives each node page a location that can be shared without placing a key in anything a server sees. *(P1)*
 - **FR-64** — Where the host offers a viewer Operate, the Graph Browser offers an edit beside a property of a node page for which the module declares an action whose one effect updates that property of that type, behind an edit mode the reader turns on. A property that its action can only change together with others opens a popup form for them all. A change is that action, validated and then invoked as the viewer with an idempotency key, and refused as the backend or the action refuses it. It is one of the browser's writes (FR-59). *(P2)*
 - **FR-65** — Where the host offers a viewer Operate, a relationship group on a Graph Browser node page offers adding a link, and each member offers removing it, where the module declares an action that does it: one `link` (or `unlink`) effect of that relationship between two reference inputs. A change is that action, validated then invoked as the viewer; a relationship the module declares no action for has no control. *(P2)*
@@ -260,7 +260,7 @@ The first module that needs durable, editable, audited knowledge, the catalog, h
 
 - **FR-38** — The product catalog's module supplies its UMF types and actions; the demonstration records are imported; the use case list of 30 meets the latency target; a correction made through an action is visible to its author at once and attributed to them.
 - **FR-39** — The use case inventory reads use cases and their related use cases from the replica and shows how current they are; counts follow when `COUNT(*)` is served.
-- **FR-40** — Praxis reads context on behalf of the signed-in user on every call without caching it, and records evaluation findings through an action; an entitlement read fails closed and is blocked on ADR-005.
+- **FR-40** — The workflow host reads context on behalf of the signed-in user on every call without caching it, and records evaluation findings through an action; an entitlement read fails closed and is blocked on ADR-005.
 - **FR-41** — Singleton read, action and type enumeration meet their latency targets on the catalog.
 
 ## Acceptance Test Sketches
@@ -316,12 +316,12 @@ The first module that needs durable, editable, audited knowledge, the catalog, h
 
 ## Technical Context
 
-- **Language/Runtime**: Python 3.11 with `uv` (a Python package manager) and a committed `uv.lock` (ADR-010). The host, praxis, requires Python ≥ 3.11.
+- **Language/Runtime**: Python 3.11 with `uv` (a Python package manager) and a committed `uv.lock` (ADR-010). The embedding host requires Python ≥ 3.11.
 - **Database access**: psycopg 3.3.6 (the PostgreSQL driver for Python, binary, libpq 18.6) for the Truss adapter's data path, in the optional `truss` extra (ADR-006, ADR-010). Arras has no migrations of its own: Truss installs itself, install-or-verify, on a trusted installing connection the host supplies (ADR-006). Registering a document runs Truss's bundled UMF producer under Bun 1.4.2, so the host image carries Bun (about 0.5 to 0.9 s of preparation per registration); writes, imports and key lookups run no Bun.
-- **Truss adapter's store**: Arras's own Postgres database, separate from praxis's (ADR-012). Deployed: a Lakebase project dedicated to Arras, Postgres 18, on Databricks: the required deployment target, which Arras treats as PostgreSQL 18.6. Locally and in CI: PostgreSQL 18.6 through `pgserver-pg18`, a test-only dependency group. The layout, import identity, unique edges, revision origin, module isolation and change feed are Truss's contracts.
+- **Truss adapter's store**: Arras's own Postgres database, separate from the host's (ADR-012). Deployed: a Lakebase project dedicated to Arras, Postgres 18, on Databricks: the required deployment target, which Arras treats as PostgreSQL 18.6. Locally and in CI: PostgreSQL 18.6 through `pgserver-pg18`, a test-only dependency group. The layout, import identity, unique edges, revision origin, module isolation and change feed are Truss's contracts.
 - **Ashlar adapter's store**: gold Delta tables on Unity Catalog, read through a Databricks SQL warehouse on behalf of the user. Ashlar is a sibling project whose requirements are being defined jointly. Delta is the open table format of Databricks' lakehouse.
 - **Types and actions**: UMF documents. UMF's declarative action contract is requested of UMF. Arras uses a minimal subset of it (CONTRACT-003) and tracks UMF's.
-- **Packaging**: a library deployable inside the praxis Databricks app; no dependency on the praxis internals (praxis ADR-004 keeps `psycopg` out of its core, so the host reaches Arras through an adapter).
+- **Packaging**: a library deployable inside the embedding Python application; no dependency on the embedding host internals (the host reaches Arras through an adapter and owns its own dependency boundaries).
 - **Platform**: Databricks Apps (Databricks' hosting for web applications); the app's database resource and service principal supply the Truss connection, and the signed-in user's token supplies Unity Catalog access.
 - **Admin console**: no frontend framework; a read-only GraphQL schema generated from the registry and explored through GraphiQL, an in-browser GraphQL explorer (ADR-011; CONTRACT-006).
 - **Operator console**: a React package, `arras-ui`, in this repository's `ui/` directory (ADR-021), that reaches Arras over HTTP: GraphQL for reads (CONTRACT-006) and JSON for declared actions and audit (CONTRACT-009).
@@ -332,7 +332,7 @@ The first module that needs durable, editable, audited knowledge, the catalog, h
 
 ### Constraints
 
-- **Technical**: Python 3.11, uv, psycopg, Truss (an optional extra), Postgres on Lakebase, Databricks Apps hosting. The design works over a pooled (transaction-mode) or a direct connection; praxis connects direct (its ADR-028). No session state is kept.
+- **Technical**: Python 3.11, uv, psycopg, Truss (an optional extra), Postgres on Lakebase, Databricks Apps hosting. The design works over a pooled (transaction-mode) or a direct connection; the host selects pooled or direct connections. No session state is kept.
 - **Business**: ADR-005 still defers durable structure over sensitive source records until its preconditions are answered; this PRD holds no such structure.
 - **Compliance**: No sensitive source records are stored.
 
@@ -342,22 +342,22 @@ The first module that needs durable, editable, audited knowledge, the catalog, h
 - The module types in the demonstration are placed with the Truss adapter as record store, the playbooks with the Ashlar adapter as record store, and the entitlement source is undecided. *(Falsifiable: the owners of those types say otherwise.)*
 - The host assigns the right identity to each person; the backends' own controls do not know the person, and the change record names the person whose own token authenticated the change (ADR-017). *(Falsifiable: an audit finds a role used for a person it was not meant for.)*
 - The catalog contains no sensitive source records. *(Falsifiable: the data governance owner or the catalog owner reviews the demonstration records.)*
-- Praxis passes a user token on every call. *(Falsifiable: the praxis maintainers confirm.)*
-- Arras's Lakebase database is separate from praxis's (ADR-012), and the installing connection the host supplies on it holds what Truss's installer needs (`CREATEROLE`, database `CREATE` with grant option). *(Falsifiable: the deployed host's `migrate` on the `arras` database.)*
+- The embedding host passes a user token on every call. *(Falsifiable: the host maintainers confirm.)*
+- Arras's Lakebase database is separate from the host's (ADR-012), and the installing connection the host supplies on it holds what Truss's installer needs (`CREATEROLE`, database `CREATE` with grant option). *(Falsifiable: the deployed host's `migrate` on the `arras` database.)*
 
 ### Dependencies
 
 - Truss: the layout, protocols and change feed; a Python implementation that passes its conformance corpus.
 - Ashlar: publication semantics, identity, current state and history, a published feed position and user-scoped reads.
 - UMF: declarative actions, validity fixtures and relationship semantics.
-- Praxis-harness FEAT-007, the catalog feature, which stores the catalog through Arras, and the praxis catalog developer for the host integration and the catalog's types.
+- The host-owned catalog feature, which stores the catalog through Arras, and its integration developer for the host integration and the catalog's types.
 - A Lakebase database and grants for Arras, managed by the host's platform owner.
 
 ## Risks
 
 | Risk | Probability | Impact | Mitigation |
 |------|-------------|--------|------------|
-| Praxis builds a catalog database of its own although the catalog runs on Arras | Medium | High | Agree with the praxis owners which database holds the catalog before either ships |
+| The embedding host builds a catalog database of its own although the catalog runs on Arras | Medium | High | Agree with the host integration owners which database holds the catalog before either ships |
 | The interface hides the difference between a fresh and a replicated read and misleads clients | Medium | High | Consistency level and `as_of` on every read; capability descriptors; contract tests that a stale answer is never unlabeled |
 | The interface is designed before two real implementations exist and fits none | Medium | High | Derive it from the twelve client interactions; run the shared backend corpus on both adapters before ratifying |
 | Declarative actions grow into a workflow engine | Medium | Medium | Effects are a closed list of primitive operations on one store; a named handler hook carries the rest; compensation is deferred |
@@ -371,7 +371,7 @@ The first module that needs durable, editable, audited knowledge, the catalog, h
 ## Open Questions
 
 - [ ] Which types have their record store where, beyond the assumptions above? Blocks FR-10; ask the owners of each type.
-- [ ] How does praxis hand a user's token, and its refresh, to a per-session stdio process, and does Ashlar accept it? Blocks FR-28 and FR-45; ask the praxis owners and the platform owner.
+- [ ] How does the embedding host hand a user's token, and its refresh, to a per-session stdio process, and does Ashlar accept it? Blocks FR-28 and FR-45; ask the host integration owners and the platform owner.
 - [ ] Which counts are required, and which Weft read profiles will Truss and Ashlar qualify for whole-entity reads, relationship predicates, `COUNT(*) GROUP BY` and joins? Blocks FR-2, FR-4 and any broader join; ask the Weft and Truss maintainers.
 - [ ] What is the measured Truss-to-Ashlar lag through the chosen publisher? Blocks any promise that `bulk` reads are fresh; ask the platform owner and the Ashlar project.
 - [ ] Should the interface itself wait for a replica to reach a receipt's token, or only report that it has not? Blocks FR-7; ask Erik LaBianca.
@@ -381,14 +381,14 @@ The first module that needs durable, editable, audited knowledge, the catalog, h
 - [ ] Who owns governed writes (ADR-005 P3) for the catalog? Blocks ADR-005 scoping; ask the data governance owner.
 - [ ] Verify the Azure CU-hour (Lakebase capacity-unit hour) and storage rates and the standard rate after 31 Jan 2027. ask the platform owner (SPIKE-005).
 - [ ] Who may read whose audit rows: is the journal grant a module reader's, a module writer's or an administrator's? Blocks the audit area of FEAT-010 (FR-51); ask the platform owner and Truss.
-- [ ] Will the praxis owners mount a write-capable operator surface, and under which per-action approval (ADR-016, praxis ADR-024)? Blocks FR-50 inside praxis; ask the praxis owners.
+- [ ] Will the host integration owners mount a write-capable operator surface, and under which per-action approval (ADR-016, the host's per-action approval policy)? Blocks FR-50 inside the embedding host; ask the host integration owners.
 - [ ] Will Truss expose a documented journal read and an import-load read? Blocks FR-51; ask the Truss maintainers.
 - [ ] No backend serves text search today (Weft v0.1 has equality predicates only; Truss lists full-text and property filters out of scope; Ashlar is silent). Which will add it, and at what strength (substring, word match, ranked)? Blocks FR-53 on any store but the in-memory one; ask the Weft, Truss and Ashlar maintainers (ADR-023).
 - [ ] Accept ADR-011 (read-only GraphQL for the console)? Should the same surface later serve agents? Blocks the Admin Console (FEAT-007) build; ask Erik LaBianca.
 
 ## Success Criteria
 
-- Praxis starts with Arras embedded, and serves its sessions when either backend is down.
+- The embedding host starts with Arras embedded, and serves its sessions when either backend is down.
 - The catalog is read and changed through the interface, loaded from demonstration records, and a correction made by a named user appears in history under that user.
 - Every read states its freshness, and no stale answer is ever unlabeled.
 - A caller without access is refused by the backend's own controls on read and on action.

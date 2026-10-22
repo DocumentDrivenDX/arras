@@ -652,10 +652,9 @@ def test_a_load_of_several_calls_is_one_load_with_the_counts_of_its_listed_calls
     )
     page = h.backend().loads(h.principal("alice"), "catalog", limit=1, after=None)
     [big] = page.items
-    # Truss 0.0.44's module-scoped discovery lists the invocations that imported entities; the one
-    # that imported only the relationship is not listed (a pinned limit, truss-requirements R20), so
-    # the counts are of the entities of the two calls that made them
-    assert (big.load_id, big.created, big.skipped, big.partial) == ("big", n, 0, False)
+    # Truss includes the final relationship-only invocation in module-scoped load discovery and its
+    # created count.
+    assert (big.load_id, big.created, big.skipped, big.partial) == ("big", n + 1, 0, False)
 
 
 @pytest.mark.truss

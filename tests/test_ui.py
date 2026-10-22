@@ -6,10 +6,12 @@ process through the ASGI interface, over the sandbox's fakes."""
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import html
 import json
 import os
 import re
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
@@ -17,8 +19,18 @@ import pytest
 
 from arras import operate, ui
 from arras.sandbox import Sandbox
+from arras.ui.assets import load_manifest
 
 BASE = "/ontology"
+
+
+def refresh_page_manifest(root: Path) -> None:
+    data = json.loads((root / "asset-manifest.json").read_text())
+    for name in data["files"]:
+        body = (root / name).read_bytes()
+        data["files"][name]["size"] = len(body)
+        data["files"][name]["sha256"] = hashlib.sha256(body).hexdigest()
+    (root / "asset-manifest.json").write_text(json.dumps(data))
 
 
 @pytest.fixture
@@ -30,10 +42,52 @@ def static(tmp_path: Path) -> Path:
     (tmp_path / "assets" / "app.css").write_text("a{}")
     (tmp_path / "umf-explorer" / "index.html").write_text("<p>explorer")
     (tmp_path / "secret.txt").write_text("no")
+    files = {}
+    for candidate in (
+        tmp_path / "embed.html",
+        tmp_path / "assets" / "app.js",
+        tmp_path / "assets" / "app.css",
+        tmp_path / "umf-explorer" / "index.html",
+    ):
+        body = candidate.read_bytes()
+        mime = {".html": "text/html", ".js": "text/javascript", ".css": "text/css"}[
+            candidate.suffix
+        ]
+        files[candidate.relative_to(tmp_path).as_posix()] = {
+            "sha256": hashlib.sha256(body).hexdigest(),
+            "size": len(body),
+            "mime": mime,
+        }
+    (tmp_path / "asset-manifest.json").write_text(
+        json.dumps(
+            {
+                "format": "arras.ui.assets",
+                "version": 1,
+                "kind": "page",
+                "package": {"name": "@documentdrivendx/arras-ui", "version": "0.5.0"},
+                "contracts": {"console": 2, "operate": 2, "schema": 1, "browser": 1},
+                "schema_browser": {
+                    "name": "@documentdrivendx/umf-schema-browser",
+                    "version": "2.0.0",
+                    "integrity": "sha512-test",
+                },
+                "entry": {"html": "embed.html"},
+                "files": files,
+            }
+        )
+    )
     return tmp_path
 
 
-def make(static_dir: Path, *, operators: bool = True, base: str = BASE):
+def make(
+    static_dir: Path,
+    *,
+    operators: bool = True,
+    base: str = BASE,
+    authorize_schema=None,
+    distribution=None,
+    brand=None,
+):
     box = Sandbox().seed()
 
     def who(request):
@@ -43,8 +97,12 @@ def make(static_dir: Path, *, operators: bool = True, base: str = BASE):
         box.arras,
         principal_for_request=who,
         authorize_operator=operate.operators_in_groups("admins", "builders") if operators else None,
+        authorize_schema=authorize_schema,
         base_path=base,
+        public_origin="https://app.example",
         static_dir=static_dir,
+        distribution=distribution,
+        brand=brand,
     )
 
 
@@ -58,7 +116,11 @@ def call(
     root_path: str = "",
 ) -> tuple[int, dict[str, str], bytes]:
     raw = json.dumps(body).encode() if body is not None else b""
-    headers = [(b"host", b"app.example"), (b"content-type", b"application/json")]
+    headers = [
+        (b"host", b"app.example"),
+        (b"content-type", b"application/json"),
+        (b"origin", b"https://app.example"),
+    ]
     if user:
         headers.append((b"x-user", user.encode()))
     scope = {
@@ -116,6 +178,154 @@ def test_only_the_page_and_its_two_directories_are_served(static: Path) -> None:
     assert call(app, "GET", f"{BASE}/assets/%2e%2e/secret.txt", user=None)[0] == 404
 
 
+def test_external_theme_is_digest_served_same_origin_and_version_pinned(
+    static: Path, tmp_path: Path
+) -> None:
+    css = b".arras-root{--arras-color-text:#111}"
+    font = b"font-bytes"
+    icon = b"<svg xmlns='http://www.w3.org/2000/svg'></svg>"
+    for name, body in (("theme.css", css), ("font.woff2", font), ("favicon.svg", icon)):
+        (tmp_path / name).write_bytes(body)
+    files = {
+        name: {"sha256": hashlib.sha256(body).hexdigest(), "size": len(body), "mime": mime}
+        for name, body, mime in (
+            ("theme.css", css, "text/css"),
+            ("font.woff2", font, "font/woff2"),
+            ("favicon.svg", icon, "image/svg+xml"),
+        )
+    }
+    manifest = tmp_path / "theme.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "format": "arras.ui.assets",
+                "version": 1,
+                "kind": "theme",
+                "package": {"name": "neutral-theme", "version": "1"},
+                "contracts": {"console": 2, "operate": 2, "schema": 1, "browser": 1},
+                "ui_versions": ["0.5.0"],
+                "entry": {
+                    "stylesheet": "theme.css",
+                    "fonts": ["font.woff2"],
+                    "favicon": "favicon.svg",
+                },
+                "files": files,
+            }
+        )
+    )
+    app = ui.create_app(
+        Sandbox().seed().arras,
+        principal_for_request=lambda _request: None,
+        base_path=BASE,
+        static_dir=static,
+        theme_manifest=manifest,
+    )
+    status, headers, body = call(app, "GET", f"/mount{BASE}/", user=None, root_path="/mount")
+    assert (
+        status == 200
+        and b"/mount/ontology/theme-assets/" in body
+        and b"theme.css" in body
+        and b"favicon.svg" in body
+    )
+    assert "font-src 'self'" in headers["content-security-policy"]
+    assert app.theme_manifest is not None
+    digest = app.theme_manifest.manifest_sha256
+    status, headers, body = call(
+        app, "GET", f"/mount{BASE}/theme-assets/{digest}/font.woff2", user=None, root_path="/mount"
+    )
+    assert status == 200 and body == font and headers["cache-control"].endswith("immutable")
+    assert call(app, "GET", f"{BASE}/theme-assets/{digest}/../theme.json", user=None)[0] == 404
+    assert call(app, "GET", f"{BASE}/theme-assets/{digest}/secret.txt", user=None)[0] == 404
+    changed = json.loads(manifest.read_text())
+    changed["ui_versions"] = ["9.9.9"]
+    manifest.write_text(json.dumps(changed))
+    assert call(app, "GET", f"{BASE}/theme-assets/{digest}/font.woff2", user=None)[0] == 503
+
+
+def test_invalid_and_wrong_cohort_theme_manifests_refuse(static: Path, tmp_path: Path) -> None:
+    path = tmp_path / "theme.json"
+    body = b"a{}"
+    (tmp_path / "theme.css").write_bytes(body)
+    path.write_text(
+        json.dumps(
+            {
+                "format": "arras.ui.assets",
+                "version": 1,
+                "kind": "theme",
+                "package": {"name": "theme", "version": "1"},
+                "contracts": {"console": 2, "operate": 2, "schema": 1, "browser": 1},
+                "ui_versions": ["9.9.9"],
+                "entry": {"stylesheet": "theme.css"},
+                "files": {
+                    "theme.css": {
+                        "sha256": hashlib.sha256(body).hexdigest(),
+                        "size": len(body),
+                        "mime": "text/css",
+                    }
+                },
+            }
+        )
+    )
+    with pytest.raises(ValueError, match="ui_versions"):
+        ui.create_app(
+            Sandbox().seed().arras,
+            principal_for_request=lambda _request: None,
+            static_dir=static,
+            theme_manifest=path,
+        )
+
+
+def test_asset_manifest_rejects_bool_version_and_exposes_immutable_entry(static: Path) -> None:
+    manifest_path = static / "asset-manifest.json"
+    data = json.loads(manifest_path.read_text())
+    data["version"] = True
+    manifest_path.write_text(json.dumps(data))
+    with pytest.raises(ValueError, match="format, version or kind"):
+        load_manifest(manifest_path, kind="page")
+    refresh_page_manifest(static)
+    theme_data = {
+        "format": "arras.ui.assets",
+        "version": 1,
+        "kind": "theme",
+        "package": {"name": "theme", "version": "1"},
+        "contracts": {"console": 2, "operate": 2, "schema": 1, "browser": 1},
+        "ui_versions": ["0.5.0"],
+        "entry": {"stylesheet": "theme.css", "fonts": ["font.woff2"]},
+        "files": {},
+    }
+    (static / "theme.css").write_text("a{}")
+    (static / "font.woff2").write_bytes(b"font")
+    for name in ("theme.css", "font.woff2"):
+        body = (static / name).read_bytes()
+        theme_data["files"][name] = {
+            "sha256": hashlib.sha256(body).hexdigest(),
+            "size": len(body),
+            "mime": "text/css" if name.endswith(".css") else "font/woff2",
+        }
+    theme_path = static / "theme-manifest.json"
+    theme_path.write_text(json.dumps(theme_data))
+    checked = load_manifest(theme_path, kind="theme")
+    assert checked.entry["fonts"] == ("font.woff2",)
+    assert isinstance(checked.entry["fonts"], tuple)
+    with pytest.raises(TypeError):
+        checked.entry["fonts"][0] = "other.woff2"  # pyright: ignore[reportIndexIssue]
+
+
+def test_page_entry_is_manifest_selected_and_refreshed_cohort_is_rechecked(static: Path) -> None:
+    page = static / "embed.html"
+    page.rename(static / "host.html")
+    data = json.loads((static / "asset-manifest.json").read_text())
+    data["entry"]["html"] = "host.html"
+    data["files"]["host.html"] = data["files"].pop("embed.html")
+    (static / "asset-manifest.json").write_text(json.dumps(data))
+    app = make(static)
+    assert call(app, "GET", f"{BASE}/", user=None)[0] == 200
+    data["package"]["version"] = "9.9.9"
+    (static / "asset-manifest.json").write_text(json.dumps(data))
+    status, _, body = call(app, "GET", f"{BASE}/", user=None)
+    assert status == 503 and b"asset manifest invalid" in body
+
+
 def test_the_bare_mount_redirects_to_the_page_so_relative_urls_resolve(static: Path) -> None:
     status, headers, _ = call(make(static), "GET", BASE, user=None)
     assert status == 308 and headers["location"] == f"{BASE}/"
@@ -157,7 +367,177 @@ def test_the_console_graphql_surface_is_mounted(static: Path) -> None:
 
 def test_schema_import_is_mounted_only_with_an_operator_rule(static: Path) -> None:
     assert call(make(static), "GET", f"{BASE}/api/schema/version")[0] == 200
-    assert call(make(static, operators=False), "GET", f"{BASE}/api/schema/version")[0] == 404
+    app = make(
+        static,
+        operators=False,
+        authorize_schema=lambda principal, module: True,
+    )
+    assert call(app, "GET", f"{BASE}/api/schema/version")[0] == 404
+
+
+def test_composed_schema_hook_receives_the_viewer_and_module_for_both_verbs(
+    static: Path,
+) -> None:
+    box = Sandbox().seed()
+    asked: list[tuple[str, str]] = []
+
+    def authorize(principal, module: str) -> bool:
+        asked.append((principal.user, module))
+        return True
+
+    app = ui.create_app(
+        box.arras,
+        principal_for_request=lambda request: (
+            box.principal(request.headers["x-user"]) if "x-user" in request.headers else None
+        ),
+        authorize_operator=operate.operators_in_groups("admins", "builders"),
+        authorize_schema=authorize,
+        base_path=BASE,
+        public_origin="https://app.example",
+        static_dir=static,
+    )
+    document = box.arras.session(box.people["alice"]).document("catalog").text
+    before = box.arras.session(box.people["alice"]).document("catalog")
+    candidate = json.loads(document)
+    candidate["modules"][0]["actions"][0]["description"] = "Add a catalog use case"
+    changed_document = json.dumps(candidate)
+    status, _, body = call(
+        app, "POST", f"{BASE}/api/schema/validate", body={"document": changed_document}
+    )
+    plan = json.loads(body)
+    assert status == 200 and plan["ok"] and plan["changed"]
+    status, _, body = call(
+        app,
+        "POST",
+        f"{BASE}/api/schema/register",
+        body={"document": changed_document, "expected_revision": plan["revision"]},
+    )
+    result = json.loads(body)
+    assert status == 200 and result["changed"]
+    assert asked == [("alice", "catalog"), ("alice", "catalog")]
+    after = box.arras.session(box.people["alice"]).document("catalog")
+    assert after.text != before.text and after.revision != before.revision
+
+
+def test_composed_schema_callback_denial_and_error_are_scrubbed_and_do_not_mutate(
+    static: Path,
+) -> None:
+    box = Sandbox().seed()
+    before = box.arras.session(box.people["alice"]).document("catalog")
+    candidate = json.loads(before.text)
+    candidate["modules"][0]["actions"][0]["description"] = "Add a catalog use case"
+    changed_document = json.dumps(candidate)
+    app = ui.create_app(
+        box.arras,
+        principal_for_request=lambda request: (
+            box.principal(request.headers["x-user"]) if "x-user" in request.headers else None
+        ),
+        authorize_operator=operate.operators_in_groups("admins", "builders"),
+        authorize_schema=lambda _principal, _module: False,
+        base_path=BASE,
+        public_origin="https://app.example",
+        static_dir=static,
+    )
+    for verb in ("validate", "register"):
+        status, _, body = call(
+            app, "POST", f"{BASE}/api/schema/{verb}", body={"document": changed_document}
+        )
+        assert status == 403
+        assert b"secret" not in body
+    after = box.arras.session(box.people["alice"]).document("catalog")
+    assert (after.text, after.revision) == (before.text, before.revision)
+
+    def broken(_principal, _module: str) -> bool:
+        raise RuntimeError("private-group-service-detail")
+
+    error_app = ui.create_app(
+        box.arras,
+        principal_for_request=lambda request: (
+            box.principal(request.headers["x-user"]) if "x-user" in request.headers else None
+        ),
+        authorize_operator=operate.operators_in_groups("admins", "builders"),
+        authorize_schema=broken,
+        base_path=BASE,
+        public_origin="https://app.example",
+        static_dir=static,
+    )
+    for verb in ("validate", "register"):
+        status, _, body = call(
+            error_app, "POST", f"{BASE}/api/schema/{verb}", body={"document": changed_document}
+        )
+        assert status == 500 and b"internal error" in body
+        assert b"private-group-service-detail" not in body
+    after = box.arras.session(box.people["alice"]).document("catalog")
+    assert (after.text, after.revision) == (before.text, before.revision)
+
+
+def test_composed_schema_precedence_and_backend_grant_still_apply(static: Path) -> None:
+    box = Sandbox().seed()
+    asked: list[tuple[str, str]] = []
+
+    def authorize(principal, module: str) -> bool:
+        asked.append((principal.user, module))
+        return True
+
+    app = ui.create_app(
+        box.arras,
+        principal_for_request=lambda request: (
+            box.principal(request.headers["x-user"]) if "x-user" in request.headers else None
+        ),
+        authorize_operator=operate.operators_in_groups("admins", "builders"),
+        authorize_schema=authorize,
+        base_path=BASE,
+        public_origin="https://app.example",
+        static_dir=static,
+    )
+    document = box.arras.session(box.people["alice"]).document("catalog").text
+    assert (
+        call(app, "POST", f"{BASE}/api/schema/validate", user=None, body={"document": document})[0]
+        == 401
+    )
+    assert (
+        call(app, "POST", f"{BASE}/api/schema/validate", user="carol", body={"document": document})[
+            0
+        ]
+        == 403
+    )
+    assert call(app, "POST", f"{BASE}/api/schema/validate", body={"document": "{"})[0] == 400
+    assert asked == []
+
+    status, _, body = call(
+        app,
+        "POST",
+        f"{BASE}/api/schema/validate",
+        user="bob",
+        body={"document": document},
+    )
+    assert status == 403 and b"no access" in body
+    assert asked == [("bob", "catalog")]
+
+
+def test_composed_schema_callback_survives_nonempty_root_path(static: Path) -> None:
+    box = Sandbox().seed()
+    seen: list[tuple[str, str]] = []
+    app = ui.create_app(
+        box.arras,
+        principal_for_request=lambda request: (
+            box.principal(request.headers["x-user"]) if "x-user" in request.headers else None
+        ),
+        authorize_operator=operate.operators_in_groups("admins", "builders"),
+        authorize_schema=lambda principal, module: seen.append((principal.user, module)) or True,
+        base_path=BASE,
+        public_origin="https://app.example",
+        static_dir=static,
+    )
+    document = box.arras.session(box.people["alice"]).document("catalog").text
+    status, _, _ = call(
+        app,
+        "POST",
+        f"/mount{BASE}/api/schema/validate",
+        body={"document": document},
+        root_path="/mount",
+    )
+    assert status == 200 and seen == [("alice", "catalog")]
 
 
 def test_operators_are_decided_by_the_hosts_rule(static: Path) -> None:
@@ -191,8 +571,114 @@ def test_the_page_carries_the_default_brand(static: Path) -> None:
     assert b'<meta name="arras-brand" content="{&quot;name&quot;: &quot;Arras&quot;}">' in body
 
 
+class _BrandMetaParser(HTMLParser):
+    """Count browser-visible metadata while treating raw-text element contents as text."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.raw_text_tag: str | None = None
+        self.brands: list[str | None] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if self.raw_text_tag is not None:
+            return
+        if tag.lower() == "meta":
+            values = dict(attrs)
+            if (values.get("name") or "").casefold() == "arras-brand":
+                self.brands.append(values.get("content"))
+        if tag.lower() in {
+            "script",
+            "style",
+            "textarea",
+            "title",
+            "xmp",
+            "iframe",
+            "noembed",
+            "noframes",
+            "plaintext",
+        }:
+            self.raw_text_tag = tag.lower()
+
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.handle_starttag(tag, attrs)
+
+    def handle_endtag(self, tag: str) -> None:
+        if self.raw_text_tag == tag.lower():
+            self.raw_text_tag = None
+
+
+def _brand_meta_values(page: bytes) -> list[str | None]:
+    parser = _BrandMetaParser()
+    parser.feed(page.decode())
+    parser.close()
+    return parser.brands
+
+
+@pytest.mark.parametrize(
+    "existing",
+    [
+        b"",
+        b'<meta name="arras-brand" content="old">',
+        b'<META content=old NAME=ARRAS-BRAND/><meta name="arras-brand" content="second">',
+    ],
+)
+def test_branded_replaces_all_real_brand_metadata(existing: bytes) -> None:
+    brand = ui.Brand(name='Café <Atlas> "Console"', tagline="x & y")
+    page = (
+        b"<!doctype html><head><title lang='en'>Old</title>"
+        + existing
+        + b"</head><body>kept</body>"
+    )
+
+    result = ui.branded(page, brand)
+
+    values = _brand_meta_values(result)
+    assert len(values) == 1 and values[0] is not None
+    assert json.loads(values[0]) == {"name": 'Café <Atlas> "Console"', "tagline": "x & y"}
+    assert b"<title lang='en'>Caf\xc3\xa9 &lt;Atlas&gt; &quot;Console&quot;</title>" in result
+    assert result.index(b'<meta name="arras-brand"') < result.index(b"</head>")
+    assert ui.branded(result, brand) == result
+
+
+def test_branded_ignores_fake_tags_in_comments_and_raw_text() -> None:
+    brand = ui.Brand(name="Atlas")
+    fake_comment = b'<!-- <meta name="arras-brand" content="comment"></head> -->'
+    fake_script = (
+        b'<script>const fake = \'<meta name="arras-brand">\'; const close = "</head>";</script>'
+    )
+    fake_textarea = b"<textarea><meta name=arras-brand></textarea>"
+    fake_title = b"<title data-x='kept'><meta name=arras-brand></title>"
+    page = b"<head>" + fake_comment + fake_script + fake_textarea + fake_title + b"</head>"
+
+    result = ui.branded(page, brand)
+
+    assert fake_comment in result
+    assert fake_script in result
+    assert fake_textarea in result
+    assert b"<title data-x='kept'>Atlas</title>" in result
+    assert len(_brand_meta_values(result)) == 1
+    assert result.index(b'<meta name="arras-brand"') < result.rindex(b"</head>")
+
+
+def test_branded_fragment_fallback_is_token_aware_and_preserves_source() -> None:
+    brand = ui.Brand(name="A&B")
+    title_fragment = b'<title>Old</title><!-- </head> --><script>"</head>"</script>'
+    result = ui.branded(title_fragment, brand)
+    meta = b'<meta name="arras-brand" content="{&quot;name&quot;: &quot;A&amp;B&quot;}">'
+    assert result.startswith(b"<title>A&amp;B</title>" + meta)
+    assert b"<!-- </head> -->" in result and b'<script>"</head>"</script>' in result
+
+    plain_fragment = b"text\r\n<!-- no head or title -->"
+    appended = ui.branded(plain_fragment, brand)
+    assert appended == plain_fragment
+
+    branded_fragment = b'text\r\n<meta name="arras-brand" content="old">'
+    assert ui.branded(branded_fragment, brand) == branded_fragment
+
+
 def test_a_custom_brand_renders_its_title_and_escaped_json(static: Path) -> None:
     (static / ui.PAGE).write_text("<!doctype html><head><title>Arras</title></head>")
+    refresh_page_manifest(static)
     brand = ui.Brand(name='A<t>"las', tagline="x & y", wordmark="https://e.example/w.svg")
     app = ui.create_app(
         Sandbox().seed().arras,
@@ -242,17 +728,19 @@ def test_the_branded_page_is_kept_until_the_file_or_the_brand_changes(
     assert b"<title>Arras</title>" not in app.static("/")[2]
     page = static / ui.PAGE
     page.write_text("<!doctype html><title>Other</title><!-- rebuilt -->")  # a rebuilt page
+    refresh_page_manifest(static)
     assert b"rebuilt" in app.static("/")[2]
     same_size = page.read_text().replace("rebuilt", "REBUILT")  # a change that keeps the size
     stat = page.stat()
     page.write_text(same_size)
     os.utime(page, ns=(stat.st_atime_ns, stat.st_mtime_ns + 1_000_000))
+    refresh_page_manifest(static)
     assert b"REBUILT" in app.static("/")[2]
     other = static.parent / "other-build"  # another directory is another page
     (other / "assets").mkdir(parents=True)
     (other / ui.PAGE).write_text("<!doctype html><title>Elsewhere</title>")
     app.static_dir = other
-    assert b"<meta" in app.static("/")[2] and b"Elsewhere" not in app.static("/")[2]
+    assert app.static("/")[0] == 503  # validated manifest pins its own root
 
 
 BRAND_VECTORS = json.loads(
@@ -362,3 +850,17 @@ def test_the_brand_names_the_graphiql_page_and_the_openapi_document(static: Path
     assert json.loads(doc)["info"]["title"] == "Atlas< operator surface"
     _, _, page = call(make(static), "GET", f"{BASE}/api/console/", user=None)
     assert b"<title>Arras console</title>" in page
+
+
+def test_distribution_brand_is_used_by_the_ui_and_explicit_brand_wins(static: Path) -> None:
+    from arras.distribution import DistributionConfig
+
+    configured = ui.Brand(name="Catalog Brand", tagline="from distribution")
+    app = make(static, distribution=DistributionConfig(brand=configured))
+    assert app.brand is configured
+    assert b"Catalog Brand" in app.static("/")[2]
+    override = ui.Brand(name="Explicit Brand")
+    app = make(static, distribution=DistributionConfig(brand=configured), brand=override)
+    assert app.brand is override
+    assert b"Explicit Brand" in app.static("/")[2]
+    assert ui.Brand is __import__("arras.branding", fromlist=["Brand"]).Brand

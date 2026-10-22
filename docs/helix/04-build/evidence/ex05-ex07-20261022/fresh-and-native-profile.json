@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-22",
+  "qualification": {
+    "fresh-installed-consumer.json": "Actual final verifier run: explicit public dependency indexes, uv --no-config and pip --isolated; fresh venv without shared site directory; real declared-backend consumer wheel; isolated installed imports, graph/seed/action attribution, 72 memory-store corpus cases and three installed-only consumer pytest tests with zero failures/errors/skips. Temporary Arras wheel predates native-helper/workflow edits and is not a final release artifact.",
+    "native-three-case.json": "Three selected source-helper cases on Truss 0.0.45 / Weft 0.4.49; not full, installed, Linux or future-cohort native qualification."
+  },
+  "failure_history": [
+    {
+      "stage": "first native source-helper smoke",
+      "result": "failed before foreign receipt provisioning",
+      "cause": "backend/resource names used hyphens rejected by the real factory",
+      "correction": "underscore names plus real-factory regression control",
+      "rerun": "one marked native smoke passed (5 deselected), 10.67 seconds; real foreign receipt and admin-without-schema refusal exercised; three selected corpus cases separately passed"
+    },
+    {
+      "stage": "installed-only consumer target review/attempts",
+      "result": "incorrect import-attribution expectation",
+      "cause": "test expected action actor example_owner as importer although the explicit import uses administrator admin",
+      "correction": "assert imported_by admin separately from action actor example_owner; no product attribution change"
+    },
+    {
+      "stage": "installed-only consumer target attempt",
+      "result": "correct Refused response to describe(admin)",
+      "cause": "test used administrative principal for ordinary module discovery despite require_user business-read contract",
+      "correction": "create installed_reader with notes/read and use it for describe/query; final fresh run executes three tests without errors/failures/skips"
+    }
+  ],
+  "files": {
+    "fresh-installed-consumer.json": "ad7468adef2aad36d8f9315affd7c41d86f9809975d99bd17914e26ccb2ec635",
+    "native-three-case.json": "1bffaeed96f70cd1dcecb001daaa2a1d8dbc4b35ca4e98f58cdce433a56e3420"
+  },
+  "source_snapshot": {
+    "src/arras/conformance/truss.py": "6fc30c10c6226003b1428d4efce3fa2b8e8e464c43b3ed119b2384e107d22773",
+    "src/arras/conformance/__init__.py": "96ebdffb8ae96d31601e58bb6f459c3f1775b6d0d5179aa31c1d021b00224812",
+    "tools/verify_extension_host.py": "06ca38d15c1c5c3c39621c2ed97c036e8c3f428ca439a661d43fbf69d368bde3",
+    "examples/extension_host/tests/test_installed.py": "d62292c6bc5dc3e72ba2860ac4fec14cbe24d83b3a7f7d06bb0a7114c2d6dceb"
+  }
+}

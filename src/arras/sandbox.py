@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import json
-import logging
 import re
 import threading
 from collections.abc import Iterable, Mapping
@@ -16,6 +15,7 @@ from arras.core import Arras
 from arras.fakes import FakeAccess, MemoryReplica, MemoryStore
 from arras.graphfile import GraphFile
 from arras.model import Placement
+from arras.telemetry import _logger  # pyright: ignore[reportPrivateUsage]
 from arras.testing import example_module
 from arras.types import Principal
 from arras.umf import parse_module
@@ -29,7 +29,7 @@ ROLES: dict[str, tuple[str, ...]] = {
     "auditor": ("read", "journal"),
     "maintainer": ("read", "write", "journal", "schema"),
 }
-log = logging.getLogger("arras.sandbox")
+log = _logger("arras.sandbox")
 NAME = re.compile(r"[a-z][a-z0-9_-]{0,31}")
 
 Step = tuple[str, Mapping[str, Any]]

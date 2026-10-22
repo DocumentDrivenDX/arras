@@ -57,7 +57,7 @@ Terms. An action is a change a module declares in its UMF document (UMF is the m
 |---------|---------------|----------|-------|-------|
 | `arras.operate.create_app(arras, *, principal_for_request, authorize_action=None, public_origin=None, allowed_origins=(), base_path="", authorize_operator=None)` | `-> ASGI application` | yes | `principal_for_request(request)` returns the viewer's `Principal` (CONTRACT-001) or `None`, as in CONTRACT-006. Every operation runs through `arras.session(principal)`. Arras MUST NOT authenticate viewers, hold a credential or decide access. | May be mounted beside the console. |
 | `authorize_operator(principal) -> bool` | host hook (CONTRACT-010, section E) | no | Whether a principal is an operator, who may use Operate. Default `None`: every principal `principal_for_request` accepts is one (this contract's behaviour before CONTRACT-010), and the surface logs that once at start. A hook that raises refuses. | Arras never infers it from `Principal.groups` or `admin`. |
-| `authorize_action(principal, module, action) -> bool` | host hook | no | Called first for `validate`, `invoke` and `batch`, before the library is asked anything, including whether the action exists. When it returns false the answer is 403 and nothing reaches the library (so an action that is not offered and one that does not exist answer alike). It lets a host apply its own per-action approval (praxis classifies each action; ADR-016). It can only narrow what the provider permits. | The provider's grants still decide everything it allows. |
+| `authorize_action(principal, module, action) -> bool` | host hook | no | Called first for `validate`, `invoke` and `batch`, before the library is asked anything, including whether the action exists. When it returns false the answer is 403 and nothing reaches the library (so an action that is not offered and one that does not exist answer alike). It lets a host apply its own per-action approval (the embedding host classifies each action; ADR-016). It can only narrow what the provider permits. | The provider's grants still decide everything it allows. |
 | `public_origin`, `allowed_origins` | origin strings | no | The app's own origin is `public_origin`, set by the host; it is never derived from `Host` or a forwarded header. A request's `Origin` is listed when it equals `public_origin` or one of `allowed_origins`, compared as scheme, host and port: the scheme's default port is filled in, case is ignored, and an IPv6 host keeps its brackets (`http://[::1]` equals `http://[::1]:80`). | Behind a proxy that rewrites `Host`, the host sets `public_origin`. |
 
 **Cross-origin and request rules**
@@ -145,6 +145,17 @@ Terms. An action is a change a module declares in its UMF document (UMF is the m
 - Deprecation rules: `Deprecation` and `Sunset` response headers for one minor release.
 
 ## Error Semantics
+
+A typed `arras.policy.PolicyRefused` (CONTRACT-005) remains HTTP 403 with
+`error.type: "Refused"`, canonical `reason: "no_access"` and the existing rebuilt
+safe message. Add only its validated `policy_code` identifier; ordinary backend
+refusals omit it. The same rule applies to a batch item's refusal and shared schema
+error serialization. Authentication/operator checks retain their existing order
+and outcomes; the field never turns policy allow into a backend grant. No policy
+inputs, annotations, credential values, callback text or arbitrary exception
+attributes are included. This is an additive field, not a new wire error type.
+Test an actual policy-wrapped action through HTTP and direct Python, safe-code
+redaction, no mutation on refusal and native refusal after policy allow.
 
 | Condition | Error / Outcome | Retry | Recovery Expectation |
 |-----------|------------------|-------|----------------------|

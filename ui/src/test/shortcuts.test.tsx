@@ -308,11 +308,11 @@ describe("the shell's keys, in both modes (SD-013, Keyboard)", () => {
 
   it("the help takes its heading from the host's brand", async () => {
     const user = userEvent.setup();
-    app({ brand: { name: "Praxis" } });
+    app({ brand: { name: "Sample Host" } });
     await explore();
     await user.keyboard("?");
     expect(
-      await screen.findByRole("dialog", { name: "Praxis · Keyboard shortcuts" }),
+      await screen.findByRole("dialog", { name: "Sample Host · Keyboard shortcuts" }),
     ).toBeInTheDocument();
     expect(screen.queryByText(/Arras/)).toBeNull();
   });

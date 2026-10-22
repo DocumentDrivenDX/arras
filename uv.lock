@@ -38,7 +38,7 @@ truss-test = [
 requires-dist = [
     { name = "graphql-core", specifier = ">=3.3,<3.4" },
     { name = "opentelemetry-api", marker = "extra == 'otel'", specifier = ">=1.27,<2" },
-    { name = "truss-toolkit", extras = ["native", "query"], marker = "extra == 'truss'", specifier = "==0.0.45" },
+    { name = "truss-toolkit", extras = ["native", "query"], marker = "extra == 'truss'", specifier = "==0.0.48" },
     { name = "uvicorn", marker = "extra == 'devhost'", specifier = ">=0.30" },
 ]
 provides-extras = ["otel", "devhost", "truss"]
@@ -52,7 +52,7 @@ dev = [
     { name = "ruff", specifier = ">=0.6" },
     { name = "uvicorn", specifier = ">=0.30" },
 ]
-truss-test = [{ name = "truss-toolkit", extras = ["local"], specifier = "==0.0.45" }]
+truss-test = [{ name = "truss-toolkit", extras = ["local"], specifier = "==0.0.48" }]
 
 [[package]]
 name = "attrs"
@@ -675,7 +675,7 @@ wheels = [
 
 [[package]]
 name = "truss-toolkit"
-version = "0.0.45"
+version = "0.0.48"
 source = { registry = "tools/find-links/index.html" }
 dependencies = [
     { name = "jsonschema" },
@@ -683,7 +683,7 @@ dependencies = [
     { name = "referencing" },
 ]
 wheels = [
-    { url = "https://github.com/DocumentDrivenDX/truss/releases/download/v0.0.45/truss_toolkit-0.0.45-py3-none-any.whl", hash = "sha256:1a1328a50415ae5e37d0d9b398d85b9c0700c0c8869208399773996feefb966c" },
+    { url = "https://github.com/DocumentDrivenDX/truss/releases/download/v0.0.48/truss_toolkit-0.0.48-py3-none-any.whl", hash = "sha256:1aedf614ff3d3ff7a61bd4d91887ede650a7135d1239e8564c1c297c0ddc37c3" },
 ]
 
 [package.optional-dependencies]
@@ -733,12 +733,10 @@ wheels = [
 
 [[package]]
 name = "weft-sql"
-version = "0.4.49"
+version = "0.4.51"
 source = { registry = "tools/find-links/index.html" }
 wheels = [
-    { url = "https://github.com/DocumentDrivenDX/weft/releases/download/v0.4.49/weft_sql-0.4.49-cp39-abi3-macosx_10_12_x86_64.whl", hash = "sha256:a1a8e1edb416020c6440b6f4ebef0648f66146f73bdacf2604af3546e7d60703" },
-    { url = "https://github.com/DocumentDrivenDX/weft/releases/download/v0.4.49/weft_sql-0.4.49-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:695e12867dfcffedb0e4bde7fa571835ebd43fd1c06b0d775b1abecb45ffa117" },
-    { url = "https://github.com/DocumentDrivenDX/weft/releases/download/v0.4.49/weft_sql-0.4.49-cp39-abi3-win_amd64.whl", hash = "sha256:bf7eefd4a00d12e77790569070a52947d43f0073961cbd188407aef63f361df4" },
-    { url = "https://github.com/DocumentDrivenDX/weft/releases/download/v0.4.49/weft_sql-0.4.49-cp39-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:591f8874a207295c33db5c9c847fe505c0636414cb10cc37ec80bd960c8ffee7" },
-    { url = "https://github.com/DocumentDrivenDX/weft/releases/download/v0.4.49/weft_sql-0.4.49-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8ca1625249c1d3bed20864dfd71481d8b956b3901ffdc619fc3ec4a1a473be9c" },
+    { url = "https://github.com/DocumentDrivenDX/weft/releases/download/v0.4.51/weft_sql-0.4.51-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:e60e552f02c670b43a43111b08d26d6b415aaa9b9de42f241c37ad1d9fdd2487" },
+    { url = "https://github.com/DocumentDrivenDX/weft/releases/download/v0.4.51/weft_sql-0.4.51-cp39-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:42f846d689ace027d6bb2951f27c587660d4e5151285fe911ce7a3006d0001de" },
+    { url = "https://github.com/DocumentDrivenDX/weft/releases/download/v0.4.51/weft_sql-0.4.51-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a23142f12b59444138b588a8a764666b025552a14036f62d83af022153f1a0a5" },
 ]

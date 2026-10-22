@@ -5,10 +5,10 @@ import ts from "typescript";
 import { describe, expect, it } from "vitest";
 
 // SD-013, Branding (FR-73): no user-visible string names the product; the only place is the default in
-// lib/brand.tsx. A literal "Arras" is allowed in comments, identifiers (ArrasApp, arras-brand,
+// lib/brand-values.ts. A literal "Arras" is allowed in comments, identifiers (ArrasApp, arras-brand,
 // package names) and developer-facing `throw new Error(...)` only.
 const SRC = join(import.meta.dirname, "..");
-const ALLOWED_FILE = "lib/brand.tsx";
+const ALLOWED_FILE = "lib/brand-values.ts";
 
 function sources(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
@@ -117,7 +117,7 @@ function titleOffences(file: string, html: string, brandName: string): string[] 
 const defaultBrandName = (): string => {
   const text = readFileSync(join(SRC, ALLOWED_FILE), "utf8");
   const name = /DEFAULT_BRAND[^=]*=\s*\{\s*name:\s*"([^"]+)"/.exec(text)?.[1];
-  if (!name) throw new Error("the default brand name was not found in lib/brand.tsx");
+  if (!name) throw new Error("the default brand name was not found in lib/brand-values.ts");
   return name;
 };
 

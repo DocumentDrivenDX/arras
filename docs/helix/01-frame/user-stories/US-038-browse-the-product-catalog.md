@@ -31,7 +31,7 @@ ddx:
 
 ## Context
 
-These are interactions 1 and 2 of the [client interactions draft](../client-interactions-draft.md), run on the demo catalog: 30 use cases of invented data. The catalog is the first Arras client and runs inside praxis, the Databricks app that embeds Arras.
+These are interactions 1 and 2 of the [client interactions draft](../client-interactions-draft.md), run on the demo catalog: 30 use cases of invented data. The catalog is the first Arras client and runs inside the embedding host.
 
 ## Walkthrough
 
@@ -68,7 +68,7 @@ These are interactions 1 and 2 of the [client interactions draft](../client-inte
 - **Feature Spec**: FEAT-008
 - **Feature Requirements**: CLI-01, CLI-04
 - **PRD Requirements**: FR-38, FR-41
-- **External**: [CONTRACT-001](../../02-design/contracts/CONTRACT-001-ontology-interface.md); praxis FEAT-007 (the catalog feature in the praxis-harness repository).
+- **External**: [CONTRACT-001](../../02-design/contracts/CONTRACT-001-ontology-interface.md); FR-38 (the upstream catalog reference-client requirement); the host owns its feature implementation.
 
 ## Out of Scope
 

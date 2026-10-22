@@ -234,7 +234,7 @@ class Planner:
         prop = self._etype(ref).property(name)
         if prop is not None and (not prop.scalar or prop.cardinality == "many"):
             raise Unsupported(
-                "a structured or repeated value", ["scalar values Truss 0.0.45 groups take"]
+                "a structured or repeated value", ["scalar values supported by this Truss adapter"]
             )
         family = prop.type if prop is not None else ""
         domain: Domain | None = self.ids.domains.get((_local(ref), name))

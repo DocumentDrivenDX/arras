@@ -57,6 +57,23 @@ anything. A recognized vocabulary name alone MUST NOT establish interpretation
 support. This rule does not require DDD on every core record or establish support
 for other vocabulary versions, constraints or action profiles.
 
+**Explicit host resources.** A downstream host MAY package its own module,
+seed and graph resources and load them through the public registration/import
+operations. The host selects those resources explicitly; registration MUST NOT
+implicitly load bundled demonstration modules or discover/execute Python from a
+document. A Python shim re-exports deliberate public APIs without changing their
+canonical identity. Source bytes and unsupported-meaning refusals remain governed
+by this contract; using an own namespace does not establish a new UMF profile.
+
+**Admission and executable capability.** Official UMF model validity, validation
+completeness and a backend's ability to execute a declared profile are separate
+results. `valid` and `complete` MUST NOT alone advertise runtime constraint or
+action support. Registered source bytes remain authoritative and preserved;
+a reduced `ModuleInfo` projection MUST NOT erase an obligation before capability
+selection. The bounded memory mutation profile in CONTRACT-004 may refuse writes
+while registration and authorized metadata/graph reads remain available. This
+interim safeguard does not replace official admission or add a constraint evaluator.
+
 | Element | Rules | Notes |
 |---------|-------|-------|
 | Module | The document MUST define exactly one module and its `id` is the module name, matching `[a-z][a-z0-9_]{0,40}`. A document may reference other modules' types but MUST NOT define them. | The module is the unit of ownership, access and placement. |

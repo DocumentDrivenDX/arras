@@ -1,0 +1,62 @@
+{
+  "umf": "0.10.0",
+  "id": "extension-host-example",
+  "vocabularies": {
+    "umf.ddd": {"version": "0.1.0"}
+  },
+  "extensions": {},
+  "modules": [
+    {
+      "id": "notes",
+      "namespace": "extension_host",
+      "extensions": {"umf.ddd": {"kind": "bounded-context", "terms": []}},
+      "elements": [
+        {
+          "id": "Entry",
+          "kind": "record",
+          "name": "Entry",
+          "members": [
+            {"module": "notes", "element": "Entry.code"},
+            {"module": "notes", "element": "Entry.title"}
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {"type": {"kind": "scalar", "name": "string"}, "cardinality": "one"},
+                "title": {"type": {"kind": "scalar", "name": "string"}, "cardinality": "one"}
+              },
+              "identity": {"fields": ["code"], "scope": "context"}
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [{"module": "notes", "element": "Entry.code"}],
+              "primary": true
+            }
+          ]
+        },
+        {"id": "Entry.code", "kind": "field", "name": "code", "nullability": "required", "cardinality": "one", "scalarType": "string", "extensions": {}},
+        {"id": "Entry.title", "kind": "field", "name": "title", "nullability": "required", "cardinality": "one", "scalarType": "string", "extensions": {}}
+      ],
+      "actions": [
+        {
+          "id": "AddEntry",
+          "description": "Add an entry",
+          "inputs": [
+            {"name": "code", "type": {"kind": "scalar", "name": "string"}, "cardinality": "one"},
+            {"name": "title", "type": {"kind": "scalar", "name": "string"}, "cardinality": "one"}
+          ],
+          "preconditions": [
+            {"id": "fresh", "reason": "entry code is unused", "predicate": {"op": "absent", "type": "Entry", "key": {"input": "code"}}}
+          ],
+          "effects": [
+            {"op": "create", "as": "created", "type": "Entry", "key": {"input": "code"}, "properties": {"title": {"input": "title"}}}
+          ]
+        }
+      ]
+    }
+  ]
+}

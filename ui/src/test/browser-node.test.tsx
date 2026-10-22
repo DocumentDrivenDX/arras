@@ -75,7 +75,7 @@ describe("a node page (US-067)", () => {
     const badge = (await screen.findByTitle("Delivery")).querySelector(".gb-badge");
     expect(badge).toHaveTextContent("Embedded");
     const link = within(screen.getByTestId("prop-launchUrl")).getByRole("link");
-    expect(link).toHaveAttribute("href", "https://praxis.example/solutions/s-017");
+    expect(link).toHaveAttribute("href", "https://example.invalid/solutions/s-017");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
     expect(link).toHaveAttribute("target", "_blank");
     expect(screen.getByTestId("prop-workflow").textContent).toContain(

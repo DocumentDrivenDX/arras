@@ -56,6 +56,16 @@ qualification follow the [Arras integration plan](../../04-build/arras-integrati
 unsupported meaning must be named and refused before effects. This clarification
 does not add a second evaluator or change existing legacy invocation semantics.
 
+**Memory profile refusal.** For the bounded memory profile (CONTRACT-004),
+`apply` including dry run, atomic and independent `apply_batch`, and
+`import_records` MUST refuse an unserved module profile as `Unsupported` before
+replay, effect execution or input-record iteration. This is a capability refusal:
+both a value within an unserved string-length bound and one violating it are
+refused. Existing authorization checks retain precedence; import also retains
+its administrative/attribution checks. Refusal creates no receipt, journal or
+load entry and leaves graph state, versions, position and idempotency unchanged.
+Registration/read access is not itself refused by this write safeguard.
+
 **Legacy declaration.** An action is defined in its module document (CONTRACT-002). Its elements:
 
 | Element | Rules | Notes |
@@ -123,6 +133,14 @@ A validation is advisory. State can change between `validate` and `invoke`, so `
 `BatchReceipt` has `action`, `atomic`, `items` (each a `Receipt` or the refusal that item met, with its index), `succeeded` and `failed` counts, and `token`, the position after the last applied group. A bulk change is never partially applied inside one atomic group; across independent items the result says exactly which applied. A caller that needs the read side to see the whole batch passes `token` as `at_least`.
 
 **Refusals.** A refusal is complete: `Invalid` (inputs), `PreconditionFailed` (conditions), `Refused` (the principal lacks write access to the module, decided by the provider's own controls), `Unsupported` (`import_records` into a module with no provider), `Unavailable` (the provider is unreachable), `Conflict` (see below). Arras writes no change for any of them.
+
+**Downstream resource loading.** A host-owned seed/graph loader MUST call the
+same public `import_records` operation as other administrative imports, with the
+explicit module, principal and load identity. An example-specific resource
+envelope remains that consumer's format; it MUST NOT be advertised as a new
+public UMF or Arras graph-file API. Loading no seed/graph resource loads no
+records. It MUST NOT import default fixtures or bypass profile, attribution,
+validation, idempotency or authorization checks.
 
 **Import**
 

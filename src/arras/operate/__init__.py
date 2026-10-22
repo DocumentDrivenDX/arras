@@ -14,7 +14,7 @@ backend's own text is never sent.
 from __future__ import annotations
 
 import asyncio
-import logging
+import contextvars
 from collections.abc import Callable, Mapping
 from datetime import datetime
 from typing import Any
@@ -52,10 +52,11 @@ from arras.results import (
     Validation,
 )
 from arras.serialize import jsonable
+from arras.telemetry import _logger
 from arras.types import Freshness, Principal, Revision
 from arras.versions import CONTRACT_VERSIONS
 
-log = logging.getLogger("arras.operate")
+log = _logger("arras.operate")
 
 MAX_BODY = 256 * 1024
 MAX_SQL = 16 * 1024  # a query's text, in bytes
@@ -334,7 +335,10 @@ class Operate(WireApp):
         """The viewer's modes (CONTRACT-010): `admin` exactly when they are an operator. A read
         that changes nothing, so it needs no origin proof; it answers a non-operator."""
         loop = asyncio.get_running_loop()
-        principal = await loop.run_in_executor(None, self.principal_for_request, request)
+        principal_context = contextvars.copy_context()
+        principal = await loop.run_in_executor(
+            None, lambda: principal_context.run(self.principal_for_request, request)
+        )
         if principal is None:
             return self.json(401, {"error": {"type": "Refused", "message": "sign in"}})
         operator = await self._operator(principal)
@@ -375,8 +379,8 @@ class Operate(WireApp):
             return self.json(e.status, {"error": {"type": "BadRequest", "message": e.message}})
         except ArrasError as e:
             return answer_error(e)
-        except Exception:
-            log.exception("operate execution failed")
+        except Exception as error:
+            log.error("operate execution failed: %s", type(error).__name__)
             return self.json(500, {"error": {"type": "InternalError", "message": "internal error"}})
 
     def _action(

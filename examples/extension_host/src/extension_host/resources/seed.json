@@ -1,0 +1,7 @@
+{
+  "format": "extension-host.graph",
+  "module": "notes",
+  "records": [
+    {"type": "Entry", "key": "seeded", "properties": {"title": "Seeded explicitly"}}
+  ]
+}

@@ -92,7 +92,7 @@ describe("value formats", () => {
   });
 
   it("US-070-AC5: a link is http, https or mailto; any other value is not a link", () => {
-    expect(safeLink("https://praxis.example/a")?.href).toBe("https://praxis.example/a");
+    expect(safeLink("https://example.invalid/a")?.href).toBe("https://example.invalid/a");
     expect(safeLink("mailto:a@b.example")?.href).toBe("mailto:a@b.example");
     for (const bad of [
       "javascript:alert(1)",
@@ -106,7 +106,7 @@ describe("value formats", () => {
   });
 
   it("a long link is shown by its host and last segment", () => {
-    const u = "https://praxis.example/solutions/a/very/long/path/to/s-017";
-    expect(safeLink(u)?.display).toBe("praxis.example/…/s-017");
+    const u = "https://example.invalid/solutions/a/very/long/path/to/s-017";
+    expect(safeLink(u)?.display).toBe("example.invalid/…/s-017");
   });
 });

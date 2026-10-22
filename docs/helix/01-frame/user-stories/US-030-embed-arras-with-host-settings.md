@@ -26,12 +26,12 @@ ddx:
 ## Story
 
 **As a** Client developer
-**I want** to start Arras inside the praxis app with one connection source per backend, each yielding a connection for a given person
+**I want** to start Arras inside the embedding application with one connection source per backend, each yielding a connection for a given person
 **So that** Arras never reads my environment, never creates its own connections and never reuses one across people
 
 ## Context
 
-Praxis is the Databricks app that embeds Arras, and it owns pooling and credentials. Arras takes backends the host registers under names it chooses, with each module's placement; the Truss adapter (a reader and provider on Lakebase, Databricks managed Postgres) is built from a connection source and the Ashlar adapter (a reader on Unity Catalog) from a warehouse source, each called with the principal (the person making the call: user, token and groups). It also takes an explicit administrative principal for registration, attachment and imports and, for the Truss adapter, an installing connection used only to install, verify and upgrade. The MCP binding (Model Context Protocol, Anthropic's open protocol for agent tools) is the only code that reads the environment.
+The embedding application owns pooling and credentials, and it owns pooling and credentials. Arras takes backends the host registers under names it chooses, with each module's placement; the Truss adapter (a reader and provider on Lakebase, Databricks managed Postgres) is built from a connection source and the Ashlar adapter (a reader on Unity Catalog) from a warehouse source, each called with the principal (the person making the call: user, token and groups). It also takes an explicit administrative principal for registration, attachment and imports and, for the Truss adapter, an installing connection used only to install, verify and upgrade. The MCP binding (Model Context Protocol, Anthropic's open protocol for agent tools) is the only code that reads the environment.
 
 ## Walkthrough
 

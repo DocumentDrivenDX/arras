@@ -67,19 +67,19 @@ ddx:
 
 ## Scope
 
-This architecture covers Arras, the interface through which applications read and change the ontology. Arras is a Python 3.11 library embedded in praxis (a Databricks app that hosts it), with a stdio MCP binding (MCP, the Model Context Protocol, is Anthropic's open protocol for agent tools) and a read-only administration console. Any number of named backends sit behind it, each with the roles reader (serves graph reads) and/or provider (applies actions); the host's placement says, per module, which is its record store (system of record, serves `latest`), which are replicas (serve `bulk`) and which provider applies each action (CONTRACT-002). In production there are two, and the diagrams below show that deployment:
+This architecture covers Arras, the interface through which applications read and change the ontology. Arras is a Python 3.11 library embedded by a host application, with a stdio MCP binding (MCP, the Model Context Protocol, is Anthropic's open protocol for agent tools) and a read-only administration console. Any number of named backends sit behind it, each with the roles reader (serves graph reads) and/or provider (applies actions); the host's placement says, per module, which is its record store (system of record, serves `latest`), which are replicas (serve `bulk`) and which provider applies each action (CONTRACT-002). The diagrams below illustrate the intended Truss/Ashlar deployment, not a qualified production deployment of both adapters:
 
 - Truss, an open-source, UMF-driven property-graph engine on SQL databases. It runs on Lakebase (Databricks managed Postgres), holds the mutable modules and is a reader and provider (the Truss adapter).
 - Ashlar, an open-source toolkit for property-graph ontologies on a warehouse. It holds the full ontology in gold Delta tables on Unity Catalog (Databricks' governance layer for tables and access) and is a reader fed from the providers' stores (the Ashlar adapter).
 
-A third adapter, the memory adapter, is an in-memory reader and provider plus an in-memory reader that ships in the library for tests, the sandbox and the dev host.
+The current package implements the Truss adapter and in-memory store/replica backends. The memory backends serve tests, the sandbox and the dev host. The Ashlar reader adapter and its integration/feed qualification remain planned.
 
 UMF (the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions) defines every type and action.
 
 Outside this architecture:
 
 - The storage layout, journal and change feed of each store, which its project owns (ADR-013).
-- Praxis internals, the end-user screens of any module, and the provisioning of Lakebase resources, role grants and Unity Catalog access (the host platform's own provisioning).
+- The embedding host internals, the end-user screens of any module, and the provisioning of Lakebase resources, role grants and Unity Catalog access (the host platform's own provisioning).
 - Structure derived from sensitive source records, which ADR-005 gates.
 - Writes to a replica, which changes only through the feed from the providers' stores, and actions that span backends (PRD, Non-Goals).
 
@@ -89,10 +89,10 @@ The design is driven by the PRD's P0 requirements (FR-1 to FR-3, FR-6, FR-9 to F
 
 | Element | Type | Purpose | Protocol |
 |---------|------|---------|----------|
-| Client developer and module users | User | Declare types and actions in UMF, read, invoke actions; correct catalog records through the catalog screens | Python calls on the `arras` package, through praxis |
+| Client developer and module users | User | Declare types and actions in UMF, read, invoke actions; correct catalog records through the catalog screens | Python calls on the `arras` package, through the embedding host |
 | Administrator and module developer | User | Browse what the ontology holds in the console; run registration and imports as the administrative principal, and install and module access on the installing connection | GraphQL over HTTP (console); Python calls (administrative) |
 | Builder and administrator | User | Browse the schema, read data, invoke declared actions and read the audit trail in the Operator Console | JSON over HTTP (CONTRACT-009) and GraphQL (CONTRACT-006), through `arras-ui` |
-| Praxis (host) | External | Hosts Arras, supplies per-person connection sources, hands each person's token to the library and to the MCP process | Python import of the public names in `arras.__all__`; local stdio for MCP |
+| Host application | External | Hosts Arras, supplies per-person connection sources, hands each person's token to the library and to the MCP process | Python import of the public names in `arras.__all__`; local stdio for MCP |
 | Agent host | External | Lists and calls Arras's MCP tools for one signed-in person; classifies each tool by name | MCP over stdio |
 | Truss on Lakebase | External | Reader and provider: the fresh system of record for the mutable modules | Postgres wire protocol, one connection per person, authenticated with that person's token |
 | Ashlar on Unity Catalog | External | Full ontology, bounded `bulk` reads, fed from Truss | Databricks SQL warehouse, with the person's token |
@@ -103,7 +103,7 @@ graph TB
     dev["Client developer and module users"]
     admin["Administrator"]
     agent["Agent host"]
-    subgraph praxis["Praxis, Databricks app (host)"]
+    subgraph host_application["Embedding application (host)"]
         arras["Arras library"]
     end
     truss[("Truss on Lakebase<br/>reader and provider")]
@@ -124,14 +124,14 @@ graph TB
 | MCP server (`python -m arras.mcp`) | Python 3.11 process on the library, MCP over stdio | Translates MCP tools to library calls for one person; the only code that reads configuration files or the environment | stdio frames on stdout, logs on stderr; one process per signed-in person |
 | Administration console (`arras.console.create_app`) | graphql-core on a thin ASGI handler, GraphiQL page (ADR-011, proposed) | Read-only GraphQL generated from the registry; every resolver is one `query` call | HTTP, `POST /graphql` and `POST /graphql/{module}`, mounted by the host |
 | Operator surface (`arras.operate.create_app`) | A thin ASGI handler over the library's `validate`, `invoke`, `invoke_batch`, `changes` and `loads` (ADR-021, proposed) | JSON binding of declared actions and audit reads; no write other than invoking a declared action; the host may apply its own per-action approval | HTTP, mounted by the host (CONTRACT-009) |
-| Operator Console UI (`arras-ui`, `ui/`) | React, TypeScript, Vite, Tailwind, TanStack Query, `appkit-ui` (ADR-021) | One interface in two modes: Explore, the instance tool (search, entity pages, edits, New, Retire, an Actions menu and History, for operators), and Operate, the model and platform tool (Model, Entities, Graph, Actions, Changes and Query), under one shell, named by a `brand`; embedded in praxis or hosted standalone | HTTP to the console and operator surfaces only |
+| Operator Console UI (`arras-ui`, `ui/`) | React, TypeScript, Vite, Tailwind, TanStack Query, host-replaceable design system (ADR-021, ADR-029) | One interface in two modes: Explore, the instance tool (search, entity pages, edits, New, Retire, an Actions menu and History, for operators), and Operate, the model and platform tool (Model, Entities, Graph, Actions, Changes and Query), under one shell, named by a `brand`; embedded in the embedding host or hosted standalone | HTTP to the console and operator surfaces only |
 | Truss backend | Postgres 18 on Lakebase, project `arras` (the required target); PostgreSQL 18.6 through `pgserver-pg18` (a test-only group) locally and in CI | System of record for the modules placed on it; Truss's own install, module isolation by role grants, retained history (Truss's contracts; it offers no journal read, so the audit reads are `Unsupported`) | Postgres wire protocol, per person |
 | Ashlar backend | Gold Delta tables on Unity Catalog, read through a Databricks SQL warehouse | Full ontology; bounded `bulk` reads; applies Unity Catalog row and column policy to the user | Databricks SQL, per person |
-| Praxis host | Python app on Databricks Apps, Python 3.11 or later | Supplies `ConnectionSource` and `WarehouseSource`, names the administrative principal and the installing connection, owns end-user screens, pooling and credential refresh | Python calls; per-new-connection credentials (praxis ADR-028) |
+| The embedding host | Python app on Databricks Apps, Python 3.11 or later | Supplies `ConnectionSource` and `WarehouseSource`, names the administrative principal and the installing connection, owns end-user screens, pooling and credential refresh | Python calls; per-new-connection credentials (the host's connection-lifecycle policy) |
 
 ```mermaid
 graph TB
-    subgraph host["Praxis host, Python on Databricks Apps"]
+    subgraph host["Embedding host, Python application"]
         screens["Module screens"]
         subgraph lib["arras package"]
             iface["Ontology interface"]
@@ -200,7 +200,53 @@ Each module of the `arras` package belongs to one group, and a group imports onl
 | `devhost`, `devtruss` | The development host: the console, the operator surface and the built UI at one origin over the sandbox's fakes or, with `--truss`, a real Truss: on the persistent PostgreSQL server a connection URL names (state kept across restarts, seeded only when empty, `--truss-reset` to start clean) or, with no URL, on a throwaway local PostgreSQL (`devtruss` provisions either through `adapters.truss.local`) | `python -m arras.devhost` | Foundation, domain, core, doubles, adapters, console, operate, ui | None |
 | `mcp` | The stdio MCP server, its configuration (files and environment) and token source (CONTRACT-007) | `python -m arras.mcp` | Foundation, domain, contract, core, adapters, doubles (for the sandbox switch only; the checker admits the whole group, so this limit is a review obligation) | Console, `devhost` |
 | `__init__` (root) | The public surface: re-exports `arras.__all__` | Names in `arras.__all__` | Foundation, domain, core | Bindings, doubles |
-| `boundary` | The host-facing boundary check (US-033) | `python -m arras.boundary` | The package root | Everything else |
+| `boundary` | The host-facing boundary check (US-033); reads the inert `arras/public-api.json` package resource and derives the host module allowlist from the reviewed catalog | `python -m arras.boundary` | The package root and catalog | Everything else |
+
+### Offline qualification and validation modules
+
+EX-01–EX-08 retain the existing 926-line ceiling and dependency/cycle checks;
+qualification code is split by responsibility rather than exempted from those
+checks. The public catalog and callable signatures remain unchanged by these
+private implementation splits.
+
+| Exact module / group | Responsibility and allowed edges | Forbidden edges |
+|---|---|---|
+| `mcp.config` / `config_validation` | The single TOML parser and existing typed config schema/merge/value validators; foundation, domain and its own group | MCP identity/server/process, core, adapters, hosts, doctor and UI |
+| `ui.assets` / `asset_validation` | Inert manifest parsing, bounded asset integrity and cohort validation; its own group | UI app composition, transports, core, adapters and doctor |
+| `doctor`, `_doctor_types` / `doctor` | Public offline orchestration/CLI and private immutable request/report values respectively; foundation, domain, config_validation, asset_validation and its own group | Core mutations, adapters, doubles, hosts and transport/process entrypoints |
+| `conformance._checks` / `doubles` | Private `_Fail` and pure result expectation comparators used by the corpus runner; existing doubles dependencies, without importing the runner back | Bindings, adapters and native SDKs |
+| `conformance.truss` / `native_conformance` | Explicit owned throwaway native corpus harness; foundation, domain, contract, doubles, adapters and its own group | Core, transports, host applications and direct native SDK imports |
+| `conformance.__main__` / `conformance_cli` | Fixed-choice memory/native corpus command; foundation, doubles, native_conformance and its own group | Arbitrary backend/module imports, host applications and direct adapter/SDK imports |
+| `adapters.truss._conformance` / `adapters` | Private native installation-marker simulation for the owned throwaway conformance resource; existing adapter dependencies, lazy SDK loading | Conformance imports, core, doubles, bindings and production use as an installation/repair API |
+
+The MCP group may consume `config_validation`; the UI group may consume
+`asset_validation`. These are explicit consumer-to-validator edges, not reverse
+permission for validators to reach their callers. General tooling and doubles
+still cannot import native adapters; only the named native harness group receives
+that composition edge. The conformance package root does not import its CLI or
+native harness, and adapter production paths do not import `_conformance`.
+
+`_doctor_types.py` owns inert immutable value validation and recursive freezing;
+`doctor.py` reexports `DoctorRequest`, `Diagnostic` and `DoctorReport` and keeps
+the existing public `check`/CLI behavior. It performs no I/O in the value module.
+`mcp.config._parse_committed_document(raw: bytes)` is the shared private pure
+UTF-8/TOML-to-mapping parser. Both the existing config reader and the doctor's
+bounded explicit-file reader use it; only `mcp.config` imports `tomllib`. No
+second key/value grammar or environment/credential reader is added.
+
+`conformance._checks` owns `_Fail`, `_eq`, `_check_rows`, `_check_row_len`,
+`_check_refs`, `_check_weft` and `_check_capabilities`; public corpus types remain
+in `conformance` with their existing identity. `_conformance` keeps raw SDK/SQL
+marker manipulation inside the adapter boundary and verifies that the caller's
+resource is owned and throwaway before any mutation. It cannot attach to or
+reset a persistent resource.
+
+Negative controls retain lazy/relative import detection and explicitly reject
+config_validation -> MCP identity, asset_validation -> UI composition, doctor ->
+core/native/process, general doubles/tooling -> adapters/native harness, and
+adapters -> conformance. Positive controls admit only the listed composition
+edges. Native engine loading remains adapter-only, the sole TOML-parser check
+remains intact, and no cycle or module-length ceiling is waived.
 
 ### UI module boundaries (`ui/src/`)
 
@@ -217,21 +263,21 @@ The UI's groups follow the same rule: a group imports only the groups listed, `t
 
 **Construction Policy**: the host constructs `Arras.start(backends, ...)` from adapters it builds (CONTRACT-005). In the MCP process, `arras.mcp.backends.build_backends` is the one place a configured handle becomes an adapter. `core` constructs no backend.
 
-**Boundary Check**: `uv run pytest tests/test_modules.py` enforces the table, the absence of cycles and the module-length ceiling, with forbidden-edge negative controls; `python -m arras.boundary` is the host-facing check (US-033). Function complexity and length are bounded by the lint (`ruff` rules C901 and PLR0915, each with its ceiling in `pyproject.toml` at the worst function when it was set, lowered as functions are split, never raised). Remaining review obligations: whether a module's public names stay minimal, and whether a type belongs to the module that owns its invariants.
+**Boundary Check**: `uv run pytest tests/test_modules.py` enforces the table, the absence of cycles and the module-length ceiling, with forbidden-edge negative controls; `python -m arras.boundary` is the host-facing check (US-033). `tests/test_public_api_manifest.py` holds the reviewed manifest against source declarations; it fails on drift and never regenerates the catalog. `tools/verify_distribution.py` compares the exact `arras/` payload in the source wheel and sdist-rebuilt wheel, checks the npm tarball bytes and packed exports, then installs both wheels in fresh consumers. This qualifies only the observed Python/platform and the workspace-linked JavaScript dependency cohort. Function complexity and length are bounded by the lint (`ruff` rules C901 and PLR0915, each with its ceiling in `pyproject.toml` at the worst function when it was set, lowered as functions are split, never raised). Remaining review obligations: whether a module's public names stay minimal, and whether a type belongs to the module that owns its invariants.
 
 ## Deployment
 
 | Component | Infrastructure | Instances | Scaling | Backup / Recovery |
 |-----------|----------------|-----------|---------|-------------------|
-| Arras library, MCP server and console | Inside the praxis Databricks app (PRD, Platform) | One library per host instance; one MCP process per signed-in person | Not recorded | Not applicable; Arras keeps no state beyond Truss's database |
-| Truss backend | Lakebase project `arras` (Azure Databricks, Postgres 18), separate from praxis's database | One project | 0.5 to 2 CU, 300-second suspend until measurement says otherwise (SPIKE-005, ADR-012) | Not recorded |
+| Arras library, MCP server and console | Inside the embedding Python application (PRD, Platform) | One library per host instance; one MCP process per signed-in person | Not recorded | Not applicable; Arras keeps no state beyond Truss's database |
+| Truss backend | Lakebase project `arras` (Azure Databricks, Postgres 18), separate from the host's database | One project | 0.5 to 2 CU, 300-second suspend until measurement says otherwise (SPIKE-005, ADR-012) | Not recorded |
 | Ashlar backend | Gold Delta tables on Unity Catalog; Databricks SQL warehouse | Not recorded | Ashlar is meant to reach about a billion entities (kickoff, 19 Sep 2026); unmeasured | Not recorded |
 | Local development and tests | PostgreSQL 18.6 through `pgserver-pg18`, a test-only dependency group | One per test run | Not applicable | Not applicable |
 
 ```mermaid
 graph TB
     subgraph azure["Azure Databricks workspace"]
-        subgraph app["Praxis Databricks app"]
+        subgraph app["Embedding Python application"]
             h["arras package + MCP process + console"]
         end
         subgraph lb["Lakebase project arras"]
@@ -308,7 +354,7 @@ A refusal at any step (invalid inputs, failed precondition, read-only module, no
 | Performance | Singleton read p95 ≤ 20 ms; action p95 ≤ 100 ms; type enumeration p95 ≤ 20 ms; 30-record list p95 ≤ 1 s (all proposed) | Reads go to the record store as parameterized SQL; no cache; every operation bounded | Benchmark harness at the host on a Lakebase branch (US-044); not yet measured |
 | Freshness honesty | 100% of reads state backend and `as_of` | Consistency level on every read; opaque receipt tokens; capability descriptors; no silent fallback (ADR-014) | Contract tests over every read operation |
 | Attribution | 100% of changes name a person or a load | The person's own token authenticates the origin actor; imports record the load apart from original author (ADR-017, CONTRACT-003) | Audit reconciliation over all action paths |
-| Availability | Praxis starts and serves with either backend unavailable | Bounded connection and migration budget; per-backend status; operations that need the backend raise `Unavailable` promptly (CONTRACT-005) | Startup tests in the host (US-032) |
+| Availability | The embedding host starts and serves with either backend unavailable | Bounded connection and migration budget; per-backend status; operations that need the backend raise `Unavailable` promptly (CONTRACT-005) | Startup tests in the host (US-032) |
 | Security | A person reads and writes only what the backends' own grants allow | User token on every call; no service-identity read path; Truss role grants; Unity Catalog policy (ADR-017) | Access tests per module role |
 | Portability | PostgreSQL 18.6 locally and in CI (Truss's tuple); Lakebase, Postgres 18.6, is the required target | The adapter holds no SQL of its own: Truss installs and runs it (ADR-012) | The Truss-marked suite in CI (US-034) |
 | Scale | Ashlar meant to reach about 1 billion entities; Truss 200,000 objects measured in an early benchmark on a local PostgreSQL; a type over 10,000 rows is not queryable through the adapter | Bounded pages (1 to 100), relationship keys bounded by each statement's `RELATED_KEYS`, 1,000 effects per action, 100 invocations per batch, 50 KB per MCP answer | Not measured through this interface |
@@ -326,19 +372,19 @@ Recovery time and recovery point objectives are not recorded (see Open Questions
 | ADR-013: an interface with a backend contract and named backends | Accepted | Clients are insulated and each backend evolves behind the contract; the interface must express capabilities and freshness honestly | The conformance corpus on both adapters before the contract is ratified |
 | ADR-014: consistency level, `as_of` and receipt tokens on every read | Accepted | Read-your-write without synchronous replication; clients must handle a not-yet-current answer | Measure feed lag through a real publisher; decide whether Arras waits for a token |
 | ADR-015: writes only as UMF actions applied by providers | Accepted | Discoverable, auditable and bounded; depends on UMF's action contract | UMF's action contract; handler hook need |
-| ADR-016: library first, stdio MCP binding with one tool per action | Accepted | One implementation; a host classifies each action tool by name | Token hand-off from praxis to a running process |
+| ADR-016: library first, stdio MCP binding with one tool per action | Accepted | One implementation; a host classifies each action tool by name | Token hand-off from the embedding host to a running process |
 | ADR-017: every backend reached with the user's own token | Accepted | One access model; the backend enforces and attributes; costs per-person connections | Truss isolation by role membership; per-principal pooling |
 | ADR-006: embedded library on psycopg and the Truss toolkit | Accepted | The host supplies connections and the Truss adapter installs or verifies the store; Arras imports nothing from the host | Synchronous or asynchronous interface (open with the host owner) |
-| ADR-012: Truss on its own Postgres database, Lakebase deployed and PostgreSQL 18.6 locally | Accepted | SPIKE-005 found no cost reason to share praxis's database | Verify rates; measure resume time; verify the app can attach both databases |
+| ADR-012: Truss on its own Postgres database, Lakebase deployed and PostgreSQL 18.6 locally | Accepted | SPIKE-005 found no cost reason to share the host's database | Verify rates; measure resume time; verify the app can attach both databases |
 | ADR-010: Python 3.11 with `uv` and a committed `uv.lock` | Accepted | Matches the host; a `requirements.txt` in an app directory breaks the Databricks Apps install | None |
 | ADR-011: read-only GraphQL generated from the registry for the console | Proposed | One generated projection that cannot drift from the registry | Accept or revise ADR-011 |
-| ADR-021: the Operator Console is a React package in this repository, reached over HTTP | Proposed | One UI for praxis and standalone; writes only as declared actions; audit read from the backends | Praxis owners' agreement to mount a write-capable surface; Truss and Ashlar audit reads |
+| ADR-021: the Operator Console is a React package in this repository, reached over HTTP | Proposed | One UI for the embedding host and standalone; writes only as declared actions; audit read from the backends | Host integration owners' agreement to mount a write-capable surface; Truss and Ashlar audit reads |
 | ADR-005: durable knowledge state gated by P1 to P3 | Proposed | Arras holds no structure derived from sensitive source records, so the gate does not block it; the entitlement read stays blocked | Governed-write owner (P3) |
 
 ## Open Questions
 
 - [ ] What are the recovery time and recovery point objectives, backup and recovery for Truss's Lakebase database, and the scaling triggers for the host? The sources record none. Ask the platform owner.
 - [ ] Which Ashlar reads are interactive, and what latency budgets apply? Ask the Ashlar project.
-- [ ] How does praxis hand a user's token, and its refresh, to a per-session stdio process, and does Ashlar accept it? Ask the praxis owners and the platform owner.
+- [ ] How does the embedding host hand a user's token, and its refresh, to a per-session stdio process, and does Ashlar accept it? Ask the host integration owners and the platform owner.
 - [ ] Should the interface wait for a replica to reach a receipt's token, or only report that it has not? Ask Erik LaBianca.
 - [ ] Is the library interface synchronous in v1 only, or does the host need an asynchronous one? Ask the host owner.

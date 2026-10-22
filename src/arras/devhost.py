@@ -8,10 +8,12 @@ It serves the sandbox's fakes to the sandbox's people, or, with `--truss`, a rea
 (`arras.devtruss`). Truss mode attaches to a persistent PostgreSQL server when a connection URL is
 available (`--truss-url`, else the environment variable `ARRAS_TRUSS_DEV_URL`, else the same
 variable in `~/.arras/truss-dev.env`): the URL names a role that owns a database and has CREATEROLE
-and no superuser, and its password; the state then persists across restarts. Starting again is safe:
-Truss is installed or verified, the modules registered again, the people's roles (`arrasdev_alice` and so
-on) made if absent with new token passwords, and the demo or `--seed` steps run only when no module
-holds an entity yet. Closing drops nothing and stops nothing; `--truss-reset` drops what the dev host
+and no superuser, and its password; the state then persists across restarts. Starting again reuses
+host-owned credentials from `--truss-credentials`, `ARRAS_TRUSS_DEV_CREDENTIALS` or a scoped file
+under `~/.arras/truss-dev-credentials/`, preserving existing memberships and expiry. New people
+and module roles get the sandbox defaults; explicit role selection reconciles only generated
+module and registrar memberships. Seeding runs only when no module holds an entity yet. Closing
+drops nothing and stops nothing; `--truss-reset` drops what the dev host
 made in that database (Truss's schema and roles, the people) and starts clean. The startup prints the
 host, port, database and role to attach `psql` with, and where the password is, never the password.
 With no URL it keeps a throwaway local PostgreSQL, removed at exit. Either way it is for developing
@@ -31,6 +33,7 @@ catalog itself from the operator surface (CONTRACT-009) with the person's header
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import mimetypes
 import os
@@ -38,7 +41,11 @@ from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from typing import Any, TypeVar, overload
 
-from arras import console, graphfile, operate
+from arras import console, graphfile, operate, telemetry
+from arras.adapters.truss.endpoint import parse_credentialed
+from arras.adapters.truss.local import CredentialSource
+from arras.devcredentials import FileCredentialSource
+from arras.distribution import DistributionConfig
 from arras.errors import ArrasError, Invalid
 from arras.http import Receive, Request, Scope, Send
 from arras.sandbox import ROLES, Box, Sandbox, read_steps
@@ -46,7 +53,6 @@ from arras.types import Principal
 from arras.ui import (  # noqa: F401  (the policy its page is measured under)
     PAGE_CSP,
     PAGE_HEADERS,
-    Brand,
     branded,
     not_built_page,
 )
@@ -80,6 +86,7 @@ _LOCKED = (
 LOOPBACK_HOSTS = ("127.0.0.1", "localhost", "[::1]")
 TRUSS_URL_VARIABLE = "ARRAS_TRUSS_DEV_URL"
 TRUSS_URL_FILE = Path("~/.arras/truss-dev.env")
+TRUSS_CREDENTIALS_VARIABLE = "ARRAS_TRUSS_DEV_CREDENTIALS"
 B = TypeVar("B", bound=Box)
 
 
@@ -109,7 +116,17 @@ def _host_name(host: str) -> str:
 
 
 class DevHost:
-    def __init__(self, sandbox: Box, *, port: int, ui_dir: Path = DEFAULT_UI) -> None:
+    def __init__(
+        self,
+        sandbox: Box,
+        *,
+        port: int,
+        ui_dir: Path = DEFAULT_UI,
+        distribution: DistributionConfig | None = None,
+        telemetry_context: telemetry.TelemetryContext | None = None,
+    ) -> None:
+        self.distribution = distribution or DistributionConfig()
+        self.telemetry_context = telemetry._context_for(telemetry_context, distribution)
         self.box: Any = serialized(sandbox)
         self.ui = ui_dir
         origins = [f"http://127.0.0.1:{port}", f"http://localhost:{port}"]
@@ -150,6 +167,10 @@ class DevHost:
             return None
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        with self.telemetry_context.activate():
+            await self._dispatch(scope, receive, send)
+
+    async def _dispatch(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http":
             return
         path = scope["path"]
@@ -260,14 +281,18 @@ class DevHost:
         Without `fallback` a missing file is a 404, not the app's page."""
         index = self.ui / "index.html"
         if not index.is_file():
-            return 200, "text/html; charset=utf-8", _NOT_BUILT
+            return (
+                200,
+                "text/html; charset=utf-8",
+                not_built_page(self.distribution.brand, _NOT_BUILT_HINT),
+            )
         target = (self.ui / path.lstrip("/")).resolve()
         if path not in ("", "/") and target.is_file() and self.ui.resolve() in target.parents:
             ctype = _TYPES.get(target.suffix) or mimetypes.guess_type(target.name)[0]
             return 200, ctype or "application/octet-stream", target.read_bytes()
         if not fallback or "." in path.rsplit("/", 1)[-1]:
             return 404, "text/plain", b"not found"
-        return 200, "text/html; charset=utf-8", branded(index.read_bytes(), Brand())
+        return 200, "text/html; charset=utf-8", branded(index.read_bytes(), self.distribution.brand)
 
 
 _TYPES = {  # not left to the platform's table, which differs (a .js as text/plain breaks nosniff)
@@ -278,10 +303,9 @@ _TYPES = {  # not left to the platform's table, which differs (a .js as text/pla
 }
 
 
-_NOT_BUILT = not_built_page(
-    Brand(),
+_NOT_BUILT_HINT = (
     b"Run <code>npm ci &amp;&amp; npm run build</code> in <code>ui/</code>, then reload. "
-    b"The API is at <code>/api/operate</code> and <code>/api/console</code>.</p>",
+    b"The API is at <code>/api/operate</code> and <code>/api/console</code>.</p>"
 )
 
 
@@ -340,6 +364,7 @@ def build(
     also: Sequence[tuple[Path, Path | None]] = ...,
     truss: bool,
     truss_url: str | None = ...,
+    credential_source: CredentialSource | None = ...,
     truss_reset: bool = ...,
 ) -> Box: ...
 def build(
@@ -351,6 +376,7 @@ def build(
     also: Sequence[tuple[Path, Path | None]] = (),
     truss: bool = False,
     truss_url: str | None = None,
+    credential_source: CredentialSource | None = None,
     truss_reset: bool = False,
 ) -> Box:
     """The box to serve: the one in `module` with the steps in `seed` and the graph in `records`
@@ -364,7 +390,7 @@ def build(
     if truss:
         from arras.devtruss import TrussBox
 
-        tbox = TrussBox(url=truss_url, reset=truss_reset)
+        tbox = TrussBox(url=truss_url, credential_source=credential_source, reset=truss_reset)
         try:
             if module is not None:
                 steps = read_steps(seed) if seed is not None else []
@@ -422,6 +448,14 @@ def truss_url(
             if value:
                 return value, f"{TRUSS_URL_VARIABLE} in {named}"
     return None
+
+
+def default_truss_credentials_path(url: str) -> Path:
+    """Credential namespace for a host, port and installer; deliberately exclude the database."""
+    endpoint, installer, _ = parse_credentialed(url)
+    identity = f"{endpoint.host}\0{endpoint.port or 5432}\0{installer}"
+    digest = hashlib.sha256(identity.encode()).hexdigest()
+    return Path.home() / ".arras" / "truss-dev-credentials" / f"{digest}.json"
 
 
 def truss_attachment(url: str, source: str) -> list[str]:
@@ -483,8 +517,23 @@ def _announce_truss(attach: tuple[str, str] | None, *, reset: bool) -> None:
     )
 
 
-def _parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="python -m arras.devhost", description=__doc__)
+def _display_brand_name(distribution: DistributionConfig | None) -> str:
+    selected = distribution or DistributionConfig()
+    return (
+        " ".join(
+            "".join(char if char.isprintable() else " " for char in selected.brand.name).split()
+        )
+        or "Arras"
+    )
+
+
+def _parser(distribution: DistributionConfig | None = None) -> argparse.ArgumentParser:
+    description = (
+        __doc__
+        if (distribution or DistributionConfig()).brand.name == "Arras"
+        else f"{_display_brand_name(distribution)} development host for a locally composed Arras app."
+    )
+    p = argparse.ArgumentParser(prog="python -m arras.devhost", description=description)
     p.add_argument("--port", type=int, default=8000)
     p.add_argument("--ui", type=Path, default=DEFAULT_UI, help="the built UI (ui/dist)")
     p.add_argument(
@@ -518,6 +567,13 @@ def _parser() -> argparse.ArgumentParser:
         "the people's roles) and start clean; never a role or database it did not make",
     )
     p.add_argument(
+        "--truss-credentials",
+        type=Path,
+        metavar="PATH",
+        help="host-owned file for stable persistent person credentials (or "
+        f"${TRUSS_CREDENTIALS_VARIABLE})",
+    )
+    p.add_argument(
         "--records",
         type=Path,
         help="a graph file (the interface's Export) to load after the seed; needs --module",
@@ -532,61 +588,109 @@ def _parser() -> argparse.ArgumentParser:
     return p
 
 
-def main(argv: list[str] | None = None) -> None:
-    p = _parser()
+def main(
+    argv: list[str] | None = None,
+    *,
+    distribution: DistributionConfig | None = None,
+    telemetry_factory: Callable[[telemetry.TelemetryNames], telemetry.TelemetryContext]
+    | None = None,
+) -> None:
+    p = _parser(distribution)
     args = p.parse_args(argv)
     needs_module = [("--also", args.also), ("--seed", args.seed), ("--records", args.records)]
     for flag, value in needs_module:
         if value and args.module is None:
             p.error(f"{flag} needs --module")
-    if (args.truss_url or args.truss_reset) and not args.truss:
-        p.error("--truss-url and --truss-reset need --truss")
+    if (args.truss_url or args.truss_reset or args.truss_credentials) and not args.truss:
+        p.error("--truss-url, --truss-reset and --truss-credentials need --truss")
     attach = truss_url(args.truss_url) if args.truss else None
+    if args.truss_credentials and attach is None:
+        p.error("--truss-credentials needs a persistent server URL")
     if args.truss_reset and attach is None:
         p.error(
             "--truss-reset needs a persistent server: give --truss-url or set "
             f"{TRUSS_URL_VARIABLE} (a throwaway starts clean anyway)"
         )
-    also = [_module_and_seed(a) for a in args.also]
-    try:
-        import uvicorn
-    except ImportError:
-        raise SystemExit(
-            "uvicorn is needed: uv run --extra devhost python -m arras.devhost"
-        ) from None
-    if args.truss:
-        _announce_truss(attach, reset=args.truss_reset)
-    try:
-        box = build(
-            args.module,
-            args.seed,
-            demo=args.demo,
-            records=args.records,
-            also=also,
-            truss=args.truss,
-            truss_url=attach[0] if attach else None,
-            truss_reset=args.truss_reset,
-        )
-    except Invalid as e:
-        lines = [f"  {v.path}: {v.code}: {v.message}" for v in e.violations]
-        raise SystemExit("\n".join([f"{args.module} was refused:", *lines])) from None
-    except (OSError, ValueError, ArrasError) as e:
-        raise SystemExit(f"could not load: {e}") from None
     if attach is not None:
-        seeded = getattr(box, "seeded", None)
-        print(
-            "the database holds nothing yet: seeded it"
-            if seeded
-            else "the database holds entities already: left them as they are",
-            flush=True,
-        )
+        try:
+            parse_credentialed(attach[0])
+        except (TypeError, ValueError):
+            p.error("--truss-url is refused")
+    also = [_module_and_seed(item) for item in args.also]
+    selected = distribution or DistributionConfig()
     try:
-        app = DevHost(box, port=args.port, ui_dir=args.ui)
-        uvicorn.run(app, host="127.0.0.1", port=args.port, log_level="info")
-    finally:
-        close = getattr(box, "close", None)
-        if close is not None:
-            close()
+        context = telemetry._make_context(selected.telemetry, telemetry_factory)
+    except Exception:
+        raise SystemExit("telemetry configuration refused") from None
+    _run_host(args, selected, context, attach, also)
+
+
+def _run_host(
+    args: argparse.Namespace,
+    distribution: DistributionConfig,
+    context: telemetry.TelemetryContext,
+    attach: tuple[str, str] | None,
+    also: list[tuple[Path, Path | None]],
+) -> None:
+    with context.activate():
+        credential_source: CredentialSource | None = None
+        try:
+            import uvicorn
+        except ImportError:
+            raise SystemExit(
+                "uvicorn is needed: uv run --extra devhost python -m arras.devhost"
+            ) from None
+        if args.truss:
+            _announce_truss(attach, reset=args.truss_reset)
+        try:
+            if attach is not None:
+                path = args.truss_credentials or (
+                    Path(os.environ[TRUSS_CREDENTIALS_VARIABLE]).expanduser()
+                    if os.environ.get(TRUSS_CREDENTIALS_VARIABLE)
+                    else default_truss_credentials_path(attach[0])
+                )
+                credential_source = FileCredentialSource(path)
+            box = build(
+                args.module,
+                args.seed,
+                demo=args.demo,
+                records=args.records,
+                also=also,
+                truss=args.truss,
+                truss_url=attach[0] if attach else None,
+                credential_source=credential_source,
+                truss_reset=args.truss_reset,
+            )
+        except Invalid as e:
+            lines = [f"  {v.path}: {v.code}: {v.message}" for v in e.violations]
+            raise SystemExit("\n".join([f"{args.module} was refused:", *lines])) from None
+        except (OSError, ValueError, ArrasError) as e:
+            raise SystemExit(f"could not load: {e}") from None
+        if attach is not None:
+            seeded = getattr(box, "seeded", None)
+            print(
+                "the database holds nothing yet: seeded it"
+                if seeded
+                else "the database holds entities already: left them as they are",
+                flush=True,
+            )
+        try:
+            app = DevHost(
+                box,
+                port=args.port,
+                ui_dir=args.ui,
+                distribution=distribution,
+                telemetry_context=context,
+            )
+            print(
+                f"{_display_brand_name(distribution)} development host at http://127.0.0.1:{args.port}",
+                flush=True,
+            )
+            uvicorn.run(app, host="127.0.0.1", port=args.port, log_level="info")
+        finally:
+            close = getattr(box, "close", None)
+            if close is not None:
+                close()
 
 
 if __name__ == "__main__":

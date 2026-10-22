@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT OR Apache-2.0
 # pyright: basic
 """The latency benchmark harness of US-044: the four targets of the PRD's success metrics, measured
-at the host (the Arras interface praxis embeds) against a real Truss on PostgreSQL.
+at the host (the Arras interface a host application embeds) against a real Truss on PostgreSQL.
 
     uv run --extra truss python tests/bench_latency.py                # the dev host's database
     uv run --extra truss python tests/bench_latency.py --throwaway    # a local PostgreSQL of its own

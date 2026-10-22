@@ -21,7 +21,7 @@ ddx:
 
 > The name is recorded as an ADR because ADR-006 and every Arras artifact identifier carry it. The decision is a naming choice and makes no architecture claim.
 >
-> Terms. ADR: architecture decision record. Arras: the interface to an ontology, a Python library with a React console and Graph Browser, embedded by host apps such as praxis.
+> Terms. ADR: architecture decision record. Arras: the interface to an ontology, a Python library with a React console and Graph Browser, embedded by host apps such as a workflow application.
 
 ## Context
 

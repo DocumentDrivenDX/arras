@@ -12,30 +12,49 @@ from __future__ import annotations
 
 import argparse
 import ast
+import json
 import sys
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
+from importlib import resources
 from pathlib import Path
+from typing import Any, cast
 
 import arras
 
-# What a host may use, by module (CONTRACT-005 and CONTRACT-006).
-PUBLIC_MODULE_NAMES: dict[str, frozenset[str]] = {
-    "arras": frozenset(arras.__all__),
-    "arras.adapters": frozenset(),
-    "arras.adapters.truss": frozenset(
-        {
-            "create_backend",
-            "ModuleAccess",
-            "TrussBackend",
-            "InstallingSource",
-            "ConnectionSource",
-        }
-    ),
-    "arras.console": frozenset({"create_app", "Request"}),
-    "arras.operate": frozenset({"create_app", "create_schema_app", "Request"}),
-    "arras.testing": frozenset({"InMemory", "example_module"}),
-}
+
+# The reviewed catalog is the source for host imports; tests compare it with declarations in code.
+def _public_catalog() -> dict[str, Any]:
+    return json.loads(resources.files("arras").joinpath("public-api.json").read_text())
+
+
+_PUBLIC_CATALOG = _public_catalog()
+_PUBLIC_MODULES = cast(dict[str, dict[str, object]], _PUBLIC_CATALOG["python"]["modules"])
+_LAUNCHER_MODULES = cast(dict[str, list[str]], _PUBLIC_CATALOG["python"]["launcher_modules"])
+_HOST_MODULES = set(_PUBLIC_CATALOG["python"]["host_modules"]) | set(_LAUNCHER_MODULES) | {"arras"}
+PUBLIC_MODULE_NAMES: dict[str, frozenset[str]] = {}
+for _module, _spec in _PUBLIC_MODULES.items():
+    if _module not in _HOST_MODULES:
+        continue
+    _names: object = _spec["names"]
+    _declared: set[str] = (
+        set(cast(list[str], _PUBLIC_CATALOG["python"]["root_all"]))
+        if _names == "root_all"
+        else set(cast(list[str], _names))
+    )
+    _selected_launcher_names = set(_LAUNCHER_MODULES.get(_module, ()))
+    if not _selected_launcher_names <= _declared:
+        raise ValueError(f"launcher names must be a subset of {_module}'s declared exports")
+    _host_names: set[str] = (
+        _declared
+        if _module in set(cast(list[str], _PUBLIC_CATALOG["python"]["host_modules"]))
+        else set()
+    )
+    PUBLIC_MODULE_NAMES[_module] = frozenset(_host_names | _selected_launcher_names)
+for _module in _LAUNCHER_MODULES:
+    if _module not in _PUBLIC_MODULES:
+        raise ValueError(f"launcher module {_module} is not declared")
+
 _DYNAMIC = {"__import__", "import_module", "importlib.import_module", "importlib.__import__"}
 
 

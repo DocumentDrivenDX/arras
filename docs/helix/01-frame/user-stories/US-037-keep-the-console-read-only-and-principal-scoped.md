@@ -31,7 +31,7 @@ ddx:
 
 ## Context
 
-The generated GraphQL schema has no Mutation or Subscription type, and every field is read as the viewer's principal (the person's user, token and groups). The console is mounted in the embedding app, praxis, the Databricks app that hosts Arras.
+The generated GraphQL schema has no Mutation or Subscription type, and every field is read as the viewer's principal (the person's user, token and groups). The console is mounted in the embedding application.
 
 ## Walkthrough
 
@@ -45,7 +45,7 @@ The generated GraphQL schema has no Mutation or Subscription type, and every fie
 - [ ] **US-037-AC1** — Given any module's schema, when it is introspected, then no Mutation or Subscription type exists.
 - [ ] **US-037-AC2** — Given two principals, when each browses, then each sees only what the backends allow that person, because every field is read by one `query` with the viewer's own token.
 - [ ] **US-037-AC3** — Given a viewer who is not signed in, when a request is made, then the response is HTTP 401.
-- [ ] **US-037-AC4** — Given the app embedded in praxis, when the console is mounted, then it needs no frontend framework of Arras's own.
+- [ ] **US-037-AC4** — Given the app embedded in the embedding host, when the console is mounted, then it needs no frontend framework of Arras's own.
 
 ## Edge Cases
 
@@ -59,7 +59,7 @@ The generated GraphQL schema has no Mutation or Subscription type, and every fie
 | Introspect | US-037-AC1 | The `catalog` schema | Introspect | No Mutation or Subscription type |
 | Scoped | US-037-AC2 | Principal A reads `catalog`; principal B reads `archive` | Browse as each | Each sees only its own module |
 | 401 | US-037-AC3 | No sign-in | Request | HTTP 401 |
-| Embedded | US-037-AC4 | Praxis app | Mount the console | Works with GraphiQL only |
+| Embedded | US-037-AC4 | Embedding application | Mount the console | Works with GraphiQL only |
 
 ## Dependencies
 

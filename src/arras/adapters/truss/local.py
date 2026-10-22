@@ -35,7 +35,7 @@ import shutil
 import tempfile
 from dataclasses import replace
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 
 from arras.adapters.truss import ModuleAccess, TrussBackend, create_backend
 from arras.adapters.truss.endpoint import Endpoint, connect, endpoint_source, parse_credentialed
@@ -52,10 +52,22 @@ PERSISTENT_PREFIX = "arrasdev_"  # the roles the dev host makes on a server it d
 _TRUSS_OWNER = re.compile(r"truss_owner_([0-9a-f]+)")
 
 
+class CredentialSource(Protocol):
+    """Host-owned credential lookup: creation is allowed only for an absent person role."""
+
+    def __call__(self, role: str, *, create: bool) -> str: ...
+
+
 def _ident(name: str) -> Any:
     from psycopg import sql
 
     return sql.Identifier(name)
+
+
+def _usable_credential(token: Any, role: str) -> str:
+    if not isinstance(token, str) or not token:
+        raise ValueError(f"no usable host-owned credential is available for {role!r}")
+    return token
 
 
 class LocalTruss:
@@ -67,6 +79,7 @@ class LocalTruss:
         *,
         directory: Path | None = None,
         url: str | None = None,
+        credential_source: CredentialSource | None = None,
         reset: bool = False,
     ) -> None:
         if reset and url is None:
@@ -88,6 +101,7 @@ class LocalTruss:
         )
         self._own_root = not self.persistent and directory is None
         self._url = url
+        self._credential_source = credential_source
         self._reset = reset
         self._installer_password = secrets.token_urlsafe(18)
         self.superuser_password: str | None = (
@@ -99,6 +113,8 @@ class LocalTruss:
         self._endpoint: Endpoint | None = None
         self._outage: str | None = None
         self._tokens: dict[str, str] = {}
+        self.created_people: set[str] = set()
+        self._created_roles: set[str] = set()
         self._registrar: str | None = None
         self.migration: MigrationResult | None = None
         self.backend: TrussBackend | None = None
@@ -195,6 +211,11 @@ class LocalTruss:
         if self._own_root:
             shutil.rmtree(self.root, ignore_errors=True)
 
+    @property
+    def created_roles(self) -> frozenset[str]:
+        """Managed role names created by this instance, for host bootstrap decisions."""
+        return frozenset(self._created_roles)
+
     def __enter__(self) -> LocalTruss:
         return self.open()
 
@@ -281,46 +302,88 @@ class LocalTruss:
         return [(str(name), bool(login)) for name, login in rows]
 
     def person(self, user: str) -> Principal:
-        """A login role named for `user` (with the prefix of a persistent server) and a token of its
-        own (its password), made once per run. On a persistent server the role may be there from an
-        earlier run: it is taken over if the installing role administers it (a new password, no
-        expiry, no memberships), and a role it did not make is refused."""
+        """Return the person's own login, creating it only when the role is absent."""
         from psycopg import sql
 
         role = self.role(user)
-        if user not in self._tokens:
-            token = secrets.token_urlsafe(24)
-            if self._exists(role):
-                if not self.persistent:
-                    raise ValueError(f"{role!r} is a role of the database already")
-                if not self._administered(role):
-                    raise ValueError(f"{role!r} is a role this dev host did not make")
-                self.su.execute(
-                    sql.SQL("ALTER ROLE {} LOGIN PASSWORD {} VALID UNTIL 'infinity'").format(
-                        _ident(role), sql.Literal(token)
-                    )
+        if self.persistent or user not in self._tokens:
+            created = False
+            try:
+                with self.su.transaction():
+                    # PostgreSQL advisory locks are database-scoped. The duplicate-role check
+                    # after CREATE also handles another host racing from a different database.
+                    self.su.execute("SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))", [role])
+                    if self._exists(role):
+                        if not self.persistent:
+                            raise ValueError(f"{role!r} is a role of the database already")
+                        token = self._existing_person_token(role)
+                    else:
+                        token = self._credential(role, create=True)
+                        self.su.execute(
+                            sql.SQL("CREATE ROLE {} LOGIN PASSWORD {}").format(
+                                _ident(role), sql.Literal(token)
+                            )
+                        )
+                        created = True
+            except Exception as error:
+                state = getattr(error, "sqlstate", None)
+                constraint = getattr(getattr(error, "diag", None), "constraint_name", None)
+                duplicate = state == "42710" or (
+                    state == "23505" and constraint == "pg_authid_rolname_index"
                 )
-                self._leave_roles(role)
-            else:
-                self.su.execute(
-                    sql.SQL("CREATE ROLE {} LOGIN PASSWORD {}").format(
-                        _ident(role), sql.Literal(token)
-                    )
-                )
+                if not duplicate:
+                    raise
+                # A same-name role may have appeared in another database while this
+                # transaction was creating it. Never alter it; verify ownership and login.
+                if not self._exists(role):
+                    raise ValueError(f"could not create person role {role!r}") from None
+                token = self._existing_person_token(role)
+            if created:
+                self.created_people.add(user)
+                self._created_roles.add(role)
             self._tokens[user] = token
         return Principal(role, self._tokens[user])
 
-    def _leave_roles(self, role: str) -> None:
-        """End every membership of `role`, so a run starts from the grants it gives."""
-        from psycopg import sql
+    def _credential(self, role: str, *, create: bool) -> str:
+        source = self._credential_source
+        if source is None:
+            if self.persistent:
+                raise ValueError(
+                    "persistent person credentials need a host-owned credential source"
+                )
+            return secrets.token_urlsafe(24)
+        try:
+            token = source(role, create=create)
+        except Exception:
+            raise ValueError(f"no usable host-owned credential is available for {role!r}") from None
+        return _usable_credential(token, role)
 
-        held = self.su.execute(
-            "SELECT g.rolname FROM pg_auth_members m JOIN pg_roles g ON g.oid = m.roleid "
-            "JOIN pg_roles u ON u.oid = m.member WHERE u.rolname = %s",
-            [role],
-        ).fetchall()
-        for (group,) in held:
-            self.su.execute(sql.SQL("REVOKE {} FROM {}").format(_ident(group), _ident(role)))
+    def _existing_person_token(self, role: str) -> str:
+        if not self._administered(role):
+            raise ValueError(f"{role!r} is not administered by this installer")
+        source = self._credential_source
+        if source is None:
+            raise ValueError("persistent person credentials need a host-owned credential source")
+        try:
+            token = self._credential(role, create=False)
+        except Exception:
+            raise ValueError(
+                f"the stored credential for {role!r} is missing or unavailable"
+            ) from None
+        try:
+            with connect(self._current(), role, token) as person:
+                actual = person.execute("SELECT current_user").fetchone()[0]
+            if actual != role:
+                raise ValueError
+        except Exception as error:
+            if getattr(error, "sqlstate", None) in {"28P01", "28000"}:
+                raise ValueError(
+                    f"the stored credential for {role!r} was refused; coordinated rotation is required"
+                ) from None
+            raise ValueError(
+                f"could not verify the stored credential for {role!r}; database authentication is unavailable"
+            ) from None
+        return token
 
     def token(self, user: str) -> str:
         return self._tokens[user]
@@ -330,6 +393,8 @@ class LocalTruss:
         shape of their own (the MCP process reads a JWT)."""
         from psycopg import sql
 
+        if self.persistent:
+            raise ValueError("persistent person credentials require coordinated rotation")
         if user not in self._tokens:
             raise KeyError(user)
         self.su.execute(
@@ -364,6 +429,7 @@ class LocalTruss:
         for role in roles:
             if not self._exists(role):
                 self.su.execute(sql.SQL("CREATE ROLE {} NOLOGIN").format(_ident(role)))
+                self._created_roles.add(role)
             elif self.persistent and not self._administered(role):
                 raise ValueError(f"{role!r} is a role this dev host did not make")
         return roles
@@ -400,6 +466,8 @@ class LocalTruss:
                     su.execute(sql.SQL("DROP OWNED BY {}").format(_ident(role)))
                 su.execute(sql.SQL("DROP ROLE {}").format(_ident(role)))
         self._tokens.clear()
+        self.created_people.clear()
+        self._created_roles.clear()
         self._registrar = None
 
     def configure_module(self, module: str, document_id: str) -> None:
@@ -412,6 +480,7 @@ class LocalTruss:
         auditor = self.auditor_role(module)
         if not self._exists(auditor):
             self.su.execute(sql.SQL("CREATE ROLE {} NOLOGIN NOINHERIT").format(_ident(auditor)))
+            self._created_roles.add(auditor)
         once = create_backend(
             self.name,
             self._person_source,

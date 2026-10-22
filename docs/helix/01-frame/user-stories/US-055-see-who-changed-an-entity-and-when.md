@@ -31,7 +31,7 @@ ddx:
 
 ## Context
 
-Arras (the interface to an ontology) records the person on every change and the load on every import, and offers no change feed; what changed is read with `changes` (FEAT-010, CONTRACT-001). A client such as the praxis catalog screens (praxis is the Databricks app that embeds Arras) needs the latest attribution on the record it shows. A load is one run of `import_records` (CONTRACT-003).
+Arras (the interface to an ontology) records the person on every change and the load on every import, and offers no change feed; what changed is read with `changes` (FEAT-010, CONTRACT-001). A client such as catalog screens in an embedding application needs the latest attribution on the record it shows. A load is one run of `import_records` (CONTRACT-003).
 
 ## Walkthrough
 

@@ -20,9 +20,9 @@ ddx:
 
 | Aspect | Description |
 |--------|-------------|
-| Problem | Arras is the interface to an ontology. It has a Truss adapter (Truss is an open-source, UMF-driven property-graph engine on SQL databases, owner DocumentDrivenDX) on Lakebase (Databricks managed Postgres) and an Ashlar adapter (Ashlar is an open-source toolkit for property-graph ontologies on a warehouse, owner DocumentDrivenDX) on Unity Catalog (Databricks' governance layer for data). UMF (the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions) declares the types. Arras's first host is praxis, an agent-harness Databricks app, which embeds Arras and runs no second app. The data layer, the way the store is installed and the packaging shape must fit that host. |
-| Current State | Databricks Apps hosting, Lakebase and Python are fixed. Praxis already uses psycopg 3 (the PostgreSQL driver for Python) for its data path (praxis ADR-028, held in the praxis-harness repository). Truss ships a public Python toolkit that installs its own store, applies actions and answers reads inside a transaction the caller begins on a connection the caller owns, and that toolkit qualifies one driver tuple (psycopg 3.3.6, PostgreSQL 18.6). Praxis requires Python 3.11 or later and keeps `psycopg` out of its core (praxis ADR-004, same repository). |
-| Requirements | Run inside a host Python application with host-supplied connection settings. Install or verify its store through Truss's installer, keeping no migration history. Reach Lakebase, pooled or direct (praxis connects direct). Report each backend unavailable, with a reason, when it is not usable, without stopping the host. Leave end-user screens and the host's own API surface to the host. Arras's only UI is a minimal read-only administration console (PRD, Admin Console). |
+| Problem | Arras is the interface to an ontology. It has a Truss adapter (Truss is an open-source, UMF-driven property-graph engine on SQL databases, owner DocumentDrivenDX) on Lakebase (Databricks managed Postgres) and an Ashlar adapter (Ashlar is an open-source toolkit for property-graph ontologies on a warehouse, owner DocumentDrivenDX) on Unity Catalog (Databricks' governance layer for data). UMF (the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions) declares the types. The reference deployment embeds Arras in an application rather than running a second service. The data layer, the way the store is installed and the packaging shape must fit that host. |
+| Current State | Databricks Apps hosting, Lakebase and Python were the decision-time deployment inputs. The embedding host supplies connection lifecycle and adapter boundaries; Arras does not import a downstream decision record. Truss ships the public Python toolkit and qualifies its own driver/server tuple. The exact installed Arras support cohort remains governed by CONTRACT-005. |
+| Requirements | Run inside a host Python application with host-supplied connection settings. Install or verify its store through Truss's installer, keeping no migration history. Reach Lakebase, pooled or direct (a host may connect directly). Report each backend unavailable, with a reason, when it is not usable, without stopping the host. Leave end-user screens and the host's own API surface to the host. Arras's only UI is a minimal read-only administration console (PRD, Admin Console). |
 | Decision Drivers | One database driver across the host and the library avoids two drivers and two pools in one process, and the store's installer and layout are Truss's, not Arras's. Embedding rules out a library-owned service; the only UI is a small console the host mounts. |
 
 ## Decision
@@ -45,7 +45,7 @@ We will build Arras as a **Python library**, with **psycopg 3** connections the 
 
 | Type | Impact |
 |------|--------|
-| Positive | Praxis deploys Arras inside its own app with no extra service. The host's pooling and identity conventions apply unchanged. |
+| Positive | The embedding host deploys Arras inside its own app with no extra service. The host's pooling and identity conventions apply unchanged. |
 | Negative | Arras's startup and install-or-verify run inside the host's startup path, so a failure there can affect a shared app. Bounded handling (see Validation) is a requirement. |
 | Negative | Truss qualifies one driver tuple (psycopg 3.3.6, libpq 18.6, PostgreSQL 18.6), so the host aligns its driver with it. |
 | Neutral | A REST surface is the host's decision. The MCP (Model Context Protocol, Anthropic's open protocol for agent tools) binding is decided in [ADR-016](ADR-016-mcp-stdio-binding-over-the-library.md). |
@@ -63,7 +63,7 @@ We will build Arras as a **Python library**, with **psycopg 3** connections the 
 
 | Success Metric | Review Trigger |
 |----------------|----------------|
-| Praxis starts and serves with Arras embedded, and still serves when the Arras database is unconfigured, unreachable, denied or fails to install | Any host startup failure attributable to Arras |
+| The embedding host starts and serves with Arras embedded, and still serves when the Arras database is unconfigured, unreachable, denied or fails to install | Any host startup failure attributable to Arras |
 | One install under two concurrent `migrate()` calls | Two installs observed |
 | The boundary check fails the build on an import in either direction | A violation merges |
 
@@ -75,4 +75,4 @@ We will build Arras as a **Python library**, with **psycopg 3** connections the 
 ## References
 
 - [Databricks Lakebase Postgres docs](https://docs.databricks.com/aws/en/oltp/projects/)
-- ADR-028 (sessions in Postgres, psycopg conventions) and ADR-004 (ports and adapters), both in the praxis-harness repository
+- ADR-028 (sessions in Postgres, psycopg conventions) and ADR-004 (ports and adapters), both in the original downstream host repository

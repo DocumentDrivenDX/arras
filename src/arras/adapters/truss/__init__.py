@@ -63,7 +63,7 @@ from arras.types import Principal, Revision, Statement
 
 # The pinned release (the optional extra `truss` in pyproject.toml names the same).
 TOOLKIT_DISTRIBUTION = "truss-toolkit"
-TOOLKIT_VERSION = "0.0.45"
+TOOLKIT_VERSION = "0.0.48"
 EXTRA = "truss"
 
 __all__ = [

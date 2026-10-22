@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
+import { EXPECTED_BRAND } from "./acceptance";
 
 // The keyboard across both modes (SD-013, Keyboard) on the dev host: `/` is find, Ctrl or Cmd+K opens the
 // palette anywhere, `?` opens one help listing both modes' keys, the digits are Operate's. The help and the
@@ -19,7 +20,7 @@ const MODES = [
   },
 ] as const;
 
-const HELP = "Arras · Keyboard shortcuts";
+const HELP = `${EXPECTED_BRAND.name} · Keyboard shortcuts`;
 
 for (const m of MODES) {
   test(`${m.name}: ? opens one help dialog headed with the brand and listing both modes' keys`, async ({

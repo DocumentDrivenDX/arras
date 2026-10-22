@@ -1,0 +1,11 @@
+{
+  "schema": "arras.ui.qualification-receipt.v1",
+  "status": "failed",
+  "target": "http://127.0.0.1:8768/",
+  "route": "compiled-host",
+  "surface": "console",
+  "platform": "darwin",
+  "visual": "comparison-failed-or-incomplete",
+  "phase": "checking app-owned themed controls in light mode",
+  "error": "qualification did not pass; see the runner output for the failing gate"
+}

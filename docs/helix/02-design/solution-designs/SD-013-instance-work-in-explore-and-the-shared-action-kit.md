@@ -69,7 +69,7 @@ ddx:
 | D7 | `Export graph` is Explore's only, on the module's entry page; the console has no graph export control (its Export is of UMF documents) | One home for instance export |
 | D8 | Competing actions are ranked by one rule with no name heuristics (Rule 1a); there is no name-based tie-break (`kit/claims.ts`, `kit/entityActions.ts`) | Plans are derived from declarations, not names |
 | D9 | Tabs and words follow the adopted vocabulary (below) | One vocabulary |
-| D11 | The product name is configuration, not code: a `brand` (name, optional wordmark or logo, optional page title) given to the shell, the browser and the console; "Arras" is only its default | A host (praxis, or another product) must be able to present the interface under its own name |
+| D11 | The product name is configuration, not code: a `brand` (name, optional wordmark or logo, optional page title) given to the shell, the browser and the console; "Arras" is only its default | A host (an embedding application) must be able to present the interface under its own name |
 | D12 | Every place the interface can be is an address, and the address is the whole identity of the page: mode, module, area, type, entity and the view state that selects what is shown; only text the contracts keep out of addresses (search text, query text, typed form values) is not in it | Pages must be bookmarkable and shareable, and Back and Forward must move through them |
 | D10 | The five Explore features are built natively, in an order that retires risk first; deep-linking History and Actions to Operate instead (the smaller design) is the fallback if the kit proves costly | Operators should not leave Explore for an entity task |
 

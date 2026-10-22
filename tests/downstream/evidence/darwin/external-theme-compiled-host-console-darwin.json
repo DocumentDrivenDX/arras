@@ -1,0 +1,71 @@
+{
+  "schema": "arras.ui.qualification-receipt.v1",
+  "target": "http://127.0.0.1:8768/",
+  "route": "compiled-host",
+  "surface": "console",
+  "platform": "darwin",
+  "browser": "Chromium 153.0.8010.12",
+  "visual": "compared",
+  "screenshots": [
+    "external-theme-compiled-host-console-light-darwin.png",
+    "external-theme-compiled-host-console-dark-darwin.png"
+  ],
+  "checks": [
+    "axe-wcag21aa",
+    "theme-tokens",
+    "contrast",
+    "keyboard-focus",
+    "arras-app-theme-provider",
+    "command-palette-keyboard"
+  ],
+  "focusMeasurements": [
+    {
+      "description": "light: host Button focus",
+      "indicator": "rgb(7, 89, 133)",
+      "background": "rgb(248, 250, 252)",
+      "contrast": 7.23
+    },
+    {
+      "description": "light: [data-theme-text-field] focus",
+      "indicator": "rgb(7, 89, 133)",
+      "background": "rgb(248, 250, 252)",
+      "contrast": 7.23
+    },
+    {
+      "description": "light: [data-theme-text-area] focus",
+      "indicator": "rgb(7, 89, 133)",
+      "background": "rgb(248, 250, 252)",
+      "contrast": 7.23
+    },
+    {
+      "description": "light: [data-theme-select] focus",
+      "indicator": "rgb(7, 89, 133)",
+      "background": "rgb(248, 250, 252)",
+      "contrast": 7.23
+    },
+    {
+      "description": "dark: host Button focus",
+      "indicator": "rgb(125, 211, 252)",
+      "background": "rgb(2, 6, 23)",
+      "contrast": 12.1
+    },
+    {
+      "description": "dark: [data-theme-text-field] focus",
+      "indicator": "rgb(125, 211, 252)",
+      "background": "rgb(2, 6, 23)",
+      "contrast": 12.1
+    },
+    {
+      "description": "dark: [data-theme-text-area] focus",
+      "indicator": "rgb(125, 211, 252)",
+      "background": "rgb(2, 6, 23)",
+      "contrast": 12.1
+    },
+    {
+      "description": "dark: [data-theme-select] focus",
+      "indicator": "rgb(125, 211, 252)",
+      "background": "rgb(2, 6, 23)",
+      "contrast": 12.1
+    }
+  ]
+}

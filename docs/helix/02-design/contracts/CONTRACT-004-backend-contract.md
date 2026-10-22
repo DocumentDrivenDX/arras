@@ -35,9 +35,9 @@ ddx:
 
 ## Purpose
 
-Defines what an adapter implements so Arras can serve the interface from it: the operations, the capability descriptor, status and positions, how the backend is reached with the person's own token, and the conformance corpus that proves it. A backend is a named store that declares its roles in `describe().roles`, a non-empty subset of `reader` and `provider`; the host configures any number of backends (CONTRACT-005), and a module's placement names which plays which part (CONTRACT-002). Three adapters ship: a Truss adapter (reader and provider), an Ashlar adapter (reader) and a memory adapter (reader and provider, in memory).
+Defines what an adapter implements so Arras can serve the interface from it: the operations, the capability descriptor, status and positions, how the backend is reached with the person's own token, and the conformance corpus that proves it. A backend is a named store that declares its roles in `describe().roles`, a non-empty subset of `reader` and `provider`; the host configures any number of backends (CONTRACT-005), and a module's placement names which plays which part (CONTRACT-002). The current package implements the Truss adapter (reader and provider) and memory store/replica backends. An Ashlar reader adapter is part of this intended contract but is not implemented or qualified in Arras.
 
-Terms. Truss is the hot mutable store, deployed on Lakebase (Databricks managed Postgres); its adapter is a reader and a provider. Lakebase is Arras's required deployment target. Ashlar is the toolkit for property-graph ontologies on Unity Catalog (Databricks' governance layer for tables and access); its adapter is a reader and holds the ontology that the providers' changes reach. A gold Delta table is a curated table in the Delta Lake format that Ashlar publishes on Unity Catalog. A reader serves graph reads; a provider applies actions. A module's record store is the reader that is the system of record for its graph and serves `latest`; a replica is any other reader the placement lists, which serves `bulk` and may lag. The protocols are `Backend` (the reader operations, which every backend implements) and `Provider` (which adds the provider operations). ADR means architecture decision record. UMF is the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions.
+Terms. Truss is the hot mutable store, deployed on Lakebase (Databricks managed Postgres); its adapter is a reader and a provider. Lakebase is Arras's required deployment target. Ashlar is the toolkit for property-graph ontologies on Unity Catalog (Databricks' governance layer for tables and access); the planned Arras adapter is a reader over the ontology that the providers' changes reach. A gold Delta table is a curated table in the Delta Lake format that Ashlar publishes on Unity Catalog. A reader serves graph reads; a provider applies actions. A module's record store is the reader that is the system of record for its graph and serves `latest`; a replica is any other reader the placement lists, which serves `bulk` and may lag. The protocols are `Backend` (the reader operations, which every backend implements) and `Provider` (which adds the provider operations). ADR means architecture decision record. UMF is the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions.
 
 ## Scope and Boundaries
 
@@ -122,6 +122,42 @@ Every call runs in a transaction the adapter begins on the person's connection a
 
 An in-memory reader and provider and an in-memory reader (`arras.fakes`, `arras.testing.InMemory`) that implement the same operations over Python data. They are real backends, not stand-ins for a named one: the sandbox and the dev host register them as `memory` (reader and provider) and `memory_replica` (reader), and a console reading from them says `memory`. The replica is fed from the provider and reports a position and lag. The memory adapter passes the same conformance corpus.
 
+**Bounded mutation profile (A2).** Memory MUST examine the current registered
+source document before mutation, because `ModuleInfo` does not carry all declared
+constraints. This is an execution-capability check, not UMF structural validation
+or value evaluation. It inspects actual `modules[].elements[]` field definitions
+and their semantic slots; it MUST NOT recursively treat an annotation/property
+named `default` or `rules` as a declaration.
+
+- Missing or empty field `facets` retain the existing legacy numeric behavior.
+  On a directly served scalar integer field, only `integerWidth` is served;
+  its only members are `bits` and `signed`. Present `bits` is a positive integer
+  excluding booleans; present `signed` is boolean. Omitted members retain the
+  legacy defaults of 64 bits and signed. These defaults are memory compatibility,
+  not a claim of canonical UMF shape admission.
+- On a directly served scalar decimal field, only the paired `precision` and
+  `scale` facets are served: integers excluding booleans, `precision >= 1` and
+  `0 <= scale <= precision`. Declaring only one is unsupported. Numeric facets
+  on an array/map/item field or structured value are unsupported unless the
+  existing direct numeric storage path actually consumes that definition.
+- Other facet names (`length`, `range`, `collectionSize`, or unknown names),
+  unknown nested numeric qualifiers, malformed numeric shapes, field `default`
+  or `allowedValues` declarations, field `semanticTypes` other than missing/an
+  empty list, and any explicit module/element `rules` slot make the whole module's mutation profile
+  unsupported. Presence is checked even when a candidate value happens to meet
+  the declaration. No rule or extension evaluator is introduced.
+
+An unsupported profile MUST name the source paths/reasons in `Unsupported` for
+`apply` (also dry run), both `apply_batch` modes and `import_records`, after the
+existing principal/module and import administration/attribution checks and
+before journal replay, state copying, clock/effect work or record iteration.
+Nothing is committed or journaled, and no receipt is returned. Unrelated types
+in that module are conservatively covered by the refusal; authorized reads and
+registered bytes remain available. Missing source on manually constructed test
+modules retains the historical fixture behavior and establishes no constraint
+support. This profile does not certify unknown extension semantics, replace
+existing parser refusals or qualify Truss/Ashlar runtime behavior.
+
 | Interface operation | Memory adapter |
 |---------------------|----------------|
 | `query` | It cannot host Weft (Weft gives no plan without a registered backend binding), so it evaluates a declared subset of Weft SQL 0.2 itself, as a small relational pipeline over the named module's rows: sources `[module.]Type [AS] alias`; `[INNER] JOIN ... ON a.x = b.y [AND ...]`, at most 16, as a bag (every matching combination, duplicates kept), hashed on the pairs that link a source to an earlier one; `WHERE` predicates joined by `AND`: `=` and `>` against a literal, a parameter or a column, a tuple keyset `(a.x, b.y) > (v, w)`, and `HAS_RELATED`; `GROUP BY` one or more columns; `COUNT(*)` over the bag and an exact `SUM` of an integer or decimal, a decimal sum at its argument's scale; `ORDER BY ... [ASC]`; `LIMIT` from 1 to 1,000; projections of columns (an absent-allowed one as a nullable column), `alias.*` with its appended facts, `RELATED_KEYS` and `AS`. Names and types are resolved as Weft resolves them: an unknown member or alias, a repeated alias, a repeated output name (compared case-folded unless quoted), an ungrouped projection, a comparison across families (an integer is no decimal), an integer parameter for a decimal field and a literal or parameter outside its field's numeric domain (a decimal's precision and scale, an integer's width, read from the registered document) are `Invalid`; a reserved word names a member, an alias or a parameter only when quoted, and parameter names are case-folded. Every other construct (`OR`, `DISTINCT`, `OFFSET`, outer and comma joins, subqueries, `DESC`, `IN`, functions), a decimal field without precision and scale, and a statement over another module are `Unsupported`, carrying the subset. A `TextMatch` narrows the first source only. It holds a number at its field's domain: a decimal at its declared scale, and a value outside the domain is refused on import and in an action (`numeric_domain`) |
@@ -166,7 +202,132 @@ The corpus runs at the adapter's operations: it cannot hold the router to accoun
 
 Cases are tagged by role; a provider is tested for `apply` and `import_records` and a reader for read behavior. A host-specific case is tagged and outside the pass rule.
 
-A backend may declare documented limits: a case id, the step (as the runner names it, `step 2 (query)`) at which a limit of the engine ends that case, and the refusal it ends in (the error class and, optionally, a fragment of its reason, construct or violation codes). The runner records such a case as `limit`, which passes the run, only when it fails at exactly that step with exactly that refusal, matched on the error the backend raised; a limited case that passes (the limit is gone), that fails at another step, that fails at the step with another error class or detail, or a limit that names no case fails the run. The corpus is not weakened for a backend: each limited case carries the engine's ask in its `limits` note. The Truss adapter declares ten (`TrussHarness.LIMITS`: the whole-entity read of related keys, R17.2, the registration of a new property on an existing record, R16.5, and the four idempotency cases a keyed retry diverges on, R18.3); every other `store` and `reader` case passes on it.
+A backend may declare documented limits: a case id, the step (as the runner names it, `step 2 (query)`) at which a limit of the engine ends that case, and the refusal it ends in (the error class and, optionally, a fragment of its reason, construct or violation codes). The runner records such a case as `limit`, which passes the run, only when it fails at exactly that step with exactly that refusal, matched on the error the backend raised; a limited case that passes (the limit is gone), that fails at another step, that fails at the step with another error class or detail, or a limit that names no case fails the run. The corpus is not weakened for a backend: each limited case carries the engine's ask in its `limits` note. The packaged native helper declares its case-specific limits in `arras.conformance.truss.TrussHarness.LIMITS`. The installed cohort receipt must establish which cases pass or reach those exact documented limits; helper availability or a selected smoke run does not establish a full corpus pass.
+
+### Installed downstream conformance
+
+A downstream adapter supplies an explicitly imported host-owned callable factory
+for the public `run_corpus`/`Harness` protocol; documents and configuration do not
+name executable imports. The harness owns isolated test resources, people,
+installation and cleanup. The packaged corpus is the authority for expectations;
+consumers MUST NOT copy or weaken repository tests to claim conformance.
+
+**Optional harness lifecycle.** A factory-created harness MAY supply a callable
+`close()`; it is not a required member of `Harness`. The runner MUST close each
+acquired probe and each acquired case harness exactly once, including newer
+corpus, setup/step failure and early-return paths. Legacy harnesses without
+`close` retain their behavior. Cleanup failure MUST fail the report: preserve
+an existing primary failure's status/text and append safe cleanup diagnostics;
+otherwise record `harness_error`. Cleanup MUST NOT hide the primary failure or
+turn a failed/limited run into success. No acquired resource may depend on the
+next case or garbage collection for disposal.
+
+**Packaged native testing resource.** `arras.conformance.truss.TrussHarness()`
+is a lazy, isolated testing harness over the production local Truss resource
+lifecycle. Its constructor accepts no persistent URL, personal directory or
+credential source. A probe allocates no server; a case owns its fresh temporary
+server and closes it. People authenticate with their own real roles/tokens.
+A foreign-position control obtains an actual receipt from a separately owned
+resource, never a fabricated token encoding. Any installation-marker mutation
+used solely to simulate `unsupported_version` is a named testing deviation on
+that owned database, restored on recovery and never used on a caller endpoint.
+No full-native support follows from source/helper availability: installed
+cohort/corpus qualification is required and missing dependencies refuse without
+memory fallback.
+
+An installed runner/report MUST name actual backend roles and corpus version,
+separate passing, failed, harness-error, documented-limit, host-specific and
+skipped outcomes, and fail an empty/incompatible/applicably failing run. A memory
+store/replica run establishes only that profile; it MUST NOT advertise native
+Truss, Ashlar, managed deployment, renderer or theme qualification. A documented
+factory protocol is distinct from a delivered installed native harness. Optional
+backend jobs require their own explicit resources, artifact cohort and evidence;
+unavailable native prerequisites MUST NOT silently fall back to memory.
+
+**Caller setup.** The reusable installed job MAY accept explicit
+`consumer_setup_path` and `theme_setup_path` Python files under the caller
+workspace. Consumer setup runs in the isolated environment after verified Arras
+installation and before installing the consumer with `--no-deps`; the caller is
+responsible for its own public dependency cohort. Theme setup runs only with a
+selected theme target and does not itself establish rendered qualification.
+Each setup is trusted caller code, executed without shell/eval; record its path,
+digest and the resulting distribution names/versions. Before claiming a stage
+against the supplied wheel, revalidate the installed Arras payload against that
+verified artifact after setup/consumer installation. A setup path without its
+applicable target is refused rather than executed. These inputs are test-job
+composition, never document-driven or runtime plug-in discovery.
+
+**Reusable optional jobs.** A native test job MUST explicitly provision its
+selected public, hash-pinned native cohort or run a trusted caller-owned Python
+setup script through the isolated interpreter. Setup and test paths are resolved
+beneath the caller workspace; no free-text shell/eval is accepted. Record the
+script identity and actual installed cohort. The native test process sets
+`ARRAS_REQUIRE_TRUSS=1`; missing native dependencies fail rather than skip or
+select memory. Any selected pytest job fails on a nonzero process status and
+requires a JUnit result with at least one test and zero failures, errors or skips
+before it is reported passed. Later logging/status commands MUST NOT mask an
+earlier failure. An omitted optional job is `not_run`. A caller theme pytest
+result alone establishes neither browser rendering, accessibility nor visual
+qualification; those claims require the corresponding actual runner/evidence.
+
+
+**Strict installed native artifact gate.** `tools/verify_native.py` verifies an
+explicit cohort; its input is a reviewed selection, not evidence that the cohort
+already passed. It accepts `--wheel`, `--cohort`, `--find-links` (a local HTML
+index), `--output-json` and an optional interpreter path `--python`. A fresh
+Python 3.11 environment outside the checkout runs the installed public
+`python -I -m arras.conformance --backend truss`; no copied repository pytest,
+shared-site path or memory fallback may supply native evidence. The caller runs
+unprivileged; the gate must not attempt privilege escalation.
+
+Cohort schema version 1 has exactly these top-level declarations:
+`schema_version` (integer 1), `arras` (`version`, `sha256`), `runtime` (`python`, `sys_platform`, `machine`),
+`find_links` (`sha256`), `native_wheels` and `corpus`. Every native wheel records
+`distribution`, `version`, flat `filename`, credential-free HTTPS `url` and
+`sha256`. The corpus records `version`, `roles` and an explicit `limits` object
+mapping case IDs to the complete `step`, `error`, nullable `detail` declaration.
+The default strict all-pass selection uses an empty mapping; no prospective
+release's limits may be invented. Digests are 64 hexadecimal characters,
+distribution identities are unique after normalization and actual runtime must
+match the selected Python/platform/architecture. Input shape and wheel metadata
+must agree before installation.
+
+Verify the local index digest and exact selected URL/SHA-256 anchor membership,
+then download each selected wheel into a private temporary wheelhouse and check
+its bytes before importing/installing. Install those exact paths, including the
+selected toolkit's `native,query,local` extras, plus the exact Arras wheel; do not
+let resolution choose an alternative same-version native artifact. Base
+dependencies resolve through the explicit public index with configuration/path
+isolation. Record origin declarations, artifact digests, all installed versions,
+installed import locations and wheel-payload parity. Inventory current-platform native binary paths/digests for every installed
+distribution, including transitive native packages: ELF/`.so` on Linux,
+Mach-O/`.dylib`/`.so` on macOS and PE/`.dll`/`.pyd`/`.exe` on Windows. Dormant
+foreign-platform installer launchers do not become runtime cohort requirements.
+Every current-platform native-bearing distribution must be explicitly selected
+and verified against its independent wheel payload; an undeclared native/cache
+library fails the claimed qualification rather than being hidden behind three
+headline version numbers. This inventory covers distribution-declared payloads;
+system dynamic linking is not independently audited and must be qualified as
+such in the receipt. Declared origins alone do not establish public
+accessibility or prior native qualification.
+
+The auxiliary installed-metadata probe derives the complete applicable ID set
+from the installed corpus and role-tag selection, without fixed case counts.
+Compare its installed harness limit dataclasses exactly with the complete cohort
+mapping; the corpus runner remains responsible for exact step/error/detail
+matching, with no diagnostic-message reinterpretation. The CLI must exit zero,
+produce one nonempty compatible report, have unique result IDs equal to the
+applicable set and skipped IDs equal to its exact complement, and report counts
+that match all outcomes. Failed, harness-error, unknown or incompatible outcomes
+fail. A run with documented limits is labeled with those limits; an all-pass
+claim requires none. Preserve failed attempts and cleanup errors as failures,
+not later logging success. Keep CLI status/stdout/stderr and the partial input/
+probe evidence when validation fails. Receipt output must not overwrite a
+selected input, including through an alias or the failure path. Timeouts require
+bounded cancellation and owned-resource checks before temporary directories are
+removed; never inspect or terminate unrelated PostgreSQL instances. The output records pending/failed/passed qualification
+and the actual artifact/runtime/corpus scope; no other platform, managed host or
+semantic profile follows from it.
 
 ## Precedence and Compatibility
 

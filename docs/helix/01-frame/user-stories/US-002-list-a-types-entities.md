@@ -31,7 +31,7 @@ ddx:
 
 ## Context
 
-The demonstration catalog has 30 use cases (invented demo data), and the catalog screen filters them by area. Paging belongs to the statement: `ORDER BY` the type's key, `LIMIT n`, and a keyset predicate (`WHERE u.code > :last`) for the next page. Arras caps each answer at `limit` (1 to 100) and sets `truncated` when the cap cut it; the answer carries no cursor. Capabilities (CONTRACT-002, the type registry and placement contract) describe the columns a client can build on; Weft and the serving backend decide what a statement may select and filter on. The host is the application that embeds Arras, first praxis (a Databricks app).
+The demonstration catalog has 30 use cases (invented demo data), and the catalog screen filters them by area. Paging belongs to the statement: `ORDER BY` the type's key, `LIMIT n`, and a keyset predicate (`WHERE u.code > :last`) for the next page. Arras caps each answer at `limit` (1 to 100) and sets `truncated` when the cap cut it; the answer carries no cursor. Capabilities (CONTRACT-002, the type registry and placement contract) describe the columns a client can build on; Weft and the serving backend decide what a statement may select and filter on. The host is the application that embeds Arras.
 
 ## Walkthrough
 

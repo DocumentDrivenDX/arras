@@ -5,8 +5,9 @@ This reader and its current DDD projection are a legacy Arras subset pending off
 adoption and qualification (PLAN-ARRAS-INTEGRATION-20261022, A1-A2). UMF is the canonical
 authority for metadata validity and meaning. `UMF_VERSION` gates this reader's expected document
 shape; it is not a claim that Arras supports or conforms to that UMF release. The reader handles
-the shape of `docs/helix/02-design/contracts/examples/catalog.umf.json`, reports violations it
-detects, and refuses constructs it does not interpret as `invalid_document`, naming them. The
+the shape of `docs/helix/02-design/contracts/examples/catalog.umf.json`, reports detected
+violations and named unsupported constructs as `invalid_document`. These checks do not establish
+complete interpretation. The
 current projection treats a record as an entity when its `umf.ddd` kind is `entity` and as a
 structured value when it is `value-object`.
 

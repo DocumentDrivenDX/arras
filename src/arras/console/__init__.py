@@ -16,8 +16,8 @@ origin instead.
 from __future__ import annotations
 
 import asyncio
+import contextvars
 import json
-import logging
 from collections.abc import Callable, Mapping
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
@@ -52,9 +52,10 @@ from arras.gqlschema import (
 )
 from arras.http import Receive, Request, Response, Scope, Send, parse_origin, post_origin_ok
 from arras.serialize import jsonable
+from arras.telemetry import _logger
 from arras.types import Principal
 
-log = logging.getLogger("arras.console")
+log = _logger("arras.console")
 
 MAX_DEPTH = 6
 MAX_FIELDS = 50
@@ -306,8 +307,12 @@ class Console:
         self.busy += 1
         try:
             loop = asyncio.get_running_loop()
+            work_context = contextvars.copy_context()
             return await loop.run_in_executor(
-                self.pool, self.execute, principal, module, payload["query"], variables, op_name
+                self.pool,
+                lambda: work_context.run(
+                    self.execute, principal, module, payload["query"], variables, op_name
+                ),
             )
         finally:
             self.busy -= 1

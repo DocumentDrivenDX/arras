@@ -15,10 +15,17 @@ from pathlib import Path
 # A module's group is the longest prefix below that names one.
 GROUPS: dict[str, str] = {
     "arras.errors": "foundation",
+    "arras.branding": "foundation",
+    "arras.distribution": "foundation",
     "arras.types": "foundation",
     "arras.names": "foundation",
     "arras.serialize": "foundation",
     "arras.telemetry": "foundation",
+    "arras.mcp.config": "config_validation",
+    "arras._doctor_types": "doctor",
+    "arras.adapters.truss._conformance": "adapters",
+    "arras.ui.assets": "asset_validation",
+    "arras.doctor": "doctor",
     "arras.callscope": "foundation",
     "arras.versions": "foundation",
     "arras.http": "foundation",
@@ -38,6 +45,7 @@ GROUPS: dict[str, str] = {
     "arras.core": "core",
     "arras.routing": "core",
     "arras.registration": "core",
+    "arras.policy": "core",
     "arras.schema_admin": "core",
     "arras.search": "core",
     "arras.graphfile": "core",
@@ -54,16 +62,22 @@ GROUPS: dict[str, str] = {
     "arras.fakes_plan": "doubles",
     "arras.fakes_eval": "doubles",
     "arras.fakes_domain": "doubles",
+    "arras.fakes_profile": "doubles",
     "arras.fakes_search": "doubles",
     "arras.testing": "doubles",
     "arras.conformance": "doubles",
+    "arras.conformance.__main__": "conformance_cli",
+    "arras.conformance.truss": "native_conformance",
     "arras.sandbox": "doubles",
     "arras.console": "console",
     "arras.operate": "operate",
     "arras.ui": "ui",
     "arras.devhost": "devhost",
     "arras.devtruss": "devhost",
+    "arras.devcredentials": "devhost",
     "arras.mcp": "mcp",
+    "arras.mcp.server": "mcp",
+    "arras.mcp.__main__": "mcp",
     "arras.boundary": "tooling",
     "arras": "root",
 }
@@ -77,9 +91,22 @@ ALLOWED: dict[str, frozenset[str]] = {
     "core": frozenset({"foundation", "domain", "contract", "schema", "core"}),
     "doubles": frozenset({"foundation", "domain", "contract", "core", "doubles"}),
     "console": frozenset({"foundation", "domain", "schema", "core", "console"}),
-    "mcp": frozenset({"foundation", "domain", "contract", "core", "doubles", "adapters", "mcp"}),
+    "mcp": frozenset(
+        {
+            "foundation",
+            "domain",
+            "contract",
+            "core",
+            "doubles",
+            "adapters",
+            "config_validation",
+            "mcp",
+        }
+    ),
     "operate": frozenset({"foundation", "domain", "core", "operate"}),
-    "ui": frozenset({"foundation", "domain", "core", "console", "operate", "ui"}),
+    "ui": frozenset(
+        {"foundation", "domain", "core", "console", "operate", "asset_validation", "ui"}
+    ),
     "devhost": frozenset(
         {
             "foundation",
@@ -94,6 +121,17 @@ ALLOWED: dict[str, frozenset[str]] = {
         }
     ),
     "tooling": frozenset({"root", "tooling"}),
+    "config_validation": frozenset({"foundation", "domain", "config_validation"}),
+    "asset_validation": frozenset({"asset_validation"}),
+    "native_conformance": frozenset(
+        {"foundation", "domain", "contract", "doubles", "adapters", "native_conformance"}
+    ),
+    "conformance_cli": frozenset(
+        {"foundation", "doubles", "native_conformance", "conformance_cli"}
+    ),
+    "doctor": frozenset(
+        {"foundation", "domain", "config_validation", "asset_validation", "doctor"}
+    ),
     "root": frozenset({"foundation", "domain", "core"}),
 }
 

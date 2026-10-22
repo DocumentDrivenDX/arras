@@ -29,7 +29,7 @@ ddx:
 
 | Aspect | Description |
 |--------|-------------|
-| Problem | Arras is the interface to an ontology, a Python library embedded in praxis (an agent-harness Databricks app), over Truss (an open-source property-graph engine on Lakebase, Databricks' managed Postgres) and Ashlar (a property-graph toolkit on Unity Catalog, Databricks' governance layer for data); both are owned by DocumentDrivenDX. Access to the ontology's data must be the person's and a shared service's access is the wrong basis. A service identity that reads on a person's behalf makes the application the access control. |
+| Problem | Arras is the interface to an ontology, a Python library embedded by a workflow host, over Truss (an open-source property-graph engine on Lakebase, Databricks' managed Postgres) and Ashlar (a property-graph toolkit on Unity Catalog, Databricks' governance layer for data); both are owned by DocumentDrivenDX. Access to the ontology's data must be the person's and a shared service's access is the wrong basis. A service identity that reads on a person's behalf makes the application the access control. |
 | Requirements | Every read and every change is made as the person; the backends' own controls decide; changes are attributed to an identity the backend authenticated. |
 | Decision Drivers | Unity Catalog applies row and column policy to the caller; Truss's module isolation is Postgres role grants; neither should be bypassed by a pooled identity. |
 

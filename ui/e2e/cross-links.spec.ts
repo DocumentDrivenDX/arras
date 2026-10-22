@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
+import { ORIGIN } from "./acceptance";
 import { ensureUseCase } from "./gb-fixtures";
 
 // Cross-mode links (FR-71) on the dev host, as the sandbox's people: alice is an operator and is
 // offered Operate; carol is not, and her page carries no link into it.
 
 const CODE = "uc-xlinks";
-const ORIGIN = "http://127.0.0.1:8123";
 const NODE = `#/explore/catalog/UseCase/${CODE}`;
 
 test.beforeAll(async ({ playwright }) => {

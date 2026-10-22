@@ -26,7 +26,7 @@ from arras.model import COLUMN_SCALARS, Capabilities, EntityTypeInfo, ModuleInfo
 from arras.results import BackendInfo, BackendStatus, Reason, WeftSupport
 
 WEFT_DISTRIBUTION = "weft-sql"
-WEFT_VERSION = "0.4.49"  # the Weft release Truss's compiled queries are qualified with
+WEFT_VERSION = "0.4.51"  # the Weft release Truss's compiled queries are qualified with
 WEFT_DIALECT = "weft-sql/0.2.0"  # the dialect Truss compiles (its backend 0.4.40, interface 0.2.6)
 
 # The read profiles `query` proves against Truss (the read corpus passes): Truss serves joins and

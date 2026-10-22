@@ -68,7 +68,7 @@ These are interactions 3 and 4 of the [client interactions draft](../client-inte
 - **Feature Spec**: FEAT-008
 - **Feature Requirements**: CLI-01
 - **PRD Requirements**: FR-38
-- **External**: [CONTRACT-003](../../02-design/contracts/CONTRACT-003-actions.md); praxis FEAT-007 (the catalog feature in the praxis-harness repository).
+- **External**: [CONTRACT-003](../../02-design/contracts/CONTRACT-003-actions.md); FR-38 (the upstream catalog reference-client requirement); the host owns its feature implementation.
 
 ## Out of Scope
 

@@ -1,0 +1,33 @@
+{
+  "verdict": "approved_source_only",
+  "files": {
+    "src/arras/public-api.json": "b680a12d780970c2472a73be9763d7c0ba6e8c4de3c5c30a3b9a4db4a27214c5",
+    "tests/test_public_api_manifest.py": "0caeaf102fa3cdd3f2b9f9ce45d1494f2766e98eb96a66395002fd86bcb6bf4e"
+  },
+  "tests": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -p no:cacheprovider tests/test_public_api_manifest.py -q",
+    "passed": 9,
+    "seconds": 0.87
+  },
+  "ui_parity": {
+    "command": "node ui/scripts/check-public-manifest.ts",
+    "passed": true,
+    "mutation_controls": 11
+  },
+  "independent_resource_comparison": {
+    "manifest_sha256": "f74814ba062e6008c40b201faca02132dcba951874ee242565dba3a4f8161dc9",
+    "file_digests_matched": 83,
+    "canonical_specs_matched": 17,
+    "all_source_helpers_byte_equal": true,
+    "project_counts": {
+      "chromium": 132,
+      "schema-admin": 3,
+      "browser": 70,
+      "visual": 67
+    }
+  },
+  "limits": [
+    "Current source and carried stage comparison only.",
+    "No final installed wheel, full packed browser suite, Linux runtime, native or publication result established."
+  ]
+}

@@ -9,7 +9,6 @@ and the record store's `schema` grant decides, with `authorize_schema` a host's 
 
 from __future__ import annotations
 
-import logging
 from collections.abc import Callable, Mapping
 from typing import Any
 
@@ -18,11 +17,12 @@ from arras.errors import ArrasError, Violation
 from arras.http import Receive, Request, Response, Scope
 from arras.operate.wire import WireApp, _Bad, answer_error
 from arras.results import RegistryResult, SchemaChange, SchemaPlan
+from arras.telemetry import _logger
 from arras.types import Principal, Revision
 from arras.umf import parse_module
 from arras.versions import CONTRACT_VERSIONS
 
-log = logging.getLogger("arras.operate")
+log = _logger("arras.operate")
 
 MAX_DOCUMENT = 1024 * 1024  # after decoding
 MAX_BODY = 4 * 1024 * 1024  # carries a document with every character escaped
@@ -144,8 +144,8 @@ class SchemaApp(WireApp):
             return self.json(e.status, {"error": {"type": "BadRequest", "message": e.message}})
         except ArrasError as e:
             return answer_error(e)
-        except Exception:
-            log.exception("schema execution failed")
+        except Exception as error:
+            log.error("schema execution failed: %s", type(error).__name__)
             return self.json(500, {"error": {"type": "InternalError", "message": "internal error"}})
 
 

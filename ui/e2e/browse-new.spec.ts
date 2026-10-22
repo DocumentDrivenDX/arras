@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, type Request, test } from "@playwright/test";
+import { ORIGIN } from "./acceptance";
 import { ensureHub } from "./gb-fixtures";
 
 // New on a type's list (FR-67) through the whole stack: the built UI on the dev host as alice. The
@@ -14,7 +15,7 @@ const CASE_NAME = "Hub use case 1";
 const SOLUTION = `sol-new-${stamp}`;
 
 test.beforeAll(async ({ playwright }) => {
-  const request = await playwright.request.newContext({ baseURL: "http://127.0.0.1:8123" });
+  const request = await playwright.request.newContext({ baseURL: ORIGIN });
   await ensureHub(request, CASE, 1, "New target");
   await request.dispose();
 });

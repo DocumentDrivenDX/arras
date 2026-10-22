@@ -17,9 +17,10 @@ describe("the packed manifest", () => {
     const all = { ...packed.dependencies, ...packed.peerDependencies };
     expect(Object.keys(all).sort()).toEqual(
       [
-        "@databricks/appkit-ui",
         "@documentdrivendx/umf-schema-browser",
         "@tanstack/react-query",
+        "@axe-core/playwright",
+        "@playwright/test",
         "react",
         "react-dom",
       ].sort(),
@@ -30,7 +31,11 @@ describe("the packed manifest", () => {
     expect(packed.peerDependencies).toMatchObject(source.peerDependencies ?? {});
     expect(packed.peerDependencies.react).toBe(source.dependencies.react);
     expect(packed.peerDependencies["react-dom"]).toBe(source.dependencies["react-dom"]);
-    expect(packed.peerDependenciesMeta).toEqual(source.peerDependenciesMeta);
+    expect(packed.peerDependenciesMeta).toEqual(source.peerDependenciesMeta ?? {});
+    expect(packed.peerDependenciesMeta).toMatchObject({
+      "@axe-core/playwright": { optional: true },
+      "@playwright/test": { optional: true },
+    });
   });
 
   it("declares every package the library build leaves external", () => {
@@ -40,10 +45,27 @@ describe("the packed manifest", () => {
       "react-dom",
       "@tanstack/react-query",
       "@documentdrivendx/umf-schema-browser",
-      "@databricks/appkit-ui",
     ]) {
       expect(declared, name).toHaveProperty([name]);
     }
+  });
+
+  it("keeps the opt-in Node testkit and browser host on separate public subpaths", () => {
+    expect(packed.exports).toMatchObject({
+      "./testkit": {
+        types: "./dist/types/testkit/index.d.ts",
+        import: "./dist/testkit.js",
+      },
+      "./testkit/host": {
+        types: "./dist/types/testkit/host.d.ts",
+        import: "./dist/testkit/host.js",
+      },
+    });
+    expect(packed.files).toContain("support/acceptance");
+    expect(packed.files).toContain("support/src");
+    expect(packed.files).toContain("support/examples");
+    expect(packed.dependencies).not.toHaveProperty("@playwright/test");
+    expect(packed.dependencies).not.toHaveProperty("@axe-core/playwright");
   });
 });
 

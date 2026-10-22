@@ -19,7 +19,7 @@ ddx:
 
 # Arras: proposed external interface
 
-**Status**: proposal for review by consumers (praxis, the product catalog, the use case inventory, Python plug-ins). The normative text is in [CONTRACT-001](contracts/CONTRACT-001-ontology-interface.md) to [CONTRACT-007](contracts/CONTRACT-007-mcp-binding.md); this page is the short version a consumer needs.
+**Status**: proposal for review by consumers (the embedding host, the product catalog, the use case inventory, Python plug-ins). The normative text is in [CONTRACT-001](contracts/CONTRACT-001-ontology-interface.md) to [CONTRACT-007](contracts/CONTRACT-007-mcp-binding.md); this page is the short version a consumer needs.
 
 Terms used on this page:
 
@@ -28,7 +28,7 @@ Terms used on this page:
 - A backend is a named store the host configures: a reader (serves graph reads) and/or a provider (applies actions). A module's placement names its record store (the reader that is its system of record and serves `latest`), its replicas (other readers, which serve `bulk` and may lag) and the provider of each action (the record store by default). There can be several of each.
 - Truss (DocumentDrivenDX) is the UMF-driven property-graph engine on Lakebase (Databricks managed Postgres); its adapter is a reader and a provider.
 - Ashlar (DocumentDrivenDX) is the toolkit for property-graph ontologies on a warehouse, running on Unity Catalog (the Databricks governance layer). Its adapter is a reader: it serves bounded reads over the full ontology and may be older than the record store.
-- praxis is the Databricks app that embeds Arras.
+- The embedding host owns deployment and session identity.
 - MCP (Model Context Protocol, Anthropic's open protocol for agent tools) is the protocol agents use to call tools. stdio means the server talks over standard input and output.
 - Weft (DocumentDrivenDX) owns the SQL language `query` takes; the serving backend compiles and runs the statement.
 - ADR is an architecture decision record; ADR-005 gates structure derived from sensitive source records.
@@ -99,7 +99,7 @@ ontology.invoke_batch("catalog.CorrectSolution", items, atomic=False, idempotenc
 
 ## MCP binding
 
-`python -m arras.mcp` speaks MCP over stdio for one person; praxis launches one per session with that person's token (file re-read for refresh).
+`python -m arras.mcp` speaks MCP over stdio for one person; the embedding host launches one per session with that person's token (file re-read for refresh).
 
 | Tool | Purpose |
 |------|---------|
@@ -129,6 +129,6 @@ No generic get/list/traverse/aggregate/changes calls (use `query`); no history o
 ## Questions for consumers
 
 1. Is the statement set above enough for your screens and agents, or what is the first missing shape?
-2. Praxis: can a per-session stdio process receive a user token and its refresh (a token file is proposed)?
+2. The embedding host: can a per-session stdio process receive a user token and its refresh (a token file is proposed)?
 3. Which actions and counts does your first module need?
 4. Is `bulk` freshness acceptable for your reads, and what age would you tolerate?

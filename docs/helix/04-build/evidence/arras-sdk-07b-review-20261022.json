@@ -1,0 +1,32 @@
+{
+  "schema": "arras.sdk.independent-receipt-review.v1",
+  "status": "approved-for-recorded-cohort",
+  "receipt": "/private/tmp/arras-packed-selected-final/sdk-attempt-20261022-01/receipt.json",
+  "receiptSha256": "1c12ee78f0d2c0c2c63d9f92f0dc8cc244294cb9b0bacfe743a633e0f83697ea",
+  "wheel": {
+    "filename": "arras-0.5.0-py3-none-any.whl",
+    "sha256": "07b3e867bd4ca48b4cd43ad5f13449076e3939f4194c06c297d1ca0171764ed1",
+    "version": "0.5.0"
+  },
+  "npmSha256": "c29a9f151d9a6a42cce55325e927634cc5713763c0485cc6e02cb63006c78307",
+  "driverSha256": "9aa379d1f2b333f855aa9886da7b6e93dcf930bc789a3721e0862ee174c08455",
+  "probeSha256": "2dd054ff5b832f279195d8e644027474181ff247d29d6b59ee0e8c2889836e0f",
+  "platform": {
+    "os": "darwin",
+    "architecture": "arm64",
+    "release": "27.0.0"
+  },
+  "python": "3.13.16",
+  "caseCount": 20,
+  "phaseCount": 8,
+  "falsePassControls": [
+    "MCP successful empty result",
+    "ASGI successful HTTP 200 empty body",
+    "finish-time ambient-context misrouting"
+  ],
+  "limitations": [
+    "No SDK rerun by reviewer; exact actual receipt/source/artifact identity inspection plus previously independently reviewed semantic mutation controls.",
+    "Receipt producer retains conservative historical temporary-native-pin boilerplate; this metadata statement does not expand qualification beyond exact recorded wheel.",
+    "No UI, native or publication claim follows from this receipt."
+  ]
+}

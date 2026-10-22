@@ -1,0 +1,27 @@
+{
+  "verdict": "approved_source_and_independent_counterexample_checks_only",
+  "source_sha256": "356fe79ed6ea060ae48a9e90af33d16bd20a884b580ac937bec579a4e6c317c4",
+  "generated_probe_sha256": "2dd054ff5b832f279195d8e644027474181ff247d29d6b59ee0e8c2889836e0f",
+  "wheel_sha256": "cdc7ec0d7b5c907ef079ed9f41f60aa07656951dea60be685a8ff049764c8261",
+  "owner_fresh_receipt_sha256": "9df50018659cf91273626a1333493b3d883fa2144c5d3c2e0b59aeec1f2c3ae2",
+  "receipt_source_hash_matches": true,
+  "receipt_probe_hash_matches": true,
+  "independent_controls": {
+    "honest": 0,
+    "mcp_successful_result": 1,
+    "operate_http200": 1,
+    "console_only_http200": 1,
+    "ambient_finish_snapshot_misrouting": 1
+  },
+  "scripts": [
+    "/private/tmp/sol_sdk_controls_final.py",
+    "/private/tmp/sol_sdk_snapshot_control_final.py"
+  ],
+  "retained_inputs": "/var/folders/z0/kv_wlyps77b_txh08w55z99w0000gn/T/sol-sdk-controls-mo6t30jj",
+  "limits": [
+    "Counterexample execution uses exact extracted temporary candidate wheel, copied consumer and existing Python3.11/OTel1.45.1 dependencies.",
+    "Fresh isolated Python3.13 twenty-case receipt is owner evidence whose exact source/probe/wheel identities were checked, not independently rerun end-to-end.",
+    "No final cohort, native, UI or publication claim."
+  ],
+  "nonblocking_note": "Phase events count observed structured query witnesses; fault phase counts all structured event records. Document the selection scope if comparing counts."
+}

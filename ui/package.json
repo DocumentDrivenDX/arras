@@ -15,10 +15,13 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:embed": "vite build --config vite.embed.config.ts",
+    "build:embed": "vite build --config vite.embed.config.ts && node scripts/pack-runtime-assets.ts",
     "build:lib": "vite build --config vite.lib.config.ts && tsc -p tsconfig.build.json",
     "pack:wheel": "node scripts/pack-wheel.ts",
-    "build:wheel": "npm run build:embed && npm run build:lib && npm run check:css -- dist-lib/styles.css && npm run pack:wheel",
+    "test:packed-consumer": "node scripts/packed-consumer.mjs",
+    "qualify:downstream-theme": "node scripts/qualify-downstream-theme.mjs",
+    "qualify:downstream": "node scripts/run-downstream-qualification.mjs",
+    "build:wheel": "npm run build:embed && npm run build:lib && npm run check:public-manifest && npm run check:css -- dist-lib/styles.css && npm run pack:wheel",
     "typecheck": "tsc --noEmit",
     "lint": "biome lint .",
     "format": "biome format --write .",
@@ -34,7 +37,8 @@
     "e2e:visual:update": "playwright test --project=visual --update-snapshots",
     "check:umf": "node scripts/umf-schema-browser.ts",
     "check:css": "node scripts/check-scoped-css.ts",
-    "check:externals": "node scripts/check-externals.ts dist-lib"
+    "check:externals": "node scripts/check-externals.ts dist-lib",
+    "check:public-manifest": "node scripts/check-public-manifest.ts"
   },
   "dependencies": {
     "@documentdrivendx/umf-schema-browser": "2.0.0",
@@ -47,12 +51,12 @@
     "vite": "^8.3.2"
   },
   "peerDependencies": {
-    "@databricks/appkit-ui": "*"
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0"
   },
   "peerDependenciesMeta": {
-    "@databricks/appkit-ui": {
-      "optional": true
-    }
+    "@axe-core/playwright": { "optional": true },
+    "@playwright/test": { "optional": true }
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",

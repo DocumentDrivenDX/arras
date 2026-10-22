@@ -25,7 +25,7 @@ ddx:
 
 | Aspect | Description |
 |--------|-------------|
-| Problem | Arras is the interface to an ontology, a Python library embedded in praxis (an agent-harness Databricks app). Clients need to change the ontology in business terms, with validation, atomicity, attribution and audit, without exposing a store's write primitives. |
+| Problem | Arras is the interface to an ontology, a Python library embedded by a workflow host. Clients need to change the ontology in business terms, with validation, atomicity, attribution and audit, without exposing a store's write primitives. |
 | Current State | The Ashlar build brief (Ashlar is an open-source toolkit for property-graph ontologies on a warehouse; owner: DocumentDrivenDX) assigns UMF (the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions) a declarative action type: name, typed parameters, a result or handle, preconditions, effects and optional compensation. UMF has not defined it. Truss (an open-source, UMF-driven property-graph engine on Postgres; owner: DocumentDrivenDX) applies primitive operations and, with grouped operations, applies several atomically. |
 | Requirements | A single, discoverable way to change data. Atomic multi-entity effects. Attribution of the person. Idempotency. Refusal without side effects. |
 | Decision Drivers | Actions are the unit of write authorization and audit; effects that fit a closed set of primitive operations can be executed generically, and the rest need an escape hatch. |

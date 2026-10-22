@@ -1,0 +1,64 @@
+{
+  "consumers": {
+    "sdist_rebuilt_wheel": {
+      "environment": "sdist-rebuilt-wheel",
+      "graphql_core": "3.3.0",
+      "graphql_core_inventory_sha256": "a125ed8e21d137e40197cd91ab565ded3d4b79b39763f576890ae91724357b61",
+      "in_memory_operation": true,
+      "package": "/private/var/folders/z0/kv_wlyps77b_txh08w55z99w0000gn/T/arras-dist-verify-te0rphkb/consumer-sdist-rebuilt-wheel/lib/python3.11/site-packages/arras",
+      "packed_npm_consumer": "Packed consumer passed through package exports",
+      "platform": "darwin",
+      "python": "3.11.17",
+      "schema_callback": true
+    },
+    "source_wheel": {
+      "environment": "source-wheel",
+      "graphql_core": "3.3.0",
+      "graphql_core_inventory_sha256": "0ac2c69938eef18f8c8153a4f2b24e7b101af7aca7d750b556184c4c25c016ce",
+      "in_memory_operation": true,
+      "package": "/private/var/folders/z0/kv_wlyps77b_txh08w55z99w0000gn/T/arras-dist-verify-te0rphkb/consumer-source-wheel/lib/python3.11/site-packages/arras",
+      "packed_npm_consumer": "Packed consumer passed through package exports",
+      "platform": "darwin",
+      "python": "3.11.17",
+      "schema_callback": true
+    }
+  },
+  "declared_python": [
+    "3.11",
+    "3.12",
+    "3.13"
+  ],
+  "javascript_consumer_cohort": "workspace-linked UI dependencies; package itself extracted from each verified wheel",
+  "not_qualified_without_observation": [
+    "Linux",
+    "Python 3.12",
+    "Python 3.13",
+    "registry installation",
+    "managed Arras host",
+    "official UMF runtime"
+  ],
+  "npm": {
+    "exact_between_wheels": true,
+    "file": "documentdrivendx-arras-ui-0.5.0.tgz",
+    "sha256": "971c9bbd8af453bc1ab30ba1e2b998a8cfc6a4bd1ced9a6f2111e0cdadabc36b"
+  },
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "python_interpreter": "3.11.17",
+  "qualification": [
+    "artifact-inspected",
+    "installed-consumer-tested"
+  ],
+  "qualified_python": "3.11.17",
+  "sdist": {
+    "file": "arras-0.5.0.tar.gz",
+    "sha256": "b819b16fd0862dd6216bcc0ab67c7be6e52b6b64c4614631706384de3099a9eb"
+  },
+  "sdist_rebuilt_wheel": {
+    "file": "arras-0.5.0-py3-none-any.whl",
+    "sha256": "b66b97874eec0ae367d66a4150d9893e13e39ffa0aff370965026f1ff29bacb0"
+  },
+  "source_wheel": {
+    "file": "arras-0.5.0-py3-none-any.whl",
+    "sha256": "b66b97874eec0ae367d66a4150d9893e13e39ffa0aff370965026f1ff29bacb0"
+  }
+}

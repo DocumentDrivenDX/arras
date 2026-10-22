@@ -8,18 +8,25 @@ Arras is an open-source interface to an ontology. Types and actions are defined 
 - **Access is the backends' own.** Every call runs as the person who made it, with that person's token. Arras keeps no service identity and no cache of data or decisions.
 - **Three surfaces.** A read-only GraphQL console, an operator surface for validating and invoking declared actions and reading the audit trail, and an MCP stdio server for agents.
 
-Arras is embedded by host apps such as praxis, a Databricks app. The host authenticates people and maps them to a principal; Arras never does.
+Arras is embedded by host apps that supply their own identity and configuration. The host authenticates people and maps them to a principal; Arras never does.
 
 ## Status
 
-Beta (`0.x`). The in-memory adapter and the Truss adapter are built and pass the conformance corpus. The Ashlar adapter and the feed from Truss to it are not built; the backend contract and the conformance corpus (`arras.conformance.run_corpus`) are what a new adapter is held to.
+Beta (`0.x`). The in-memory and Truss adapters are implemented. Their qualified subsets, documented limits and exact artifact/platform evidence are recorded in the [downstream compatibility note](docs/helix/02-design/downstream-extensibility.md) and [release notes](docs/helix/05-deploy/release-notes.md). The Ashlar adapter and the feed from Truss to it are not built; the backend contract and packaged conformance corpus (`arras.conformance.run_corpus`) are what a new adapter is held to.
 
 ## Install
 
+Install the wheel from the selected GitHub Release after verifying the attached
+`SHA256SUMS`. For example, with the verified 0.5.0 wheel in the current directory:
+
 ```bash
-pip install arras                                            # from PyPI
-pip install "arras @ git+https://github.com/DocumentDrivenDX/arras"   # or from GitHub
+pip install ./arras-0.5.0-py3-none-any.whl
 ```
+
+[Release notes](docs/helix/05-deploy/release-notes.md) record publication status and
+registry availability. PyPI/npm uploads are separate from GitHub asset delivery;
+do not assume a registry package is available. A source/git install omits the
+built UI; use the release wheel for the mountable page and carried npm tarball.
 
 The base install needs only `graphql-core`. Extras: `arras[otel]` (OpenTelemetry spans), `arras[devhost]` (the development host), `arras[truss]` (the Truss adapter; the Truss and Weft wheels are not on a package index, so resolve them from `tools/find-links/index.html`, as `pyproject.toml` does).
 
@@ -74,19 +81,22 @@ needs none of them, and the tests marked `truss` run only with `uv run --extra t
 
 The checks that hold Arras's statements and the memory adapter to Weft's own parser
 (`tests/test_weft_parser.py`, `test_weft_relational.py`, `test_reserved_names.py`) need Weft's
-`weft-sql` 0.4.49 wheel, a test tool and a dependency of the optional `truss` extra, never of the base install. Without it they skip and
+`weft-sql` 0.4.51 wheel, a test tool and a dependency of the optional `truss` extra, never of the base install. Without it they skip and
 say so; CI installs it and sets `ARRAS_REQUIRE_WEFT=1`, which turns the skip into a failure. To run
 them locally, take the wheel for your platform from Weft's public release, check it against the
 release's `SHA256SUMS` and install it after `uv sync` (which would remove it), then run with
 `--no-sync`:
 
 ```bash
-gh release download v0.4.49 --repo DocumentDrivenDX/weft --dir /tmp/weft \
-  --pattern SHA256SUMS --pattern 'weft_sql-0.4.49-*-<platform>.whl'
+gh release download v0.4.51 --repo DocumentDrivenDX/weft --dir /tmp/weft \
+  --pattern SHA256SUMS --pattern 'weft_sql-0.4.51-*-<platform>.whl'
 (cd /tmp/weft && grep ' weft_sql-' SHA256SUMS | shasum -a 256 -c --ignore-missing)
-uv pip install /tmp/weft/weft_sql-0.4.49-*.whl
+uv pip install /tmp/weft/weft_sql-0.4.51-*.whl
 ARRAS_REQUIRE_WEFT=1 uv run --no-sync pytest -q
 ```
+
+The 0.4.51 release publishes wheels for macOS arm64, Linux x86_64, and Linux aarch64; it has no
+macOS x86_64 or Windows wheel. This records artifact availability, not Arras's native qualification.
 
 What exists, built against the contracts in `docs/helix/02-design/contracts/` with the in-memory adapter
 (`memory` and `memory_replica`, `src/arras/fakes.py`, which evaluate a declared subset of Weft SQL,
@@ -105,6 +115,23 @@ joins and aggregates included, behind `src/arras/fakes_weft.py`) as the backends
 | MCP stdio server and its configuration: `python -m arras.mcp` | `mcp/` (`config/` holds the committed files, `.env.example` the environment keys) |
 | Telemetry: events and spans to the host's logger and tracer provider | `telemetry.py` (`arras[otel]` for spans) |
 | Dev host: console, operator surface and the built UI at one origin: `python -m arras.devhost` | `devhost.py` (`uv run --extra devhost`) |
+
+## Distribution boundary and compatibility
+
+The reviewed host-facing import catalog is the packaged `arras/public-api.json` resource. It records
+the intentional Python imports, packed `@documentdrivendx/arras-ui` runtime/type/style exports,
+configuration and command names, CSS tokens, telemetry catalog, and resource versions. The catalog
+is deliberately edited and source tests flag drift; the boundary checker derives its module allowlist
+from it. The file is versioned independently from package, contract and vocabulary versions.
+
+Arras is 0.x: a breaking Python or packed UI public API change increments the package minor version;
+a patch preserves the declared public surface. At 1.x and later, breaking changes increment the major
+version. Python deprecated names keep their existing one-minor grace, HTTP surfaces retain their
+`Deprecation`/`Sunset` grace, and vocabulary terms retain their vocabulary-major grace.
+
+The CI/release artifact verifier rebuilds a wheel from the sdist, compares the complete installed
+package payload and the exact carried npm tarball, and checks separate clean installed consumers.
+Its evidence is limited to the actual Python/platform and dependency cohort reported for that run.
 
 ## Mounting the interface in a host
 
@@ -135,6 +162,11 @@ surfaces the page calls: `/api/console` (CONTRACT-006), `/api/operate` (CONTRACT
 Content-Security-Policy (`ui.PAGE_CSP`); every read and write is answered by a surface, which refuses a
 viewer with no principal. `/ontology` redirects to `/ontology/`, because the page's URLs are relative so
 that any prefix works. Behind a proxy that rewrites `Host`, pass `public_origin`.
+
+`authorize_schema(principal, module) -> bool` optionally narrows schema validation and registration
+through this same mount. Pass it as `ui.create_app(..., authorize_schema=...)`; it receives the
+viewer and parsed module name, and a true result still requires the backend's schema grant.
+The schema surface remains absent without `authorize_operator`, even if this callback is supplied.
 
 **Or bundle the components into the host's own React app.** The package is `@documentdrivendx/arras-ui`. The
 wheel carries it as a tarball, so the version follows the Python pin and nothing else is needed:
@@ -168,6 +200,15 @@ for the three surfaces and `/umf-explorer` (the component's iframe loads from `e
 host's policy must allow `frame-src 'self'` and `script-src 'self'` there). In a source checkout, build
 both with `npm run build:wheel` in `ui/`.
 
+The component package's root also exports `DesignSystemProvider`, `useDesignSystem`,
+`defaultDesignSystem`, `ROLE_TOKENS` and the widget prop types. Import them from
+`@documentdrivendx/arras-ui` and wrap the components with
+`<DesignSystemProvider designSystem={{ Button: HostButton }}>...</DesignSystemProvider>`.
+A partial design system inherits the remaining widgets from its outer provider or the built-in
+default. Keep one host React/ReactDOM peer pair; widget replacements must preserve their props
+and accessibility behavior. See [the UI guide](ui/README.md#theme-and-design-system) for the contract.
+The current source build's packed exports are locally verified; registry publication is separate.
+
 `python -m arras.devhost` serves the console on the loopback address only, over fake data: pick a
 role (viewer, editor, schema author, auditor, maintainer) and any name, take a backend down, feed the
 replica, run one Weft statement at a time against a chosen module at either consistency level (paging
@@ -177,13 +218,50 @@ The sandbox has a `catalog` module and five people, named in the `x-arras-user` 
 
 With `--truss` the dev host serves a real Truss instead of the fakes: the same people, but their roles and grants are database roles, `expire` is `VALID UNTIL`, `grant` and `revoke` are role membership and `outage` is a real unreachable (or, on a throwaway, refused) connection. A control with no meaning on Truss (`feed`, `search`) answers 400. It needs the `truss` extra.
 
-By default Truss mode attaches to a persistent PostgreSQL 18.6 server and keeps its state across restarts. The connection URL is `--truss-url`, else `ARRAS_TRUSS_DEV_URL` in the environment, else the same variable in `~/.arras/truss-dev.env` (keep it there, mode 600, so the password is not on a command line). It names a role that owns an empty database, has `CREATEROLE` and is not a superuser (Truss's supported installation path), and whose password `pg_hba` asks for (a connection that skips the password is refused):
+When a connection URL is configured, Truss mode attaches to a persistent PostgreSQL 18.6 server and keeps its state across restarts. The URL is `--truss-url`, else `ARRAS_TRUSS_DEV_URL` in the environment, else the same variable in `~/.arras/truss-dev.env` (keep it there, mode 600, so the password is not on a command line). It names a role that owns the database, has `CREATEROLE` and is not a superuser (an initial Truss installation requires an empty database), and whose password `pg_hba` asks for (a connection that skips the password is refused):
 
 ```bash
 uv run --extra devhost --extra truss python -m arras.devhost --truss
 ```
 
-Starting is safe to repeat. Truss is installed or verified, the modules are registered again (an unchanged document stays unchanged), the people's roles are made when absent and get new token passwords, the grants are given again, and the demo (or `--seed`) runs only when no registered module holds an entity yet (one row is asked of each entity type). Seeding is decided across every registered module, so a database that already holds entities from one module is not seeded for a module added later; `--truss-reset` is the way to reseed. Closing the host drops nothing and stops nothing. The people are database roles the dev host names with its own fixed prefix (one per person, and a reader and a writer role per module): role names are cluster-wide, so a developer's own role named `alice` is never touched. The startup prints the host, port, database and role to attach `psql` with and where the password is, never the password. `--truss-reset` drops what the dev host made in that database (Truss's schema, its owner and registrar roles, and the person and module roles the installing role administers) and starts clean; it never drops a role or a database it did not create. The `access_denied` outage (a revoked `CONNECT`) is for the throwaway only, because it could lock the installing role out of its own database.
+The CLI shares stable person credentials through a private versioned JSON file. Choose it with
+`--truss-credentials PATH`, else `ARRAS_TRUSS_DEV_CREDENTIALS`; the default is
+`~/.arras/truss-dev-credentials/<scope>.json`, scoped by credential-free server host/port and
+installer role. The database is excluded because PostgreSQL roles are cluster-wide. Hosts sharing
+the same identities must share this file, including when using different aliases for the server.
+The source creates random credentials only for absent database roles. Existing roles require a
+retained credential and fresh authentication; startup preserves their password, expiry and grants,
+including deliberate revocations and unrelated memberships. Unsafe or malformed stores refuse
+instead of being replaced. Files are owner-only (mode 600); do not commit them.
+
+Programmatic `arras.devhost.build`, `TrussBox` and `LocalTruss` persistent attachment requires an
+explicit `credential_source`. It is a host-owned callable
+`source(role: str, *, create: bool) -> str`, keyed by the full database role name:
+`create=False` only looks up a retained password, while `create=True` may atomically create one
+for an absent role. Programmatic construction does not read or create a default credential file;
+the CLI supplies that composition. Existing development roles whose old generated passwords were
+not retained need explicit administrator recovery with a matching shared source, or an explicitly
+selected isolated reset. Startup never silently takes over a role, rotates its password, restores
+its expiry or resets the database.
+
+Truss is installed or verified and the modules registered again (an unchanged document stays
+unchanged). Initial demo grants are assigned only for newly created people or module roles;
+restarting or reloading an existing module does not restore revoked access. Explicit sandbox role
+selection reconciles the installer's direct managed module/registrar grants while preserving
+independent grants and inherited rights. PostgreSQL still decides effective access; a selected
+sandbox label does not remove authority granted through another path.
+The demo (or `--seed`) runs only when no registered module holds an entity yet (one row is asked of
+each entity type). Seeding is decided across every registered module, so a database holding
+entities is not seeded for a module added later. Closing the host drops nothing and stops nothing.
+People use the dev host's fixed role prefix, so a developer's own role named `alice` is untouched.
+Startup prints the connection's host, port, database and role and where the password is, never the
+password.
+
+`--truss-reset` remains an explicit operation to reseed: it drops what the dev host made in that
+database (Truss's schema, its owner and registrar roles, and the person and module roles the
+installing role administers) and starts clean. It never drops an unrelated role or database and
+does not implicitly discard the shared credential file. The `access_denied` outage (a revoked
+`CONNECT`) is for the throwaway only, because it could lock the installing role out of its database.
 
 With no URL, Truss mode is a throwaway local PostgreSQL started for the run and removed at exit; it needs the `truss-test` group as well, and installing, registering and seeding the default catalog takes a few seconds:
 
@@ -211,10 +289,11 @@ its relationships and the actions that write to it. A module the registry refuse
 every violation and nothing is served, so edit the file and start it again. `examples/catalog/` is
 a small catalog: use cases, solutions that say how they are delivered, products and how far
 each covers a use case. Its data is invented; see its README.
-The catalog registers on Truss 0.0.45 and serves with `--truss --module examples/catalog/catalog.umf.json`: Truss prepares it,
-and the 92 steps of `examples/catalog/seed.json` run against it as the people in atomic batches of up to 32 steps of one
-action. Registration and preparation take the same path, and the evidence of a document is under 2.4 KB
-(`truss-registration-evidence-spec.md`).
+Prior Arras evidence registered the catalog on Truss 0.0.45 and served it with
+`--truss --module examples/catalog/catalog.umf.json`: Truss prepared it, and the 92 steps of
+`examples/catalog/seed.json` ran as the people in atomic batches of up to 32 steps of one action.
+Registration and preparation took the same path, with document evidence under 2.4 KB
+(`truss-registration-evidence-spec.md`). This evidence does not qualify the newly source-pinned toolkit.
 
 Checks beyond the unit tests: `tests/test_modules.py` holds the library's module rules,
 `tests/test_properties.py` checks the contracts' rules against a model over random sequences, and
@@ -222,13 +301,13 @@ Checks beyond the unit tests: `tests/test_modules.py` holds the library's module
 
 ## The Truss adapter
 
-`arras.adapters.truss.create_backend(name, source, installing=None, *, module_access=None)` builds the Truss backend (reader and provider). It is built, with its install-or-verify `migrate()`, `configure_access()` (a module's reader, writer and, optionally, auditor roles) and `install_roles()`, and a credential-free endpoint handle for the MCP process. Truss 0.0.45 is pinned (`truss-toolkit[native,query]==0.0.45` under the `truss` extra); it is experimental, and the adapter is the only place that imports it.
+`arras.adapters.truss.create_backend(name, source, installing=None, *, module_access=None)` builds the Truss backend (reader and provider). It is built, with its install-or-verify `migrate()`, `configure_access()` (a module's reader, writer and, optionally, auditor roles) and `install_roles()`, and a credential-free endpoint handle for the MCP process. The optional `truss` extra pins the public source tuple `truss-toolkit[native,query]==0.0.48` and `weft-sql==0.4.51`; Arras's qualification against this tuple is pending. The adapter is the only place that imports Truss.
 
 What the host provides:
 
 - A per-person `ConnectionSource` (each call runs as the person, never a service identity) and, for `migrate` and `configure_access`, a separate trusted installing connection and the module roles.
-- Truss 0.0.45 qualifies PostgreSQL 18.6 with psycopg 3.3.6 (binary, libpq 18.6) on Linux x86_64 and macOS arm64, and declares Python 3.11 or later; the runtime set (truss, psycopg-binary 3.3.6 with cp311 to cp315 wheels, weft as cp39-abi3) covers Python 3.11 and later; the local test PostgreSQL (`pgserver-pg18`, test group only) has wheels for 3.11 to 3.13. Installation needs `CREATEROLE` and database `CREATE` with grant option (or ownership) and a `statement_timeout` of 1 to 60,000 ms.
-- No Bun, Node or other process on the machine: Truss 0.0.45 prepares a module in an embedded V8 (about 0.4 s of preparation per registration, `register` and the `validate_register` dry run of a changed document) and derives a key in PostgreSQL. A host can register as a deploy-time job and keep the registrar's connection out of the process that serves.
+- Prior Arras evidence qualified Truss 0.0.45 with PostgreSQL 18.6 and psycopg 3.3.6 (binary, libpq 18.6) on Linux x86_64 and macOS arm64; it declared Python 3.11 or later. Its runtime set (Truss, psycopg-binary 3.3.6 with cp311 to cp315 wheels, Weft as cp39-abi3) covered Python 3.11 and later; the local test PostgreSQL (`pgserver-pg18`, test group only) had wheels for 3.11 to 3.13. Installation needed `CREATEROLE`, database `CREATE` with grant option (or ownership), and a `statement_timeout` of 1 to 60,000 ms. These are prior-version results, not claims about the newly pinned tuple.
+- Prior Arras evidence also showed that Truss 0.0.45 prepared a module in embedded V8 (about 0.4 s per registration, `register`, and the `validate_register` dry run of a changed document) and derived a key in PostgreSQL, without a Bun or Node process. A host could register as a deploy-time job and keep the registrar's connection out of the serving process; qualification against the new tuple is pending.
 - The pinned Truss and Weft wheels. They are on no package index, and a release carries only the base dependencies, so the host vendors them from `tools/find-links/index.html` (digests from each release's `SHA256SUMS`).
 
 Declared limits, all Truss's and answered as `Unsupported` or a documented limit by the adapter: text search is `Unsupported`; the audit reads (`changes`, `loads`) are served from Truss's audit pages under its own audit grant, and state their limits (observed time, no key or version in an op, load discovery: CONTRACT-004, ask R20); a type over 10,000 rows is not queryable; an import is sent in calls of 128 records, each its own transaction, and is not atomic; and nine corpus cases end at a documented limit (R16.5, R17.2 and R18.3 in `docs/helix/02-design/truss-requirements.md`); an export of a type over 10,000 rows, or of an entity with over 100 related keys on a relationship, is `Unsupported` (R17.2, R17.5).

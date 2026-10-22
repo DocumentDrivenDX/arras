@@ -1,0 +1,254 @@
+{
+  "all_installed_distributions": {
+    "arras": "0.5.0",
+    "attrs": "26.1.0",
+    "fasteners": "0.20",
+    "graphql-core": "3.3.0",
+    "jsonschema": "4.26.0",
+    "jsonschema-specifications": "2025.9.1",
+    "mini-racer": "0.14.1",
+    "pgserver-pg18": "18.6.1",
+    "pip": "24.0",
+    "platformdirs": "4.12.4",
+    "psutil": "7.2.2",
+    "psycopg": "3.3.6",
+    "psycopg-binary": "3.3.6",
+    "referencing": "0.37.0",
+    "rpds-py": "2026.9.1",
+    "setuptools": "79.0.1",
+    "truss-toolkit": "0.0.48",
+    "typing_extensions": "4.16.0",
+    "weft-sql": "0.4.51"
+  },
+  "arras": {
+    "sha256": "07b3e867bd4ca48b4cd43ad5f13449076e3939f4194c06c297d1ca0171764ed1",
+    "version": "0.5.0"
+  },
+  "checks": {
+    "all_arras_wheel_payload_hashes_match_receipt": true,
+    "cli_exit_code": 0,
+    "packaged_corpus_order_and_packaged_harness_limits_match": true,
+    "private_environment_removed": true,
+    "remaining_owned_postgres_processes_worker_reported": 0,
+    "runtime_native_inventory_payload_hash_matches": 92,
+    "selected_wheel_pip_digests_match": true,
+    "tracked_template_binding_and_index_match": true
+  },
+  "corpus": {
+    "applicable_count": 72,
+    "counts": {
+      "failed": 0,
+      "harness_error": 0,
+      "host_specific": 0,
+      "limit": 8,
+      "passed": 64
+    },
+    "exact_reviewed_limits": {
+      "action.applies-atomically-and-reads-back": {
+        "detail": "wft-output-name",
+        "error": "Invalid",
+        "step": "step 3 (query)"
+      },
+      "action.conflict-rolls-back-the-unit": {
+        "detail": "wft-output-name",
+        "error": "Invalid",
+        "step": "step 4 (query)"
+      },
+      "action.keyed-retry-after-its-target-was-deleted-replays": {
+        "detail": "idempotency_key_reused",
+        "error": "Conflict",
+        "step": "step 2 (apply)"
+      },
+      "action.keyed-retry-of-a-delete-replays": {
+        "detail": "idempotency_key_reused",
+        "error": "Conflict",
+        "step": "step 1 (apply)"
+      },
+      "action.keyed-retry-of-an-unlink-replays": {
+        "detail": "idempotency_key_reused",
+        "error": "Conflict",
+        "step": "step 1 (apply)"
+      },
+      "action.same-key-from-another-person-replays": {
+        "detail": "fresh",
+        "error": "PreconditionFailed",
+        "step": "step 1 (apply)"
+      },
+      "read.relationship-columns-are-capped": {
+        "detail": "refused the statement (limits)",
+        "error": "Unsupported",
+        "step": "step 2 (query)"
+      },
+      "read.relationship-columns-follow-ends": {
+        "detail": "wft-output-name",
+        "error": "Invalid",
+        "step": "step 0 (query)"
+      }
+    },
+    "inapplicable_count": 7,
+    "ordered_applicable_case_ids": [
+      "read.key-lookup-whole-entity",
+      "read.relationship-columns-follow-ends",
+      "read.missing-key-is-no-rows",
+      "read.columns-and-filters",
+      "read.relationship-filter-both-directions",
+      "read.repeated-relationship-predicates-mean-both",
+      "read.count-group-by",
+      "read.inner-join-is-a-bag",
+      "read.count-over-a-join-by-several-columns",
+      "read.paging-by-key",
+      "read.relationship-columns-are-capped",
+      "read.the-named-module-scopes-the-statement",
+      "access.no-token-is-refused",
+      "access.anothers-token-is-refused",
+      "access.no-grant-is-refused-not-empty",
+      "access.expired-token-is-refused-not-unavailable",
+      "access.outage-is-unavailable-never-empty",
+      "access.no-token-is-refused-even-when-down",
+      "access.outage-during-a-write-changes-nothing",
+      "access.non-member-write-is-refused",
+      "freshness.status-states-availability",
+      "freshness.undeterminable-token-is-unavailable-not-false",
+      "freshness.store-has-reached-its-own-tokens",
+      "freshness.non-member-reached-is-refused",
+      "describe.capabilities-by-role",
+      "store.registers-under-the-schema-grant-and-never-attaches",
+      "action.applies-atomically-and-reads-back",
+      "action.failed-precondition-changes-nothing",
+      "action.conflict-rolls-back-the-unit",
+      "action.update-bumps-the-version-once",
+      "action.read-only-principal-is-refused",
+      "action.anothers-token-cannot-write",
+      "action.idempotent-retry-returns-the-original",
+      "action.keyed-retry-of-a-delete-replays",
+      "action.keyed-retry-of-an-unlink-replays",
+      "action.keyed-retry-after-its-target-was-deleted-replays",
+      "action.same-key-from-another-person-replays",
+      "action.key-reused-with-other-inputs-conflicts",
+      "action.dry-run-writes-nothing-and-keeps-the-key",
+      "action.deleted-keys-stay-deleted",
+      "action.atomic-batch-is-all-or-nothing",
+      "action.independent-batch-reports-each-item",
+      "action.batch-shape-and-access",
+      "import.identity-skip-and-provenance",
+      "import.original-time-names-its-offset",
+      "import.entities-before-relationships",
+      "import.administrative-principals-only",
+      "import.deleted-stays-deleted",
+      "action.receipt-names-its-group",
+      "action.retry-with-generated-keys-matches",
+      "journal.changes-are-committed-groups-newest-first",
+      "journal.loads-newest-first",
+      "registry.document-is-verbatim",
+      "registry.document-is-refused-without-read",
+      "text.every-word-in-some-property",
+      "text.folds-case",
+      "text.only-the-named-properties",
+      "text.percent-underscore-backslash-are-literal",
+      "text.rows-are-ordered-by-key-and-bounded",
+      "text.no-match-is-an-empty-answer",
+      "text.rows-carry-attribution",
+      "text.on-a-property-the-backend-does-not-list-is-unsupported",
+      "text.refused-without-the-grant",
+      "text.unavailable-is-not-empty",
+      "registry.validate-reports-without-applying",
+      "registry.schema-is-not-write",
+      "registry.register-checks-the-revision-it-was-planned-against",
+      "registry.rewritten-equal-document-registers-unchanged",
+      "registry.registers-a-new-record-type",
+      "export.canonical-order-and-absent-properties",
+      "export.refused-without-read-never-empty",
+      "export.pages-resume-after-the-last-record"
+    ],
+    "ordered_inapplicable_case_ids": [
+      "freshness.replica-status-states-its-position",
+      "freshness.unissued-token-is-invalid",
+      "freshness.replica-catches-up-to-a-token",
+      "replica.refuses-every-change",
+      "replica.holds-no-document",
+      "replica.refuses-validate-register",
+      "replica.export-is-unsupported"
+    ],
+    "roles": [
+      "reader",
+      "provider"
+    ],
+    "version": 13
+  },
+  "evidence_sha256": {
+    "macos-arm64.binding.json": "beaaae3404ebb7e9a0dc65452eef6938f9d7984b96804d032e38eabd99f7e2e2",
+    "macos-arm64.bound.json": "322f710c4f5b8ac4661a44762bceaf7e2260eb041e03ff5930c8cdb03a6f8993",
+    "native-receipt.json": "a5d45cf642c760d6467de47cac0897b941c8cc567bac77558fb84180ae87b995",
+    "verify-native.log": "4dc628df482cb8c01962d149079fb65e60634d5e34e1cae25dfd55181a590784"
+  },
+  "fresh_install_evidence": {
+    "basis": "Reviewed verifier creates a private fresh venv, uses isolated public-index pip with exact hash-verified selected wheel paths, checks Arras import inside that environment, and checks payload parity before the isolated public CLI. Receipt records successful checks. Native inventory identifies one removed private environment.",
+    "capture_limit": "Successful receipt does not retain raw Arras import origin or Python patch version; origin validation is source-enforced, not re-inspected after cleanup."
+  },
+  "qualification_limits": [
+    "64 pass and eight reviewed limits are distinct outcomes; seven reader-only cases are inapplicable.",
+    "Runtime capture is Python major/minor plus platform and architecture, without patch version or OS release.",
+    "Native inventory is distribution-declared binaries; system dynamic linking was not audited.",
+    "No other platform, UI, SDK, sdist, managed-service, or production federation qualification is inferred."
+  ],
+  "runtime": {
+    "machine": "arm64",
+    "python": "3.11",
+    "sys_platform": "darwin"
+  },
+  "schema": "arras.installed-native-review.v1",
+  "selected_native_wheels": [
+    {
+      "distribution": "truss-toolkit",
+      "filename": "truss_toolkit-0.0.48-py3-none-any.whl",
+      "sha256": "1aedf614ff3d3ff7a61bd4d91887ede650a7135d1239e8564c1c297c0ddc37c3",
+      "version": "0.0.48"
+    },
+    {
+      "distribution": "weft-sql",
+      "filename": "weft_sql-0.4.51-cp39-abi3-macosx_11_0_arm64.whl",
+      "sha256": "e60e552f02c670b43a43111b08d26d6b415aaa9b9de42f241c37ad1d9fdd2487",
+      "version": "0.4.51"
+    },
+    {
+      "distribution": "pgserver-pg18",
+      "filename": "pgserver_pg18-18.6.1-cp311-cp311-macosx_14_0_arm64.whl",
+      "sha256": "fd42f07982693e16478ed42a297890d142d22250116e08887146e690f0dd2649",
+      "version": "18.6.1"
+    },
+    {
+      "distribution": "psycopg-binary",
+      "filename": "psycopg_binary-3.3.6-cp311-cp311-macosx_11_0_arm64.whl",
+      "sha256": "f0535693ce476a722b718b002d5d2c27d47e71ca945276ac194409c98e74c492",
+      "version": "3.3.6"
+    },
+    {
+      "distribution": "mini-racer",
+      "filename": "mini_racer-0.14.1-py3-none-macosx_11_0_arm64.whl",
+      "sha256": "56cc6965a1665a50d8d613bc43aa83b4cec6b1f09acc69dc4c2845dacb201463",
+      "version": "0.14.1"
+    },
+    {
+      "distribution": "rpds-py",
+      "filename": "rpds_py-2026.9.1-cp311-cp311-macosx_11_0_arm64.whl",
+      "sha256": "3231c4c0e521dafa5be0c9f114ee2c2ad46650836f2d72caa86801950c3e7044",
+      "version": "2026.9.1"
+    },
+    {
+      "distribution": "psutil",
+      "filename": "psutil-7.2.2-cp36-abi3-macosx_11_0_arm64.whl",
+      "sha256": "1a7b04c10f32cc88ab39cbf606e117fd74721c831c98a27dc04578deb0c16979",
+      "version": "7.2.2"
+    }
+  ],
+  "status": "accepted",
+  "tracked_find_links_sha256": "fbf184b300c70b2dab7d8233227aeb99547cf69e186dac55061146cfef1a0f7a",
+  "tracked_template_sha256": "d064aeb34e4f777f2eb11d5bdf215e3d49822ed4b41a41d47191592dde6a4f99",
+  "verifier_source_sha256": {
+    "_native_artifacts.py": "f84acaffabe1c46feb25a6e15239e10f99cd6069e8f1587d0a0b6dfa903a2446",
+    "_native_install.py": "a2da9ebf018e601a55eaf7d3a2db3f10fd2a1b2d3efa49a0023daba56c6a8b8a",
+    "_native_payload.py": "8b4460ace382cd7948c673a54e7580bfd8c05381d486c5bd85a1f3801452a27b",
+    "_native_process.py": "f14699e1f0c9d808ea04057313b377dc67e66b80abb0166de3d9b7bc5b6eed8b",
+    "verify_native.py": "d8a41e30ef05fc7ce0be1b83fe3bc49d31f83983060baea54809bf04c632790a"
+  }
+}

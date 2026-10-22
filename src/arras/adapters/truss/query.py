@@ -49,10 +49,12 @@ COMPLETE = "complete-entity"
 PAGE_PROFILES = ("entity-page", "related-entity-page", "count-summary")
 _STAR = re.compile(r"\.\s*\*")  # an `alias.*`: the only lexical test the adapter makes
 _PARAM_TYPES = (str, int, bool, Decimal)  # Truss accepts exactly these, by exact type
-_SUPPORTED = ["Weft statements Truss 0.0.45 compiles within its bounds"]
+_SUPPORTED = ["Weft statements Truss compiles within its bounds"]
 # Weft codes that mean a construct or type the dialect does not take (Truss reports a plain syntax
 # error under WFT-UNSUPPORTED too, so a syntax error is not told from an unsupported construct).
-_UNSUPPORTED_CODES = frozenset({"WFT-UNSUPPORTED", "WFT-CAPABILITY", "WFT-TYPE", "WFT-PROFILE"})
+_UNSUPPORTED_CODES = frozenset(
+    {"WFT-UNSUPPORTED", "WFT-CAPABILITY", "WFT-TYPE", "WFT-PROFILE", "WFT-SOURCE-UNAVAILABLE"}
+)
 _NO_SOURCE = "No queryable record matches source"  # a type outside the module or not in it
 FACTS: dict[str, str] = {
     "_version": "integer",

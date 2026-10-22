@@ -433,6 +433,11 @@ def test_another_unsupported_refusal_is_not_retried_under_a_page_profile(code: s
             None,
         ),
         (
+            refused("invalid_query", ("WFT-SOURCE-UNAVAILABLE", "No queryable source")),
+            Unsupported,
+            None,
+        ),
+        (
             refused(
                 "invalid_query", ("WFT-NAME-MISSING", "Selected member name missing or ambiguous")
             ),
@@ -506,7 +511,7 @@ def test_an_error_outcome_maps_by_the_connection_layer() -> None:
 def test_describe_declares_the_profiles_when_the_weft_release_is_installed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(describe_module.metadata, "version", lambda name: "0.4.49")
+    monkeypatch.setattr(describe_module.metadata, "version", lambda name: "0.4.51")
     weft = describe_module.weft_support()
     assert weft == WeftSupport(
         "weft-sql/0.2.0", ("entity-page", "related-entity-page", "count-summary", "general")

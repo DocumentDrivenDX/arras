@@ -1,0 +1,108 @@
+{
+  "schema": "arras.ui.narrow-visual-review.v1",
+  "status": "approved_visual_baselines",
+  "reviewed_file_count": 8,
+  "wheel_sha256": "eeb787b836c4fa6f4309bd33a1119d51883ab2fd53d75a89b34893d509644e80",
+  "npm_sha256": "53488f14f7587c191f81ea0a1741fca080960529b7955baee1a6bcb2e05400df",
+  "receipts": [
+    {
+      "filename": "external-theme-compiled-host-browser-darwin.json",
+      "visual": "baselines-updated",
+      "browser": "Chromium 153.0.8010.12"
+    },
+    {
+      "filename": "external-theme-compiled-host-console-darwin.json",
+      "visual": "baselines-updated",
+      "browser": "Chromium 153.0.8010.12"
+    },
+    {
+      "filename": "external-theme-prebuilt-page-browser-darwin.json",
+      "visual": "baselines-updated",
+      "browser": "Chromium 153.0.8010.12"
+    },
+    {
+      "filename": "external-theme-prebuilt-page-console-darwin.json",
+      "visual": "baselines-updated",
+      "browser": "Chromium 153.0.8010.12"
+    }
+  ],
+  "files": [
+    {
+      "filename": "external-theme-compiled-host-browser-light-darwin.png",
+      "path": "/Users/erik/Projects/arras/tests/downstream/baselines/darwin/external-theme-compiled-host-browser-light-darwin.png",
+      "sha256": "1ed71c966fb6d45fb22ab67683a75d238e9703346d33a2124431429854168710",
+      "width": 1280,
+      "height": 879,
+      "verdict": "approved_visual_baseline",
+      "review": "Inspected full image at native 1280-pixel width; expected route branding, legible controls/content, stable light/dark palette, visible focus indicator and no unexpected overlap or clipping. Compiled routes include viewport-sized app below synthetic controls."
+    },
+    {
+      "filename": "external-theme-compiled-host-browser-dark-darwin.png",
+      "path": "/Users/erik/Projects/arras/tests/downstream/baselines/darwin/external-theme-compiled-host-browser-dark-darwin.png",
+      "sha256": "c1404e800f556e769125510701a7cd780a716069429deb67fa8548d2c4cf8c7f",
+      "width": 1280,
+      "height": 879,
+      "verdict": "approved_visual_baseline",
+      "review": "Inspected full image at native 1280-pixel width; expected route branding, legible controls/content, stable light/dark palette, visible focus indicator and no unexpected overlap or clipping. Compiled routes include viewport-sized app below synthetic controls."
+    },
+    {
+      "filename": "external-theme-compiled-host-console-light-darwin.png",
+      "path": "/Users/erik/Projects/arras/tests/downstream/baselines/darwin/external-theme-compiled-host-console-light-darwin.png",
+      "sha256": "4bc7a844379980be1b4e3b1f304b864020f4dae1d4019e962b4353b937c56caf",
+      "width": 1280,
+      "height": 879,
+      "verdict": "approved_visual_baseline",
+      "review": "Inspected full image at native 1280-pixel width; expected route branding, legible controls/content, stable light/dark palette, visible focus indicator and no unexpected overlap or clipping. Compiled routes include viewport-sized app below synthetic controls."
+    },
+    {
+      "filename": "external-theme-compiled-host-console-dark-darwin.png",
+      "path": "/Users/erik/Projects/arras/tests/downstream/baselines/darwin/external-theme-compiled-host-console-dark-darwin.png",
+      "sha256": "8a031a3c086c87a3b67936976fffbe8dfe5cc4952dc70a16efb2a536bed6324c",
+      "width": 1280,
+      "height": 879,
+      "verdict": "approved_visual_baseline",
+      "review": "Inspected full image at native 1280-pixel width; expected route branding, legible controls/content, stable light/dark palette, visible focus indicator and no unexpected overlap or clipping. Compiled routes include viewport-sized app below synthetic controls."
+    },
+    {
+      "filename": "external-theme-prebuilt-page-browser-light-darwin.png",
+      "path": "/Users/erik/Projects/arras/tests/downstream/baselines/darwin/external-theme-prebuilt-page-browser-light-darwin.png",
+      "sha256": "228e90b5fad3a8dd0d00a78d584be60aa2f036437ce08f67f82cdbbd2c121a74",
+      "width": 1280,
+      "height": 720,
+      "verdict": "approved_visual_baseline",
+      "review": "Inspected full image at native 1280-pixel width; expected route branding, legible controls/content, stable light/dark palette, visible focus indicator and no unexpected overlap or clipping. Compiled routes include viewport-sized app below synthetic controls."
+    },
+    {
+      "filename": "external-theme-prebuilt-page-browser-dark-darwin.png",
+      "path": "/Users/erik/Projects/arras/tests/downstream/baselines/darwin/external-theme-prebuilt-page-browser-dark-darwin.png",
+      "sha256": "efb40cded0ec54ee7d3df1e69547568a85bd6915fb3712758bdcd5fafda76f02",
+      "width": 1280,
+      "height": 720,
+      "verdict": "approved_visual_baseline",
+      "review": "Inspected full image at native 1280-pixel width; expected route branding, legible controls/content, stable light/dark palette, visible focus indicator and no unexpected overlap or clipping. Compiled routes include viewport-sized app below synthetic controls."
+    },
+    {
+      "filename": "external-theme-prebuilt-page-console-light-darwin.png",
+      "path": "/Users/erik/Projects/arras/tests/downstream/baselines/darwin/external-theme-prebuilt-page-console-light-darwin.png",
+      "sha256": "718d242cded25f2fee3b9874016c4dee51758a74921988261ed2b1709cc3e3a3",
+      "width": 1280,
+      "height": 720,
+      "verdict": "approved_visual_baseline",
+      "review": "Inspected full image at native 1280-pixel width; expected route branding, legible controls/content, stable light/dark palette, visible focus indicator and no unexpected overlap or clipping. Compiled routes include viewport-sized app below synthetic controls."
+    },
+    {
+      "filename": "external-theme-prebuilt-page-console-dark-darwin.png",
+      "path": "/Users/erik/Projects/arras/tests/downstream/baselines/darwin/external-theme-prebuilt-page-console-dark-darwin.png",
+      "sha256": "c90b7703cd34109816ecee0c4f0a79f27ddfb710b3fef0bf8e4028eeb8dcde2c",
+      "width": 1280,
+      "height": 720,
+      "verdict": "approved_visual_baseline",
+      "review": "Inspected full image at native 1280-pixel width; expected route branding, legible controls/content, stable light/dark palette, visible focus indicator and no unexpected overlap or clipping. Compiled routes include viewport-sized app below synthetic controls."
+    }
+  ],
+  "limits": [
+    "Visual approval of these eight narrow route baselines only.",
+    "Capture receipts remain baselines-updated; ordinary comparison execution is still required.",
+    "Does not approve the 67 canonical visual tests/images or establish the complete 272-case suite."
+  ]
+}

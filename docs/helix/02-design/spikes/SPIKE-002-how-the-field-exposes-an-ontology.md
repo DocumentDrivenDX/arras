@@ -30,7 +30,7 @@ Terms used in this spike:
 - Truss (DocumentDrivenDX) is the UMF-driven property-graph engine that Arras runs on Lakebase as the authoritative store for mutable types.
 - Ashlar (DocumentDrivenDX) is the toolkit for property-graph ontologies on a warehouse; its gold Delta tables on Unity Catalog serve bounded reads over the full ontology.
 - Lakebase is Databricks' managed Postgres. Unity Catalog is the Databricks governance layer for the warehouse.
-- praxis is a Databricks app that embeds Arras as a library.
+- the host is the application that embeds Arras as a library.
 - ADR is an architecture decision record. ADR-011 (read-only GraphQL surface generated from the type registry), ADR-013 (Arras as an ontology interface over Truss and Ashlar) and ADR-015 (writes are UMF actions on the authoritative backend) are the decisions this spike tests.
 - MCP (Model Context Protocol, Anthropic's open protocol for agent tools) is the transport agents use to call tools.
 - CQRS (command query responsibility segregation) is the pattern of one command model for writes with separate read projections.

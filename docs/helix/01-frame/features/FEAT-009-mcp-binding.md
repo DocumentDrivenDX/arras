@@ -27,7 +27,7 @@ ddx:
 
 ## Overview
 
-The MCP Binding implements PRD FR-44 to FR-46. It is a stdio MCP (Model Context Protocol, Anthropic's open protocol for agent tools) server, `python -m arras.mcp`, built on the library. It exposes `describe`, `query`, `validate_action` and one tool per declared action, each taking one item or a batch. Praxis (the Databricks app that embeds Arras, which consumes MCP through a local stdio adapter only) and any MCP client can then read and change the ontology with no Python import. ADR-016 (the architecture decision record for this binding) records the choice.
+The MCP Binding implements PRD FR-44 to FR-46. It is a stdio MCP (Model Context Protocol, Anthropic's open protocol for agent tools) server, `python -m arras.mcp`, built on the library. It exposes `describe`, `query`, `validate_action` and one tool per declared action, each taking one item or a batch. A workflow host that consumes MCP through a local stdio adapter and any MCP client can then read and change the ontology with no Python import. ADR-016 (the architecture decision record for this binding) records the choice.
 
 ## Ideal Future State
 
@@ -35,7 +35,7 @@ A host starts one process per signed-in person with that person's token. An agen
 
 ## Problem Statement
 
-- **Current situation**: Praxis may reach Arras only through a local stdio MCP adapter. Python plugins use the library directly.
+- **Current situation**: The embedding host may reach Arras only through a local stdio MCP adapter. Python plugins use the library directly.
 - **Pain points**: A generic invoke tool cannot be classified or approved per action. An agent in a long session is stalled by one backend or flooded by a large result. A shared identity would let one agent act as another person.
 - **Desired outcome**: One implementation behind two bindings, with one tool per action, one person per process and answers an agent can use.
 
@@ -106,12 +106,12 @@ MCP-06. An action tool accepts up to 100 `items`, applied atomically or independ
 ## Constraints and Assumptions
 
 - The MCP binding is stdio only. A shared HTTP server is deferred (ADR-016).
-- How praxis hands a refreshed token to a running process, and the claim that names the user, are open with the praxis owners.
+- How the embedding host hands a refreshed token to a running process, and the claim that names the user, are open with the host integration owners.
 
 ## Dependencies
 
 - **Other features**: FEAT-001 (`query`, `describe`), FEAT-002 (the registry), FEAT-003 (actions and batches), FEAT-005 (the person's own token), FEAT-006 (the only environment reader).
-- **External services**: an MCP client such as praxis; the exact surface lives in CONTRACT-007 (MCP binding); ADR-016 and ADR-017 (the architecture decision record on reaching backends with the user's own token).
+- **External services**: an MCP client such as a workflow application; the exact surface lives in CONTRACT-007 (MCP binding); ADR-016 and ADR-017 (the architecture decision record on reaching backends with the user's own token).
 - **PRD requirements**: FR-44 to FR-46 (P0 item 1; the PRD lists them under the Actions subsystem).
 
 ## Out of Scope

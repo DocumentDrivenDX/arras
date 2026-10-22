@@ -1,0 +1,18 @@
+{
+  "verdict": "approved_source_only",
+  "files": {
+    ".github/workflows/release.yml": "96bebef525985afdd861b4c57ba91cafac527f46ed11d4c2d6c482a86ca15d23",
+    ".github/scripts/verify_public_release_assets.py": "5c84e601d16bbaf9bf71a0f16a403f1c18508b9ced74543fda22c2298d70f134",
+    "tests/test_release_public_download.py": "1aca6688ae1bba20cb2762f213df6eb0926e61ca2740a1d3a85927ed8adca5d0",
+    "tests/test_truss_docs.py": "35160cbdc4304b886a16e048cdcf98df7c27765431c8331bfa4297dae69e070b"
+  },
+  "independent_tests": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -p no:cacheprovider tests/test_release_public_download.py tests/test_truss_docs.py -q",
+    "passed": 30,
+    "seconds": 7.16
+  },
+  "review": "Validated-tag checkout and tracked notes-file preserve approved release DAG and trusted/public asset byte comparisons.",
+  "limits": [
+    "No actual native, UI, publication, public network or registry execution established."
+  ]
+}

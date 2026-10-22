@@ -5,7 +5,7 @@ ddx:
   activity: design
   status: draft
   owner: Erik LaBianca
-  updated: 2026-10-11
+  updated: 2026-10-22
   authoring:
     home: repo
   links:
@@ -84,6 +84,64 @@ Terms. A span is one timed operation in a trace. W3C Trace Context is the standa
 **Reasons.** `reason` is one of `not_configured`, `unreachable`, `access_denied`, `migration_failed`, `unsupported_version`, or `other`: a backend's own wording is never emitted.
 
 **Loss.** Telemetry never raises into the operation it observes. A signal that could not be emitted is counted, readable as `arras.telemetry.dropped()`. Arras does not sample.
+
+### Optional host-scoped naming projection
+
+CONTRACT-005 binds `TelemetryNames`, `TelemetryContext`, launcher factories and
+ASGI composition. This is an additive v1 option; without it the names, logger
+records, attributes, severities, counts and global-API fallback above are unchanged.
+Canonical `EVENTS`, allowlisted attribute suffixes, `arras` tracer instrumentation
+scope and log record origin keys remain stable. Only the selected host context's
+output is projected, once, **after** event membership and `clean` default-deny
+validation:
+
+| Output | Selected projection | Stable identity |
+| --- | --- | --- |
+| Span name and telemetry log event/message prefix | Replace the initial `arras.` of a catalogued event with `<event_prefix>.` | The canonical event remains in `arras_event`; unknown events are still dropped |
+| Span attribute name | `<attribute_namespace>.<allowlisted-suffix>` | `error.type` stays the OTel semantic-convention name; suffix allowlist and safe values are unchanged |
+| Telemetry logger route | `<log_prefix>.telemetry` | `arras_attrs` keeps its current sanitized suffix-keyed mapping; no duplicate alias record |
+| Other Arras diagnostic logger route | Replace only initial `arras` with `log_prefix` | Existing suffix/message/severity rules remain; no arbitrary logger names or global record rewrite |
+| Resource `service.name` | Exact explicit value on the caller-owned provider Resource | Never a span attribute substitute or inferred person/service identity |
+
+The diagnostic creation sites are `operate/wire.py`, `operate/schema_app.py`,
+`operate/__init__.py`, `mcp/process.py`, `mcp/server.py`, `sandbox.py` and
+`console/__init__.py` (seven besides `telemetry.py`). A small private context-aware
+logger route may implement this; it must not add handlers, change unrelated host
+loggers, duplicate records or change canonical default messages. Names are bounded
+configuration values, not a new attribute-content escape hatch. Do not emit the
+Brand, namespace configuration object, provider exceptions, credentials, inputs,
+raw data or principal identity as additional attributes.
+
+Each operation retains its entry context/provider through completion; immediate
+events and diagnostics use the active context. Nested/concurrent hosts must route
+to their own names and providers, and reset after failure. The host owns SDK/exporter
+lifecycle. Explicit-service/provider mismatch is a pre-operation configuration
+refusal; failures while acquiring a tracer, recording, finishing or exporting must
+not change business results or route a signal to another host/global fallback.
+Existing dropped-signal accounting remains readable. Existing diagnostic sites
+that use `exc_info`, `log.exception` or raw exception/detail interpolation must be
+changed to fixed safe labels plus exception class only; selecting a new route
+does not qualify an existing leak as redacted. Actual sensitive principal/operator
+callback and execution/provider-fault tests must capture DEBUG logs as well as
+normal severity and assert no message, traceback or sentinel reaches any route.
+
+Arras-owned executor submissions must explicitly carry a fresh copied context
+for each submission. Actual worker-backed console/operator receiver tests must
+prove the caller context reaches principal/operator callbacks and execution,
+including completion after caller cancellation without cross-host routing.
+No SDK or provider is a valid
+log-only mode only when no explicit service name requires a matching Resource.
+
+Actual SDK receiver tests MUST prove two concurrently interleaved contexts with
+different Resource service names, event/attribute/log prefixes, and no global
+provider mutation; nested restoration and finish-time snapshot behavior; default
+compatibility; rejection of invalid names/provider mismatch before work; unchanged
+traceparent/error/status semantics; and sensitive/unknown-value default denial in
+both logs and exported spans. Inject failing provider/logger/exporter paths and
+assert business results remain unchanged. A fresh installed public consumer must
+construct both host-owned SDK providers and exercise public direct-library, MCP
+and ASGI contexts without private imports or source checkout fallback. Source-only
+name assertions or a span `service.name` attribute do not qualify this requirement.
 
 ## Precedence and Compatibility
 

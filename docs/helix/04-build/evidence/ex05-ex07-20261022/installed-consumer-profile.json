@@ -1,0 +1,25 @@
+{
+  "not_established": [
+    "fresh public dependency resolution",
+    "hosted reusable workflow execution",
+    "native Truss or Ashlar corpus",
+    "browser/theme/accessibility execution",
+    "final released Arras artifact"
+  ],
+  "observed": [
+    "real Hatchling backend consumer build",
+    "seed console script and graph python-module execution",
+    "installed imports under new venv outside Arras checkout",
+    "72 fixed memory-store corpus cases passed"
+  ],
+  "qualification": "installed Arras and real-built neutral consumer wheels with explicitly reused dependency directory",
+  "receipt_sha256": "f7371a9926947048602a0a22e999ca7b560bd61e937aeb8c176837ccaf9d8fee",
+  "schema_version": 1,
+  "source_inputs": {
+    "examples/extension_host/pyproject.toml": "94d3d0a2975168010fe715740c4d05bd5602b0679318bdbe08efaa1fed3b17c2",
+    "examples/extension_host/src/extension_host/resources/graph.json": "f2a6a1ba12a46d89ec7c616997204208dbb1d917e5ef9cc35b3d964299ef526a",
+    "examples/extension_host/src/extension_host/resources/module.umf.json": "46a2b99557e0f0d810c04bb0f8f8018ad10cc89fe48255749f5be20693ecd461",
+    "examples/extension_host/src/extension_host/resources/seed.json": "41fa55c3aada33b62297d27ae443ab92b697aa6c51592876f2e8d627b9878982",
+    "tools/verify_extension_host.py": "83dcbbd4e058caaebe37df06df2e2e328c97412bab9be2bb69c81c027e4e1e93"
+  }
+}

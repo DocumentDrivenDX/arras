@@ -23,5 +23,22 @@ export { SchemaExport } from "./areas/SchemaExport";
 export { SchemaImport } from "./areas/SchemaImport";
 export { DEFAULT_EXPLORER_BASE, UmfSource, type UmfSourceProps } from "./areas/UmfSource";
 export { annotationsFor, entryId, toEntries, typeForSelection } from "./areas/umfBrowser";
+export { DesignSystemProvider, useDesignSystem } from "./ds/context";
+export type {
+  ButtonProps,
+  ButtonVariant,
+  DesignSystem,
+  FieldChrome,
+  MarkProps,
+  NoticeProps,
+  NoticeTone,
+  RoleToken,
+  SelectOption,
+  SelectProps,
+  TextAreaProps,
+  TextFieldProps,
+} from "./ds/contract";
+export { ROLE_TOKENS } from "./ds/contract";
+export { defaultDesignSystem } from "./ds/default";
 export type { Brand } from "./lib/brand";
 export { DEFAULT_BRAND, readBrandMeta } from "./lib/brand";

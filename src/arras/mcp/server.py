@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import difflib
 import json
-import logging
 import re
 import time
 from collections.abc import Callable, Iterable, Mapping
@@ -23,11 +22,13 @@ from typing import Any, TextIO
 
 from arras import telemetry
 from arras.core import Arras, Ontology
+from arras.distribution import DistributionConfig
 from arras.errors import (
     ArrasError,
     Conflict,
     Invalid,
     NotYetCurrent,
+    PolicyRefused,
     PreconditionFailed,
     Refused,
     Unavailable,
@@ -47,9 +48,10 @@ from arras.model import COLUMN_SCALARS, ModuleInfo
 from arras.names import quoted, quoted_type
 from arras.results import BatchReceipt, Receipt, Validation
 from arras.serialize import jsonable
+from arras.telemetry import _logger
 from arras.types import Principal, Rows
 
-log = logging.getLogger("arras.mcp")
+log = _logger("arras.mcp")
 
 # 2025-03-26 required batches; this server answers one message per line and offers only the
 # revision that dropped them.
@@ -115,18 +117,36 @@ class McpServer:
         name: str = "arras",
         version: str = "0.1.0",
         clock: Callable[[], float] = time.monotonic,
+        distribution: DistributionConfig | None = None,
+        telemetry_context: telemetry.TelemetryContext | None = None,
     ) -> None:
         self.h = arras
         self.principal = principal
-        self.info = {"name": name, "version": version}
+        if distribution is None:
+            self.distribution = DistributionConfig(
+                mcp_server_name=name,
+                telemetry=(telemetry_context.names if telemetry_context is not None else None)
+                or DistributionConfig().telemetry,
+            )
+        else:
+            self.distribution = distribution
+        self.telemetry_context = telemetry._context_for(telemetry_context, distribution)
+        self.info = {"name": self.distribution.mcp_server_name, "version": version}
         self.clock = clock
-        self._listed: tuple[Any, ...] | None = None  # the signature the host last listed
-        self._tools: dict[str, str] = {}  # tool name -> qualified action, as last listed
+        self._listed: tuple[Any, ...] | None = None  # the full signature the host last listed
+        self._listed_actions: tuple[Any, ...] | None = None  # action aliases last shown to the host
+        self._requires_relist = False  # stale aliases stay refused until an explicit tools/list
+        self._tools: dict[str, str] = {}  # exposed tool name -> canonical qualified action
+        self._fixed_names = {self._expose(n): n for n in FIXED}
         self._checked = float("-inf")
         self._queue: list[dict[str, Any]] = []
 
     # -- JSON-RPC
     def handle(self, msg: Any) -> dict[str, Any] | None:
+        with self.telemetry_context.activate():
+            return self._handle(msg)
+
+    def _handle(self, msg: Any) -> dict[str, Any] | None:
         if not isinstance(msg, dict) or msg.get("jsonrpc") != "2.0":
             return self._error(None, _INVALID_REQUEST, "a message is a JSON-RPC 2.0 object")
         if "method" not in msg:
@@ -162,6 +182,7 @@ class McpServer:
 
     def _dispatch(self, method: str, params: dict[str, Any]) -> Any:
         if method == "initialize":
+            self._validate_initial_inventory()
             wanted = params.get("protocolVersion")
             return {
                 "protocolVersion": wanted if wanted in PROTOCOLS else PROTOCOLS[0],
@@ -212,11 +233,22 @@ class McpServer:
         mods = o.modules()
         status = self.h.status()
         return (
-            tuple(
-                (t.tool, t.action.name, str(m.revision)) for m in mods for t in action_tools([m])
-            ),
+            self._action_signature(mods),
             tuple(sorted((n, s.available) for n, s in status.items())),
         )
+
+    @staticmethod
+    def _action_signature(mods: list[ModuleInfo]) -> tuple[Any, ...]:
+        return tuple(
+            (t.tool, t.action.name, str(m.revision)) for m in mods for t in action_tools([m])
+        )
+
+    def _action_mapping(self, mods: list[ModuleInfo]) -> dict[str, str]:
+        return {
+            self._expose(tool.tool): tool.action.name
+            for module in mods
+            for tool in action_tools([module])
+        }
 
     def _note_changes(self) -> None:
         """Queue `tools/list_changed` when what was listed no longer holds; at most once per
@@ -230,10 +262,42 @@ class McpServer:
             if o is None:
                 return
             if self._signature(o) != self._listed:
+                current = self._action_mapping(o.modules())
                 self._listed = None  # the next list is the new baseline
+                self._listed_actions = None
+                # Keep only prior aliases still bound to the same action; never retarget one.
+                self._tools = {
+                    name: action
+                    for name, action in self._tools.items()
+                    if current.get(name) == action
+                }
+                self._requires_relist = True
                 self._queue.append({"jsonrpc": "2.0", "method": "notifications/tools/list_changed"})
         except Exception as e:  # a transient failure is not a change
             log.warning("tool list check failed: %s", type(e).__name__)
+
+    def _expose(self, canonical: str) -> str:
+        prefix = self.distribution.mcp_tool_prefix
+        return f"{prefix}_{canonical}" if prefix else canonical
+
+    def _validate_names(self, mods: list[ModuleInfo]) -> None:
+        names = [self._expose(name) for name in (*FIXED, *(t.tool for t in action_tools(mods)))]
+        if len(names) != len(set(names)) or any(
+            len(name) > 128 or not name.isascii() for name in names
+        ):
+            raise _Protocol(
+                _INTERNAL, "configured MCP tool names collide or exceed the supported length"
+            )
+
+    def _validate_initial_inventory(self) -> None:
+        mods: list[ModuleInfo] = []
+        o = self._session()
+        if o is not None:
+            try:
+                mods = o.modules()
+            except ArrasError:
+                pass  # unavailable registries do not imply that an unseen action collides
+        self._validate_names(mods)
 
     def _list(self) -> list[dict[str, Any]]:
         o = self._session()
@@ -244,7 +308,10 @@ class McpServer:
             except ArrasError:
                 mods = []  # listed again once the backends answer; the fixed tools remain
         tools = action_tools(mods)
-        self._tools = {t.tool: t.action.name for t in tools}
+        self._validate_names(mods)
+        self._tools = {self._expose(t.tool): t.action.name for t in tools}
+        self._listed_actions = self._action_signature(mods)
+        self._requires_relist = False
         try:
             self._listed = self._signature(o) if o is not None else None
         except ArrasError:
@@ -255,7 +322,7 @@ class McpServer:
     def _tool_defs(self, mods: list[ModuleInfo], tools: list[ActionTool]) -> list[dict[str, Any]]:
         defs: list[dict[str, Any]] = [
             {
-                "name": "describe",
+                "name": self._expose("describe"),
                 "description": "The modules you may read: types with columns and relationships, per-backend capabilities and status, actions and their tool names, and the ontology revision.",
                 "inputSchema": {
                     "type": "object",
@@ -265,7 +332,7 @@ class McpServer:
                 "annotations": {"readOnlyHint": True, "openWorldHint": False},
             },
             {
-                "name": "query",
+                "name": self._expose("query"),
                 "description": f"Read the ontology. {STATEMENT} {self._example(mods)}",
                 "inputSchema": {
                     "type": "object",
@@ -283,7 +350,7 @@ class McpServer:
                 "annotations": {"readOnlyHint": True, "openWorldHint": False},
             },
             {
-                "name": "validate_action",
+                "name": self._expose("validate_action"),
                 "description": "Check an action's inputs and preconditions and see the effects it would have, writing nothing.",
                 "inputSchema": {
                     "type": "object",
@@ -304,7 +371,7 @@ class McpServer:
                 ann["destructiveHint"] = True  # only ever set to tighten: the default is the host's
             defs.append(
                 {
-                    "name": t.tool,
+                    "name": self._expose(t.tool),
                     "description": f"{t.action.description} (action {t.action.name}). Pass exactly one of inputs, or items (1 to {MAX_BATCH}) for a batch; repeat safely with an idempotency_key.",
                     "inputSchema": action_tool_schema(t),
                     "annotations": ann,
@@ -330,7 +397,8 @@ class McpServer:
     def _call(self, name: str, args: dict[str, Any]) -> dict[str, Any]:
         o = self._session()
         if o is None:
-            if name == "describe":
+            self._validate_names([])
+            if name == self._expose("describe"):
                 return _text(
                     {
                         "modules": [],
@@ -340,15 +408,35 @@ class McpServer:
                 )
             return _fail("refused", "no usable token", NO_TOKEN)  # even for a name it cannot place
         try:
-            if name in FIXED:
-                if name == "describe":
+            fixed = self._fixed_names.get(name)
+            mods = o.modules()
+            self._validate_names(mods)
+            changed = False
+            if (
+                self._listed_actions is not None
+                and self._action_signature(mods) != self._listed_actions
+            ):
+                current = self._action_mapping(mods)
+                self._listed = None
+                self._listed_actions = None
+                self._tools = {
+                    tool_name: action
+                    for tool_name, action in self._tools.items()
+                    if current.get(tool_name) == action
+                }
+                self._requires_relist = True
+                self._checked = self.clock()
+                self._queue.append({"jsonrpc": "2.0", "method": "notifications/tools/list_changed"})
+                changed = True
+            if fixed is not None:
+                if fixed == "describe":
                     return self._describe(o, args)
-                mods = o.modules() if name == "validate_action" else []
-                return self._query(o, args) if name == "query" else self._validate(o, mods, args)
-            if not self._tools:
+                return self._query(o, args) if fixed == "query" else self._validate(o, mods, args)
+            if name not in self._tools and (changed or self._requires_relist):
+                raise _Protocol(_INVALID_PARAMS, "tool inventory changed; list the tools again")
+            if not self._tools and not self._requires_relist:
                 self._list()  # a host that never listed gets the names it would have been given
             action = self._tools.get(name)
-            mods = o.modules()  # an outage or a refusal here is the answer, not "no such tool"
             found = (
                 next(
                     ((t, m) for m in mods for t in action_tools([m]) if t.action.name == action),
@@ -369,9 +457,13 @@ class McpServer:
         if want is not None and not isinstance(want, str):
             raise Invalid([_v("module", "type", "a module name")])
         found = o.describe(want) if want else o.describe()
-        by_tool = {a: t for t, a in self._tools.items()}
-        if not by_tool:
-            by_tool = {t.action.name: t.tool for t in action_tools(o.modules())}
+        current_modules = o.modules()
+        self._validate_names(current_modules)
+        by_tool = {
+            action: exposed
+            for module in current_modules
+            for exposed, action in self._action_mapping([module]).items()
+        }
         return _text(
             {
                 "modules": [_render(m, by_tool) for m in found],
@@ -472,10 +564,14 @@ class McpServer:
     # -- errors an agent can act on
     def _translate(self, e: ArrasError, o: Ontology) -> dict[str, Any]:
         if isinstance(e, Refused):
+            more: dict[str, Any] = {}
+            if isinstance(e, PolicyRefused):
+                more["policy_code"] = e.policy_code
             return _fail(
                 "refused",
                 f"{e.backend} refused {e.operation}",
                 "re-authenticate, or ask for access to the module",
+                **more,
             )
         if isinstance(e, Unavailable):
             return _fail(

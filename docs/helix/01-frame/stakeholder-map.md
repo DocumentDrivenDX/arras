@@ -35,7 +35,7 @@ Arras is the interface to an ontology over named backends, with the roles reader
 - **Contact Channel**: Pull requests and issues in this repository.
 
 ### Host-app developers
-- **Role**: Embed Arras in a host application (praxis is the first host), own the host's startup path and map its identity to a principal. Inferred as the host's integration owner.
+- **Role**: Embed Arras in a host application , own the host's startup path and map its identity to a principal. Inferred as the host's integration owner.
 - **Interest**: A catalog that deploys with the host through Arras's interface, imports nothing from the host's internals, cannot break shared-app startup, and gives the host context reads on behalf of the user.
 - **Influence**: Can accept or reject Arras as a module's store; own the host's startup path.
 - **Concerns**: Startup budget, migration safety across instances, an independence check in the build.

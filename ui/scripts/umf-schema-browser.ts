@@ -12,7 +12,8 @@
 // to the GitHub release's tarball digest, run this with --download, then the tests (ui/README.md).
 import { createHash } from "node:crypto";
 import { cpSync, existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { join, relative } from "node:path";
+import { createRequire } from "node:module";
+import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const PACKAGE = "@documentdrivendx/umf-schema-browser";
@@ -27,7 +28,10 @@ export const RELEASE = {
 export const LICENSE_FILES = ["LICENSE-MIT", "LICENSE-APACHE", "THIRD_PARTY_NOTICES.md"] as const;
 
 const UI = fileURLToPath(new URL("..", import.meta.url));
-export const PACKAGE_DIR = join(UI, "node_modules", ...PACKAGE.split("/"));
+const consumerRequire = createRequire(join(process.cwd(), "package.json"));
+export const PACKAGE_DIR = dirname(
+  dirname(consumerRequire.resolve(`${PACKAGE}/assets/index.html`)),
+);
 /** The directory a host serves at `explorerBase`; the build copies it to dist/umf-explorer. */
 export const ASSETS_DIR = join(PACKAGE_DIR, "assets");
 /** Where `npm run build` puts the assets, under the build's output directory. */

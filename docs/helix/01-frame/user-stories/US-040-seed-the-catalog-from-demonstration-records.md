@@ -27,11 +27,11 @@ ddx:
 
 **As a** Client developer
 **I want** to load the demonstration records with their identity, relationships and original provenance, repeatably
-**So that** the catalog runs on the interface inside praxis within the latency targets with data to browse, and the load is safe to rerun
+**So that** the catalog runs on the interface inside the embedding host within the latency targets with data to browse, and the load is safe to rerun
 
 ## Context
 
-This is interaction 5 of the [client interactions draft](../client-interactions-draft.md). The import is defined in CONTRACT-003 and is administrative: it runs as the administrative principal, not as a person. Praxis is the Databricks app that embeds Arras.
+This is interaction 5 of the [client interactions draft](../client-interactions-draft.md). The import is defined in CONTRACT-003 and is administrative: it runs as the administrative principal, not as a person. The embedding host owns its deployment and session identity.
 
 ## Walkthrough
 

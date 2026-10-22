@@ -25,7 +25,7 @@ from arras.backend import Provider
 from arras.errors import ArrasError, Unavailable, Unsupported
 
 ROOT = Path(__file__).resolve().parent.parent
-WEFT_VERSION = "0.4.49"
+WEFT_VERSION = "0.4.51"
 
 
 def _pyproject() -> dict[str, object]:
@@ -46,7 +46,7 @@ def test_the_toolkit_and_weft_resolve_from_the_committed_find_links_page() -> No
     page = (ROOT / "tools/find-links/index.html").read_text()
     assert f"/truss/releases/download/v{TOOLKIT_VERSION}/" in page
     assert f"/weft/releases/download/v{WEFT_VERSION}/" in page
-    assert len(re.findall(r"#sha256=[0-9a-f]{64}\"", page)) == 6 + 12  # plus pgserver-pg18
+    assert len(re.findall(r"#sha256=[0-9a-f]{64}\"", page)) == 4 + 12  # plus pgserver-pg18
 
 
 def test_the_weft_pin_is_one_version_everywhere() -> None:
@@ -174,17 +174,38 @@ def test_a_backend_with_no_connections_says_it_is_not_configured() -> None:
 
 def test_every_toolkit_and_weft_file_in_the_lock_carries_a_hash() -> None:
     lock = tomllib.loads((ROOT / "uv.lock").read_text())
-    checked = 0
+    expected = {
+        "truss-toolkit": {
+            "version": "0.0.48",
+            "files": {
+                "truss_toolkit-0.0.48-py3-none-any.whl": "sha256:1aedf614ff3d3ff7a61bd4d91887ede650a7135d1239e8564c1c297c0ddc37c3",
+            },
+        },
+        "weft-sql": {
+            "version": "0.4.51",
+            "files": {
+                "weft_sql-0.4.51-cp39-abi3-macosx_11_0_arm64.whl": "sha256:e60e552f02c670b43a43111b08d26d6b415aaa9b9de42f241c37ad1d9fdd2487",
+                "weft_sql-0.4.51-cp39-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl": "sha256:42f846d689ace027d6bb2951f27c587660d4e5151285fe911ce7a3006d0001de",
+                "weft_sql-0.4.51-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl": "sha256:a23142f12b59444138b588a8a764666b025552a14036f62d83af022153f1a0a5",
+            },
+        },
+    }
+    found: dict[str, dict[str, str]] = {}
     for pkg in lock["package"]:
         if pkg["name"] not in ("truss-toolkit", "weft-sql"):
             continue
+        name = pkg["name"]
+        assert pkg["version"] == expected[name]["version"], name
         assert not Path(pkg["source"]["registry"]).is_absolute()
         files = [*pkg.get("wheels", []), *([pkg["sdist"]] if "sdist" in pkg else [])]
         assert files, pkg["name"]
+        found[name] = {}
         for f in files:
             assert re.fullmatch(r"sha256:[0-9a-f]{64}", f.get("hash", "")), f["url"]
-            checked += 1
-    assert checked == 6  # the toolkit's wheel (the sdist is not listed), Weft's five wheels
+            filename = f["url"].rsplit("/", 1)[-1]
+            assert filename not in found[name], filename
+            found[name][filename] = f["hash"]
+    assert found == {name: item["files"] for name, item in expected.items()}
 
 
 def test_the_truss_test_group_holds_the_local_server_and_every_wheel_is_hashed() -> None:
@@ -209,7 +230,7 @@ def test_a_missing_or_other_toolkit_names_the_extra(monkeypatch: pytest.MonkeyPa
     with pytest.raises(ImportError, match=r"arras\[truss\]"):
         require_toolkit()
     monkeypatch.setattr(metadata, "version", lambda name: "0.0.2")
-    with pytest.raises(ImportError, match="0.0.2 is installed but 0.0.45 is pinned"):
+    with pytest.raises(ImportError, match="0.0.2 is installed but 0.0.48 is pinned"):
         require_toolkit()
     monkeypatch.setattr(metadata, "version", lambda name: TOOLKIT_VERSION)
     assert require_toolkit() == TOOLKIT_VERSION
@@ -219,7 +240,7 @@ def test_a_missing_or_other_toolkit_names_the_extra(monkeypatch: pytest.MonkeyPa
 def test_the_installed_extra_is_the_pinned_tuple() -> None:
     import psycopg
 
-    assert require_toolkit() == "0.0.45"
+    assert require_toolkit() == "0.0.48"
     assert metadata.version("weft-sql") == WEFT_VERSION
     assert metadata.version("psycopg") == "3.3.6"
     assert psycopg.pq.version() == 180006  # libpq 18.6

@@ -1,0 +1,42 @@
+{
+  "verdict": "approved_source_corrections_and_compiled_factory_discovery_only",
+  "files": {
+    "ui/src/testkit/config.ts": "c68371bd6e0979c8033bd126598d305cb723aa0d44b3348ba5192c343c76f3ca",
+    "ui/src/testkit/resources.ts": "1394eba8bafd222c8ecf41e192d03b4b07546af3bef7391b8ecd8840125500fd",
+    "ui/src/testkit/inventory.ts": "08c3d816a3ca7bf14fa6601429a6ed5384440363f429e73fea757162131cc71d",
+    "ui/src/testkit/layout.ts": "790e609d549796f74c3566001710f046f77d90993bc3dd89c49e74d0492052eb",
+    "ui/src/testkit/host.tsx": "92d943aa3e18340acb120c481d4b24e45abcc766f61deb1c74937f84e4a17bfa",
+    "ui/vite.lib.config.ts": "832fb69908deac48d848025baee4546360e30321d7ca6bff4c84e67ec2c0a554",
+    "ui/scripts/run-downstream-qualification.mjs": "97c888a9e7482b9498abdadfd401e9c733e65faac48a0fbef4e39a3927bf3492",
+    "ui/scripts/pack-wheel.ts": "dcb8c60079329c5b41e86fc733e4bb0a8e4a85fb9c08585ba9daf5fea25c4880",
+    "ui/scripts/umf-schema-browser.ts": "18726a0d7eeadc65951e5c36aa5d8e8306cc8835098dd5ea13dbc21b079c6f5c",
+    "ui/e2e/brand.spec.ts": "0d4424e99b499d45befb69f01be93d00b242b0d33e79c405e984872aa8b2806e"
+  },
+  "independent_tests": {
+    "passed": 20,
+    "seconds": 1.46
+  },
+  "compiled_factory_discovery": {
+    "node": "26.12.1",
+    "flags": "ordinary Playwright CLI, no TypeScript strip workaround",
+    "darwin": {
+      "chromium": 132,
+      "schema-admin": 3,
+      "browser": 70,
+      "visual": 67
+    },
+    "simulated_linux": {
+      "chromium": 132,
+      "schema-admin": 3,
+      "browser": 70
+    },
+    "cleanup": "both fresh materialized directories removed by generated teardown scripts",
+    "script": "/private/tmp/sol_materialized_discovery_fixed.py",
+    "evidence_root": "/var/folders/z0/kv_wlyps77b_txh08w55z99w0000gn/T/sol-materialized-fixed-76j5jdgr"
+  },
+  "limits": [
+    "Compiled dist-lib plus carried verified resources copied into private consumer for discovery; final public-catalog integration and exact rebuilt wheel remain pending.",
+    "Linux selection was simulated, not Linux runtime.",
+    "No full packed themed browser suite, 67 visual baseline approval or final publication claim."
+  ]
+}

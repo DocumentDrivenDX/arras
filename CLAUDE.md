@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Arras: an open-source interface to an ontology. UMF-defined types and actions, reads that state their freshness, and a backend contract with a Truss adapter (authoritative, PostgreSQL or Lakebase) and an Ashlar adapter (replica, Unity Catalog). A Python library that host apps such as praxis embed. See `docs/helix/01-frame/prd.md`, `concerns.md`, ADR-013 to ADR-015 and the contracts in `docs/helix/02-design/contracts/`.
+Arras: an open-source interface to an ontology. UMF-defined types and actions, reads that state their freshness, and a backend contract with a Truss adapter (authoritative, PostgreSQL or Lakebase) and an Ashlar adapter (replica, Unity Catalog). A Python library that host apps such as a workflow application embed. See `docs/helix/01-frame/prd.md`, `concerns.md`, ADR-013 to ADR-015 and the contracts in `docs/helix/02-design/contracts/`.
 
 ## HELIX
 

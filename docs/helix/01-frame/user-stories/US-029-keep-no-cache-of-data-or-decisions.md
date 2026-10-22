@@ -31,15 +31,15 @@ ddx:
 
 ## Context
 
-This is interaction 9 of the [client interactions draft](../client-interactions-draft.md): praxis (the Databricks app that embeds Arras) reads a playbook for the signed-in user on every call. A cache would let a revoked user keep reading, and would hide a changed registry.
+This is interaction 9 of the [client interactions draft](../client-interactions-draft.md): the embedding host reads a playbook for the signed-in user on every call. A cache would let a revoked user keep reading, and would hide a changed registry.
 
 ## Walkthrough
 
-1. Praxis reads the playbook `pb-example-review` for a user.
+1. The workflow host reads the playbook `pb-example-review` for a user.
 2. The system sends the read to the backend.
-3. Praxis reads the same playbook for the same user again.
+3. The workflow host reads the same playbook for the same user again.
 4. The system sends the second read to the backend as well.
-5. An administrator revokes the user's access, and praxis reads the playbook a third time.
+5. An administrator revokes the user's access, and a workflow client reads the playbook a third time.
 6. The system refuses the read.
 
 ## Acceptance Criteria
@@ -58,7 +58,7 @@ This is interaction 9 of the [client interactions draft](../client-interactions-
 
 | Scenario | AC ID | Input / State | Action | Expected Result |
 |----------|-------|---------------|--------|-----------------|
-| Two reads | US-029-AC1 | `SELECT p.* FROM praxis.Playbook p WHERE p.key = 'pb-example-review'` | Run twice | Two backend reads |
+| Two reads | US-029-AC1 | `SELECT p.* FROM workflows.Playbook p WHERE p.key = 'pb-example-review'` | Run twice | Two backend reads |
 | Revoked | US-029-AC2 | Access revoked after the first read | Run the second read | `Refused` |
 | Registry | US-029-AC3 | Registry revision advances between two reads | Read the registry twice | The second read shows the new revision |
 | Decision | US-029-AC4 | Earlier call made while access was granted | Make a later call after revocation | Decided afresh; not reused |

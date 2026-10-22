@@ -24,6 +24,8 @@ jobs:
         with:
           enable-cache: true
       - run: uv sync --locked --extra truss
+      - name: Verify declared public origins and fixture provenance
+        run: uv run python tools/check_public_content.py
       - run: uv run ruff check . && uv run ruff format --check .
       - run: uv run pyright
       # The wheel carries the UI: the page and the npm tarball built from ui/ (ADR-027).
@@ -34,7 +36,11 @@ jobs:
           cache-dependency-path: ui/package-lock.json
       - run: npm ci && npm run build:wheel
         working-directory: ui
-      - run: uv build
+      - run: uv build --wheel && uv build --sdist
+      - name: Verify exact source and sdist-rebuilt artifacts
+        run: python tools/verify_distribution.py --output artifacts/distribution-verification.json dist/*.whl dist/*.tar.gz
+      - name: Verify installed extension host with fresh public dependencies
+        run: python tools/verify_extension_host.py --wheel dist/arras-*.whl --output-json artifacts/extension-host-fresh-dependencies.json --fresh-dependencies
       - name: The wheel installs on a clean interpreter and carries the UI
         run: |
           uv run --no-project --isolated --with dist/*.whl python -c "import importlib.util, arras, arras.ui, arras.adapters.truss; assert importlib.util.find_spec('truss') is None, 'the base wheel must not need Truss'; print(arras.CONTRACT_VERSIONS, arras.ui.npm_package().name); assert (arras.ui.STATIC / arras.ui.PAGE).is_file()"
@@ -42,6 +48,7 @@ jobs:
   ui:
     name: Operator Console UI
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     defaults:
       run:
         working-directory: ui
@@ -73,10 +80,89 @@ jobs:
       - run: npm run build:lib && npm run check:css -- dist-lib/styles.css
       # Every bare import in the library build is a dependency or a peer of the packed manifest.
       - run: npm run check:externals
-      - run: npx playwright install --with-deps chromium
+      - name: Configure official Ubuntu HTTPS sources and bounded APT
+        working-directory: .
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/configure_ubuntu_apt_sources.py --self-test
+          sudo python3 .github/scripts/configure_ubuntu_apt_sources.py --apply
+          if ! apt_main_config="$(sudo apt-config shell ARRAS_MAIN Dir::Etc::main/f 2>/dev/null)"; then
+            printf '%s\n' "$apt_main_config" >&2
+            exit 1
+          fi
+          if [ "$apt_main_config" != "ARRAS_MAIN='/etc/apt/apt.conf'" ]; then
+            printf '%s\n' "$apt_main_config" >&2
+            exit 1
+          fi
+          apt_main_path=/etc/apt/apt.conf
+          if sudo test -e "$apt_main_path" || sudo test -L "$apt_main_path"; then
+            if ! sudo test -f "$apt_main_path" || sudo test -L "$apt_main_path"; then
+              printf '%s\n' "$apt_main_config" >&2
+              exit 1
+            fi
+          fi
+          sudo tee -a "$apt_main_path" >/dev/null <<'EOF'
+
+          Acquire {
+            Retries "2";
+            http::Timeout "20";
+            https::Timeout "20";
+          };
+          Binary::apt-get::Acquire {
+            Retries "2";
+            http::Timeout "20";
+            https::Timeout "20";
+          };
+          EOF
+          if ! apt_config="$(sudo apt-config shell ARRAS_RETRIES Acquire::Retries ARRAS_HTTP_TIMEOUT Acquire::http::Timeout ARRAS_HTTPS_TIMEOUT Acquire::https::Timeout ARRAS_APTGET_RETRIES Binary::apt-get::Acquire::Retries ARRAS_APTGET_HTTP_TIMEOUT Binary::apt-get::Acquire::http::Timeout ARRAS_APTGET_HTTPS_TIMEOUT Binary::apt-get::Acquire::https::Timeout 2>/dev/null)"; then
+            printf '%s\n' "$apt_config" >&2
+            exit 1
+          fi
+          expected_apt_config="$(printf "ARRAS_RETRIES='2'\nARRAS_HTTP_TIMEOUT='20'\nARRAS_HTTPS_TIMEOUT='20'\nARRAS_APTGET_RETRIES='2'\nARRAS_APTGET_HTTP_TIMEOUT='20'\nARRAS_APTGET_HTTPS_TIMEOUT='20'")"
+          if [ "$apt_config" != "$expected_apt_config" ]; then
+            printf '%s\n' "$apt_config" >&2
+            exit 1
+          fi
+          timeout --signal=TERM --kill-after=30s 180s sudo apt-get update
+      - name: Install Chromium operating-system dependencies with bounded APT
+        run: timeout --signal=TERM --kill-after=30s 240s npx --no-install playwright install-deps chromium
+      - name: Install the Chromium revision pinned by this Playwright lock
+        env:
+          PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT: "20000"
+        run: timeout --signal=TERM --kill-after=30s 240s npx --no-install playwright install chromium
+      - name: Launch and record the pinned Playwright Chromium
+        run: |
+          set -euo pipefail
+          mkdir -p ../artifacts
+          timeout --signal=TERM --kill-after=10s 90s node --input-type=module <<'JS'
+          import { writeFileSync, readFileSync, appendFileSync } from 'node:fs';
+          import { chromium } from '@playwright/test';
+
+          const playwrightTestVersion = JSON.parse(readFileSync('node_modules/@playwright/test/package.json', 'utf8')).version;
+          const browser = await chromium.launch({ headless: true });
+          try {
+            const receipt = {
+              browser: 'chromium',
+              playwrightTestVersion,
+              browserVersion: browser.version(),
+              executablePath: chromium.executablePath(),
+            };
+            writeFileSync('../artifacts/arras-linux-chromium.json', JSON.stringify(receipt, null, 2) + '\n');
+            appendFileSync(process.env.GITHUB_STEP_SUMMARY, `\nLinux Chromium launch: Playwright ${receipt.playwrightTestVersion}, browser ${receipt.browserVersion}, executable ${receipt.executablePath}.\n`);
+            console.log(JSON.stringify(receipt));
+          } finally {
+            await browser.close();
+          }
+          JS
       # The visual project (screenshots) is macOS only and is left out of the Linux run
       # (ui/README.md, "Visual baselines"). Locally `npm run e2e` runs every project.
       - run: npx playwright test --project=chromium --project=schema-admin --project=browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: arras-linux-chromium
+          path: artifacts/arras-linux-chromium.json
+          if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
@@ -105,10 +191,10 @@ jobs:
       # never a dependency of the package: installed after the locked sync, which would remove it, from
       # Weft's public GitHub release, the exact version pinned and the SHA256SUMS file itself pinned
       # by digest before it vouches for the wheel.
-      - name: Install Weft's parser (weft-sql 0.4.49)
+      - name: Install Weft's parser (weft-sql 0.4.51)
         env:
-          WEFT_VERSION: "0.4.49"
-          WEFT_SUMS_SHA256: f33acf71786dedf72c72c2a20291a633b692eba7a75596264b44693b7fb519d8
+          WEFT_VERSION: "0.4.51"
+          WEFT_SUMS_SHA256: 62c9d8082eb2f446446d7b94ff7ef7f48769e3cd836e5641c2951069302a6c75
         run: |
           set -euo pipefail
           cd "$RUNNER_TEMP"

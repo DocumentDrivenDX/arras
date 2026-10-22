@@ -1,0 +1,10 @@
+/* Give the acceptance host a viewport-sized canvas for its canonical body-relative interactions. */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}

@@ -1,0 +1,66 @@
+{
+  "binding": {
+    "added_field": "arras: actual wheel METADATA version and SHA-256 compared with checked tag/build outputs",
+    "companion_index": "tests/downstream/native-cohorts/linux-x86_64.find-links.html",
+    "source_fields_preserved": [
+      "schema_version",
+      "runtime",
+      "find_links",
+      "native_wheels",
+      "corpus"
+    ],
+    "template_data": "not created; pending actual public artifacts and full cohort qualification",
+    "template_path": "tests/downstream/native-cohorts/linux-x86_64.json"
+  },
+  "captured_on": "2026-10-22",
+  "failure_evidence": "Binding and verifier receipts, bound manifest/source hashes, stdout/stderr and quarantine path diagnostics; no raw PostgreSQL cluster data. Original nonzero status preserved.",
+  "file_sha256": {
+    ".github/scripts/bind_native_cohort.py": "196131b81aa71e4eee5c10dc873904fa8cf99cd073c1d45f84df6d936810282b",
+    ".github/scripts/ensure_native_receipt_failure.py": "bd3c2b15475b57ca109e582060a34551e04e732d3f495b565edb7cb9b4fa2122",
+    ".github/workflows/release.yml": "a87b0609474de47af698423d8b449bcd6bf1368cdbee1ef95dc3c03958aa6949",
+    "docs/helix/02-design/contracts/CONTRACT-005-embedding-and-lifecycle.md": "95c63f4f2d6a69a6c106e6661518eb250bfc1549c028bd214352ac75cf0c7a15",
+    "tests/test_native_cohort_binding.py": "85bef611a912321197a4ea59a4643b59b8dc2a34105a5912b65fa4cd30ed46a1",
+    "tests/test_native_receipt_failure.py": "4c1452bc3efa0a794bca03da79df743e962e654718ba65077d9f51ae772fd0e4",
+    "tests/test_truss_docs.py": "6d6417e0f3f7e995020e2bf5faa7b14a9fea8bd3ed844babd5409effe86cc789"
+  },
+  "job": "installed-native",
+  "limits": [
+    "No live native CLI or new dependency cohort was executed by these synthetic controls.",
+    "No source template/index/native allowlist is fabricated. Missing files fail closed.",
+    "Final public native artifacts, fresh actual cohort checks, exact final artifacts, hosted jobs and downloaded-release acceptance remain required."
+  ],
+  "qualification": "reviewed and tested source preparation only; no native cohort or hosted execution",
+  "required_by": "github-release",
+  "schema": "arras.release-native-gate-preparation.v1",
+  "subsequent_exact_exit_status_amendment": {
+    "change": "Guard the normalizer and generic diagnostic so the saved verifier code is always explicitly returned.",
+    "executed_outcomes": [
+      "verifier23 + normalizer7 returns23",
+      "verifier23 + normalizer0 returns23",
+      "verifier0 returns0 and skips normalizer"
+    ],
+    "file_sha256": {
+      ".github/workflows/release.yml": "079da85d274fc8f588ca3de7f5939abdf28a0128a0f5b426abaf3a76f6aa438c",
+      "tests/test_truss_docs.py": "6d6417e0f3f7e995020e2bf5faa7b14a9fea8bd3ed844babd5409effe86cc789"
+    },
+    "issue": "Under set-e a failed receipt normalizer could replace the saved verifier exit code.",
+    "limits": "Shell exit/logging invariant only; no new default-suite, native, cohort or hosted qualification.",
+    "logs": "stdout/stderr retained by each actual extracted workflow-shell control",
+    "luna_combined_focused_tests": 29,
+    "sol_independent_actual_workflow_shell_controls": 3,
+    "source_review": "Sol final clear"
+  },
+  "validation": {
+    "luna_combined_tests": 26,
+    "reported_checks": [
+      "Ruff check and format",
+      "scoped strict Pyright",
+      "YAML parse",
+      "shell syntax",
+      "diff whitespace"
+    ],
+    "sol_independent_binder_and_receipt_subset": 17,
+    "source_review": "Sol final clear",
+    "subset_result": "passed; do not add subset count to combined count"
+  }
+}

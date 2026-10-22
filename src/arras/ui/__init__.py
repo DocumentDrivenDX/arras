@@ -29,20 +29,22 @@ browser counts) is a `ValueError`, so the page never shows a field cut short. Th
 
 from __future__ import annotations
 
+import hashlib
 import html
-import json
-import mimetypes
-import re
+import importlib.metadata
 from collections.abc import Callable
-from dataclasses import dataclass
 from pathlib import Path
-from urllib.parse import urlsplit
 
-from arras import console, operate
+from arras import console, operate, telemetry
+from arras.branding import BRAND_CAPS as BRAND_CAPS
+from arras.branding import Brand
 from arras.core import Arras
+from arras.distribution import DistributionConfig
 from arras.http import Receive, Request, Scope, Send
 from arras.operate import schema_app
 from arras.types import Principal
+from arras.ui._brand_page import branded as branded
+from arras.ui.assets import AssetManifest, load_manifest, read_verified
 
 STATIC = Path(__file__).resolve().parent / "static"
 NPM = Path(__file__).resolve().parent / "npm"
@@ -75,90 +77,6 @@ _TYPES = {  # not left to the platform's table, which differs (a .js as text/pla
     ".html": "text/html; charset=utf-8",
     ".json": "application/json",
 }
-_SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.\-]*:\S")
-_IMAGE_URL = re.compile(r"^https://[^\s;,'\"]+$")
-_TITLE = re.compile(r"<title>.*?</title>", re.IGNORECASE | re.DOTALL)
-
-
-# The most characters each field may hold: the UI reads the same caps from the page's meta tag
-# (`ui/src/lib/brand.tsx`), and `tests/vectors/brand.json` holds both sides to them.
-BRAND_CAPS = {"name": 80, "title": 120, "wordmark": 2048, "tagline": 200}
-
-
-def _length(text: str) -> int:
-    """UTF-16 code units of the trimmed text, which is how the browser counts."""
-    return len(text.strip().encode("utf-16-le")) // 2
-
-
-@dataclass(frozen=True)
-class Brand:
-    """What the console is called. `title` is the page title (default `name`); `wordmark` is text or an
-    `https://` URL; `tagline` is a line under the name;
-    `logo` is `"theme"` to show the theme's mark before the name."""
-
-    name: str = "Arras"
-    title: str | None = None
-    wordmark: str | None = None
-    tagline: str | None = None
-    logo: str | None = None
-
-    def __post_init__(self) -> None:
-        if not self.name.strip():
-            raise ValueError("a brand needs a name")
-        for field_name, cap in BRAND_CAPS.items():
-            value = getattr(self, field_name)
-            if value is not None and _length(value) > cap:
-                raise ValueError(f"a brand's {field_name} is at most {cap} characters")
-        w = self.wordmark
-        if w is not None and _SCHEME.match(w) and not w.startswith("https://"):
-            raise ValueError("a wordmark is text or an https:// URL")
-        if (
-            w is not None
-            and w.startswith("https://")
-            and not (_IMAGE_URL.match(w) and self.image_origin)
-        ):
-            raise ValueError("a wordmark is text or an https:// URL")
-        if self.logo is not None and self.logo != "theme":
-            raise ValueError('a logo is "theme"')
-
-    @property
-    def image_origin(self) -> str | None:
-        """The origin of an `https://` image wordmark, else None (text, or no wordmark)."""
-        w = self.wordmark
-        if w is None or not w.startswith("https://"):
-            return None
-        try:
-            parts = urlsplit(w)
-            host = parts.hostname
-            port = parts.port
-        except ValueError:
-            return None
-        if not host or host == "*" or parts.username is not None or parts.password is not None:
-            return None
-        if parts.netloc.endswith(":"):  # an empty port
-            return None
-        shown = f"[{host}]" if ":" in host else host
-        return f"https://{shown}" if port is None else f"https://{shown}:{port}"
-
-    def csp(self) -> str:
-        """`PAGE_CSP`, with the origin of an image wordmark admitted to `img-src`."""
-        origin = self.image_origin
-        return (
-            PAGE_CSP
-            if origin is None
-            else PAGE_CSP.replace("img-src 'self'", f"img-src 'self' {origin}")
-        )
-
-    def meta(self) -> str:
-        """The brand as JSON, the fields that are set."""
-        fields = {
-            "name": self.name,
-            "title": self.title,
-            "wordmark": self.wordmark,
-            "tagline": self.tagline,
-            "logo": self.logo,
-        }
-        return json.dumps({k: v for k, v in fields.items() if v is not None})
 
 
 def not_built_page(brand: Brand, hint: bytes) -> bytes:
@@ -171,19 +89,6 @@ def not_built_page(brand: Brand, hint: bytes) -> bytes:
         + b"). "
         + hint
     )
-
-
-def branded(page: bytes, brand: Brand) -> bytes:
-    """The built page with its title and the brand's meta tag."""
-    text = page.decode()
-    title = html.escape(brand.title or brand.name, quote=True)
-    meta = f'<meta name="arras-brand" content="{html.escape(brand.meta(), quote=True)}">'
-    text = _TITLE.sub(lambda _: f"<title>{title}</title>", text, count=1)
-    if "</head>" in text:
-        text = text.replace("</head>", meta + "</head>", 1)
-    else:
-        text = text.replace("</title>", "</title>" + meta, 1)
-    return text.encode()
 
 
 _NOT_BUILT_HINT = (
@@ -206,23 +111,92 @@ def npm_package() -> Path:
 
 
 class UI:
-    def __init__(
+    def __init__(  # noqa: PLR0915
         self,
         arras: Arras,
         *,
         principal_for_request: Callable[[Request], Principal | None],
         authorize_operator: Callable[[Principal], bool] | None,
+        authorize_schema: Callable[[Principal, str], bool] | None = None,
         authorize_action: Callable[[Principal, str, str], bool] | None,
         base_path: str,
         public_origin: str | None,
         allowed_origins: tuple[str, ...],
         static_dir: Path,
+        asset_manifest: Path | None = None,
+        theme_manifest: Path | None = None,
         brand: Brand | None = None,
+        distribution: DistributionConfig | None = None,
+        telemetry_context: telemetry.TelemetryContext | None = None,
     ) -> None:
-        self.brand = brand or Brand()
+        self.telemetry_context = telemetry._context_for(telemetry_context, distribution)
+        self.brand = brand if brand is not None else (distribution or DistributionConfig()).brand
         title = self.brand.name
         self.base = base_path.rstrip("/")
         self.static_dir = static_dir
+        self.asset_manifest_path = asset_manifest or (static_dir / "asset-manifest.json")
+        self.asset_manifest: AssetManifest | None = None
+        self.runtime_version: str | None = None
+        manifest_exists = self.asset_manifest_path.is_file()
+        page_exists = (static_dir / PAGE).is_file()
+        if asset_manifest is not None and not manifest_exists:
+            raise ValueError(f"invalid asset manifest {self.asset_manifest_path}: file is missing")
+        if manifest_exists:
+            if (
+                asset_manifest is not None
+                and static_dir != STATIC
+                and static_dir != self.asset_manifest_path.parent
+            ):
+                raise ValueError("asset_manifest parent conflicts with nondefault static_dir")
+            self.asset_manifest = load_manifest(self.asset_manifest_path, kind="page")
+            expected_contracts = {"console": 2, "operate": 2, "schema": 1, "browser": 1}
+            if dict(self.asset_manifest.contracts) != expected_contracts:
+                raise ValueError(
+                    f"invalid asset manifest {self.asset_manifest_path}: unsupported contracts"
+                )
+            try:
+                runtime_version = importlib.metadata.version("arras")
+            except importlib.metadata.PackageNotFoundError:
+                runtime_version = self.asset_manifest.package["version"]
+            self.runtime_version = runtime_version
+            if self.asset_manifest.package["version"] != runtime_version:
+                raise ValueError(
+                    f"invalid asset manifest {self.asset_manifest_path}: package version does not match runtime"
+                )
+            schema = self.asset_manifest.schema_browser or {}
+            if schema.get("name") != "@documentdrivendx/umf-schema-browser" or not str(
+                schema.get("integrity", "")
+            ).startswith("sha512-"):
+                raise ValueError(
+                    f"invalid asset manifest {self.asset_manifest_path}: schema_browser identity or integrity is invalid"
+                )
+            if self.asset_manifest.root != self.asset_manifest_path.parent.resolve():
+                raise ValueError("asset manifest root is invalid")
+            self.static_dir = self.asset_manifest.root
+        elif page_exists:
+            raise ValueError(
+                f"invalid asset manifest {self.asset_manifest_path}: required for built page"
+            )
+        self.theme_manifest = (
+            load_manifest(theme_manifest, kind="theme") if theme_manifest else None
+        )
+        self.theme_manifest_path = theme_manifest
+        if self.theme_manifest and dict(self.theme_manifest.contracts) != {
+            "console": 2,
+            "operate": 2,
+            "schema": 1,
+            "browser": 1,
+        }:
+            raise ValueError(f"invalid asset manifest {theme_manifest}: unsupported contracts")
+        if self.theme_manifest and self.asset_manifest:
+            if (
+                self.theme_manifest.ui_versions
+                and self.asset_manifest.version
+                and self.asset_manifest.package["version"] not in self.theme_manifest.ui_versions
+            ):
+                raise ValueError(
+                    f"invalid asset manifest {theme_manifest}: ui_versions does not include {self.asset_manifest.package['version']}"
+                )
         self._page: tuple[tuple[object, ...], bytes] | None = None  # the branded page and its key
         shared = {
             "principal_for_request": principal_for_request,
@@ -247,10 +221,15 @@ class UI:
                 arras,
                 base_path=f"{self.base}/api/schema",
                 authorize_operator=authorize_operator,
+                authorize_schema=authorize_schema,
                 **shared,
             )
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        with self.telemetry_context.activate():
+            await self._dispatch(scope, receive, send)
+
+    async def _dispatch(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http":
             return
         root = scope.get("root_path") or ""
@@ -273,35 +252,121 @@ class UI:
             return await self._send(
                 send, 405, "text/plain", b"GET only", extra=((b"allow", b"GET, HEAD"),)
             )
-        status, ctype, body = self.static(rel or "/")
-        await self._send(send, status, ctype, body, page_headers(self.brand.csp()))
+        if rel.startswith("/theme-assets/"):
+            status, ctype, body, cache = self.theme_asset(rel)
+            csp = self.brand.csp()
+            if self.theme_manifest and self.theme_manifest.entry.get("fonts"):
+                csp += "; font-src 'self'"
+            return await self._send(
+                send, status, ctype, body, page_headers(csp), ((b"cache-control", cache.encode()),)
+            )
+        status, ctype, body = self.static(rel or "/", root_path=root)
+        csp = self.brand.csp()
+        if self.theme_manifest and self.theme_manifest.entry.get("fonts"):
+            csp += "; font-src 'self'"
+        extra = ((b"cache-control", b"no-store"),) if rel in ("", "/") else ()
+        await self._send(send, status, ctype, body, page_headers(csp), extra)
 
-    def static(self, rel: str) -> tuple[int, str, bytes]:
+    def theme_asset(self, rel: str) -> tuple[int, str, bytes, str]:
+        theme = self.theme_manifest
+        if theme is None or self.theme_manifest_path is None:
+            return 404, "text/plain", b"not found", "no-store"
+        try:
+            theme = load_manifest(self.theme_manifest_path, kind="theme")
+            self._check_theme_cohort(theme)
+            self.theme_manifest = theme
+        except ValueError:
+            return 503, "text/plain", b"theme manifest invalid", "no-store"
+        prefix = f"/theme-assets/{theme.manifest_sha256}/"
+        if not rel.startswith(prefix):
+            return 404, "text/plain", b"not found", "no-store"
+        name = rel[len(prefix) :]
+        metadata = theme.files.get(name)
+        if metadata is None:
+            return 404, "text/plain", b"not found", "no-store"
+        body = read_verified(theme, name)
+        if body is None:
+            return 503, "text/plain", b"theme asset changed after validation", "no-store"
+        return 200, str(metadata["mime"]), body, "public, max-age=31536000, immutable"
+
+    def static(self, rel: str, *, root_path: str = "") -> tuple[int, str, bytes]:
         """A file of the built UI: the page at `/`, `assets/` and the schema browser's files. Never
         a path outside the build, and no fallback page: the page's routes live in its fragment."""
         root = self.static_dir.resolve()
-        if not (root / PAGE).is_file():
+        if self.asset_manifest is None:
             return 503, "text/html; charset=utf-8", not_built_page(self.brand, _NOT_BUILT_HINT)
-        name = PAGE if rel == "/" else rel.lstrip("/")
+        # Revalidate the declared cohort and bytes at each response, so changed files are never
+        # returned under stale digest metadata.
+        try:
+            current = load_manifest(self.asset_manifest_path, kind="page")
+            self._check_page_cohort(current)
+            self.asset_manifest = current
+        except ValueError:
+            return 503, "text/plain", b"asset manifest invalid"
+        if root != self.asset_manifest.root:
+            return 503, "text/plain", b"asset manifest root changed after validation"
+        page_name = str(self.asset_manifest.entry["html"])
+        if not (root / page_name).is_file():
+            return 503, "text/html; charset=utf-8", not_built_page(self.brand, _NOT_BUILT_HINT)
+        name = page_name if rel == "/" else rel.lstrip("/")
         target = (root / name).resolve()
-        served = (root / "assets", root / EXPLORER.lstrip("/"))
-        if target != root / PAGE and not any(d in target.parents for d in served):
-            return 404, "text/plain", b"not found"  # also what `assets/../x` resolves to
+        if name not in self.asset_manifest.files or target != (root / name).resolve():
+            return 404, "text/plain", b"not found"
         if not target.is_file():
             return 404, "text/plain", b"not found"
-        ctype = _TYPES.get(target.suffix) or mimetypes.guess_type(target.name)[0]
-        body = self._branded_page(target) if target == root / PAGE else target.read_bytes()
-        return 200, ctype or "application/octet-stream", body
+        metadata = self.asset_manifest.files[name]
+        body = read_verified(self.asset_manifest, name)
+        if body is None:
+            return 503, "text/plain", b"asset changed after validation"
+        if name == self.asset_manifest.entry["html"]:
+            body = self._branded_page(target, body)
+            if self.theme_manifest:
+                prefix = (
+                    f"{root_path}{self.base}/theme-assets/{self.theme_manifest.manifest_sha256}/"
+                )
+                css = prefix + str(self.theme_manifest.entry["stylesheet"])
+                link = f'<link rel="stylesheet" href="{html.escape(css, quote=True)}">'
+                favicon = self.theme_manifest.entry.get("favicon")
+                if favicon:
+                    link += (
+                        f'<link rel="icon" href="{html.escape(prefix + str(favicon), quote=True)}">'
+                    )
+                if b"</head>" in body:
+                    body = body.replace(b"</head>", link.encode() + b"</head>", 1)
+                else:
+                    body = body.replace(b"</title>", b"</title>" + link.encode(), 1)
+            return 200, "text/html; charset=utf-8", body
+        ctype = str(metadata["mime"])
+        if ctype.startswith("text/") or ctype == "application/json":
+            ctype += "; charset=utf-8"
+        return 200, ctype, body
 
-    def _branded_page(self, page: Path) -> bytes:
-        """The page re-branded, kept until the file or the brand changes: the key is where the
-        page is (so the static directory), what the file is now (its size and modification) and
-        the brand."""
-        st = page.stat()
-        key = (page, st.st_mtime_ns, st.st_size, st.st_ino, self.brand)
+    def _branded_page(self, page: Path, content: bytes) -> bytes:
+        """Brand already-verified bytes, caching by their digest and selected Brand."""
+        key = (page, hashlib.sha256(content).hexdigest(), self.brand)
         if self._page is None or self._page[0] != key:
-            self._page = (key, branded(page.read_bytes(), self.brand))
+            self._page = (key, branded(content, self.brand))
         return self._page[1]
+
+    def _check_page_cohort(self, manifest: AssetManifest) -> None:
+        if dict(manifest.contracts) != {"console": 2, "operate": 2, "schema": 1, "browser": 1}:
+            raise ValueError("unsupported page contracts")
+        if self.runtime_version and manifest.package["version"] != self.runtime_version:
+            raise ValueError("page package version does not match runtime")
+        schema = manifest.schema_browser or {}
+        if schema.get("name") != "@documentdrivendx/umf-schema-browser" or not str(
+            schema.get("integrity", "")
+        ).startswith("sha512-"):
+            raise ValueError("schema-browser metadata is incompatible")
+
+    def _check_theme_cohort(self, manifest: AssetManifest) -> None:
+        if dict(manifest.contracts) != {"console": 2, "operate": 2, "schema": 1, "browser": 1}:
+            raise ValueError("unsupported theme contracts")
+        if (
+            self.asset_manifest
+            and self.asset_manifest.package["version"] not in manifest.ui_versions
+        ):
+            raise ValueError("theme does not declare the active UI version")
 
     async def _send(
         self,
@@ -324,12 +389,17 @@ def create_app(
     *,
     principal_for_request: Callable[[Request], Principal | None],
     authorize_operator: Callable[[Principal], bool] | None = None,
+    authorize_schema: Callable[[Principal, str], bool] | None = None,
     authorize_action: Callable[[Principal, str, str], bool] | None = None,
     base_path: str = "",
     public_origin: str | None = None,
     allowed_origins: tuple[str, ...] = (),
     static_dir: Path = STATIC,
+    asset_manifest: Path | None = None,
+    theme_manifest: Path | None = None,
     brand: Brand | None = None,
+    distribution: DistributionConfig | None = None,
+    telemetry_context: telemetry.TelemetryContext | None = None,
 ) -> UI:
     """The ASGI application; mount it at `base_path`. `authorize_operator` is the host's decision
     that a principal is an operator (`operate.operators_in_groups("admins", "builders")`); without it
@@ -338,10 +408,15 @@ def create_app(
         arras,
         principal_for_request=principal_for_request,
         authorize_operator=authorize_operator,
+        authorize_schema=authorize_schema,
         authorize_action=authorize_action,
         base_path=base_path,
         public_origin=public_origin,
         allowed_origins=allowed_origins,
         static_dir=static_dir,
+        asset_manifest=asset_manifest,
+        theme_manifest=theme_manifest,
         brand=brand,
+        distribution=distribution,
+        telemetry_context=telemetry_context,
     )

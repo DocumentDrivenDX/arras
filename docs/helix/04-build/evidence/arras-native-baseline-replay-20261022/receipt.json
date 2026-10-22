@@ -1,0 +1,78 @@
+{
+  "status": "passed-focused-local-replay",
+  "sourceCommit": "cb64ecd7d70aae41e26cfc2d766a95b1c71e6441",
+  "baseline": {
+    "workflowRun": 39787522094,
+    "job": 119854493102,
+    "platform": "Linux",
+    "Truss": "0.0.45",
+    "Weft": "0.4.49",
+    "failed": 23,
+    "passed": 164
+  },
+  "candidate": {
+    "platform": "macOS ARM64",
+    "python": "3.11.17",
+    "PostgreSQL": "18.6",
+    "Truss": "0.0.48",
+    "Weft": "0.4.51",
+    "compilerSourceFreeze": "86c092178bb8ca1a0d84edfebc175009d8862493",
+    "TrussWheelSha256": "e701b06fa1972e91c8039b32bba164ea908d3fa3e0b73f6ccbec4597d9e9bbdd",
+    "WeftWheelSha256": "a21faed75304e730c7cc9782394001be2ba1772b429e587f0d1910c2269dabbe",
+    "WeftNativeModuleSha256": "93bee228350743286073a9400bdf5ec92e387c5e35431bbf34b0f81279c460a2",
+    "nativeManifestSha256": "c4339ac7f09ab5a004c272ab00962107a970938004c1765ec4163e4d5ca9b6f0",
+    "passed": 23,
+    "skipped": 0,
+    "seconds": 67.85,
+    "sameExactFailedCaseSet": true
+  },
+  "sourceHashes": {
+    "tests/test_truss_examples.py": "bf2f8b30d40bf7875ad0408ea794e6b61a351e8851237149eb256f59614a2bd4",
+    "tests/test_truss_bench.py": "2e270f60acbc0eaa73f7a5c2f56cc187ce250edcd2ce5a52083569b3ea65435b",
+    "src/arras/adapters/truss/query.py": "97d897e9df05e0448ac79ad7f02a954f6586ba900c8610d721e5611a0e655a1c",
+    "src/arras/adapters/truss/describe.py": "09c79b4aa26c2ce07638a28703b9c937ad56d2bf93593d4d7233d29cf712a5f0",
+    "examples/catalog/catalog.umf.json": "49276d13a7e6fbfbc7a1f4aedd5e180bbec219b6f005d28371b75f5a5a196f96",
+    "examples/northwind/northwind.umf.json": "da3689829785ed03cb89774e0ba72b1a62e2dbd7918b9a9b41e54495824d5b89",
+    "examples/pizza/pizza.umf.json": "294e3965ebfdf2810fa55c8b59ec43d646515b199e3cd75ac9da3c9d5d8851e9"
+  },
+  "files": {
+    "/private/tmp/arras-native-ci-39787522094.log": "51701b728dc0ccf31ed3adee7b565019f062c2d0d57b11b5b53e0392070165ab",
+    "/private/tmp/arras-cb64-hf048-results.xml": "eef8b50fe25610715a3d96030104afa955f8d2d13d15b8cbe981df8110ab7e16",
+    "/private/tmp/arras-cb64-hf048-native.log": "8783d173d7bb5bae2fd28617a3a829b27189ec951346285995f21e2c3dcb3c3d",
+    "/private/tmp/arras-cb64-native-baseline.tar": "b5239e3a7be2b3849d2e1d71dffecf5abfe5f0bf3d86f01e752920d6fb337c5a"
+  },
+  "caseIds": [
+    "tests/test_truss_bench.py::test_enforce_exits_non_zero_when_a_target_is_missed",
+    "tests/test_truss_bench.py::test_the_harness_runs_every_acceptance_criterion_and_prints_the_table",
+    "tests/test_truss_examples.py::test_a_whole_entity_list_with_the_facts_reads_every_type_of_every_example",
+    "tests/test_truss_examples.py::test_every_type_lists_the_way_the_console_asks_and_opens_by_its_key[catalog.CoverageAssertion]",
+    "tests/test_truss_examples.py::test_every_type_lists_the_way_the_console_asks_and_opens_by_its_key[catalog.Finding]",
+    "tests/test_truss_examples.py::test_every_type_lists_the_way_the_console_asks_and_opens_by_its_key[catalog.ProductVersion]",
+    "tests/test_truss_examples.py::test_every_type_lists_the_way_the_console_asks_and_opens_by_its_key[catalog.Product]",
+    "tests/test_truss_examples.py::test_every_type_lists_the_way_the_console_asks_and_opens_by_its_key[catalog.Solution]",
+    "tests/test_truss_examples.py::test_every_type_lists_the_way_the_console_asks_and_opens_by_its_key[catalog.UseCase]",
+    "tests/test_truss_examples.py::test_every_type_lists_the_way_the_console_asks_and_opens_by_its_key[northwind.Category]",
+    "tests/test_truss_examples.py::test_every_type_lists_the_way_the_console_asks_and_opens_by_its_key[northwind.Customer]",
+    "tests/test_truss_examples.py::test_every_type_lists_the_way_the_console_asks_and_opens_by_its_key[northwind.Employee]",
+    "tests/test_truss_examples.py::test_every_type_lists_the_way_the_console_asks_and_opens_by_its_key[northwind.OrderLine]",
+    "tests/test_truss_examples.py::test_every_type_lists_the_way_the_console_asks_and_opens_by_its_key[northwind.Order]",
+    "tests/test_truss_examples.py::test_every_type_lists_the_way_the_console_asks_and_opens_by_its_key[northwind.Product]",
+    "tests/test_truss_examples.py::test_every_type_lists_the_way_the_console_asks_and_opens_by_its_key[northwind.Supplier]",
+    "tests/test_truss_examples.py::test_every_type_lists_the_way_the_console_asks_and_opens_by_its_key[pizza.Country]",
+    "tests/test_truss_examples.py::test_every_type_lists_the_way_the_console_asks_and_opens_by_its_key[pizza.PizzaBase]",
+    "tests/test_truss_examples.py::test_every_type_lists_the_way_the_console_asks_and_opens_by_its_key[pizza.Pizza]",
+    "tests/test_truss_examples.py::test_every_type_lists_the_way_the_console_asks_and_opens_by_its_key[pizza.Topping]",
+    "tests/test_truss_examples.py::test_northwind_takes_an_add_a_rename_a_correct_and_a_link_and_an_unlink",
+    "tests/test_truss_examples.py::test_pizza_takes_an_add_a_rename_a_correct_and_a_link_and_an_unlink_of_has_topping",
+    "tests/test_truss_examples.py::test_the_catalog_takes_an_add_a_rename_a_correct_and_a_link_and_an_unlink"
+  ],
+  "command": "ARRAS_REQUIRE_TRUSS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=<scratch>/src:<scratch>/tests <separate candidate python> -m pytest -m truss -q -ra --tb=short -o cache_dir=<tmp> --basetemp=<tmp> --junitxml=<tmp> tests/test_truss_examples.py tests/test_truss_bench.py",
+  "diagnosis": "The original source models declare arras.view0.1.0 on selected Record/Field elements. PublicWeft49 lacks its admission; the existing source86c fix admits it under the same exact owning declaration and retains original bytes/pins. Generic Arras support text saying within its bounds does not identify a bounds failure. No source/model/facet/descriptor change was needed to pass these23 cases.",
+  "remaining": [
+    "This is a candidate pair substitution into a scratch copy; original Arras source and dependency declarations remain unchanged.",
+    "The other164 native cases, current Arras branch, Linux/full release suite and actual public artifacts still need qualification.",
+    "Arras owners must update dependency/lock/find-links hashes and describe.py WEFT_VERSION/capability matrix after the public pair is available.",
+    "Neither Truss0.0.48 nor Weft0.4.51 is published; remote push remains awaiting direct human approval.",
+    "No Arras source edits or publication were performed."
+  ]
+}

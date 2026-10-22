@@ -23,10 +23,10 @@ ddx:
 
 | Aspect | Description |
 |--------|-------------|
-| Problem | The kickoff fixed Python as the language of Arras (the interface to an ontology, a Python library embedded in the praxis Databricks app) and set nothing else. The toolchain (package manager, linter, type checker, test runner) needs a recorded choice. Arras and anything runnable beside it need reproducible, isolated environments that a reviewer can stand up in one command. |
+| Problem | The kickoff fixed Python as the language of Arras (the interface to an ontology, a Python library embedded in the embedding Python application) and set nothing else. The toolchain (package manager, linter, type checker, test runner) needs a recorded choice. Arras and anything runnable beside it need reproducible, isolated environments that a reviewer can stand up in one command. |
 | Current State | The repo is a uv project (uv is Astral's Python package and project manager): `pyproject.toml`, a committed `uv.lock`, `uv run`. The HELIX library's `python-uv` concern prescribes Python 3.12+ (Arras uses 3.11, see Decision), uv, `ruff` (linter and formatter), `pyright` (type checker), `pytest` (test runner), `hatchling` (build backend), and `pyproject.toml` as the only project metadata. **Databricks Apps supports uv natively** ([Manage dependencies for a Databricks app](https://docs.databricks.com/aws/en/dev-tools/databricks-apps/dependencies), read 19 Sep 2026): if `requirements.txt` is absent and both `pyproject.toml` and `uv.lock` are present, the app is installed with `uv sync` from the lock file; `requires-python` selects the interpreter; uv-based apps ship no pre-installed libraries. If `requirements.txt` exists it takes precedence and the app is installed with pip on Python 3.11. |
 | Requirements | One command to create an environment and run anything (`uv sync`, `uv run`). Byte-reproducible dependency resolution across machines (a committed lockfile). Isolation per implementation, so a benchmark or tool cannot pollute the library. A pinned interpreter per project. Static checks that run without configuration. Deployable to Databricks Apps as-is: the same `pyproject.toml` and `uv.lock` the developer commits are what the platform installs. |
-| Decision Drivers | Operator direction, 19 Sep 2026: record uv by ADR and give each implementation an isolated uv environment. The library concern already exists, so adopting it costs nothing. The host, praxis (an agent-harness app on Databricks Apps), requires Python 3.11 or later (`requires-python = ">=3.11"`), and Arras embeds in it, so 3.11 is the interpreter. `pgserver`, a PostgreSQL bundled in a wheel and used for local development and tests, ships wheels through CPython 3.12, so it runs on 3.11. |
+| Decision Drivers | Operator direction, 19 Sep 2026: record uv by ADR and give each implementation an isolated uv environment. The library concern already exists, so adopting it costs nothing. The embedding host requires Python 3.11 or later (`requires-python = ">=3.11"`), and Arras embeds in it, so 3.11 is the interpreter. `pgserver`, a PostgreSQL bundled in a wheel and used for local development and tests, ships wheels through CPython 3.12, so it runs on 3.11. |
 
 ## Decision
 
@@ -68,7 +68,7 @@ We will use **Python 3.11 managed by uv** for Arras and every runnable artifact 
 |----------------|----------------|
 | Arras syncs and passes tests from a clean checkout with `uv sync && uv run pytest` | A reviewer cannot reproduce a result |
 | No `requirements.txt` appears under any Arras app directory | One is committed |
-| The praxis app deploys with Arras installed from `pyproject.toml` + `uv.lock` on the declared interpreter | The platform installs with pip, or refuses the declared `requires-python` |
+| The embedding application deploys with Arras installed from `pyproject.toml` + `uv.lock` on the declared interpreter | The platform installs with pip, or refuses the declared `requires-python` |
 
 
 ## Concern Impact

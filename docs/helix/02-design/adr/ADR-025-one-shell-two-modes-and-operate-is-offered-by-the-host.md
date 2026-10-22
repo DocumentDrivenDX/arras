@@ -42,7 +42,7 @@ ddx:
 | Problem | Arras has two interfaces: the Operator Console for the people who build and run modules (builders, administrators) and the Graph Browser for everyone who reads. They should be one product with a mode switch, "user" and "admin", and only builders and administrators should see Operate. Arras has no role model of its own, so something else must say who a builder or an administrator is. |
 | Current State | The host supplies `principal_for_request` (identity only) and optionally `authorize_action` (per-action approval for invocations). `Principal` carries `user`, `token`, `groups` and `admin` (the host's administrative principal). The operate surface (CONTRACT-009) serves every principal that is accepted; the PRD makes an authorization model for the host organization a non-goal; backends decide what a viewer may read or change by their own grants (ADR-017). The dev host's people: alice and bob (read, write, journal; group `builders`), root (the administrator; group `admins`), carol (read only), dave (no access). |
 | Requirements | A switch in the interface between Explore and Operate; Operate absent, not merely disabled, for people who are not operators; a person who is not an operator cannot reach the operator surface by calling it directly; Arras decides nothing about who is an operator; no change to what any viewer may read or change. |
-| Decision Drivers | Two shells would split the product, the sign-in and the embedding in praxis. A switch that is only hidden in the interface is cosmetic, so the operate surface must also refuse. The host's notion of a builder belongs to the host and the platform (PRD non-goals), not to the library. |
+| Decision Drivers | Two shells would split the product, the sign-in and the embedding in the embedding host. A switch that is only hidden in the interface is cosmetic, so the operate surface must also refuse. The host's notion of a builder belongs to the host and the platform (PRD non-goals), not to the library. |
 
 ## Decision
 
@@ -63,7 +63,7 @@ Arras never infers "operator" from `Principal.groups` or `Principal.admin` by it
 
 | Option | Pros | Cons | Evaluation |
 |--------|------|------|------------|
-| Two separate apps | Simple separation | Two sign-ins and embeddings in praxis; the browser and console cannot link to each other | Rejected: one product |
+| Two separate apps | Simple separation | Two sign-ins and embeddings in the embedding host; the browser and console cannot link to each other | Rejected: one product |
 | Hide Operate in the interface only | Trivial | Anyone can call the operate surface directly; the hiding is cosmetic | Rejected |
 | Hard-code operator as membership of fixed groups inside Arras | No new hook | Arras would own a role model the PRD excludes, and group names differ by host; the helper takes the names instead | Rejected; the host names its groups (by default `admins` and `builders`) through `operators_in_groups` |
 | Operator means "holds a write grant on some module" (ask the backends) | No host code | A reader-turned-editor would see Operate; a builder who only reads would not; it makes a data grant carry an interface meaning | Rejected: wrong coupling; a host may implement exactly this in its hook if it wants |
@@ -81,7 +81,7 @@ Arras never infers "operator" from `Principal.groups` or `Principal.admin` by it
 
 | Risk | Prob | Impact | Mitigation |
 |------|------|--------|------------|
-| A host mounts the shell with the default hook and every reader sees Operate | M | M | The embedding guide and `README` state it first; a host such as praxis passes `operators_in_groups("admins", "builders")` or its own group names; the dev host does the same over its sandbox people; a startup log line names the default |
+| A host mounts the shell with the default hook and every reader sees Operate | M | M | The embedding guide and `README` state it first; an embedding host passes `operators_in_groups("admins", "builders")` or its own group names; the dev host does the same over its sandbox people; a startup log line names the default |
 | The audit, schema and action endpoints leak to non-operators | L | H | They live on the operate surface and are refused server-side; a conformance test calls each as a non-operator |
 | "Operator" is confused with an authorization to change data | M | M | The contract says an offer, not a permission; writes still need the provider's grant and `authorize_action` |
 | A mode in the URL fragment of a shared link takes a non-operator to Operate | L | L | The shell reads the fragment and shows Explore's entry when `admin` is absent |

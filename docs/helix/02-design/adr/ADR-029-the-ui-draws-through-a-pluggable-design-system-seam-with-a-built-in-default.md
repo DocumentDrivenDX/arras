@@ -27,10 +27,10 @@ ddx:
 
 | Aspect | Description |
 |--------|-------------|
-| Problem | `arras-ui` is embedded in host apps such as praxis, whose pages have their own look. The console and the Graph Browser must look right with no host theme at all, follow a host's colours and appearance where it has them, and let a host draw the common controls with its own widgets. Hand-made buttons, fields and lists in every screen are each a place for layout and accessibility faults (an overlapping list and button row in the add-link popup). |
+| Problem | `arras-ui` is embedded in host applications whose pages have their own look. The console and the Graph Browser must look right with no host theme at all, follow a host's colours and appearance where it has them, and let a host draw the common controls with its own widgets. Hand-made buttons, fields and lists in every screen are each a place for layout and accessibility faults (an overlapping list and button row in the add-link popup). |
 | Current State | The library's styles are scoped to `.arras-root` with their own tokens (`--bg`, `--surface`, `--fg`, `--accent`, ...) and light and dark values (ADR-027). The buttons, fields, dropdowns and notices are drawn through one set of widgets, imported from `src/ds`. |
 | Requirements | The UI is complete and accessible (WCAG 2.1 AA) with no design-system package installed and no registry reached. A host can restyle it with CSS custom properties alone, or replace the widgets with its own. A host that does neither gets the built-in look. The library sets nothing on the host's document. |
-| Decision Drivers | An open-source library has no private dependency to install; praxis embeds the UI and has its own widgets; ADR-027's rule that the library's CSS reaches nothing outside its root; one copy of React and no second widget library in a host. |
+| Decision Drivers | An open-source library has no private dependency to install; an embedding host can supply its own widgets; ADR-027's rule that the library's CSS reaches nothing outside its root; one copy of React and no second widget library in a host. |
 
 ## Decision
 
@@ -40,8 +40,38 @@ ddx:
    The eight tones a view may name (CONTRACT-010) are drawn from the state colours, because a theme has one accent and four state colours and no eight-hue palette: `green` is `--arras-state-live`, `amber` `-limited`, `red` `-closed`, `blue` `-purchasing`, `slate` the muted text, `rose` the accent, `teal` a mix of live and purchasing, `violet` a mix of purchasing and the accent. A tone's ink and soft fill are mixed from its mark and the page's text and surface, so a node's border, icon tile and badge follow the tokens and the appearance. The status colours of the console (`--ok`, `--warn`, `--bad`) are the same live, limited and closed colours.
 4. **The seam.** `src/ds/context.tsx` holds a React context whose default value is the built-in implementation, `DesignSystemProvider` (a host passes `designSystem`, complete or partial; a missing widget is the built-in one, an inner provider overrides an outer one) and `useDesignSystem()`. `src/ds/index.ts` re-exports the widgets as components that read the context, so a screen writes `import { Button, Notice } from "../ds"` and never names an implementation. `ArrasApp`, `ArrasConsole` and `GraphBrowser` install no provider of their own: they use the one above them, or the built-in default. `src/ds` is a leaf: it imports React and its own modules only (Biome override and `src/test/boundaries.test.ts`); the browser and the kit may import it (ADR-030).
 5. **The host owns the theme.** No component installs a theme, takes an appearance prop, sets `color-scheme`, `data-theme`, `data-appearance` or a class on the host's document or elements, or stores a choice. The built-in dark values apply through the nearest ancestor that gives an appearance (`data-appearance="light" | "dark"`, or an inline `color-scheme` of exactly `light` or `dark`, alone or with `only`; `light dark` and `dark light` say none), then `prefers-color-scheme`. A host switching light, dark or auto at run time re-themes the components with no call into them. UMF's schema browser fixes its theme at mount, so the console reads the host's effective scheme (the same nearest ancestor, else the system's) with the tokens, watches the page's root element and every ancestor of its own root, for attributes only and never a subtree, for a change of `data-appearance`, `data-theme`, `class`, inline `style` or the system's preference (the ancestors are resolved again on every change and once after mount, so a host that writes its attribute after the console has mounted is seen, and an element that has stopped being an ancestor is no longer watched), and mounts the frame again when the scheme or the token values differ.
-6. **Standalone pages.** The dev host (`src/main.tsx`) and the page `arras.ui` serves (`src/embed.tsx`) use the built-in design system, follow the system's preference, and load no theme or font file.
+6. **Standalone pages.** The dev host (`src/main.tsx`) and the page `arras.ui` serves (`src/embed.tsx`) use the built-in design system, follow the system's preference, and load no theme or font file by default. A host may opt into CONTRACT-005's same-origin runtime theme manifest; executable widget replacement uses the compiled provider route.
 7. **Where widgets stay ours.** Where a widget imposes a label that the page already states (the inline property editor), the native element carries the widget's field class (`arras-field__input`). Icon-sized controls, the lock and the dialogs stay ours (`gb-dialog`), drawn with the tokens. The action kit (`ui/src/kit/`, SD-013) is drawn with the widgets for both modes: `ActionFields`, `EffectsSummary` and `ReceiptSummary` use `Button`, `TextField`, `TextArea`, `Select` and `Notice`, and the kit renders no dialog or panel of its own.
+
+### Downstream theme qualification
+
+Publish reusable synthetic theme checks with the interface artifacts. A compiled
+host may replace all six widgets and Mark without a private dependency entering
+Arras; a prebuilt page may replace tokens, fonts and favicon through the inert
+asset manifest. Neither route changes Arras layout, action behavior or focus
+orchestration. The host remains responsible for replacement-widget semantics;
+labels, descriptions, refs, busy/disabled/error and keyboard props are required.
+
+Check the actual themed browser and console widgets, not only a probe calling the
+provider hook. Run light/dark axe, applicable computed contrast/state pairs and
+keyboard/focus checks, plus noncolor CSS token validation. Use separate reviewed
+macOS visual baselines per theme and run nonvisual CI on Linux. The fixture uses
+only public packed artifacts and neutral synthetic data. These checks qualify
+that exact theme/browser cohort; token presence alone does not establish contrast
+or accessibility. CONTRACT-005 owns the executable asset and acceptance boundary.
+
+### The existing acceptance suite runs against a theme overlay
+
+The packed token/axe/widget checker is useful but narrower than the existing
+Playwright a11y/end-to-end suite. CONTRACT-005 therefore requires a shared public
+testkit using the canonical specs/resources and a standard synthetic acceptance
+host wrapped in the consumer's theme/provider. Parameterize only explicit fixture
+origins, resource paths, expected Brand/surfaces and per-theme output/baselines;
+retain assertions rather than inventing a selector/callback test language.
+Production imports remain free of optional Playwright/Node tooling. Qualify the
+actual packed overlay with all nonvisual projects and reviewed Darwin theme
+baselines; Linux skips only visual comparison. No checkout-only or narrower-checker
+result is counted as this portable full-suite proof.
 
 ## Alternatives
 

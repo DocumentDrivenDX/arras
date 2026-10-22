@@ -7,8 +7,8 @@ rules, the body reader, the per-person and global concurrency gate and the error
 from __future__ import annotations
 
 import asyncio
+import contextvars
 import json
-import logging
 from collections.abc import Callable, Mapping
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
@@ -35,9 +35,10 @@ from arras.http import (
     post_origin_ok,
 )
 from arras.serialize import error_body
+from arras.telemetry import _logger
 from arras.types import Principal
 
-log = logging.getLogger("arras.operate")
+log = _logger("arras.operate")
 
 MAX_WORKERS = 8
 NOT_OPERATOR = {"error": "REFUSED", "reason": "not_operator"}  # CONTRACT-010 (the Graph Browser's)
@@ -109,9 +110,8 @@ def answer_error(e: ArrasError) -> Response:
         | Unavailable
         | NotYetCurrent,
     ):
-        log.error("operate: library fault", exc_info=e)
+        log.error("operate: library fault: %s", type(e).__name__)
     log.info("operate refused: %s", type(e).__name__)
-    log.debug("operate refused detail: %s", getattr(e, "detail", ""))
     return WireApp.json(status_of(e), error_json(e))
 
 
@@ -159,8 +159,8 @@ class WireApp:
             return
         try:
             status, headers, body = await self.handle(scope, receive)
-        except Exception:  # never a traceback to the viewer, never silent to the operator
-            log.exception("operate request failed")
+        except Exception as error:  # never a traceback to the viewer, never silent to the operator
+            log.error("operate request failed: %s", type(error).__name__)
             status, headers, body = self.json(
                 500, {"error": {"type": "InternalError", "message": "internal error"}}
             )
@@ -260,7 +260,10 @@ class WireApp:
         """Resolve the viewer, refuse a non-operator, read the body (a POST's), and run the work
         in the pool under the per-person and global caps."""
         loop = asyncio.get_running_loop()
-        principal = await loop.run_in_executor(None, self.principal_for_request, request)
+        principal_context = contextvars.copy_context()
+        principal = await loop.run_in_executor(
+            None, lambda: principal_context.run(self.principal_for_request, request)
+        )
         if principal is None:
             return self.json(401, {"error": {"type": "Refused", "message": "sign in"}})
         operator = await self._operator(principal)
@@ -276,7 +279,10 @@ class WireApp:
                 return self.json(e.status, {"error": {"type": "BadRequest", "message": e.message}})
         if not self._admit(principal.user):
             return self.busy()
-        work = loop.run_in_executor(self.pool, self.execute, principal, target, body)
+        work_context = contextvars.copy_context()
+        work = loop.run_in_executor(
+            self.pool, lambda: work_context.run(self.execute, principal, target, body)
+        )
         # when the work ends, not when the caller stops waiting
         work.add_done_callback(lambda _: self._release(principal.user))
         return await asyncio.shield(work)
@@ -288,8 +294,8 @@ class WireApp:
             return True
         try:
             return bool(self.authorize_operator(principal))
-        except Exception:
-            log.exception("operate: authorize_operator failed")
+        except Exception as error:
+            log.error("operate: authorize_operator failed: %s", type(error).__name__)
             return False
 
     def busy(self) -> Response:
@@ -321,8 +327,9 @@ class WireApp:
         if not self._admit(principal.user):
             return None
         try:
+            authorization_context = contextvars.copy_context()
             return await asyncio.get_running_loop().run_in_executor(
-                self.pool, self.is_operator, principal
+                self.pool, lambda: authorization_context.run(self.is_operator, principal)
             )
         finally:
             self._release(principal.user)

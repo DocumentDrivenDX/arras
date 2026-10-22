@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import { expect, type Page, test } from "@playwright/test";
+import { ORIGIN } from "./acceptance";
 import { control, ensureAtlas, ensureHub, moduleNames } from "./gb-fixtures";
 
 // Visual review (SD-011, Verification Plan 5; DESIGN-GB, Review): every screen of the design, from
@@ -10,7 +11,6 @@ import { control, ensureAtlas, ensureHub, moduleNames } from "./gb-fixtures";
 // `npm run e2e:visual:update` rewrites the baselines; each change is reviewed against the mockup in
 // docs/helix/02-design/graph-browser-mockup/.
 
-const ORIGIN = "http://127.0.0.1:8123";
 const HUB = "uc-hub-120";
 const SOLUTION = "lumen-runbook-prompt";
 // The use case the operator states are shot on: it is only opened, never retired or changed.

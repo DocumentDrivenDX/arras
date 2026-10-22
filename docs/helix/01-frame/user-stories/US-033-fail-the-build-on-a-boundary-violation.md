@@ -31,7 +31,7 @@ ddx:
 
 ## Context
 
-The public names are those listed in `arras.__all__`. The check runs in each repository: Arras's and the host's (praxis, the Databricks app that embeds Arras).
+The public names are those listed in `arras.__all__`. The check runs in each repository: Arras's and the host's (the embedding host).
 
 ## Walkthrough
 
@@ -56,7 +56,7 @@ The public names are those listed in `arras.__all__`. The check runs in each rep
 
 | Scenario | AC ID | Input / State | Action | Expected Result |
 |----------|-------|---------------|--------|-----------------|
-| Arras to host | US-033-AC1 | An Arras module imports a praxis module | Run the check | Fails |
+| Arras to host | US-033-AC1 | An Arras module imports a the embedding host module | Run the check | Fails |
 | Host to internal | US-033-AC2 | The host imports a name not in `__all__` | Run the check | Fails |
 | Public | US-033-AC3 | The host imports only names in `__all__` | Run the check | Passes |
 | New name | US-033-AC4 | A name added to the public interface | Run the check and review the documentation | Name is in `__all__` and documented |

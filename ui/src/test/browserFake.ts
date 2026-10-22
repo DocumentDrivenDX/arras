@@ -387,7 +387,7 @@ export function dataset(): Record<string, Row[]> {
           name: "Lumen alert correlation",
           deliveryMode: "Embedded",
           audience: "Platform engineers",
-          launchUrl: "https://praxis.example/solutions/s-017",
+          launchUrl: "https://example.invalid/solutions/s-017",
           caveat: null,
           workflow: "Upload a draft.\nLumen compares each pattern.",
           summary: "Groups alerts against recent deploys.",

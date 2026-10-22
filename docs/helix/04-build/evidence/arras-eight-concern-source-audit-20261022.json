@@ -1,0 +1,68 @@
+{
+  "verdict": "all_eight_source_seams_exist_final_acceptance_partial",
+  "concerns": [
+    {
+      "id": 1,
+      "concern": "distribution/public catalog/compatibility",
+      "source": "exists",
+      "completion": "partial: final integrated artifact/runtime/delivery gates open"
+    },
+    {
+      "id": 2,
+      "concern": "typed naming/configuration/aliases/telemetry",
+      "source": "exists",
+      "completion": "partial: final integrated artifact/runtime/delivery gates open"
+    },
+    {
+      "id": 3,
+      "concern": "runtime assets/compiled themes/canonical portable UI",
+      "source": "exists",
+      "completion": "partial: final integrated artifact/runtime/delivery gates open"
+    },
+    {
+      "id": 4,
+      "concern": "current-principal callbacks/write policy/atomic annotation-or-refusal",
+      "source": "exists",
+      "completion": "partial: final integrated artifact/runtime/delivery gates open"
+    },
+    {
+      "id": 5,
+      "concern": "explicit content/resources/closed views/hygiene",
+      "source": "exists",
+      "completion": "partial: final integrated artifact/runtime/delivery gates open"
+    },
+    {
+      "id": 6,
+      "concern": "backend factories/conformance/host-owned connections/credentials",
+      "source": "exists",
+      "completion": "partial: final integrated artifact/runtime/delivery gates open"
+    },
+    {
+      "id": 7,
+      "concern": "reusable CI/no-copy tests/public-origin governance",
+      "source": "exists",
+      "completion": "partial: final integrated artifact/runtime/delivery gates open"
+    },
+    {
+      "id": 8,
+      "concern": "per-seam change record/offline doctor",
+      "source": "exists",
+      "completion": "partial: final integrated artifact/runtime/delivery gates open"
+    }
+  ],
+  "source_finding": "Cached cleanup P2 addressed in separately recorded narrow review.",
+  "required_actual_gates": [
+    "new-pair full native and installed native qualification",
+    "actual packed themed canonical UI suite and reviewed theme baselines",
+    "final wheel/sdist/npm payload and metadata parity",
+    "fresh final SDK/doctor/consumer checks with precise OS",
+    "final whole-source quality and public content checks",
+    "exact tag/Linux required gates",
+    "GitHub safe assets and fresh anonymous public download consumers"
+  ],
+  "registry": "Explicit deferral permitted without configured auth; GitHub delivery remains mandatory.",
+  "limits": [
+    "Read-only source coverage audit; no heavy tests or runtime qualification.",
+    "No customer-specific migration promise or general native/official-profile support inferred."
+  ]
+}
