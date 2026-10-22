@@ -637,10 +637,15 @@ export default config;
       },
       visual:
         process.platform === "darwin"
-          ? {
-              status: "compared",
-              comparedScreenshots: fullCounts.find((item) => item.name === "visual")?.passed ?? 0,
-            }
+          ? updateCanonicalBaselines
+            ? {
+                status: "updated-unreviewed",
+                updatedScreenshots: fullCounts.find((item) => item.name === "visual")?.passed ?? 0,
+              }
+            : {
+                status: "compared",
+                comparedScreenshots: fullCounts.find((item) => item.name === "visual")?.passed ?? 0,
+              }
           : { status: "skipped-non-Darwin" },
       negativeControls: {
         missingResource: "refused",
