@@ -27,15 +27,16 @@ Its separate EX queue tracks the generic
 [downstream extensibility design](02-design/downstream-extensibility.md). The
 implemented candidate includes credential/grant safety, schema authorization,
 public distribution/catalog, typed naming and policy, explicit consumer content,
-external theme assets and the portable canonical testkit. The historical 0.5.0 07b wheel
-passes the installed doctor/SDK and fresh example proofs. Its packed themed
-capture and ordinary comparison each pass all 272 cases; all 67 canonical images
-and eight narrow route images have Sol review. Earlier failures and exact scoped
-receipts remain in the build plan. Mac source and fresh installed-native
-qualification and finalized source/sdist parity pass for the selected public
-cohort. The immutable 0.5.0 tag failed before artifact publication on a stale refusal
-assertion. The 0.5.1 fix-forward cohort requires fresh installed proofs; exact-tag
-GitHub assets and public-download gates remain open in the
+external theme assets and the portable canonical testkit. The fresh 0.5.1 wheel
+passes installed SDK/doctor, fresh example and selected installed-native proofs.
+Its ordinary themed comparison passes all 272 cases, with all 67 canonical and
+eight narrow reviewed baseline hashes unchanged. Historical capture/source
+receipts remain bound to their original artifacts; the explicit source-delta
+attestation qualifies retention of the Mac source-native evidence. Final source
+archive parity and independent component reviews pass. The immutable 0.5.0 tag
+failed before artifact publication on a stale refusal assertion; 0.5.1 fixes
+that assertion and CI dependency parity. Exact-tag GitHub assets and fresh public
+download gates remain open in the
 [release checklist](05-deploy/deployment-checklist.md). Real registry uploads may
 be explicitly deferred; no downstream migration or general official-UMF execution
 is implied by this release work.

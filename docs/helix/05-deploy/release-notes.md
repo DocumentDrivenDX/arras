@@ -32,13 +32,15 @@ checks before publication and fresh public-download qualification afterward.
 
 ## Qualification state
 
-Version 0.5.1 is undergoing qualification. The immutable `v0.5.0` tag's
+The 0.5.1 wheel has fresh installed SDK, example, memory/native corpus and ordinary
+themed-browser qualification, plus independent source/sdist parity and Sol review.
+The immutable `v0.5.0` tag's
 [workflow](https://github.com/DocumentDrivenDX/arras/actions/runs/39869369841)
 failed before artifact creation or publication: its fuller dependency environment
-exposed a stale CLI-refusal assertion. The patch corrects the assertion and aligns
-regular Python CI with that environment. The production refusal remains intact.
-The component results below describe the historical 0.5.0 candidate until fresh
-0.5.1 receipts and exact-tag/public-download results supersede them.
+exposed a stale CLI-refusal assertion. This patch corrects the assertion and
+aligns regular Python CI with that environment. The production refusal remains intact.
+Exact-tag GitHub publication and fresh anonymous-download consumers are separate
+mandatory delivery gates, recorded by the release workflow and checklist.
 
 ## Highlights
 
@@ -62,7 +64,7 @@ also forwards the host's schema-authorization callback.
 | Operator and policy | Host callbacks retain operator, role, schema and Operate ownership. PolicyBackend checks immutable resolved requests as the current person; policy refusals use existing error envelopes. Annotation-aware providers must commit annotations with the write or refuse before effects. |
 | Content | The downstream owns its modules, seeds and graph files and chooses registration explicitly. Demo modules are not discovered automatically. The view vocabulary remains closed; adding a vocabulary item requires an upstream extension. |
 | Backend/deployment | Backend factories and connections remain host-owned. A lazy public Truss conformance harness owns only a throwaway local database. Stable credential storage supports multiple persistent development hosts. |
-| Testing | The packaged corpus and public UI checker can be run without the upstream test tree. Reusable CI installs an exact digest-qualified wheel and the consumer's selected test targets. Generic import-origin and fixture-provenance gates protect the public source. Public Node-only `./testkit` and browser-only `./testkit/host` carry the shared 17-spec, 83-resource suite. The actual installed themed capture and ordinary comparison each pass 272 cases, including 67 reviewed visual baselines; the Linux profile selects 205 nonvisual cases. |
+| Testing | The packaged corpus and public UI checker can be run without the upstream test tree. Reusable CI installs an exact digest-qualified wheel and the consumer's selected test targets. Generic import-origin and fixture-provenance gates protect the public source. Public Node-only `./testkit` and browser-only `./testkit/host` carry the shared 17-spec, 83-resource suite. The current installed ordinary themed comparison passes 272 cases, including 67 unchanged reviewed visual baselines; historical capture approvals remain separate; the Linux profile selects 205 nonvisual cases. |
 | Upgrade | The offline doctor checks installed identities, contracts/exports, config/naming, role-token names, manifests and declared document profiles. Reports distinguish incompatibility, malformed requests and unavailable proof. It does not read ambient credentials or contact hosts. |
 
 ## Required actions and compatibility
@@ -84,8 +86,9 @@ silently changing passwords. This release does not migrate a live database.
 
 The [compatibility matrix](../02-design/downstream-extensibility.md#compatibility-and-qualification-matrix)
 separates actual component cohorts from version declarations. The selected native
-versions are public Truss 0.0.48, Weft 0.4.51 and pgserver-pg18 18.6.1. Source Linux
-and Mac qualification each pass all 199 native tests. A separate fresh Darwin
+versions are public Truss 0.0.48, Weft 0.4.51 and pgserver-pg18 18.6.1. Current source Linux qualification passes all 199 native tests. The historical
+Mac 199-test source result is retained by the explicit source-equivalence
+attestation. A separate fresh 0.5.1 Darwin
 arm64/CPython 3.11 installed-native run records 64
 passes, eight exact declared limits and seven replica-only cases inapplicable,
 with no failures or harness errors. All seven selected native distributions and
@@ -94,9 +97,9 @@ dynamic-link audit. The fresh installed example passes four tests and all 72 app
 replica-only cases inapplicable.
 
 On Darwin arm64, the frozen wheel passes the 20-case doctor/SDK check on Python
-3.13.16/OpenTelemetry 1.45.1. The packed themed browser suite passes both capture
-and ordinary comparison with 272 cases and no failures/skips; all 67 reviewed
-baselines compare unchanged. It uses React 19.3.0, Vite 8.3.2, Playwright 1.63.0,
+3.13.16/OpenTelemetry 1.45.1. The current packed themed browser ordinary comparison passes
+272 cases with no failures/skips; all 67 reviewed canonical baselines and eight
+route baseline hashes remain unchanged. Historical capture approvals are retained. It uses React 19.3.0, Vite 8.3.2, Playwright 1.63.0,
 axe 4.13.0 and Chromium 153.0.8010.12. These are named component results. The
 release workflow separately binds its
 exact tagged Linux artifacts and emits fresh public-download results; component

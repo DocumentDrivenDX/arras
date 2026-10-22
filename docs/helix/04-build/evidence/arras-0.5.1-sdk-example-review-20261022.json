@@ -1,0 +1,129 @@
+{
+  "schema": "arras.independent-installed-proof-review.v1",
+  "reviews": [
+    {
+      "kind": "doctor",
+      "status": "approved-exact-recorded-cohort",
+      "receipt_sha256": "baa9334e26936908bc1fabe6e6e6b3e630c92e1bd9cede907ceb1a6341527b2f",
+      "driver_sha256": "9aa379d1f2b333f855aa9886da7b6e93dcf930bc789a3721e0862ee174c08455",
+      "run_log_sha256": "243b9bb8331eeba79f64097644df04e453802e5153e425bdf27edddbc3e97eae",
+      "exit": 0,
+      "wheel_sha256": "59827644e2e423980afed1047f75c7130dc5d8c542778df4b62a9e2244cdc24c",
+      "npm_sha256": "460e1b1037d4965d17af8b3e689c364c22b51a09cc9d3d64c8ddf0296e34c943",
+      "details": {
+        "cases": 20,
+        "phases": {
+          "direct": {
+            "spans": 8,
+            "events": 2,
+            "logs": 8,
+            "service_name": "extension-alpha+extension-beta"
+          },
+          "mcp_frame": {
+            "spans": 1,
+            "events": 1,
+            "logs": 1,
+            "service_name": "extension-beta"
+          },
+          "worker_backed_asgi_console": {
+            "spans": 1,
+            "events": 1,
+            "logs": 3,
+            "service_name": "extension-alpha"
+          },
+          "worker_backed_asgi_operate": {
+            "spans": 1,
+            "events": 1,
+            "logs": 1,
+            "service_name": "extension-alpha"
+          },
+          "concurrent_nested": {
+            "spans": 8,
+            "events": 2,
+            "logs": 8,
+            "service_name": "extension-alpha+extension-beta"
+          },
+          "nested_ambient_restoration": {
+            "spans": 4,
+            "events": 1,
+            "logs": 4,
+            "service_name": "extension-alpha"
+          },
+          "finish_time_snapshot": {
+            "spans": 4,
+            "events": 1,
+            "logs": 4,
+            "service_name": "extension-alpha"
+          },
+          "provider_fault_isolation": {
+            "spans": 4,
+            "events": 4,
+            "logs": 4,
+            "service_name": "extension-alpha"
+          }
+        },
+        "false_pass_controls": [
+          "MCP successful empty result",
+          "ASGI successful HTTP 200 empty body",
+          "finish-time ambient-context misrouting"
+        ],
+        "runtime": {
+          "python": "3.13.16",
+          "platform": {
+            "os": "darwin",
+            "architecture": "arm64",
+            "release": "27.0.0"
+          },
+          "versions": {
+            "arras": "0.5.1",
+            "example-extension-host": "0.1.0",
+            "graphql-core": "3.3.0",
+            "opentelemetry-api": "1.45.1",
+            "opentelemetry-sdk": "1.45.1"
+          }
+        },
+        "probe_sha256": "2dd054ff5b832f279195d8e644027474181ff247d29d6b59ee0e8c2889836e0f"
+      }
+    },
+    {
+      "kind": "example",
+      "status": "approved-exact-recorded-cohort",
+      "receipt_sha256": "f997f651181ef6e5221dedd2faa6e36d7b618c335b49c62f6fdb3764ca892890",
+      "driver_sha256": "06ca38d15c1c5c3c39621c2ed97c036e8c3f428ca439a661d43fbf69d368bde3",
+      "run_log_sha256": "5f8227eec38f2e9ca13512ac6b822ac8c2834841a82790eae1ce670b5a3dce1e",
+      "exit": 0,
+      "wheel_sha256": "59827644e2e423980afed1047f75c7130dc5d8c542778df4b62a9e2244cdc24c",
+      "npm_sha256": "460e1b1037d4965d17af8b3e689c364c22b51a09cc9d3d64c8ddf0296e34c943",
+      "details": {
+        "fresh_tests": 4,
+        "memory": {
+          "passed": 72,
+          "replica_only_inapplicable": 7,
+          "errors_failures_limits": 0
+        },
+        "runtime": {
+          "python": "3.11.17",
+          "distributions": {
+            "Pygments": "2.21.0",
+            "arras": "0.5.1",
+            "example-extension-host": "0.1.0",
+            "graphql-core": "3.3.0",
+            "iniconfig": "2.3.1",
+            "packaging": "26.3",
+            "pip": "24.0",
+            "pluggy": "1.7.0",
+            "pytest": "9.1.1",
+            "setuptools": "79.0.1"
+          }
+        },
+        "consumer_wheel_sha256": "fe4c419114045ba9ccb393dc2a931eb4bb34cafa96a5c46b94cb4c62476dbd03"
+      }
+    }
+  ],
+  "limitations": [
+    "Metadata/content identity review, not duplicate test execution.",
+    "Raw import/working/interpreter paths deliberately omitted; original receipts remain private exact provenance.",
+    "Doctor SDK Darwin3.13.16 and example3.11.17 are separate cohorts, no runtime merge.",
+    "Native/UI/distribution/tag/publicdownload gates remain independent."
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "schema": "arras.ui.independent-comparison-review.v1",
+  "status": "approved-exact-0.5.1-cohort",
+  "receipt_sha256": "2538efc8242bec4390865953e6d575b00439fff7134bc566f07a880374071b78",
+  "log_sha256": "860d37861334850aee742693724142b2515337cac23ae826112727130eb4fc81",
+  "cohort": {
+    "wheel": {
+      "file": "arras-0.5.1-py3-none-any.whl",
+      "sha256": "59827644e2e423980afed1047f75c7130dc5d8c542778df4b62a9e2244cdc24c",
+      "version": "0.5.1"
+    },
+    "npm": {
+      "file": "documentdrivendx-arras-ui-0.5.1.tgz",
+      "sha256": "460e1b1037d4965d17af8b3e689c364c22b51a09cc9d3d64c8ddf0296e34c943",
+      "version": "0.5.1"
+    },
+    "theme": {
+      "name": "@arras-fixtures/neutral-theme",
+      "version": "1.0.0",
+      "sha256": "f5248a8774512ef722ea76046fa550797b0eaa510649db622fd750e0e008e086"
+    },
+    "runner": {
+      "sha256": "67633a3dcfbc5e1130e1135d7c3192f612370078882ac98e247c732f03f753b9"
+    }
+  },
+  "runtime": {
+    "python": "Python 3.13.16",
+    "node": "v26.12.1",
+    "npm": "11.20.0",
+    "browser": "Chromium 153.0.8010.12",
+    "packages": {
+      "react": "19.3.0",
+      "reactDom": "19.3.0",
+      "typescript": "6.0.3",
+      "vite": "8.3.2",
+      "playwright": "1.63.0",
+      "axePlaywright": "4.13.0"
+    },
+    "platform": "darwin",
+    "javascriptDependencies": "npm-installed from the public registry into a temporary consumer; Arras and theme installed from exact cohort tarballs"
+  },
+  "project_results": [
+    {
+      "name": "chromium",
+      "expected": 132,
+      "discovered": 132,
+      "passed": 132,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "schema-admin",
+      "expected": 3,
+      "discovered": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "browser",
+      "expected": 70,
+      "discovered": 70,
+      "passed": 70,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "visual",
+      "expected": 67,
+      "discovered": 67,
+      "passed": 67,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "visual": {
+    "status": "compared",
+    "comparedScreenshots": 67
+  },
+  "all_67_canonical_and_8_narrow_reviewed_baseline_hashes_unchanged": true,
+  "sidecars": {
+    "acceptance-inventory-neutral-theme.json": "925019da1651937a72a20b91a7a032f1101c2af024ae96c51ef423aa67bbe14c",
+    "acceptance-resources-neutral-theme.json": "bfb6ed43ff0accdb170b60cc7095365f2a7cc287a66b7dfcab31918106042f78"
+  },
+  "playwright_summary_sha256": "9eb4ce63e6c9ddeced890fcb4a0af978b95c38b98b6419254e2f65f1e26e4371",
+  "negative_controls": {
+    "missingResource": "refused",
+    "tamperedResource": "refused",
+    "invalidOptions": "refused",
+    "controlledFailure": "exit-1"
+  },
+  "routes_compared": 4,
+  "private_driver_sha256": "55541807e4bb6ccf249b7681aabf71d4c492e1a359125e4f052f8bca9283af7e",
+  "qualifications": [
+    "No baseline regeneration; prior independent image approvals reused by exact PNG hash.",
+    "Ordinarycomparison is canonical Playwright/checker comparison with existing masks/tolerances, not assertion that every unmasked output PNG bytehash equalsbaseline.",
+    "Receipt runner hash identifies wheel-carried publicchecker, separately verified againstexactnpm; privateouterdriver recordedseparately.",
+    "No native/Linux/tag/publicdownload qualification implied."
+  ]
+}
