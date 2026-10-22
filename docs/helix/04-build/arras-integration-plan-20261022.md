@@ -1011,6 +1011,56 @@ metadata, title and both-mode coverage. Because canonical test bytes are carried
 this correction requires a new manifest/npm/wheel and repeated installed proofs.
 No full 272-case success or reviewed canonical visual comparison is established.
 
+The theme-logo profile exposed a further test-only distinction: a rendered Mark
+adds its own glyph beside the exact product-name text. Sol approved an exact
+visible text-node witness outside semantic image content, plus the exact named
+image assertion. Actual browser controls accept the exact visible sibling and
+refuse prefixed, suffixed, display-hidden, visibility-hidden, transparent and
+image-label-only names. Plain-text and HTTPS wordmark priority remain unchanged.
+The resulting wheel
+`07b3e867bd4ca48b4cd43ad5f13449076e3939f4194c06c297d1ca0171764ed1`
+carries npm
+`c29a9f151d9a6a42cce55325e927634cc5713763c0485cc6e02cb63006c78307`
+and acceptance manifest
+`bfb6ed43ff0accdb170b60cc7095365f2a7cc287a66b7dfcab31918106042f78`.
+All 83 resource bytes and the unchanged 17-spec/project inventory were verified.
+Its selected packed run passed all nine cases with no unexpected, skipped or
+flaky result, and all four ordinary narrow routes passed. The private command
+still failed overall: the controlled-negative config lived outside the installed
+host's module-resolution tree, and its output directory overlapped its own inputs.
+Sol independently reproduced the module-resolution error and approved placing the
+control under the installed host with a separate child results directory. The
+standard full capture must still prove its canonical cases and all four negative
+controls; the passing selected subset is not a complete qualification.
+
+The standard packed capture then passed **272/272 cases with zero failures or
+skips** on wheel `07b3e867bd4ca48b4cd43ad5f13449076e3939f4194c06c297d1ca0171764ed1`:
+132 Chromium, three schema-administration, 70 browser and 67 visual cases. It
+retained all 17 canonical specs and 83 verified resources. Missing/tampered
+resources and unsafe options were refused; the real canonical controlled-brand
+assertion produced the required exit 1 and failed-test JSON. All four narrow
+routes compared successfully. The capture receipt SHA-256 is
+`23a40f538c1c34d14a54a408d35f5b2d94d183bb66bdb70b2b167606f4895f79` and reports
+`updated-unreviewed`, not a canonical comparison. Sol individually covered all
+67 images and approved them as initial baselines in the
+[complete visual review](evidence/arras-neutral-theme-67-visual-review-20261022.json).
+Existing volatile-content masks remain explicit review limits. An ordinary full
+comparison with updates disabled is still required.
+
+The same final wheel repeated all 20 installed doctor cases, eight SDK phases and
+three false-pass controls on the recorded Darwin/Python 3.13.16/OpenTelemetry
+1.45.1 cohort. Receipt SHA-256 is
+`1c12ee78f0d2c0c2c63d9f92f0dc8cc244294cb9b0bacfe743a633e0f83697ea`;
+[Sol's identity review](evidence/arras-sdk-07b-review-20261022.json) independently
+matches wheel, current verifier, generated probe and carried npm hashes. The
+fresh installed example also passed four tests and memory corpus 72/7 with no
+limit/error; its reviewed receipt SHA-256 is
+`fbdce0dc76e11a1457f05a18e5ae40169050ef379242b76c2874047c45595dc7`.
+These results supersede the earlier EEB installed proofs for release planning.
+The doctor's conservative candidate/native-pin boilerplate does not establish
+native behavior: the selected public 48/51 tuple requires its separate native
+receipts. Final source/sdist parity, Mac native and tag/download gates remain.
+
 ## Validation Plan
 
 - A0: focused `tests/test_umf.py` and `tests/test_core.py`; existing module/host

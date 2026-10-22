@@ -3,21 +3,94 @@
   "cohort": {
     "wheel": {
       "file": "arras-0.5.0-py3-none-any.whl",
-      "sha256": "87955c4020102535b52eb6e46815e7f3a41a69240084478d20d3d4a14351c4d2",
+      "sha256": "07b3e867bd4ca48b4cd43ad5f13449076e3939f4194c06c297d1ca0171764ed1",
       "version": "0.5.0"
     },
     "npm": {
       "file": "documentdrivendx-arras-ui-0.5.0.tgz",
-      "sha256": "43c6df8067ff849d870979a22d4517e15d43d59ab06ae964c1c2ee8d97836aea",
+      "sha256": "c29a9f151d9a6a42cce55325e927634cc5713763c0485cc6e02cb63006c78307",
       "version": "0.5.0"
     },
     "theme": {
       "name": "@arras-fixtures/neutral-theme",
       "version": "1.0.0",
-      "sha256": "5e6de93da709c27242eb70a7800cb10a12e4df29e3c07c5e3cad74e294b6240b"
+      "sha256": "27ce95cfbc5ec907561bf853ef2cc4d456c2efdf671c63e483f16ebdbc6e32dc"
     },
     "runner": {
-      "sha256": "bf5a0590e51a91465e7ea42c87b01fedc4ed3d86f091a82b08174f3d2de72073"
+      "sha256": "67633a3dcfbc5e1130e1135d7c3192f612370078882ac98e247c732f03f753b9"
+    }
+  },
+  "acceptance_suite": {
+    "schema": "arras.ui.portable-acceptance.v1",
+    "status": "passed",
+    "themeId": "neutral-theme",
+    "projects": [
+      {
+        "name": "chromium",
+        "expected": 132,
+        "discovered": 132,
+        "passed": 132,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "name": "schema-admin",
+        "expected": 3,
+        "discovered": 3,
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "name": "browser",
+        "expected": 70,
+        "discovered": 70,
+        "passed": 70,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "name": "visual",
+        "expected": 67,
+        "discovered": 67,
+        "passed": 67,
+        "failed": 0,
+        "skipped": 0
+      }
+    ],
+    "canonical": {
+      "specCount": 17,
+      "expectedTestCount": 272,
+      "sourceExpectedCounts": {
+        "chromium": 132,
+        "schema-admin": 3,
+        "browser": 70,
+        "visual": 67
+      },
+      "inventoryPath": "acceptance-inventory-neutral-theme.json",
+      "inventorySha256": "925019da1651937a72a20b91a7a032f1101c2af024ae96c51ef423aa67bbe14c",
+      "resourcesPath": "acceptance-resources-neutral-theme.json",
+      "resourcesSha256": "bfb6ed43ff0accdb170b60cc7095365f2a7cc287a66b7dfcab31918106042f78"
+    },
+    "playwright": {
+      "reportPath": "playwright-summary-neutral-theme.json",
+      "sha256": "9eb4ce63e6c9ddeced890fcb4a0af978b95c38b98b6419254e2f65f1e26e4371"
+    },
+    "visual": {
+      "status": "updated-unreviewed",
+      "updatedScreenshots": 67
+    },
+    "negativeControls": {
+      "missingResource": "refused",
+      "tamperedResource": "refused",
+      "invalidOptions": "refused",
+      "controlledFailure": "exit-1"
+    },
+    "cohort": {
+      "wheelSha256": "07b3e867bd4ca48b4cd43ad5f13449076e3939f4194c06c297d1ca0171764ed1",
+      "npmSha256": "c29a9f151d9a6a42cce55325e927634cc5713763c0485cc6e02cb63006c78307",
+      "themeSha256": "27ce95cfbc5ec907561bf853ef2cc4d456c2efdf671c63e483f16ebdbc6e32dc",
+      "runnerSha256": "67633a3dcfbc5e1130e1135d7c3192f612370078882ac98e247c732f03f753b9"
     }
   },
   "runtime": {
@@ -105,7 +178,7 @@
     },
     {
       "schema": "arras.ui.qualification-receipt.v1",
-      "target": "http://127.0.0.1:8766/",
+      "target": "http://127.0.0.1:8768/",
       "route": "compiled-host",
       "surface": "browser",
       "platform": "darwin",
@@ -176,7 +249,7 @@
     },
     {
       "schema": "arras.ui.qualification-receipt.v1",
-      "target": "http://127.0.0.1:8766/",
+      "target": "http://127.0.0.1:8768/",
       "route": "compiled-host",
       "surface": "console",
       "platform": "darwin",

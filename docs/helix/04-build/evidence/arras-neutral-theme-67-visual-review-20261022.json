@@ -1,0 +1,902 @@
+{
+  "schema": "arras.ui.independent-baseline-review.v1",
+  "reviewer": "Sol",
+  "status": "approved-initial-baselines",
+  "count": 67,
+  "scope": "All 67 initial neutral-theme Darwin canonical PNGs visually inspected. This approves baseline content; it is not an ordinary screenshot comparison result.",
+  "cohort": {
+    "wheel": {
+      "file": "arras-0.5.0-py3-none-any.whl",
+      "sha256": "07b3e867bd4ca48b4cd43ad5f13449076e3939f4194c06c297d1ca0171764ed1",
+      "version": "0.5.0"
+    },
+    "npm": {
+      "file": "documentdrivendx-arras-ui-0.5.0.tgz",
+      "sha256": "c29a9f151d9a6a42cce55325e927634cc5713763c0485cc6e02cb63006c78307",
+      "version": "0.5.0"
+    },
+    "theme": {
+      "name": "@arras-fixtures/neutral-theme",
+      "version": "1.0.0",
+      "sha256": "27ce95cfbc5ec907561bf853ef2cc4d456c2efdf671c63e483f16ebdbc6e32dc"
+    },
+    "runner": {
+      "sha256": "67633a3dcfbc5e1130e1135d7c3192f612370078882ac98e247c732f03f753b9"
+    }
+  },
+  "runtime": {
+    "python": "Python 3.13.16",
+    "node": "v26.12.1",
+    "npm": "11.20.0",
+    "browser": "Chromium 153.0.8010.12",
+    "packages": {
+      "react": "19.3.0",
+      "reactDom": "19.3.0",
+      "typescript": "6.0.3",
+      "vite": "8.3.2",
+      "playwright": "1.63.0",
+      "axePlaywright": "4.13.0"
+    },
+    "platform": "darwin",
+    "javascriptDependencies": "npm-installed from the public registry into a temporary consumer; Arras and theme installed from exact cohort tarballs"
+  },
+  "capture_receipt_sha256": "23a40f538c1c34d14a54a408d35f5b2d94d183bb66bdb70b2b167606f4895f79",
+  "capture_status": {
+    "status": "updated-unreviewed",
+    "updatedScreenshots": 67
+  },
+  "project_results": [
+    {
+      "name": "chromium",
+      "expected": 132,
+      "discovered": 132,
+      "passed": 132,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "schema-admin",
+      "expected": 3,
+      "discovered": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "browser",
+      "expected": 70,
+      "discovered": 70,
+      "passed": 70,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "visual",
+      "expected": 67,
+      "discovered": 67,
+      "passed": 67,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "source_inventory_verified": {
+    "specCount": 17,
+    "fileCount": 83,
+    "resourcesSha256": "bfb6ed43ff0accdb170b60cc7095365f2a7cc287a66b7dfcab31918106042f78",
+    "inventorySha256": "925019da1651937a72a20b91a7a032f1101c2af024ae96c51ef423aa67bbe14c",
+    "summarySha256": "9eb4ce63e6c9ddeced890fcb4a0af978b95c38b98b6419254e2f65f1e26e4371"
+  },
+  "review_method": "Inspected all 67 in 17 labeled contact sheets; separately inspected 18 original images covering dense dialogs, long hub/product/result/type lists, and narrow solution pages. Original tall hub images tool-rendered at 1120x2048; text and layout remained legible.",
+  "qualifications": [
+    "Magenta masks intentionally cover attribution/freshness and entire gb-history panel, as defined in canonical visual.spec.ts; those pixels are outside visual content approval.",
+    "Narrow dialog attribution masks can overlay parts of buttons because Playwright masks underlying locators; unmasked new-form/retire and semantic UI tests provide separate evidence.",
+    "No new Linux visual-runtime claim.",
+    "Ordinary full 272 run with snapshots disabled remains required."
+  ],
+  "files": [
+    {
+      "index": 1,
+      "file": "actions-dialog-narrow-dark-visual-darwin.png",
+      "sha256": "dde2f4a7b6bf7d635f2de5b86bb1fed955c20fa779fcb16b56974d4a4fe8c01a",
+      "dimensions": [
+        390,
+        844
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet plus original image",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 2,
+      "file": "actions-dialog-narrow-light-visual-darwin.png",
+      "sha256": "e38c8354c06b9a0e38b07770b065fad71e5f304154c0c2e18fa2a8afb18a82b6",
+      "dimensions": [
+        390,
+        844
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet plus original image",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 3,
+      "file": "actions-dialog-wide-dark-visual-darwin.png",
+      "sha256": "8d9cafa37b8f54dafffd996eeed9755e7805db980be0046c465e7bc0595285eb",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 4,
+      "file": "actions-dialog-wide-light-visual-darwin.png",
+      "sha256": "f7169642e110c4d640b676125dbea6e09a6c4c5673d56ef070142221b255466e",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 5,
+      "file": "actions-menu-narrow-dark-visual-darwin.png",
+      "sha256": "01dd65b0403554a62b9de300b4c1385ec4e4aafa0ac0225e86e5233fa5b51861",
+      "dimensions": [
+        390,
+        844
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 6,
+      "file": "actions-menu-narrow-light-visual-darwin.png",
+      "sha256": "712469b35b7084e8c0ec9608c20ce28fe5bde357fcee9366b7e1ed8eb725ae4d",
+      "dimensions": [
+        390,
+        844
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 7,
+      "file": "actions-menu-wide-dark-visual-darwin.png",
+      "sha256": "01338cace5999d8f90517e411604783db0587939648eabe4aea180d29efedf41",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 8,
+      "file": "actions-menu-wide-light-visual-darwin.png",
+      "sha256": "a130d0cf176e4fcc9cf6a1131e86b7a5d74c510755ac16092aaf3fa34eec7b76",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 9,
+      "file": "backend-down-wide-dark-visual-darwin.png",
+      "sha256": "bf734026db719c1f9c2b5d7092287a3b43ef6af6e4e8720ffcb42e731392f202",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 10,
+      "file": "backend-down-wide-light-visual-darwin.png",
+      "sha256": "873fd29f04d87c37118b6403a8bec4a4d4e046b9dc0afc7adc62cd1c95b44204",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 11,
+      "file": "entry-narrow-dark-visual-darwin.png",
+      "sha256": "4a374941c62ca1edbd44ddfa33899bc070031a4d340d670e91c6100681a10e78",
+      "dimensions": [
+        390,
+        902
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 12,
+      "file": "entry-narrow-light-visual-darwin.png",
+      "sha256": "2004f54adddc4f9da8e8e580ef00c798d30dc968a624f92a1ac6b1ce76d975df",
+      "dimensions": [
+        390,
+        902
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 13,
+      "file": "entry-wide-dark-visual-darwin.png",
+      "sha256": "165949164f743aa5e8a63bef6e31368bcd647fa2fe54b93baae306b515d87d20",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 14,
+      "file": "entry-wide-light-visual-darwin.png",
+      "sha256": "bc37e3c9710aa2185c5e5d34f651dbe6abff051a6da9e1e0ccb09205b7136790",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 15,
+      "file": "history-panel-narrow-dark-visual-darwin.png",
+      "sha256": "d79a0aee757fa3e12fe9def9a75e03e388cabb307e5095365cf7349593ef6a7e",
+      "dimensions": [
+        390,
+        844
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 16,
+      "file": "history-panel-narrow-light-visual-darwin.png",
+      "sha256": "95e211a0314ad7d8db0c028b757f1bbb7ce846a98227bbdc86b515af256f85cf",
+      "dimensions": [
+        390,
+        844
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 17,
+      "file": "history-panel-wide-dark-visual-darwin.png",
+      "sha256": "bb18728b77c34517a2fd249df8e82daec68299ad3d459bc4493ca1c4baa66fbe",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 18,
+      "file": "history-panel-wide-light-visual-darwin.png",
+      "sha256": "c036e105bbc6d5a012cb9a8974cdb5e628c690b040565433641fe0838420b679",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 19,
+      "file": "new-form-narrow-dark-visual-darwin.png",
+      "sha256": "d07f43cdd64ef8ff2e10e38aa172ab1f423ed1c10acf563ca97f08c149fd2f26",
+      "dimensions": [
+        390,
+        844
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet plus original image",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 20,
+      "file": "new-form-narrow-light-visual-darwin.png",
+      "sha256": "20ef137798180b60784a863e80211eb9945694c68c3cbd2b6785df55ccd7b458",
+      "dimensions": [
+        390,
+        844
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet plus original image",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 21,
+      "file": "new-form-wide-dark-visual-darwin.png",
+      "sha256": "280382c09d1f10927907b527c5b73036200a3a31c6db00f84af5757e4b4ff846",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 22,
+      "file": "new-form-wide-light-visual-darwin.png",
+      "sha256": "ff43593b8b66264dd7be317a826816077de43c40743ffffae734d9aa681e409e",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 23,
+      "file": "no-results-narrow-dark-visual-darwin.png",
+      "sha256": "99fbca08a5fadde2df269f1b81d536e41bfc42c70a981a0010b3d57a93645bdd",
+      "dimensions": [
+        390,
+        844
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 24,
+      "file": "no-results-narrow-light-visual-darwin.png",
+      "sha256": "00aca9135497e19df36f5edca85b7679ca46e976e2c11432945981db5144d12b",
+      "dimensions": [
+        390,
+        844
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 25,
+      "file": "no-results-wide-dark-visual-darwin.png",
+      "sha256": "bccce947f3429bba44aa46dc649704c593b5f45e21464421f5ef659f328230a0",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 26,
+      "file": "no-results-wide-light-visual-darwin.png",
+      "sha256": "57c0f17920eaaba5a1040a44aa8be218c8c32246556fec0e51cd2430f8473753",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 27,
+      "file": "node-finding-four-groups-wide-dark-visual-darwin.png",
+      "sha256": "5c84bed7272de8e892001c9698d4cc94306ceba6140f271b698128dbc85496e0",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 28,
+      "file": "node-finding-four-groups-wide-light-visual-darwin.png",
+      "sha256": "ba59616433e509c5adb85ea6bcde2a2936075e326bf24680cea6951fdc15a67f",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 29,
+      "file": "node-hub-wide-dark-visual-darwin.png",
+      "sha256": "41277651ab883220cdc7e5ede5eccac84ae3a16eb341fd9280c66021a062c2e0",
+      "dimensions": [
+        1280,
+        2341
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet plus original image",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 30,
+      "file": "node-hub-wide-light-visual-darwin.png",
+      "sha256": "8f1e23dfc1b9fd07a33fd1bdd87c941d20260271948a2320deec57bdb064517c",
+      "dimensions": [
+        1280,
+        2341
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet plus original image",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 31,
+      "file": "node-product-wide-dark-visual-darwin.png",
+      "sha256": "89550891980be29a4ed2fb647e7620405ce65a9aa42871ee334c82452682eaa8",
+      "dimensions": [
+        1280,
+        1380
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet plus original image",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 32,
+      "file": "node-product-wide-light-visual-darwin.png",
+      "sha256": "658795b0711560a3d09f3fd230c2049e9f6bed3cca4aae5d52e0bc3f50ccedca",
+      "dimensions": [
+        1280,
+        1380
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet plus original image",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 33,
+      "file": "node-solution-narrow-dark-visual-darwin.png",
+      "sha256": "b820eb277835c622d1df7b3d324b185d4f3921e05cbe6111129b937dcea99426",
+      "dimensions": [
+        390,
+        1019
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet plus original image",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 34,
+      "file": "node-solution-narrow-light-visual-darwin.png",
+      "sha256": "a1a2564f485892f52c19bf77248cbeebec1f2dec2acce36ccac82aff501ee8ab",
+      "dimensions": [
+        390,
+        1019
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet plus original image",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 35,
+      "file": "node-solution-wide-dark-visual-darwin.png",
+      "sha256": "705faa87481337f673ff09b4ac17cd07fbdda631aa5c0de971c9a9fd09a98813",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 36,
+      "file": "node-solution-wide-light-visual-darwin.png",
+      "sha256": "68e005b79460311183f474737cef13c5fbc34038f47f38764be47a1bde2b7570",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 37,
+      "file": "not-available-narrow-dark-visual-darwin.png",
+      "sha256": "2dc894f561d56d3f179ef5458cf46efba52289c763196bbee67afef5507c05ab",
+      "dimensions": [
+        390,
+        844
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 38,
+      "file": "not-available-narrow-light-visual-darwin.png",
+      "sha256": "24c3370b8c34602ea01c58e5efd87bbf5b162aa4f449257a4318ff606e903192",
+      "dimensions": [
+        390,
+        844
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 39,
+      "file": "not-available-wide-dark-visual-darwin.png",
+      "sha256": "2bc1038e81cb049030d7715d11d5cd44dfb58652ed213da5b036613ee22c0fb0",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 40,
+      "file": "not-available-wide-light-visual-darwin.png",
+      "sha256": "97f54a3675bc1e801cee7611f1fcd4f02fdac251841a3695c06e7c9f6c848f89",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 41,
+      "file": "picture-focus-wide-light-visual-darwin.png",
+      "sha256": "e2e2d71f795a6cf2340f58e1d82a19f1bb29a50b154f0ab9f0bc86966d20a88c",
+      "dimensions": [
+        400,
+        121
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 42,
+      "file": "results-narrow-dark-visual-darwin.png",
+      "sha256": "eee40844c70af12bae04f7442d1b37ad832cb196f01eb32fa73c91af9aafe794",
+      "dimensions": [
+        390,
+        2080
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet plus original image",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 43,
+      "file": "results-narrow-light-visual-darwin.png",
+      "sha256": "d27752968d6a73a5af4ba06f9529b6430b864c4e7ba01f75c249dd71ec2f4698",
+      "dimensions": [
+        390,
+        2080
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet plus original image",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 44,
+      "file": "results-not-searched-wide-dark-visual-darwin.png",
+      "sha256": "9f1cf17929663e0f1fa8389a883e21f9c106a6dd99fac84efa9f25c344395a53",
+      "dimensions": [
+        1280,
+        1289
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet plus original image",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 45,
+      "file": "results-not-searched-wide-light-visual-darwin.png",
+      "sha256": "8e6bbc4e1f8e05fadaae32b7b50accfafdcdd10cb1461d361093bbbbc3ce072c",
+      "dimensions": [
+        1280,
+        1289
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet plus original image",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 46,
+      "file": "results-wide-dark-visual-darwin.png",
+      "sha256": "5dbe130c6803d7c7b609c4f07cd684b926d0848fe61f483583623a605131c992",
+      "dimensions": [
+        1280,
+        1219
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet plus original image",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 47,
+      "file": "results-wide-light-visual-darwin.png",
+      "sha256": "6894fa97ca8b668fa7e5c230ac7c2e305f43a3cc644118e48c679cec2201821f",
+      "dimensions": [
+        1280,
+        1219
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet plus original image",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 48,
+      "file": "retire-confirm-narrow-dark-visual-darwin.png",
+      "sha256": "bff0af20d3c6a82da28099f79bd04a8090bd996b8a1c49324ccf08a95a7631dd",
+      "dimensions": [
+        390,
+        844
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 49,
+      "file": "retire-confirm-narrow-light-visual-darwin.png",
+      "sha256": "d7b78671bbff012687a47ba5024d9b33a6b4075e7c4faa2ed75b51b3c8e8e968",
+      "dimensions": [
+        390,
+        844
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 50,
+      "file": "retire-confirm-wide-dark-visual-darwin.png",
+      "sha256": "67a9a52e9914c9487310782a44715ba648e66dbdb8e76a893aa2ad7c507405c1",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 51,
+      "file": "retire-confirm-wide-light-visual-darwin.png",
+      "sha256": "aa18b0aef3f61b9884f713577fec1a476a3c35b5571eeecaa14d82693a5f7485",
+      "dimensions": [
+        1280,
+        900
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 52,
+      "file": "topbar-logo-theme-narrow-dark-visual-darwin.png",
+      "sha256": "fa8edfee985f9dabfdd0c6295dbc195c23c3209e580ece8bb85a8322dbfaa89d",
+      "dimensions": [
+        390,
+        174
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 53,
+      "file": "topbar-logo-theme-narrow-light-visual-darwin.png",
+      "sha256": "d64fab875da140952b73d953113be4073372c0ec12be1b99d8ee269d4f1f47d2",
+      "dimensions": [
+        390,
+        174
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 54,
+      "file": "topbar-logo-theme-wide-dark-visual-darwin.png",
+      "sha256": "ac2bb0382d7c18f0470a5a1d6ee4f1f34ddaa47162f6eccf0d547cad8ad0e980",
+      "dimensions": [
+        1280,
+        65
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 55,
+      "file": "topbar-logo-theme-wide-light-visual-darwin.png",
+      "sha256": "3a0a9e0692fb0758cc130f80f46017c96a4aefdb4d4f6c2e93a8009cb26f27e3",
+      "dimensions": [
+        1280,
+        65
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 56,
+      "file": "topbar-operator-wide-dark-visual-darwin.png",
+      "sha256": "47ef37a413c2c48faac8b15cf0a0732099c48a41893350bfba1220e8bf5a3ac2",
+      "dimensions": [
+        1280,
+        101
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 57,
+      "file": "topbar-operator-wide-light-visual-darwin.png",
+      "sha256": "28ff45b5f58742e6a2625ddcefb5523878763cd702842cc180a0bf9ddc4d41b4",
+      "dimensions": [
+        1280,
+        101
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 58,
+      "file": "topbar-reader-narrow-dark-visual-darwin.png",
+      "sha256": "70d34ace0acd9a40c89c09ed8823f72644a5b063a8a48b326486c293d5478dd1",
+      "dimensions": [
+        390,
+        174
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 59,
+      "file": "topbar-reader-narrow-light-visual-darwin.png",
+      "sha256": "f19f3cd828dad8950d778071e942298a1baf581e4af9b3a6c7e9b2536f49e298",
+      "dimensions": [
+        390,
+        174
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 60,
+      "file": "topbar-reader-wide-dark-visual-darwin.png",
+      "sha256": "8fddede2290005d351114e90762b42241826476fc7bbf0d0e7a0e62f5e037c5c",
+      "dimensions": [
+        1280,
+        65
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 61,
+      "file": "topbar-reader-wide-light-visual-darwin.png",
+      "sha256": "1ba7a56fd4646902ae72ca123371e8d76cccabe671d533caf9dc3086a886fb04",
+      "dimensions": [
+        1280,
+        65
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 62,
+      "file": "topbar-wordmark-narrow-dark-visual-darwin.png",
+      "sha256": "c23e9962f0613e6ffe505c04dd8449dc561d2c0f59ac62ffa0b0c9ca67f394c0",
+      "dimensions": [
+        390,
+        174
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 63,
+      "file": "topbar-wordmark-narrow-light-visual-darwin.png",
+      "sha256": "9fbb56f43c4bc16b0c19cac93c6a2688c41be0ec398f36efe683d9be799952f9",
+      "dimensions": [
+        390,
+        174
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 64,
+      "file": "topbar-wordmark-wide-dark-visual-darwin.png",
+      "sha256": "6bd0a66d04270d3a2355236b0c95e91f02e89c5da480fcd5af12ff0531de8607",
+      "dimensions": [
+        1280,
+        65
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 65,
+      "file": "topbar-wordmark-wide-light-visual-darwin.png",
+      "sha256": "54cd16ae44db77f3b34be8dbc2a3b806c172a58c68b4d58b6e8558ea5de9de8c",
+      "dimensions": [
+        1280,
+        65
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet inspection",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 66,
+      "file": "type-list-wide-dark-visual-darwin.png",
+      "sha256": "80d172b0c1bde31d1b487b2fef0e0fbaa0cbd317ff59f1f223f5dd21964b9480",
+      "dimensions": [
+        1280,
+        1467
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet plus original image",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    },
+    {
+      "index": 67,
+      "file": "type-list-wide-light-visual-darwin.png",
+      "sha256": "dcb8665fd0acaa1982cf953e267b00b07483eaed5457986ae2e88833f501b29e",
+      "dimensions": [
+        1280,
+        1467
+      ],
+      "verdict": "approved",
+      "inspection": "contact-sheet plus original image",
+      "notes": "Expected canonical volatile-content masks retained; no unexpected clipping, overlap, missing branding, or light/dark palette defect observed."
+    }
+  ]
+}

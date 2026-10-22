@@ -533,7 +533,7 @@ export default {
       invalidOptions,
       "packed testkit must refuse unsafe options without echoing credentials",
     );
-    const controlledDir = join(temp, "controlled-failure");
+    const controlledDir = join(hostRoot, "controlled-failure");
     mkdirSync(controlledDir, { recursive: true });
     const controlledReport = join(controlledDir, "canonical-brand-failure.json");
     writeFileSync(
