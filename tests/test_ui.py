@@ -11,6 +11,7 @@ import html
 import json
 import os
 import re
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
@@ -568,6 +569,109 @@ def test_the_page_carries_the_default_brand(static: Path) -> None:
     _, _, body = call(make(static), "GET", f"{BASE}/", user=None)
     assert b"<title>Arras</title>" in body
     assert b'<meta name="arras-brand" content="{&quot;name&quot;: &quot;Arras&quot;}">' in body
+
+
+class _BrandMetaParser(HTMLParser):
+    """Count browser-visible metadata while treating raw-text element contents as text."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.raw_text_tag: str | None = None
+        self.brands: list[str | None] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if self.raw_text_tag is not None:
+            return
+        if tag.lower() == "meta":
+            values = dict(attrs)
+            if (values.get("name") or "").casefold() == "arras-brand":
+                self.brands.append(values.get("content"))
+        if tag.lower() in {
+            "script",
+            "style",
+            "textarea",
+            "title",
+            "xmp",
+            "iframe",
+            "noembed",
+            "noframes",
+            "plaintext",
+        }:
+            self.raw_text_tag = tag.lower()
+
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.handle_starttag(tag, attrs)
+
+    def handle_endtag(self, tag: str) -> None:
+        if self.raw_text_tag == tag.lower():
+            self.raw_text_tag = None
+
+
+def _brand_meta_values(page: bytes) -> list[str | None]:
+    parser = _BrandMetaParser()
+    parser.feed(page.decode())
+    parser.close()
+    return parser.brands
+
+
+@pytest.mark.parametrize(
+    "existing",
+    [
+        b"",
+        b'<meta name="arras-brand" content="old">',
+        b'<META content=old NAME=ARRAS-BRAND/><meta name="arras-brand" content="second">',
+    ],
+)
+def test_branded_replaces_all_real_brand_metadata(existing: bytes) -> None:
+    brand = ui.Brand(name='Café <Atlas> "Console"', tagline="x & y")
+    page = (
+        b"<!doctype html><head><title lang='en'>Old</title>"
+        + existing
+        + b"</head><body>kept</body>"
+    )
+
+    result = ui.branded(page, brand)
+
+    values = _brand_meta_values(result)
+    assert len(values) == 1 and values[0] is not None
+    assert json.loads(values[0]) == {"name": 'Café <Atlas> "Console"', "tagline": "x & y"}
+    assert b"<title lang='en'>Caf\xc3\xa9 &lt;Atlas&gt; &quot;Console&quot;</title>" in result
+    assert result.index(b'<meta name="arras-brand"') < result.index(b"</head>")
+    assert ui.branded(result, brand) == result
+
+
+def test_branded_ignores_fake_tags_in_comments_and_raw_text() -> None:
+    brand = ui.Brand(name="Atlas")
+    fake_comment = b'<!-- <meta name="arras-brand" content="comment"></head> -->'
+    fake_script = (
+        b'<script>const fake = \'<meta name="arras-brand">\'; const close = "</head>";</script>'
+    )
+    fake_textarea = b"<textarea><meta name=arras-brand></textarea>"
+    fake_title = b"<title data-x='kept'><meta name=arras-brand></title>"
+    page = b"<head>" + fake_comment + fake_script + fake_textarea + fake_title + b"</head>"
+
+    result = ui.branded(page, brand)
+
+    assert fake_comment in result
+    assert fake_script in result
+    assert fake_textarea in result
+    assert b"<title data-x='kept'>Atlas</title>" in result
+    assert len(_brand_meta_values(result)) == 1
+    assert result.index(b'<meta name="arras-brand"') < result.rindex(b"</head>")
+
+
+def test_branded_fragment_fallback_is_token_aware_and_preserves_source() -> None:
+    brand = ui.Brand(name="A&B")
+    title_fragment = b'<title>Old</title><!-- </head> --><script>"</head>"</script>'
+    result = ui.branded(title_fragment, brand)
+    meta = b'<meta name="arras-brand" content="{&quot;name&quot;: &quot;A&amp;B&quot;}">'
+    assert result.startswith(b"<title>A&amp;B</title>" + meta)
+    assert b"<!-- </head> -->" in result and b'<script>"</head>"</script>' in result
+
+    plain_fragment = b"text\r\n<!-- no head or title -->"
+    appended = ui.branded(plain_fragment, brand)
+    assert appended.startswith(plain_fragment)
+    assert _brand_meta_values(appended) == [brand.meta()]
 
 
 def test_a_custom_brand_renders_its_title_and_escaped_json(static: Path) -> None:

@@ -913,6 +913,44 @@ Node configuration one default without importing React into the Node entry.
 Baseline capture must report `updated-unreviewed`; only a visually reviewed,
 ordinary comparison run may produce final `compared` evidence.
 
+### Full themed candidate findings and reviewed corrections
+
+The next hosted [CI run 39853529762](https://github.com/DocumentDrivenDX/arras/actions/runs/39853529762)
+on `ad099d8be295a461073e23a3d5fc706390085601` passed the default Python,
+full 199-case native Linux, source quality/build, exact artifact and fresh
+installed-example gates. UI checks passed 1,449 unit tests and 205 integration
+tests, plus its type, build, CSS scope and external-import checks. The job then
+failed during effective APT configuration verification, before dependency
+installation or Chromium execution. Source rewriting and its fixture check had
+succeeded; the three display-format matches require replacement with the release
+workflow's exact effective-value query. Expected retries/timeouts remain 2/20/20.
+
+The subsequent macOS packed capture used wheel
+`8c8d37cb0af89b57d77493a8819e07bc147eff4be684b2d8fbee3d3e61dbed26`
+and npm tarball
+`c4d1b3b2890352d5226994cfb1a6fea6c15e9fc285da6d9c504f4f6a9d37fc39`.
+It executed all 272 canonical cases: **241 passed, 31 failed, none skipped**.
+It created 67 unreviewed visual images and established no successful UI receipt.
+The compiled-host schema assets now loaded successfully. Its four-test fresh
+installed Python example also passed on that wheel, with all 72 applicable memory
+conformance cases passing and seven replica-only cases inapplicable. This is a
+historical artifact result; later wheel changes require a new installed proof.
+
+The full themed suite exposed two upstream behavior defects. Runtime page
+branding appended metadata to a page already containing a brand, leaving multiple
+conflicting tags. Graph Browser's native-control reset overrode an external
+widget's foreground, producing measured 2.15:1 contrast. Sol approved Luna's
+single-metadata HTML transformation and lower-specificity control reset. The
+HTML transformation preserves unrelated source and has 50 passing focused tests.
+Three canonical visible-name assertions now use the supplied profile, retaining
+their assertions. The neutral acceptance fixture's 18 root role properties use
+the host's resolved light/dark color scheme, and its launcher supplies the public
+distribution branding explicitly. Contrast thresholds and accessibility checks
+are unchanged. One remaining body-click geometry failure still needs a small
+actual browser probe before another full capture. Failed private run diagnostics
+will be preserved before owned-host cleanup. No images from the failed capture
+are accepted baselines, and the final ordinary comparison remains outstanding.
+
 ## Validation Plan
 
 - A0: focused `tests/test_umf.py` and `tests/test_core.py`; existing module/host

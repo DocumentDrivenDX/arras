@@ -185,7 +185,9 @@ async function installAndCheckBackdropProbe(page) {
       if (backdrop[3] < 1) {
         const probe = document.createElement("span");
         probe.style.backgroundColor = "Canvas";
-        document.documentElement.append(probe);
+        const root = element.closest(".arras-root");
+        if (!root) throw new Error("focus contrast measurement requires the Arras root");
+        root.append(probe);
         backdrop = over(backdrop, parse(getComputedStyle(probe).backgroundColor));
         probe.remove();
       }
@@ -360,7 +362,7 @@ try {
         if (!CSS.supports("color", value)) throw new Error(`invalid color token ${name}`);
         const probe = document.createElement("span");
         probe.style.color = value;
-        document.documentElement.append(probe);
+        node.append(probe);
         const normalized = getComputedStyle(probe).color;
         probe.remove();
         return normalized;

@@ -1,26 +1,28 @@
 /* SPDX-License-Identifier: MIT OR Apache-2.0 */
 /* Synthetic host theme; it exercises role tokens, not any production brand or workload. */
-.arras-root {
-  background-color: var(--arras-color-ground);
-  color: var(--arras-color-text);
-  --arras-color-text: #172033;
-  --arras-color-text-muted: #475569;
-  --arras-color-surface: #ffffff;
-  --arras-color-surface-sunken: #e2e8f0;
-  --arras-color-ground: #f8fafc;
-  --arras-color-border: #475569;
-  --arras-color-accent: #075985;
-  --arras-color-on-accent: #ffffff;
+:root {
+  --arras-color-text: light-dark(#172033, #f8fafc);
+  --arras-color-text-muted: light-dark(#475569, #cbd5e1);
+  --arras-color-surface: light-dark(#ffffff, #172033);
+  --arras-color-surface-sunken: light-dark(#e2e8f0, #0f172a);
+  --arras-color-ground: light-dark(#f8fafc, #020617);
+  --arras-color-border: light-dark(#475569, #94a3b8);
+  --arras-color-accent: light-dark(#075985, #7dd3fc);
+  --arras-color-on-accent: light-dark(#ffffff, #082f49);
   --arras-radius-control: 0.25rem;
   --arras-radius-card: 0.5rem;
   --arras-font-body: system-ui, sans-serif;
   --arras-font-mono: ui-monospace, monospace;
   --arras-font-size-small: 0.875rem;
   --arras-font-size-heading: 1.25rem;
-  --arras-state-live: #166534;
-  --arras-state-limited: #854d0e;
-  --arras-state-closed: #475569;
-  --arras-state-purchasing: #075985;
+  --arras-state-live: light-dark(#166534, #86efac);
+  --arras-state-limited: light-dark(#854d0e, #fde68a);
+  --arras-state-closed: light-dark(#475569, #cbd5e1);
+  --arras-state-purchasing: light-dark(#075985, #7dd3fc);
+}
+.arras-root {
+  background-color: var(--arras-color-ground);
+  color: var(--arras-color-text);
 }
 
 .arras-root [data-theme-button] {
@@ -67,21 +69,4 @@
 .arras-root :is(button, input, textarea, select):focus-visible {
   outline: 3px solid var(--arras-color-accent);
   outline-offset: 2px;
-}
-
-@media (prefers-color-scheme: dark) {
-  .arras-root {
-    --arras-color-text: #f8fafc;
-    --arras-color-text-muted: #cbd5e1;
-    --arras-color-surface: #172033;
-    --arras-color-surface-sunken: #0f172a;
-    --arras-color-ground: #020617;
-    --arras-color-border: #94a3b8;
-    --arras-color-accent: #7dd3fc;
-    --arras-color-on-accent: #082f49;
-    --arras-state-live: #86efac;
-    --arras-state-limited: #fde68a;
-    --arras-state-closed: #cbd5e1;
-    --arras-state-purchasing: #7dd3fc;
-  }
 }

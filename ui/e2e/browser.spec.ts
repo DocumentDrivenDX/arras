@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, type Request, test } from "@playwright/test";
-import { ORIGIN } from "./acceptance";
+import { EXPECTED_BRAND, ORIGIN } from "./acceptance";
 import { control, ensureHub } from "./gb-fixtures";
 
 // The Graph Browser whole stack (FEAT-011): the built UI served by the dev host, read as the
@@ -653,6 +653,8 @@ test.describe("Explore state in the address (FR-74)", () => {
     await as(page, "carol", "#/explore/catalog/UseCase/uc-pipeline/history");
     await expect(page.getByRole("heading", { level: 1, name: "Pipeline mapping" })).toBeVisible();
     expect(new URL(page.url()).hash).toBe("#/explore/catalog/UseCase/uc-pipeline/history");
-    await expect(page).toHaveTitle("Pipeline mapping · Use cases · catalog · Arras");
+    await expect(page).toHaveTitle(
+      `Pipeline mapping · Use cases · catalog · ${EXPECTED_BRAND.title ?? EXPECTED_BRAND.name}`,
+    );
   });
 });

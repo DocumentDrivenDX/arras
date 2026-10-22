@@ -32,7 +32,6 @@ from __future__ import annotations
 import hashlib
 import html
 import importlib.metadata
-import re
 from collections.abc import Callable
 from pathlib import Path
 
@@ -44,6 +43,7 @@ from arras.distribution import DistributionConfig
 from arras.http import Receive, Request, Scope, Send
 from arras.operate import schema_app
 from arras.types import Principal
+from arras.ui._brand_page import branded as branded
 from arras.ui.assets import AssetManifest, load_manifest, read_verified
 
 STATIC = Path(__file__).resolve().parent / "static"
@@ -77,7 +77,6 @@ _TYPES = {  # not left to the platform's table, which differs (a .js as text/pla
     ".html": "text/html; charset=utf-8",
     ".json": "application/json",
 }
-_TITLE = re.compile(r"<title>.*?</title>", re.IGNORECASE | re.DOTALL)
 
 
 def not_built_page(brand: Brand, hint: bytes) -> bytes:
@@ -90,19 +89,6 @@ def not_built_page(brand: Brand, hint: bytes) -> bytes:
         + b"). "
         + hint
     )
-
-
-def branded(page: bytes, brand: Brand) -> bytes:
-    """The built page with its title and the brand's meta tag."""
-    text = page.decode()
-    title = html.escape(brand.title or brand.name, quote=True)
-    meta = f'<meta name="arras-brand" content="{html.escape(brand.meta(), quote=True)}">'
-    text = _TITLE.sub(lambda _: f"<title>{title}</title>", text, count=1)
-    if "</head>" in text:
-        text = text.replace("</head>", meta + "</head>", 1)
-    else:
-        text = text.replace("</title>", "</title>" + meta, 1)
-    return text.encode()
 
 
 _NOT_BUILT_HINT = (

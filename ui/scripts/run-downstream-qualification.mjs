@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { execFileSync, spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
+  chmodSync,
   cpSync,
   existsSync,
   mkdirSync,
@@ -262,21 +263,31 @@ const py = spawn(
   ],
   { cwd: temp, stdio: "inherit" },
 );
-const mainHost = spawn(python, ["-m", "arras.devhost", "--port", "8766", "--ui", hostDist], {
-  cwd: temp,
-  env: { ...process.env, PYTHONPATH: "", PYTHONNOUSERSITE: "1" },
-  stdio: "inherit",
-});
-const schemaHost = spawn(python, ["-m", "arras.devhost", "--port", "8777", "--ui", hostDist], {
-  cwd: temp,
-  env: { ...process.env, PYTHONPATH: "", PYTHONNOUSERSITE: "1" },
-  stdio: "inherit",
-});
-const checkerHost = spawn(python, ["-m", "arras.devhost", "--port", "8768", "--ui", controlsDist], {
-  cwd: temp,
-  env: { ...process.env, PYTHONPATH: "", PYTHONNOUSERSITE: "1" },
-  stdio: "inherit",
-});
+const brandedDevhostPath = join(hostRoot, "branded_devhost.py");
+writeFileSync(
+  brandedDevhostPath,
+  `import sys
+from arras.devhost import main
+from arras.branding import Brand
+from arras.distribution import DistributionConfig
+
+main(
+    ["--port", sys.argv[1], "--ui", sys.argv[2]],
+    distribution=DistributionConfig(
+        brand=Brand(name="Neutral Host", title="Neutral Host Console", logo="theme")
+    ),
+)
+`,
+);
+const brandedDevhost = (port, directory) =>
+  spawn(python, [brandedDevhostPath, String(port), directory], {
+    cwd: temp,
+    env: { ...process.env, PYTHONPATH: "", PYTHONNOUSERSITE: "1" },
+    stdio: "inherit",
+  });
+const mainHost = brandedDevhost(8766, hostDist);
+const schemaHost = brandedDevhost(8777, hostDist);
+const checkerHost = brandedDevhost(8768, controlsDist);
 async function ready(url, process) {
   for (let i = 0; i < 80; i++) {
     if (process.exitCode !== null)
@@ -750,6 +761,28 @@ export default config;
       `Downstream qualification passed: wheel ${pkg.version}, ${process.platform}, prebuilt and packed host routes.\n`,
     );
   }
+} catch (error) {
+  const privateRoot = join(tmpdir(), "arras-downstream-failed-runs");
+  const attempt = join(
+    privateRoot,
+    `${new Date().toISOString().replaceAll(":", "-")}-${process.pid}`,
+  );
+  try {
+    mkdirSync(privateRoot, { recursive: true, mode: 0o700 });
+    mkdirSync(attempt, { recursive: true, mode: 0o700 });
+    chmodSync(privateRoot, 0o700);
+    chmodSync(attempt, 0o700);
+    for (const name of ["playwright-raw.json", "playwright-results"]) {
+      const source = join(temp, name);
+      if (existsSync(source))
+        cpSync(source, join(attempt, name), { recursive: true, errorOnExist: true });
+    }
+    writeFileSync(join(attempt, "failure.txt"), `${error?.stack ?? error}\n`, { mode: 0o600 });
+    process.stderr.write(`Private failed-run artifacts retained at ${attempt}\n`);
+  } catch (preserveError) {
+    process.stderr.write(`Could not preserve private failed-run artifacts: ${preserveError}\n`);
+  }
+  throw error;
 } finally {
   py.kill("SIGTERM");
   mainHost.kill("SIGTERM");

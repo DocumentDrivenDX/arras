@@ -13,9 +13,7 @@
 .gb *::after {
   box-sizing: border-box;
 }
-.gb button:not(.arras-btn),
-.gb input,
-.gb select {
+.gb :where(button:not(.arras-btn), input, select) {
   font: inherit;
   color: inherit;
 }

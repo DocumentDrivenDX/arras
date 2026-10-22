@@ -91,9 +91,15 @@ jobs:
           Acquire::http::Timeout "20";
           Acquire::https::Timeout "20";
           EOF
-          sudo apt-config dump | grep -Fx 'Acquire::Retries "2";'
-          sudo apt-config dump | grep -Fx 'Acquire::http::Timeout "20";'
-          sudo apt-config dump | grep -Fx 'Acquire::https::Timeout "20";'
+          if ! apt_config="$(sudo apt-config shell ARRAS_RETRIES Acquire::Retries ARRAS_HTTP_TIMEOUT Acquire::http::Timeout ARRAS_HTTPS_TIMEOUT Acquire::https::Timeout 2>/dev/null)"; then
+            printf '%s\n' "$apt_config" >&2
+            exit 1
+          fi
+          expected_apt_config="$(printf "ARRAS_RETRIES='2'\nARRAS_HTTP_TIMEOUT='20'\nARRAS_HTTPS_TIMEOUT='20'")"
+          if [ "$apt_config" != "$expected_apt_config" ]; then
+            printf '%s\n' "$apt_config" >&2
+            exit 1
+          fi
           timeout --signal=TERM --kill-after=30s 180s sudo apt-get update
       - name: Install Chromium operating-system dependencies with bounded APT
         run: timeout --signal=TERM --kill-after=30s 240s npx --no-install playwright install-deps chromium
