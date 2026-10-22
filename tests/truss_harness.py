@@ -725,10 +725,6 @@ class TrussHarness:
         "action.conflict-rolls-back-the-unit": Limit(
             "step 4 (query)", "Invalid", "wft-output-name"
         ),  # R17.2
-        # a changed umf.ddd on an existing record is refused: the edit that adds a property
-        "registry.validate-reports-without-applying": Limit(
-            "step 0 (validate_register)", "Unsupported", "this change to a registered document"
-        ),  # R16.5
         # a keyed retry rebuilds its input from what exists now, and Truss answers a replay only for
         # byte-identical input: the original's deleted targets and unlinked edge cannot be named again
         "action.keyed-retry-of-a-delete-replays": Limit(

@@ -37,9 +37,6 @@ class TrussHarness:
         "action.conflict-rolls-back-the-unit": Limit(
             "step 4 (query)", "Invalid", "wft-output-name"
         ),
-        "registry.validate-reports-without-applying": Limit(
-            "step 0 (validate_register)", "Unsupported", "this change to a registered document"
-        ),
         "action.keyed-retry-of-a-delete-replays": Limit(
             "step 1 (apply)", "Conflict", "idempotency_key_reused"
         ),

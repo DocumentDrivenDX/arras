@@ -853,6 +853,47 @@ review. Linux retains the nonvisual suite. The upstream standard development
 fixture may use upstream internals; that does not make those internals public
 consumer APIs. The separate installed example must retain public-only composition.
 
+### First public candidate and actual qualification failures
+
+The coordinated source candidate is commit
+`94c7e58a021941889ee8a2ab438f1f0353cc14ab` on
+`codex/arras-distribution-release`, under [draft PR #1](https://github.com/DocumentDrivenDX/arras/pull/1).
+It is not tagged or released. Hosted [CI run 39848187520](https://github.com/DocumentDrivenDX/arras/actions/runs/39848187520)
+passed the public-content gate, full Ruff/format and Pyright checks, builds, and
+exact source/sdist-rebuilt wheel and npm comparisons. The default Python suite,
+UI formatting check and fresh installed example exposed stale test assumptions;
+those failures remain part of this candidate's record rather than being counted
+as successful gates. Luna's four test corrections have Sol approval and 17 doctor
+plus three targeted test passes. The two UI formatting corrections are reviewed;
+formatting the packed acceptance helper also requires a new resource digest at
+repack. The whole candidate must rerun its gates after integration.
+
+The first local native attempt was invalid infrastructure evidence: sandboxed
+PostgreSQL startup failed at System V shared-memory allocation before backend
+behavior could be tested. The corrected host-permission startup control passed
+one real registration/foreign-receipt test in 10.58 seconds. The subsequent
+unchanged 199-case suite on public Truss 0.0.48/Weft 0.4.51/PostgreSQL 18.6.1
+finished with **192 passed, seven failed, no errors** in 596.14 seconds on macOS.
+The Linux CI native job independently finished with **192 passed, seven failed**
+in 526.50 seconds. The same seven cases concern multiplicity error mapping,
+load audit counts, module-scoped query refusals/conformance, a now-passing
+registration-validation limit and historical runtime revision expectations.
+Sol is classifying actual carriers and assertions before Luna changes behavior,
+expectations or the declared limits. No native qualification, limit relaxation
+or publication is established by these failed runs. Owned local PostgreSQL
+processes were stopped after the corrected campaign.
+
+The follow-up Sol-reviewed change maps the exact native multiplicity and
+unavailable-source diagnostic carriers to the existing public errors, preserves
+legacy delete/dependency handling, updates stale audit/revision expectations and
+removes only the registration-validation limitation that now passes. The corpus
+and its assertions are unchanged. The seven original failing tests then passed
+in 119.05 seconds on the same public macOS cohort, with owned PostgreSQL cleanup
+confirmed. There are now eight declared limits. This focused result permits the
+next candidate and UI build; the whole native suite and final installed-artifact
+gates still need to pass. The installed example's stale TOML selector assertion
+has a reviewed public-launcher/bootstrap replacement, pending fresh wheel proof.
+
 ## Validation Plan
 
 - A0: focused `tests/test_umf.py` and `tests/test_core.py`; existing module/host

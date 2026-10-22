@@ -174,17 +174,38 @@ def test_a_backend_with_no_connections_says_it_is_not_configured() -> None:
 
 def test_every_toolkit_and_weft_file_in_the_lock_carries_a_hash() -> None:
     lock = tomllib.loads((ROOT / "uv.lock").read_text())
-    checked = 0
+    expected = {
+        "truss-toolkit": {
+            "version": "0.0.48",
+            "files": {
+                "truss_toolkit-0.0.48-py3-none-any.whl": "sha256:1aedf614ff3d3ff7a61bd4d91887ede650a7135d1239e8564c1c297c0ddc37c3",
+            },
+        },
+        "weft-sql": {
+            "version": "0.4.51",
+            "files": {
+                "weft_sql-0.4.51-cp39-abi3-macosx_11_0_arm64.whl": "sha256:e60e552f02c670b43a43111b08d26d6b415aaa9b9de42f241c37ad1d9fdd2487",
+                "weft_sql-0.4.51-cp39-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl": "sha256:42f846d689ace027d6bb2951f27c587660d4e5151285fe911ce7a3006d0001de",
+                "weft_sql-0.4.51-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl": "sha256:a23142f12b59444138b588a8a764666b025552a14036f62d83af022153f1a0a5",
+            },
+        },
+    }
+    found: dict[str, dict[str, str]] = {}
     for pkg in lock["package"]:
         if pkg["name"] not in ("truss-toolkit", "weft-sql"):
             continue
+        name = pkg["name"]
+        assert pkg["version"] == expected[name]["version"], name
         assert not Path(pkg["source"]["registry"]).is_absolute()
         files = [*pkg.get("wheels", []), *([pkg["sdist"]] if "sdist" in pkg else [])]
         assert files, pkg["name"]
+        found[name] = {}
         for f in files:
             assert re.fullmatch(r"sha256:[0-9a-f]{64}", f.get("hash", "")), f["url"]
-            checked += 1
-    assert checked == 6  # the toolkit's wheel (the sdist is not listed), Weft's five wheels
+            filename = f["url"].rsplit("/", 1)[-1]
+            assert filename not in found[name], filename
+            found[name][filename] = f["hash"]
+    assert found == {name: item["files"] for name, item in expected.items()}
 
 
 def test_the_truss_test_group_holds_the_local_server_and_every_wheel_is_hashed() -> None:

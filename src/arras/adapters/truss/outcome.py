@@ -122,10 +122,13 @@ def _conflicting_create(op: Op, built: Built, exists_now: Callable[[Ref], bool])
 
 
 def attributed(failure: Any, built: Built, code: object) -> Op | None:
-    """The operation a failure is about. Truss 0.0.45 names none (`operation_index` is absent) for
+    """The operation a failure is about. Truss names none (`operation_index` is absent) for
     a failure found when the group finishes: a `not_found` is then the first operation that names
-    what is not there (a ghost the adapter found missing, or a ref an earlier delete of the group removed), and a multiplicity `dependencies`
-    the group's last operation, where Truss reported it before."""
+    what is not there (a ghost the adapter found missing, or a ref an earlier delete of the group
+    removed). A final-state `dependencies` or `multiplicity` failure is reported at the group's last
+    operation; that path is a reporting location, not a causal attribution."""
+    if code == "multiplicity":
+        return built.ops[-1] if built.ops else None
     try:
         return built.ops[int(failure.operation_index)]
     except (ValueError, IndexError):
@@ -154,6 +157,17 @@ def operation_failure(
     op = attributed(failure, built, code)
     if code == "expected_version":
         return Conflict("version", "the object changed since it was read")
+    if code == "multiplicity":
+        return Invalid(
+            [
+                Violation(
+                    _where(op, built),
+                    "multiplicity",
+                    "the relationship's final-state multiplicity is not met; Truss did not "
+                    "identify a causal operation; the path is a reporting location",
+                )
+            ]
+        )
     if code == "dependencies":
         # P1005 is the delete-with-edges check at the delete's step (a race: the object gained an
         # edge after its edges were read) and the multiplicity check (minimum and maximum) that

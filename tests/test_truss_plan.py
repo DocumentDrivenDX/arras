@@ -43,6 +43,7 @@ from arras.errors import (
     Refused,
     Unavailable,
     Unsupported,
+    Violation,
 )
 from arras.results import Validation
 from arras.types import Principal
@@ -1038,9 +1039,14 @@ def test_a_receipt_counts_effects_lists_refs_once_and_leaves_out_what_changed_no
     assert (got.token, got.replayed, got.group) == ("t", False, "epoch:77")
 
 
-def op_failure(code: str, index: int, plan: Plan, **kw: Any) -> Any:
+def op_failure(code: str, index: int | None, plan: Plan, **kw: Any) -> Any:
     built = planner(plan, basic_world()).operations()
-    failure = GroupOperationFailure(str(index), artifact_of(code=code))
+    inner_error = artifact_of(code=code)
+    failure = (
+        GroupOperationFailure(str(index), inner_error)
+        if index is not None
+        else SimpleNamespace(operation_index=None, inner_error=inner_error)
+    )
     return operation_failure("truss", failure, built, kw.get("exists", lambda r: True))
 
 
@@ -1100,6 +1106,54 @@ def test_dependencies_is_busy_at_a_delete_and_a_multiplicity_violation_elsewhere
         assert violation.path == f"effects[{index}]"
     unresolved = op_failure("dependencies", 9, link)
     assert isinstance(unresolved, Invalid) and unresolved.violations[0].path == "effects"
+
+
+def test_final_state_multiplicity_reports_without_claiming_a_causal_effect() -> None:
+    detail = (
+        "the relationship's final-state multiplicity is not met; Truss did not identify a causal "
+        "operation; the path is a reporting location"
+    )
+    single = Plan("catalog.X", (), (Update(sol("sol-1"), {"name": "A"}),))
+    err = op_failure("multiplicity", None, single)
+    assert isinstance(err, Invalid)
+    assert err.violations == [Violation("effects[0]", "multiplicity", detail)]
+
+
+def test_final_state_multiplicity_after_a_delete_uses_last_effect_as_reporting_location() -> None:
+    detail = (
+        "the relationship's final-state multiplicity is not met; Truss did not identify a causal "
+        "operation; the path is a reporting location"
+    )
+    plan = Plan(
+        "catalog.X",
+        (),
+        (Update(sol("sol-1"), {"name": "A"}), Delete(uc("uc-1"))),
+    )
+    err = op_failure("multiplicity", None, plan)
+    assert isinstance(err, Invalid)
+    assert err.violations == [Violation("effects[1]", "multiplicity", detail)]
+
+
+def test_batch_final_state_multiplicity_uses_the_last_effect_as_a_reporting_location() -> None:
+    from arras.adapters.truss.plan import Built, Op
+
+    failure = SimpleNamespace(operation_index=None, inner_error=artifact_of(code="multiplicity"))
+    built = Built(
+        ops=[Op("delete_object", effects=[3], item=2)],
+        effect_op={},
+        touched={},
+        batch=True,
+    )
+    err = operation_failure("truss", failure, built, lambda r: True)
+    assert isinstance(err, Invalid)
+    [violation] = err.violations
+    assert violation.path == "items[2].effects[3]"
+    assert "Truss did not identify a causal operation" in violation.message
+
+
+def test_an_unknown_group_failure_without_an_operation_index_fails_closed() -> None:
+    err = op_failure("surprise", None, Plan("catalog.X", (), (Delete(uc("uc-1")),)))
+    assert isinstance(err, Unavailable) and err.reason == "unreachable"
 
 
 def test_an_artifact_that_is_not_json_decodes_to_nothing() -> None:

@@ -39,7 +39,7 @@ from arras.umf import parse_module
 from test_truss_connection import FakeConn
 from test_truss_harness import MODULE_TEXT, _world, cluster  # noqa: F401
 
-RELEASE = "truss-catalog-runtime/0.72-candidate"
+RELEASE = "truss-catalog-runtime/0.74-candidate"
 
 
 needs_toolkit = pytest.mark.skipif(

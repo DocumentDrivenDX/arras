@@ -3,6 +3,11 @@
 
 from __future__ import annotations
 
+import json
+import os
+import subprocess
+import sys
+import tempfile
 import tomllib
 from importlib import resources
 from pathlib import Path
@@ -49,7 +54,7 @@ def test_example_uses_installed_packages_and_explicit_seed_and_graph_resources()
     config_data = tomllib.loads(config.read_text(encoding="utf-8"))
     distribution = config_data["distribution"]
     assert distribution["mcp_server_name"] == "Extension Host Example MCP"
-    assert distribution["env_prefix"] == "EXTENSION_HOST"
+    assert "env_prefix" not in distribution
     assert distribution["telemetry"] == {
         "attribute_namespace": "extension_host",
         "log_prefix": "extension_host",
@@ -64,6 +69,50 @@ def test_example_uses_installed_packages_and_explicit_seed_and_graph_resources()
     assert graph_result["created_by_action"] == 1
     assert graph_result["actor"] == "example_owner"
     assert graph_result["imported_by"] == "admin"
+
+
+def test_public_launcher_uses_packaged_example_config_and_env_prefix() -> None:
+    config = resources.files("extension_host").joinpath("config", "default.toml")
+    request = {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "initialize",
+        "params": {
+            "protocolVersion": "2025-06-18",
+            "capabilities": {},
+            "clientInfo": {"name": "installed-example-test", "version": "0"},
+        },
+    }
+    launcher = (
+        "from arras.distribution import DistributionConfig; "
+        "from arras.mcp import launch; "
+        'launch([], distribution=DistributionConfig(env_prefix="EXTENSION_HOST"))'
+    )
+    env = {
+        key: value
+        for key, value in os.environ.items()
+        if not key.startswith(("ARRAS_", "EXTENSION_HOST_"))
+        and key not in {"PYTHONPATH", "PYTHONHOME"}
+    }
+    env["PATH"] = os.environ.get("PATH", "")
+
+    with tempfile.TemporaryDirectory() as cwd, resources.as_file(config) as config_path:
+        env["EXTENSION_HOST_CONFIG_DIR"] = str(config_path.parent)
+        result = subprocess.run(
+            [sys.executable, "-I", "-c", launcher],
+            input=json.dumps(request) + "\n",
+            cwd=cwd,
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=False,
+        )
+
+    assert result.returncode == 0, result.stderr
+    response = json.loads(result.stdout)
+    assert response["result"]["serverInfo"]["name"] == "Extension Host Example MCP"
+    assert "default.toml" in result.stderr
 
 
 @pytest.mark.parametrize("resource", ["unknown.json", "module.umf.json"])

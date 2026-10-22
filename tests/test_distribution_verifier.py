@@ -6,6 +6,7 @@ from __future__ import annotations
 import importlib.util
 import io
 import json
+import re
 import tarfile
 from pathlib import Path
 from typing import Any
@@ -134,7 +135,14 @@ def test_metadata_gate_rejects_python_floor_and_optional_dependency_drift() -> N
     truss_requirement = next(
         i for i, value in enumerate(dependencies) if value.startswith("truss-toolkit")
     )
-    dependencies[truss_requirement] = dependencies[truss_requirement].replace("0.0.45", "0.0.44")
+    pinned_requirement = dependencies[truss_requirement]
+    pinned_version = re.search(r"==([^;\s]+)", pinned_requirement)
+    assert pinned_version is not None, pinned_requirement
+    stale_requirement = pinned_requirement.replace(
+        f"=={pinned_version.group(1)}", f"=={pinned_version.group(1)}.post1", 1
+    )
+    assert stale_requirement != pinned_requirement
+    dependencies[truss_requirement] = stale_requirement
     stale_optional_dependency["requires_dist"] = dependencies
     with pytest.raises(SystemExit, match="requires-dist"):
         verifier.verify_metadata_headers(stale_optional_dependency, expected, "fixture")

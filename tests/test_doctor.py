@@ -49,10 +49,26 @@ class DoctorTests(unittest.TestCase):
                 '{"schema_version":1,"distribution":{"telemetry":{"service_name":null}}}',
                 encoding="utf-8",
             )
-            with patch("sys.stdout") as output:
-                self.assertEqual(main(["--request", str(path)]), 0)
+            catalog_path = Path(__file__).parents[1] / "src" / "arras" / "public-api.json"
+            npm = json.loads(catalog_path.read_text(encoding="utf-8"))["distribution"]["npm"]
+            with patch(
+                "arras.doctor._npm_package",
+                return_value=("0" * 64, {"name": npm["name"], "version": npm["version"]}),
+            ):
+                with patch("sys.stdout") as output:
+                    self.assertEqual(main(["--request", str(path)]), 0)
             rendered = "".join(call.args[0] for call in output.write.call_args_list)
             self.assertNotIn('"request_invalid"', rendered)
+
+    def test_missing_npm_package_reports_exit_three(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "request.json"
+            path.write_text('{"schema_version":1}', encoding="utf-8")
+            with patch("arras.doctor._npm_package", return_value=(None, None)):
+                with patch("sys.stdout") as output:
+                    self.assertEqual(main(["--request", str(path)]), 3)
+            rendered = "".join(call.args[0] for call in output.write.call_args_list)
+            self.assertIn('"package_missing"', rendered)
 
     def test_malformed_distribution_shape_remains_request_invalid(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

@@ -16,7 +16,8 @@ type Runtime = {
 };
 
 const serialized = process.env.ARRAS_ACCEPTANCE_RUNTIME;
-if (!serialized) throw new Error("Playwright config did not initialize the Arras acceptance profile");
+if (!serialized)
+  throw new Error("Playwright config did not initialize the Arras acceptance profile");
 export const acceptance = JSON.parse(serialized) as Runtime;
 export const ORIGIN = acceptance.baseURL;
 export const SCHEMA_ORIGIN = acceptance.schemaBaseURL;

@@ -65,7 +65,10 @@ def test_the_readme_states_the_host_prerequisites() -> None:
     for needle in ("ConnectionSource", "PostgreSQL 18.6", "Unsupported"):
         assert needle in readme, needle
     assert "Not built, because they wait on Truss" not in readme
-    assert "No Bun, Node or other process on the machine" in readme
+    assert re.search(
+        r"Truss 0\.0\.45 prepared a module in embedded V8 .*? without a Bun or Node process\.",
+        readme,
+    )
     assert "deploy-time job" in readme
 
 

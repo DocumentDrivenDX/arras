@@ -433,6 +433,11 @@ def test_another_unsupported_refusal_is_not_retried_under_a_page_profile(code: s
             None,
         ),
         (
+            refused("invalid_query", ("WFT-SOURCE-UNAVAILABLE", "No queryable source")),
+            Unsupported,
+            None,
+        ),
+        (
             refused(
                 "invalid_query", ("WFT-NAME-MISSING", "Selected member name missing or ambiguous")
             ),
