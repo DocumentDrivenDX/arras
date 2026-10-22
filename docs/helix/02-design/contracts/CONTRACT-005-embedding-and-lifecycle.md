@@ -161,6 +161,37 @@ python .github/scripts/assemble_release_evidence.py
   --output-dir <new-public-stage>
 ```
 
+The five build inputs remain exact private transport evidence: wheel, sdist,
+wheel-carried npm archive, raw distribution-verification receipt and raw installed
+doctor receipt. Validate their existing checksums, schemas, identities and required
+outcomes before projection. The public bundle preserves the **three binary
+artifacts** byte-for-byte; it publishes `distribution-verification.json` and
+`doctor-installed.json` as separately versioned, typed, allowlisted public-v1
+projections, with schemas `arras.distribution-public-qualification.v1` and
+`arras.ui.doctor-public-qualification.v1`, respectively. These public diagnostic
+files are not byte copies of their raw producer receipts. Each carries `source_receipt_sha256` binding the unchanged raw
+receipt, and the aggregate binds both trusted raw input and emitted public asset
+hashes. Original raw receipts remain retained evidence; do not rewrite them or
+claim that their public projections are new test executions. A public projection
+is never admissible as a raw producer input to the assembler.
+
+Projection retains observed artifact/dependency/runtime identities, case outcomes,
+SDK phases and controls within their original capture limits. Omit absolute
+checkout, interpreter, import-origin, working-directory, temporary and native
+process paths from public diagnostics, including nested consumer package paths.
+Record the omission explicitly. Do not replace an omitted path with an invented
+fresh-origin or isolation observation, infer a missing Python patch/OS version,
+merge component runtimes, or weaken a producer's required checks. Public assets
+remain the same closed sixteen-file inventory, with a newly computed complete
+`SHA256SUMS` and unchanged mandatory workflow gates.
+
+The public comparison helper consumes the aggregate's `version` together with
+its canonical `release_artifacts.wheel` filename/digest binding. It refuses absent, malformed
+or mismatched identities rather than accepting a legacy top-level wheel key.
+Tests must exercise actual assembler output through the public comparison helper,
+including wrong version/digest controls, and verify diagnostic omission plus raw/
+emitted provenance. Synthetic schemas alone do not establish this agreement.
+
 The owning assembler lane governs its finite safe output inventory and strict
 receipt schemas; workflow shell must not fabricate, rename status meanings or
 fill absent proof fields to satisfy it. Producer/consumer schema agreement is a

@@ -14,8 +14,10 @@ from typing import Any, cast
 
 if __package__:
     from . import _release_evidence_inputs as _inputs
+    from . import _release_evidence_public as _public
 else:
     import _release_evidence_inputs as _inputs
+    import _release_evidence_public as _public
 
 MAX_INDEX = _inputs.MAX_INDEX
 MAX_JSON = _inputs.MAX_JSON
@@ -51,16 +53,6 @@ _string = _inputs.string
 _load_json = _inputs.load_json
 
 _SHA = re.compile(r"[0-9a-f]{64}\Z")
-
-
-def _projection_binding(value: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "schema_version": 1,
-        "status": "bound",
-        "wheel": {key: value["wheel"][key] for key in ("name", "version", "sha256")},
-        "find_links": {"sha256": value["find_links"]["sha256"]},
-        "bound_manifest": {"sha256": value["bound_manifest"]["sha256"]},
-    }
 
 
 def _verify_build(
@@ -116,6 +108,11 @@ def _verify_build(
 def _validate_distribution(
     value: dict[str, Any], version: str, wheel_name: str, digests: dict[str, str]
 ) -> None:
+    if (
+        value.get("schema") == "arras.distribution-public-qualification.v1"
+        or "source_receipt_sha256" in value
+    ):
+        _fail("public distribution projection cannot be used as a raw qualification receipt")
     wheel = _object(value.get("source_wheel"), "distribution.source_wheel")
     sdist = _object(value.get("sdist"), "distribution.sdist")
     npm = _object(value.get("npm"), "distribution.npm")
@@ -711,56 +708,6 @@ def _validate_ui_resources(
     }
 
 
-def _aggregate(
-    *,
-    version: str,
-    wheel_name: str,
-    wheel_sha: str,
-    npm_name: str,
-    npm_sha: str,
-    source_hashes: dict[str, str],
-    native: dict[str, Any],
-    ui: dict[str, Any],
-    consumer: dict[str, Any],
-    component_hashes: dict[str, str],
-    sdist_name: str,
-    sdist_sha: str,
-    doctor_runtime: dict[str, str],
-) -> dict[str, Any]:
-    return {
-        "schema_version": 1,
-        "status": "passed",
-        "version": version,
-        "release_artifacts": {
-            "wheel": {"filename": wheel_name, "sha256": wheel_sha},
-            "sdist": {"filename": sdist_name, "sha256": sdist_sha},
-            "npm": {"filename": npm_name, "sha256": npm_sha},
-        },
-        "published_components": dict(sorted(component_hashes.items())),
-        "source_evidence_sha256": dict(sorted(source_hashes.items())),
-        "qualification_scope": {
-            "statement": "Linked component proofs apply only to their named artifacts, runtime cohorts, and reviewed limits; this bundle is not one production-host end-to-end qualification.",
-            "native_runtime": native["runtime"],
-            "doctor_runtime": doctor_runtime,
-            "native_corpus_version": native["corpus"]["version"],
-            "native_limits": native["corpus"]["limits"],
-            "consumer_backend": "memory-store",
-            "ui_suite": "full portable acceptance suite",
-        },
-        "gates": {
-            "distribution": "passed",
-            "doctor": "passed",
-            "native": "passed",
-            "ui": "passed",
-            "consumer": "passed",
-            "public_download": {
-                "status": "not_run_at_assembly",
-                "purpose": "A separate post-download receipt must record the later public-download consumer check.",
-            },
-        },
-    }
-
-
 def assemble(
     *,
     build_bundle: Path,
@@ -848,7 +795,13 @@ def assemble(
     }
     projections = {
         "native-qualification.json": native,
-        "native-cohort-binding.json": _projection_binding(binding),
+        "native-cohort-binding.json": _public.binding_projection(binding),
+        "distribution-verification.json": _public.distribution_projection(
+            distribution, digests["distribution-verification.json"]
+        ),
+        "doctor-installed.json": _public.doctor_projection(
+            doctor, digests["doctor-installed.json"]
+        ),
         "ui-qualification.json": ui,
         "consumer-qualification.json": consumer,
     }
@@ -858,7 +811,7 @@ def assemble(
     component_hashes["native-cohort.json"] = cohort_sha
     component_hashes["native-find-links.html"] = index_sha
     component_hashes.update({name: _sha(raw) for name, raw in ui_sidecars.items()})
-    aggregate = _aggregate(
+    aggregate = _public.release_evidence_projection(
         version=version,
         wheel_name=expected_wheel,
         wheel_sha=wheel_sha,
@@ -879,7 +832,9 @@ def assemble(
         "native-find-links.html": index_raw,
         **ui_sidecars,
     }
-    _publish_bundle(output_dir, selected, projections, raw_files, digests)
+    private_receipts = {"distribution-verification.json", "doctor-installed.json"}
+    public_selected = {name: path for name, path in selected.items() if name not in private_receipts}
+    _publish_bundle(output_dir, public_selected, projections, raw_files, digests)
     return aggregate
 
 

@@ -4,6 +4,7 @@ import hashlib
 import importlib.util
 import io
 import json
+import shutil
 import sys
 import tarfile
 import zipfile
@@ -133,15 +134,19 @@ def doctor_receipt(wheel_sha: str, npm_sha: str) -> dict[str, Any]:
             "unsupported": {"ok": False, "complete": False},
         },
         "launcher_probes": {
-            name: "passed"
-            for name in (
-                "custom_mcp_help",
-                "custom_mcp_unsupported_args",
-                "alias_conflict_refused",
-                "custom_devhost_help",
-                "custom_devhost_unsupported_args",
-                "custom_devhost_startup_forwarding",
-            )
+            **{
+                name: "passed"
+                for name in (
+                    "custom_mcp_help",
+                    "custom_mcp_unsupported_args",
+                    "alias_conflict_refused",
+                    "custom_devhost_help",
+                    "custom_devhost_unsupported_args",
+                    "custom_devhost_startup_forwarding",
+                )
+            },
+            "effective_telemetry_names": "observed through public launch factory",
+            "native_and_server_work": "mocked or not imported",
         },
         "telemetry_probes": {
             "status": "passed",
@@ -160,7 +165,23 @@ def doctor_receipt(wheel_sha: str, npm_sha: str) -> dict[str, Any]:
             "concurrent_and_nested_contexts": "passed",
             "default_deny_and_failure_isolation": "passed",
             "phases": phases,
+            "versions": {"opentelemetry-api": "1.45.1", "opentelemetry-sdk": "1.45.1"},
         },
+        "versions": {
+            "python_distributions": {
+                "arras": VERSION,
+                "example-extension-host": "0.1.0",
+                "graphql-core": "3.3.0",
+                "opentelemetry-api": "1.45.1",
+                "opentelemetry-sdk": "1.45.1",
+            },
+            "extension_host_wheel": {"filename": "example_extension_host-0.1.0-py3-none-any.whl", "sha256": "b" * 64},
+            "uv": "private local path /cannot/export",
+            "theme_assets": "private path /cannot/export",
+            "telemetry_sdk": {"opentelemetry-api": "1.45.1", "opentelemetry-sdk": "1.45.1"},
+        },
+        "installed_origin": {"arras_origin": "/private/secret/raw/path"},
+        "diagnostic_extra": {"credential": "secret raw log"},
     }
 
 
@@ -462,6 +483,34 @@ def make_build_bundle(root: Path) -> tuple[Path, str, str, bytes]:
             "sdist_rebuilt_wheel": {"file": WHEEL_NAME, "sha256": "9" * 64},
             "npm": {"file": npm_path.name, "sha256": npm_sha, "exact_between_wheels": True},
             "qualification": ["artifact-inspected", "installed-consumer-tested"],
+            "declared_python": ["3.11", "3.12", "3.13"],
+            "javascript_consumer_cohort": "workspace-linked UI dependencies; package itself extracted from each verified wheel",
+            "not_qualified_without_observation": [
+                "Linux",
+                "Python 3.12",
+                "Python 3.13",
+                "registry installation",
+                "managed Arras host",
+                "official UMF runtime",
+            ],
+            "platform": "macOS-27.0.1-arm64-arm-64bit",
+            "python_interpreter": "3.11.17",
+            "qualified_python": "3.11.17",
+            "consumers": {
+                name: {
+                    "environment": name.replace("_", "-"),
+                    "python": "3.11.17",
+                    "platform": "darwin",
+                    "graphql_core": "3.3.0",
+                    "graphql_core_inventory_sha256": "a" * 64,
+                    "in_memory_operation": True,
+                    "packed_npm_consumer": "Packed consumer passed through package exports",
+                    "schema_callback": True,
+                    "package": "/private/secret/raw/consumer/path",
+                    "diagnostic_extra": {"credential": "consumer private diagnostic"},
+                }
+                for name in ("source_wheel", "sdist_rebuilt_wheel")
+            },
         },
     )
     write_json(bundle / "doctor-installed.json", doctor_receipt(wheel_sha, npm_sha))
@@ -481,6 +530,10 @@ def make_build_bundle(root: Path) -> tuple[Path, str, str, bytes]:
 
 def test_assemble_links_exact_assets_and_regenerates_complete_sums(tmp_path: Path) -> None:
     inputs = make_inputs(tmp_path)
+    raw_receipts = {
+        name: (inputs["build_bundle"] / name).read_bytes()
+        for name in ("doctor-installed.json", "distribution-verification.json")
+    }
     aggregate = assembler.assemble(
         **{
             key: value
@@ -524,14 +577,44 @@ def test_assemble_links_exact_assets_and_regenerates_complete_sums(tmp_path: Pat
         "release": "27.0.0",
         "python": "3.13.16",
     }
-    for name in (
-        WHEEL_NAME,
-        f"arras-{VERSION}.tar.gz",
-        f"documentdrivendx-arras-ui-{VERSION}.tgz",
-        "distribution-verification.json",
-        "doctor-installed.json",
-    ):
+    for name in (WHEEL_NAME, f"arras-{VERSION}.tar.gz", f"documentdrivendx-arras-ui-{VERSION}.tgz"):
         assert (output / name).read_bytes() == (inputs["build_bundle"] / name).read_bytes()
+    raw_doctor = raw_receipts["doctor-installed.json"]
+    raw_distribution = raw_receipts["distribution-verification.json"]
+    assert (inputs["build_bundle"] / "doctor-installed.json").read_bytes() == raw_doctor
+    assert (inputs["build_bundle"] / "distribution-verification.json").read_bytes() == raw_distribution
+    assert aggregate["source_evidence_sha256"]["doctor-installed.json"] == sha(raw_doctor)
+    assert aggregate["source_evidence_sha256"]["distribution-verification.json"] == sha(
+        raw_distribution
+    )
+    doctor_public = json.loads((output / "doctor-installed.json").read_bytes())
+    distribution_public = json.loads((output / "distribution-verification.json").read_bytes())
+    assert doctor_public["schema"] == "arras.ui.doctor-public-qualification.v1"
+    assert doctor_public["source_receipt_sha256"] == sha(raw_doctor)
+    assert len(doctor_public["cases"]) == 20
+    assert len(doctor_public["telemetry_probes"]["phases"]) == 8
+    assert len(doctor_public["telemetry_probes"]["false_pass_controls"]) == 3
+    assert doctor_public["versions"] == {
+        "python_distributions": {
+            "arras": VERSION,
+            "example-extension-host": "0.1.0",
+            "graphql-core": "3.3.0",
+            "opentelemetry-api": "1.45.1",
+            "opentelemetry-sdk": "1.45.1",
+        },
+        "extension_host_wheel": {
+            "filename": "example_extension_host-0.1.0-py3-none-any.whl",
+            "sha256": "b" * 64,
+        },
+    }
+    assert distribution_public["schema"] == "arras.distribution-public-qualification.v1"
+    assert distribution_public["source_receipt_sha256"] == sha(raw_distribution)
+    assert b"/private/secret" not in (output / "doctor-installed.json").read_bytes()
+    assert b"/private/secret" not in (output / "distribution-verification.json").read_bytes()
+    assert b"secret raw log" not in (output / "doctor-installed.json").read_bytes()
+    assert b"cannot/export" not in (output / "doctor-installed.json").read_bytes()
+    assert b"consumer private diagnostic" not in (output / "distribution-verification.json").read_bytes()
+    assert b'"package"' not in (output / "distribution-verification.json").read_bytes()
     assert b"secret raw log" not in (output / "native-qualification.json").read_bytes()
     lines = (output / "SHA256SUMS").read_text().splitlines()
     assert {line.split("  ", 1)[1] for line in lines} == expected - {"SHA256SUMS"}
@@ -560,8 +643,6 @@ def test_assemble_links_exact_assets_and_regenerates_complete_sums(tmp_path: Pat
         WHEEL_NAME,
         f"arras-{VERSION}.tar.gz",
         f"documentdrivendx-arras-ui-{VERSION}.tgz",
-        "distribution-verification.json",
-        "doctor-installed.json",
         "release-evidence.json",
         "SHA256SUMS",
     }
@@ -857,6 +938,8 @@ def test_doctor_receipt_must_match_trusted_probe_builder(tmp_path: Path) -> None
         assembler._validate_doctor(
             value, VERSION, WHEEL_NAME, inputs["wheel_sha"], inputs["npm_sha"]
         )
+
+
     path.write_text(json.dumps(doctor_receipt(inputs["wheel_sha"], inputs["npm_sha"])))
     value = json.loads(path.read_text())
     del value["telemetry_probes"]["phases"]["worker_backed_asgi_operate"]
@@ -890,6 +973,98 @@ def test_doctor_receipt_must_match_trusted_probe_builder(tmp_path: Path) -> None
         assembler._validate_doctor(
             value, VERSION, WHEEL_NAME, inputs["wheel_sha"], inputs["npm_sha"]
         )
+
+
+def test_public_receipt_projections_cannot_be_reused_as_raw_qualification(tmp_path: Path) -> None:
+    inputs = make_inputs(tmp_path)
+    doctor_path = inputs["build_bundle"] / "doctor-installed.json"
+    distribution_path = inputs["build_bundle"] / "distribution-verification.json"
+    doctor_raw = json.loads(doctor_path.read_bytes())
+    distribution_raw = json.loads(distribution_path.read_bytes())
+    doctor_public = assembler._public.doctor_projection(doctor_raw, sha(doctor_path.read_bytes()))
+    distribution_public = assembler._public.distribution_projection(
+        distribution_raw, sha(distribution_path.read_bytes())
+    )
+    with pytest.raises(assembler.AssemblyError, match="unsupported installed-doctor receipt schema"):
+        assembler._validate_doctor(
+            doctor_public, VERSION, WHEEL_NAME, inputs["wheel_sha"], inputs["npm_sha"]
+        )
+    with pytest.raises(assembler.AssemblyError, match="public distribution projection"):
+        assembler._validate_distribution(
+            distribution_public,
+            VERSION,
+            WHEEL_NAME,
+            {
+                WHEEL_NAME: inputs["wheel_sha"],
+                f"arras-{VERSION}.tar.gz": "a" * 64,
+                f"documentdrivendx-arras-ui-{VERSION}.tgz": inputs["npm_sha"],
+            },
+        )
+    for name, projection, message in (
+        ("doctor-installed.json", doctor_public, "unsupported installed-doctor receipt schema"),
+        (
+            "distribution-verification.json",
+            distribution_public,
+            "public distribution projection",
+        ),
+    ):
+        bundle = tmp_path / f"projection-as-raw-{name}"
+        shutil.copytree(inputs["build_bundle"], bundle)
+        write_json(bundle / name, projection)
+        selected_names = [
+            WHEEL_NAME,
+            f"arras-{VERSION}.tar.gz",
+            f"documentdrivendx-arras-ui-{VERSION}.tgz",
+            "distribution-verification.json",
+            "doctor-installed.json",
+        ]
+        (bundle / "SHA256SUMS").write_text(
+            "".join(f"{sha((bundle / item).read_bytes())}  {item}\n" for item in selected_names),
+            encoding="ascii",
+        )
+        with pytest.raises(assembler.AssemblyError, match=message):
+            assembler._verify_build(bundle, VERSION, WHEEL_NAME, inputs["wheel_sha"])
+
+
+def test_distribution_projection_requires_passing_consumer_controls(tmp_path: Path) -> None:
+    inputs = make_inputs(tmp_path)
+    path = inputs["build_bundle"] / "distribution-verification.json"
+    raw = json.loads(path.read_bytes())
+    source_sha = sha(path.read_bytes())
+    for field in ("in_memory_operation", "schema_callback"):
+        changed = json.loads(json.dumps(raw))
+        changed["consumers"]["source_wheel"][field] = False
+        with pytest.raises(assembler.AssemblyError, match="checks are incomplete"):
+            assembler._public.distribution_projection(changed, source_sha)
+
+
+def test_doctor_projection_retains_only_safe_installed_identities(tmp_path: Path) -> None:
+    inputs = make_inputs(tmp_path)
+    raw = doctor_receipt(inputs["wheel_sha"], inputs["npm_sha"])
+    source_sha = sha(json.dumps(raw, sort_keys=True).encode())
+    controls: list[tuple[dict[str, Any], str]] = []
+    changed = json.loads(json.dumps(raw))
+    changed["versions"]["python_distributions"]["graphql-core"] = "/private/path"
+    controls.append((changed, "unsafe"))
+    changed = json.loads(json.dumps(raw))
+    changed["versions"]["python_distributions"]["private/package"] = "1.0"
+    del changed["versions"]["python_distributions"]["graphql-core"]
+    controls.append((changed, "exactly"))
+    changed = json.loads(json.dumps(raw))
+    changed["versions"]["extension_host_wheel"]["filename"] = "../../secret.whl"
+    controls.append((changed, "unsafe public token"))
+    changed = json.loads(json.dumps(raw))
+    changed["versions"]["extension_host_wheel"]["sha256"] = "not-a-digest"
+    controls.append((changed, "lowercase SHA-256"))
+    changed = json.loads(json.dumps(raw))
+    changed["versions"]["python_distributions"]["arras"] = "8.0.0"
+    controls.append((changed, "disagree with wheel or telemetry"))
+    changed = json.loads(json.dumps(raw))
+    changed["versions"]["python_distributions"]["opentelemetry-api"] = "9.9.9"
+    controls.append((changed, "disagree with wheel or telemetry"))
+    for value, message in controls:
+        with pytest.raises(assembler.AssemblyError, match=message):
+            assembler._public.doctor_projection(value, source_sha)
 
 
 def test_doctor_runtime_is_validated_and_reported_separately(tmp_path: Path) -> None:

@@ -19,6 +19,19 @@ _BASENAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._+-]{0,199}\Z")
 _MAX_SUMS = 64 * 1024
 _MAX_FILE = 512 * 1024 * 1024
 _MAX_TOTAL = 1024 * 1024 * 1024
+_PUBLISHED_COMPONENTS = {
+    "acceptance-inventory-neutral-theme.json",
+    "acceptance-resources-neutral-theme.json",
+    "consumer-qualification.json",
+    "doctor-installed.json",
+    "distribution-verification.json",
+    "native-cohort-binding.json",
+    "native-cohort.json",
+    "native-find-links.html",
+    "native-qualification.json",
+    "playwright-summary-neutral-theme.json",
+    "ui-qualification.json",
+}
 
 
 class AssetError(ValueError):
@@ -144,17 +157,51 @@ def _validate_trusted(
             _fail(f"trusted release asset checksum failed: {name}")
     try:
         aggregate = json.loads((directory / "release-evidence.json").read_text(encoding="utf-8"))
-        identity = aggregate["arras_wheel"]
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError, KeyError, TypeError) as exc:
-        _fail(f"trusted release aggregate has no valid wheel identity: {type(exc).__name__}")
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        _fail(f"trusted release aggregate is invalid: {type(exc).__name__}")
     if (
         not isinstance(aggregate, dict)
+        or type(aggregate.get("schema_version")) is not int
+        or aggregate.get("schema_version") != 1
+        or aggregate.get("status") != "passed"
         or aggregate.get("version") != version
-        or not isinstance(identity, dict)
-        or identity.get("filename") != wheel
-        or identity.get("sha256") != wheel_sha256
     ):
-        _fail("trusted release aggregate differs from the verified build wheel identity")
+        _fail("trusted release aggregate has an unsupported schema, status or version")
+
+    artifacts = aggregate.get("release_artifacts")
+    if not isinstance(artifacts, dict) or set(artifacts) != {"wheel", "sdist", "npm"}:
+        _fail("trusted release aggregate has an invalid release-artifact inventory")
+    expected_artifacts = {
+        "wheel": (wheel, wheel_sha256),
+        "sdist": (f"arras-{version}.tar.gz", entries[f"arras-{version}.tar.gz"]),
+        "npm": (
+            f"documentdrivendx-arras-ui-{version}.tgz",
+            entries[f"documentdrivendx-arras-ui-{version}.tgz"],
+        ),
+    }
+    for artifact, (filename, digest) in expected_artifacts.items():
+        identity = artifacts[artifact]
+        if (
+            not isinstance(identity, dict)
+            or set(identity) != {"filename", "sha256"}
+            or identity.get("filename") != filename
+            or not isinstance(identity.get("sha256"), str)
+            or not _DIGEST.fullmatch(identity["sha256"])
+            or identity["sha256"] != digest
+        ):
+            _fail(f"trusted release aggregate differs from the verified {artifact} identity")
+
+    components = aggregate.get("published_components")
+    if not isinstance(components, dict) or set(components) != _PUBLISHED_COMPONENTS:
+        _fail("trusted release aggregate has an invalid published-component inventory")
+    for name in sorted(_PUBLISHED_COMPONENTS):
+        digest = components[name]
+        if (
+            not isinstance(digest, str)
+            or not _DIGEST.fullmatch(digest)
+            or digest != entries[name]
+        ):
+            _fail(f"trusted published-component digest differs from its emitted asset: {name}")
     return sums_raw, entries
 
 

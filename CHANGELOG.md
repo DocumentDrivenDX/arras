@@ -1,10 +1,11 @@
 # Changelog
 
-## Unreleased — first public distribution candidate
+## 0.5.0 — 2026-10-22
 
-These changes are in the reviewed release candidate. Publication and final
-cohort qualification are tracked by the
-[release checklist](docs/helix/05-deploy/deployment-checklist.md).
+The first public distribution supplies generic Python/UI seams and installed
+consumer qualification. The [release notes](docs/helix/05-deploy/release-notes.md)
+record qualified cohorts and limits; the
+[release checklist](docs/helix/05-deploy/deployment-checklist.md) governs delivery.
 
 ### Distribution and public API
 
@@ -55,7 +56,7 @@ resolved requests while preserving the person's token and backend authority.
 An optional provider protocol binds annotations to the write/audit group; a
 provider without that capability refuses before writing. The generic transaction
 proof is synthetic. Native Truss policy annotations and deployment-specific
-source-entitlement guarantees are not supplied by this release candidate.
+source-entitlement guarantees are not supplied by this release.
 
 ### Modules and content
 
@@ -101,7 +102,10 @@ installed, native and rendered qualification profiles against each new pin.
 Configure a shared stable credential source before attaching another persistent
 development host; recover previously unretained role credentials explicitly.
 
-The final release record must state its exact Python, UI, UMF-profile,
-Truss/Weft/PostgreSQL, Node/browser and platform evidence. Source classifiers and
-matching version strings do not qualify unrun platforms. Registry availability
-must be reported separately from GitHub artifact delivery.
+The release notes and machine-readable evidence separate Python/SDK, UI, native
+and installed-consumer cohorts. The selected native tuple is public Truss 0.0.48,
+Weft 0.4.51 and pgserver-pg18 18.6.1. Both Linux and Mac source suites pass 199 tests;
+the fresh Darwin installed corpus records 64 passes, eight declared limits and
+seven replica-only cases inapplicable. Source classifiers do not qualify unrun
+platforms. PyPI/npm uploads are deferred while existing publishing access is
+unavailable; GitHub artifact delivery remains required.

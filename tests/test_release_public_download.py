@@ -12,7 +12,9 @@ import subprocess
 import sys
 import textwrap
 import zipfile
+from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -37,6 +39,19 @@ ASSETS = {
     "acceptance-resources-neutral-theme.json",
     "playwright-summary-neutral-theme.json",
     "native-find-links.html",
+}
+PUBLISHED_COMPONENTS = {
+    "acceptance-inventory-neutral-theme.json",
+    "acceptance-resources-neutral-theme.json",
+    "consumer-qualification.json",
+    "doctor-installed.json",
+    "distribution-verification.json",
+    "native-cohort-binding.json",
+    "native-cohort.json",
+    "native-find-links.html",
+    "native-qualification.json",
+    "playwright-summary-neutral-theme.json",
+    "ui-qualification.json",
 }
 
 
@@ -69,7 +84,22 @@ def build_trusted(
                 "schema_version": 1,
                 "status": "passed",
                 "version": VERSION,
-                "arras_wheel": {"filename": WHEEL, "sha256": sha(wheel_bytes)},
+                "release_artifacts": {
+                    "wheel": {"filename": WHEEL, "sha256": sha(wheel_bytes)},
+                    "sdist": {
+                        "filename": f"arras-{VERSION}.tar.gz",
+                        "sha256": sha((path / f"arras-{VERSION}.tar.gz").read_bytes()),
+                    },
+                    "npm": {"filename": NPM, "sha256": sha(npm)},
+                },
+                "published_components": {
+                    name: sha((path / name).read_bytes()) for name in sorted(PUBLISHED_COMPONENTS)
+                },
+                # The assembler retains raw input digests separately from emitted projections.
+                "source_evidence_sha256": {
+                    "doctor-installed.json": sha(b"private raw doctor receipt"),
+                    "distribution-verification.json": sha(b"private raw distribution receipt"),
+                },
             }
         )
         + "\n",
@@ -78,6 +108,18 @@ def build_trusted(
     sums = "".join(f"{sha((path / name).read_bytes())}  {name}\n" for name in sorted(ASSETS))
     (path / "SHA256SUMS").write_text(sums, encoding="ascii")
     return sha(wheel_bytes), sha(sums.encode())
+
+
+def rewrite_trusted_aggregate(path: Path, mutate: Callable[[dict[str, Any]], None]) -> str:
+    aggregate_path = path / "release-evidence.json"
+    aggregate = json.loads(aggregate_path.read_text(encoding="utf-8"))
+    mutate(aggregate)
+    aggregate_path.write_text(json.dumps(aggregate) + "\n", encoding="utf-8")
+    sums = "".join(
+        f"{sha((path / name).read_bytes())}  {name}\n" for name in sorted(ASSETS)
+    )
+    (path / "SHA256SUMS").write_text(sums, encoding="ascii")
+    return sha(sums.encode())
 
 
 def args(
@@ -117,6 +159,12 @@ def test_plan_and_verify_require_exact_trusted_public_bytes(tmp_path: Path) -> N
     trusted = tmp_path / "trusted"
     public = tmp_path / "public"
     wheel_sha, sums_sha = build_trusted(trusted)
+    aggregate = json.loads((trusted / "release-evidence.json").read_text(encoding="utf-8"))
+    assert set(aggregate["release_artifacts"]) == {"wheel", "sdist", "npm"}
+    assert set(aggregate["published_components"]) == PUBLISHED_COMPONENTS
+    assert aggregate["source_evidence_sha256"]["doctor-installed.json"] != aggregate[
+        "published_components"
+    ]["doctor-installed.json"]
     public.mkdir()
     shutil.copyfile(trusted / "SHA256SUMS", public / "SHA256SUMS")
     plan = tmp_path / "plan.txt"
@@ -132,6 +180,61 @@ def test_plan_and_verify_require_exact_trusted_public_bytes(tmp_path: Path) -> N
     value = json.loads(receipt.read_text(encoding="utf-8"))
     assert value["status"] == "passed" and value["npm_matches_wheel_payload"] is True
     assert value["wheel"] == {"filename": WHEEL, "sha256": wheel_sha}
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "wrong-version",
+        "wrong-wheel-digest",
+        "wrong-sdist-filename",
+        "wrong-npm-digest",
+        "wrong-component-digest",
+    ],
+)
+def test_trusted_assembler_schema_rejects_identity_or_projection_drift(
+    tmp_path: Path, mutation: str
+) -> None:
+    trusted = tmp_path / "trusted"
+    wheel_sha, _ = build_trusted(trusted)
+
+    def change(aggregate: dict[str, Any]) -> None:
+        if mutation == "wrong-version":
+            aggregate["version"] = "0.5.1"
+        elif mutation == "wrong-wheel-digest":
+            aggregate["release_artifacts"]["wheel"]["sha256"] = "0" * 64
+        elif mutation == "wrong-sdist-filename":
+            aggregate["release_artifacts"]["sdist"]["filename"] = "other.tar.gz"
+        elif mutation == "wrong-npm-digest":
+            aggregate["release_artifacts"]["npm"]["sha256"] = "f" * 64
+        else:
+            aggregate["published_components"]["doctor-installed.json"] = "a" * 64
+
+    sums_sha = rewrite_trusted_aggregate(trusted, change)
+    public = tmp_path / "public"
+    public.mkdir()
+    shutil.copyfile(trusted / "SHA256SUMS", public / "SHA256SUMS")
+    output = tmp_path / "plan.txt"
+    result = call_helper(*args("plan", trusted, public, output, wheel_sha, sums_sha))
+    assert result.returncode != 0
+    assert not output.exists()
+
+
+def test_legacy_arras_wheel_aggregate_shape_is_not_accepted(tmp_path: Path) -> None:
+    trusted = tmp_path / "trusted"
+    wheel_sha, _ = build_trusted(trusted)
+
+    def use_legacy_shape(aggregate: dict[str, Any]) -> None:
+        aggregate["arras_wheel"] = aggregate["release_artifacts"].pop("wheel")
+
+    sums_sha = rewrite_trusted_aggregate(trusted, use_legacy_shape)
+    public = tmp_path / "public"
+    public.mkdir()
+    shutil.copyfile(trusted / "SHA256SUMS", public / "SHA256SUMS")
+    output = tmp_path / "plan.txt"
+    result = call_helper(*args("plan", trusted, public, output, wheel_sha, sums_sha))
+    assert result.returncode != 0
+    assert not output.exists()
 
 
 @pytest.mark.parametrize(

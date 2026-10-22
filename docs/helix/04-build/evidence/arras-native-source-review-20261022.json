@@ -1,0 +1,88 @@
+{
+  "dependency_assertions": {
+    "evidence": "Passed tests.test_truss_toolkit::test_the_installed_extra_is_the_pinned_tuple; inspected unchanged source assertion body. This is not a complete installed-distribution or native-payload inventory.",
+    "libpq_version_integer": 180006,
+    "psycopg": "3.3.6",
+    "truss-toolkit": "0.0.48",
+    "weft-sql": "0.4.51"
+  },
+  "evidence": {
+    "prepared-commands.txt": {
+      "public_copy": false,
+      "sha256": "ce6b0c0b226aaaff9a83dd6b6b56e8b3aa1d5bec0e12d4e54dc8d23d39ff74cc"
+    },
+    "pytest-native.log": {
+      "sha256": "754b5a48932183d5ddf052cbca5b35a8a1e955bc680ca4b5702bdc26b5baa387"
+    },
+    "pytest-native.xml": {
+      "sha256": "7d22b3268b0bd4ef7a8f71fe0bfa880c255f9d13badbb9e355b66ee0fe7eff39"
+    }
+  },
+  "invocation": {
+    "arguments": [
+      "-m",
+      "truss",
+      "-q",
+      "--junitxml=<owned-output>"
+    ],
+    "interpreter_identity": "project virtual environment; exact Python version not captured in these source-run files",
+    "removed_environment": [
+      "PYTHONPATH",
+      "PYTHONHOME"
+    ],
+    "required_environment": {
+      "ARRAS_REQUIRE_TRUSS": "1"
+    },
+    "runner": "python -m pytest"
+  },
+  "owned_postgres_cleanup": {
+    "basis": "Worker terminal cleanup report supplied by the coordinator; private post-suite process inventory was reviewed without copying it. Unrelated existing PostgreSQL instances were left untouched.",
+    "limit": "This is a scoped worker cleanup result, not a global process-absence claim.",
+    "result": "no_owned_postgres_remaining_reported"
+  },
+  "qualification_limits": [
+    "No fresh installed-wheel native claim is made by this source suite.",
+    "No complete runtime/native-file inventory or system dynamic-link audit is claimed.",
+    "No UI, SDK, sdist, managed-platform, or other-platform qualification is inferred."
+  ],
+  "results": {
+    "deselected": 2897,
+    "errors": 0,
+    "failures": 0,
+    "junit_started_at": "2026-10-22T18:07:56.381746-04:00",
+    "junit_time_seconds": 620.352,
+    "log_time_seconds": 620.37,
+    "passed": 199,
+    "skipped": 0,
+    "tests": 199,
+    "unique_testcases": 199
+  },
+  "runtime": {
+    "architecture": null,
+    "capture_limit": "The source-run files do not contain a standalone runtime/platform metadata snapshot; SDK or installed-run metadata has not been substituted.",
+    "os": null,
+    "os_release": null,
+    "python_version": null
+  },
+  "schema": "arras.native-source-review.v1",
+  "scope": "Source pytest native suite; separate from fresh installed-wheel qualification.",
+  "source_identity": {
+    "changes_during_suite": [
+      "release evidence assembler and its synthetic tests",
+      "documentation",
+      "UI evidence files"
+    ],
+    "commit_preceding_suite_start": "3199dffb7f20d8e40f9b1c9fbbd22f3fe9292c50",
+    "commit_recorded_during_suite": "ff2b83a21d44c2beab3ababe13c707bb7666ffb1",
+    "comparison_scope": [
+      "production native adapter and conformance code",
+      "native test code",
+      "native cohort inputs",
+      "dependency pins and lock"
+    ],
+    "during_suite_commit_time": "2026-10-22T18:08:28-04:00",
+    "native_relevant_source_stable_across_commits": true,
+    "qualification": "Commit comparison confirms unchanged native-relevant source across these commits. It does not establish an immutable whole-checkout snapshot or a captured before/after working-tree digest."
+  },
+  "status": "passed"
+}

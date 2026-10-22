@@ -58,7 +58,9 @@ cases (seven replica-only cases inapplicable). Its portable themed capture passe
 eight narrower route images. The subsequent ordinary run passed all 272 cases with updates disabled and all 67 approved baselines unchanged.
 
 The [build plan](../04-build/arras-integration-plan-20261022.md) records exact
-receipts, source reviews, failed candidates and remaining final native, source/sdist and public-delivery gates. The
+receipts, source reviews, failed candidates and remaining source/sdist and
+public-delivery gates. Local source and fresh installed-native qualification pass
+for the selected public tuple; exact-tag Linux execution remains separate. The
 [naming inventory](naming-surfaces.md) distinguishes stable identity from host
 presentation. The [release checklist](../05-deploy/deployment-checklist.md)
 requires exact-tag GitHub assets and fresh public-download consumers. Earlier
@@ -84,7 +86,7 @@ Exact new interfaces belong in the affected contracts before implementation.
 | Theming/UI split | EX-03; ADR-027/029, CONTRACT-005 | Public Node testkit/browser host, 17 shared specs and 83 resources; packed themed capture 272/272; all 67 canonical and eight narrow images reviewed | Ordinary full comparison passed; exact-tag and public-download delivery remain |
 | Operator/policy | EX-04; CONTRACT-005/007/009/010/011, ADR-005 | Existing callbacks, composed schema forwarding, PolicyBackend, safe PolicyRefused, optional annotation protocol with synthetic transaction proof | Final installed/cross-surface gates; native annotation support explicitly unavailable until qualified |
 | Modules/content | EX-05; CONTRACT-002/003/010, ADR-022 | Explicit custom resource example and no-default composition; final installed example four tests plus memory corpus 72/7 | Tag/download delivery; official-profile/native qualification remains separately scoped |
-| Backends/deployment | EX-06/07, A7; CONTRACT-004/005 | Host factories/connections, repaired stable credentials; reviewed packaged harness/verifier source with 17 offline controls | Final installed native harness/cohort proof and deployment guidance |
+| Backends/deployment | EX-06/07, A7; CONTRACT-004/005 | Host factories/connections, repaired stable credentials; reviewed packaged harness/verifier source with 17 offline controls | Exact-tag installed-native and public-delivery repetition; deployment-specific qualification remains host-owned |
 | Downstream CI | EX-07; TP-001/architecture | External Python/theme fixtures, generic public-content gate, reusable workflow, portable no-copy canonical testkit and actual packed themed capture | Ordinary full comparison passed; final integrated exact-tag/download jobs remain |
 | Upgrades | EX-08; CONTRACT-005/catalog | Reviewed offline doctor/report/CLI implementation and compatibility/deprecation policy | Frozen-wheel 20-case positive/breaking/no-I/O and launcher controls pass; finalize per-seam delivery record and repeat on public downloads |
 
@@ -96,14 +98,16 @@ verified from that exact artifact.
 ## Compatibility and qualification matrix
 
 Version declarations define candidate compatibility; the evidence column limits
-what is actually qualified. The exact release bundle will bind its own wheel,
+what is actually qualified. `pgserver-pg18` 18.6.1 is the Python distribution
+version; it must not be presented as an observed PostgreSQL server patch version.
+The source suite separately asserts client libpq 18.6. The exact release bundle will bind its own wheel,
 platform and native cohort rather than merge these component runtimes.
 
 | Component/cohort | Selected versions | Evidence and limit |
 | --- | --- | --- |
 | Arras Python/UI | `0.5.0`; Python requirement `>=3.11`, declared 3.11/3.12/3.13 | Frozen 07b wheel and c29 npm qualified as named below; declarations alone do not prove every interpreter/platform |
-| Native Linux x86_64 | Truss `0.0.48`, Weft `0.4.51`, PostgreSQL `18.6.1`, CPython 3.11 | Actual source suite 199 passes; fresh installed/tagged native gates remain separate |
-| Native macOS arm64 | Same public native tuple; CPython 3.11.17 | Focused original seven failures corrected and passing; final full 199 plus fresh installed harness pending |
+| Native Linux x86_64 | Truss `0.0.48`, Weft `0.4.51`, `pgserver-pg18` `18.6.1`, CPython 3.11 | Actual source suite 199 passes; fresh installed/tagged native gates remain separate |
+| Native macOS arm64 | Same public native tuple; CPython 3.11 | Full source suite 199 passes, zero failures/errors/skips. Fresh exact-07b installed CLI corpus: 64 passes/eight declared limits/seven replica-only inapplicable, no failures/harness errors; seven selected distribution payloads verified. No system dynamic-link audit |
 | Native distribution floors | Linux x86_64 glibc `2.27`; macOS arm64 `14` | Static maximum dependency floors, not execution on those OS minima; exact seven-archive inputs live under `tests/downstream/native-cohorts/` |
 | Installed Python/SDK macOS arm64 | Python `3.13.16`, OpenTelemetry API/SDK `1.45.1`, graphql-core `3.3.0` | Doctor 20 cases/eight phases/three controls and four fresh example tests; memory corpus 72 passes/seven replica-only cases inapplicable; no native inference |
 | UI macOS arm64 | Node `26.12.1`, React/ReactDOM `19.3.0`, TypeScript `6.0.3`, Vite `8.3.2`, Playwright `1.63.0`, axe `4.13.0`, Chromium `153.0.8010.12` | Packed themed capture and ordinary comparison each 272 passes; all 67 approved baselines unchanged |
@@ -351,10 +355,12 @@ corpus/runner and explicit memory/native conformance helpers now have source;
 installed native helper/cohort proof is tracked by EX-07/A7.
 The [installed native verifier](../../../tools/verify_native.py) has completed
 source review and 17 offline controls. Those controls qualify verifier preparation
-and failure/report behavior only. Separate actual Linux source runs pass all
-199 native tests on public Truss 0.0.48/Weft 0.4.51/PostgreSQL 18.6.1. Final Mac
-source and fresh installed-native helper receipts remain required; source tests
-do not qualify the installed helper or a released artifact.
+and failure/report behavior only. Separate actual Linux and Mac source runs each pass all
+199 native tests on public Truss 0.0.48/Weft 0.4.51/pgserver-pg18 18.6.1. The separate fresh installed 07b helper passes its CLI/corpus gate: 64 passes,
+eight exact declared limits and seven replica-only cases inapplicable, with no
+failures/harness errors. It verifies all seven selected native distributions and
+their installed payloads on Darwin arm64/CPython 3.11. This is not a system
+dynamic-link audit, minimum-OS execution or another platform qualification.
 
 **Resolved defect:** persistent LocalTruss uses an explicit shared stable
 credential source. Existing-role lookup cannot mint a replacement credential;
@@ -370,9 +376,9 @@ grant reset. Preserve reader/provider roles from `describe`, not Python method
 presence. Optional lifecycle/annotation capabilities are advertised only within
 their explicit qualified contracts.
 
-**Gap/cost:** medium remaining installed native runner, exact public Truss/Weft/
-PostgreSQL cohort and Linux gates. Retain two-host/restart/stale-credential/
-independent-grant tests. A packaged helper existing in source is not native proof.
+**Gap/cost:** small remaining exact-tag Linux installed-native and public-delivery
+gates. Retain two-host/restart/stale-credential/independent-grant tests. The local
+installed native receipt is distinct from source passes and static package checks.
 
 ## 7. Downstream testing and CI — partial
 
