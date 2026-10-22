@@ -546,7 +546,7 @@ export default {
 const config = createAcceptanceConfig({
   baseURL: "http://127.0.0.1:8766",
   schemaBaseURL: "http://127.0.0.1:8777",
-  outputDir: ${JSON.stringify(controlledDir)},
+  outputDir: ${JSON.stringify(join(controlledDir, "playwright-results"))},
   themeId: "controlled-failure",
   expectedBrand: { name: "Intentionally incorrect", title: "Intentionally incorrect Console" },
   expectedSurface: { light: "rgb(248, 250, 252)", dark: "rgb(2, 6, 23)" },

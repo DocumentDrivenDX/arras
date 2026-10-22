@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
-import { EXPECTED_BRAND } from "./acceptance";
+import { EXPECTED_BRAND, hasExactVisibleBrandText } from "./acceptance";
 
 // The brand (SD-013, Branding): the dev host's page carries the default name in the top bar and in the
 // document title, in both modes, and the top bar passes axe in both schemes.
@@ -13,9 +13,17 @@ const MODES = [
 
 async function expectVisibleBrand(page: Page) {
   const banner = page.getByRole("banner").first();
-  const imageWordmark = EXPECTED_BRAND.wordmark?.startsWith("https://") === true;
+  const imageWordmark =
+    EXPECTED_BRAND.wordmark?.startsWith("https://") === true ||
+    (EXPECTED_BRAND.logo === "theme" && EXPECTED_BRAND.wordmark === undefined);
+  const themeLogo = EXPECTED_BRAND.logo === "theme" && EXPECTED_BRAND.wordmark === undefined;
   if (imageWordmark) {
     await expect(banner.getByRole("img", { name: EXPECTED_BRAND.name, exact: true })).toBeVisible();
+    if (themeLogo) {
+      await expect
+        .poll(() => banner.evaluate(hasExactVisibleBrandText, EXPECTED_BRAND.name))
+        .toBe(true);
+    }
   } else {
     await expect(
       banner.getByText(EXPECTED_BRAND.wordmark ?? EXPECTED_BRAND.name, { exact: true }),

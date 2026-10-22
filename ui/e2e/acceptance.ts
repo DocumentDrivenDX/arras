@@ -23,3 +23,28 @@ export const ORIGIN = acceptance.baseURL;
 export const SCHEMA_ORIGIN = acceptance.schemaBaseURL;
 export const EXPECTED_BRAND = acceptance.expectedBrand;
 export const EXPECTED_SURFACE = acceptance.expectedSurface;
+
+/** Whether a banner contains an exact, visible text node outside its brand glyph. */
+export function hasExactVisibleBrandText(root: Element, expectedName: string): boolean {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  let node = walker.nextNode();
+  while (node) {
+    if (node.textContent?.trim() === expectedName && node.parentElement) {
+      const parent = node.parentElement;
+      if (
+        parent.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }) &&
+        !parent.closest('[role="img"], img, svg')
+      ) {
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        const visible = Array.from(range.getClientRects()).some(
+          (rect) => rect.width > 0 && rect.height > 0,
+        );
+        range.detach();
+        if (visible) return true;
+      }
+    }
+    node = walker.nextNode();
+  }
+  return false;
+}
