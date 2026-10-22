@@ -11,12 +11,23 @@ const MODES = [
   { name: "operate", hash: "#/operate/catalog/model", bar: "banner" },
 ] as const;
 
+async function expectVisibleBrand(page: Page) {
+  const banner = page.getByRole("banner").first();
+  const imageWordmark = EXPECTED_BRAND.wordmark?.startsWith("https://") === true;
+  if (imageWordmark) {
+    await expect(banner.getByRole("img", { name: EXPECTED_BRAND.name, exact: true })).toBeVisible();
+  } else {
+    await expect(
+      banner.getByText(EXPECTED_BRAND.wordmark ?? EXPECTED_BRAND.name, { exact: true }),
+    ).toBeVisible();
+  }
+}
+
 test("the served page carries the brand meta tag the app reads", async ({ page }) => {
   await page.goto("/");
   const content = await page.locator('meta[name="arras-brand"]').getAttribute("content");
   expect(JSON.parse(content ?? "null")).toEqual(EXPECTED_BRAND);
-  const wordmark = page.getByTestId("console-header").locator(":scope > .truncate.font-semibold");
-  await expect(wordmark).toHaveText(EXPECTED_BRAND.name);
+  await expectVisibleBrand(page);
   await expect
     .poll(async () => (await page.title()).endsWith(EXPECTED_BRAND.title ?? EXPECTED_BRAND.name))
     .toBe(true);
@@ -90,9 +101,7 @@ for (const m of MODES) {
 for (const m of MODES) {
   test(`${m.name}: the default name is in the top bar and the document title`, async ({ page }) => {
     await page.goto(`/${m.hash}`);
-    const bar = page.getByTestId("console-header");
-    const wordmark = bar.locator(":scope > .truncate.font-semibold");
-    await expect(wordmark).toHaveText(EXPECTED_BRAND.name);
+    await expectVisibleBrand(page);
     await expect
       .poll(async () => (await page.title()).endsWith(EXPECTED_BRAND.title ?? EXPECTED_BRAND.name))
       .toBe(true);

@@ -974,6 +974,43 @@ drop-in. Configuration precedence, rather than display matching alone, therefore
 requires correction across CI and both release browser-install blocks. Exact
 required bounds remain unchanged, and this failed UI job never ran Chromium.
 
+The next candidate passed all four narrow theme routes after the compiled host
+set `build.cssTarget: "chrome123"`. Without that fixture target, Vite lowered
+`light-dark()` role values to invalid concatenated alternatives. Both the exact
+Vite 8.3.2 runner and an isolated 8.3.5 reproduction preserve the native function
+with that CSS target and minification retained. The resulting eight light/dark
+images were captured as `baselines-updated`, then individually inspected and
+[approved by Sol](evidence/arras-narrow-eight-visual-review-20261022.json).
+Actual Chromium was 153.0.8010.12. Ordinary comparison remains required.
+
+Wheel `eeb787b836c4fa6f4309bd33a1119d51883ab2fd53d75a89b34893d509644e80`
+passed 20 installed doctor cases, eight SDK telemetry phases and three false-pass
+controls on Darwin arm64/27.0.0, Python 3.13.16 and OpenTelemetry API/SDK 1.45.1.
+Receipt SHA-256 is
+`0d19174753c42f01a63bece20a72bb28c162ca026592846b8a9461cbbeef65b7`;
+current verifier/probe identities are respectively
+`9aa379d1f2b333f855aa9886da7b6e93dcf930bc789a3721e0862ee174c08455` and
+`2dd054ff5b832f279195d8e644027474181ff247d29d6b59ee0e8c2889836e0f`.
+Sol independently verified the receipt identities and the existing assembler's
+trusted doctor validator accepted it. Its fresh installed example separately
+passed four tests and all 72 applicable memory corpus cases, with seven
+replica-only cases inapplicable. Consumer receipt SHA-256 is
+`073139cae16bf45ac0884aef6cc561c86dedb98736005295968efa3fae1456e9`.
+These exact candidate results remain distinct from native or full-UI proof.
+
+[CI run 39857567776](https://github.com/DocumentDrivenDX/arras/actions/runs/39857567776)
+on `cacc90acc0d8af8bbc3cc1bf07747ef7fcdc0289` passed default Python, all
+199 native Linux cases, source/build and installed artifact gates. The effective
+APT checks, dependency installation and pinned Chromium launch passed. Its actual
+nonvisual UI suite passed 203 cases and failed two existing brand assertions that
+selected an Operate-only header after opening Explore. A separate source-selected
+regression had seven passes and the same first selector failure; it is source
+proof, not packed overlay qualification. Sol scoped a canonical test correction
+to assert the exact visible wordmark in each actual banner while preserving
+metadata, title and both-mode coverage. Because canonical test bytes are carried,
+this correction requires a new manifest/npm/wheel and repeated installed proofs.
+No full 272-case success or reviewed canonical visual comparison is established.
+
 ## Validation Plan
 
 - A0: focused `tests/test_umf.py` and `tests/test_core.py`; existing module/host

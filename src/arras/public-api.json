@@ -1664,7 +1664,7 @@
     ],
     "ui_acceptance": {
       "manifest_path": "support/acceptance/resources.json",
-      "manifest_sha256": "f3f0e039d89588e87ec02f8795ba5d6fa3d9a7ef570d008d940171c1b1a99ea6",
+      "manifest_sha256": "7b029ad0855d0d247d6fe5dd11f40fe96781451b254226ebf90eba0eb37e79ac",
       "version": 1,
       "specs": [
         "a11y.spec.ts",

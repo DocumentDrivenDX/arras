@@ -43,6 +43,7 @@ export default defineConfig({
   build: {
     outDir: "dist",
     emptyOutDir: true,
+    cssTarget: "chrome123",
     rollupOptions: { input: [resolve(root ?? ".", "index.html"), resolve(root ?? ".", "controls.html")] },
   },
 });
