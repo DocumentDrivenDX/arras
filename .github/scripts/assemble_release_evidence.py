@@ -833,7 +833,9 @@ def assemble(
         **ui_sidecars,
     }
     private_receipts = {"distribution-verification.json", "doctor-installed.json"}
-    public_selected = {name: path for name, path in selected.items() if name not in private_receipts}
+    public_selected = {
+        name: path for name, path in selected.items() if name not in private_receipts
+    }
     _publish_bundle(output_dir, public_selected, projections, raw_files, digests)
     return aggregate
 
