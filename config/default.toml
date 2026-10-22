@@ -1,0 +1,15 @@
+# Committed defaults (layer 3): dev-owned, non-secret, reviewed. Read by `python -m arras.mcp`
+# from ARRAS_CONFIG_DIR (default `config`); `<ARRAS_ENV>.toml` overrides it key by key.
+# Backend endpoints, tokens and every other ops value never appear in a committed file: they are
+# injected as ARRAS_BACKEND_<NAME>_ENDPOINT, ARRAS_TOKEN[_FILE] or the file ARRAS_OPS_FILE names
+# (see .env.example). A committed file carrying one is refused at start.
+
+log_level = "INFO"
+user_claims = ["preferred_username", "email", "sub"]
+
+# Where a module lives is deployment, not the module's document (CONTRACT-002). Uncomment and
+# name the backends your host configures, to place every module no `[modules.<name>]` table names:
+#
+# [placement]
+# record = "primary"
+# replicas = ["mirror"]

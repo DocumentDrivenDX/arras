@@ -1,0 +1,154 @@
+[
+  {
+    "action": "northwind.AddCategory",
+    "inputs": {
+      "code": "beverages",
+      "name": "Beverages",
+      "description": "Soft drinks, coffees, teas, beers, and ales"
+    }
+  },
+  {
+    "action": "northwind.AddCategory",
+    "inputs": {
+      "code": "condiments",
+      "name": "Condiments",
+      "description": "Sweet and savory sauces, relishes, spreads, and seasonings"
+    }
+  },
+  {
+    "action": "northwind.AddSupplier",
+    "inputs": {
+      "code": "exotic-liquids",
+      "companyName": "Exotic Liquids",
+      "country": "UK"
+    }
+  },
+  {
+    "action": "northwind.AddSupplier",
+    "inputs": {
+      "code": "grandma-kellys",
+      "companyName": "Grandma Kelly's Homestead",
+      "country": "USA"
+    }
+  },
+  {
+    "action": "northwind.AddProduct",
+    "inputs": {
+      "code": "chai",
+      "name": "Chai",
+      "quantityPerUnit": "10 boxes x 20 bags",
+      "unitPrice": 18,
+      "unitsInStock": 39,
+      "discontinued": false,
+      "inCategory": "beverages",
+      "suppliedBy": "exotic-liquids"
+    }
+  },
+  {
+    "action": "northwind.AddProduct",
+    "inputs": {
+      "code": "chang",
+      "name": "Chang",
+      "quantityPerUnit": "24 - 12 oz bottles",
+      "unitPrice": 19,
+      "unitsInStock": 17,
+      "discontinued": false,
+      "inCategory": "beverages",
+      "suppliedBy": "exotic-liquids"
+    }
+  },
+  {
+    "action": "northwind.AddProduct",
+    "inputs": {
+      "code": "boysenberry-spread",
+      "name": "Grandma's Boysenberry Spread",
+      "quantityPerUnit": "12 - 8 oz jars",
+      "unitPrice": 25,
+      "unitsInStock": 120,
+      "discontinued": false,
+      "inCategory": "condiments",
+      "suppliedBy": "grandma-kellys"
+    }
+  },
+  {
+    "action": "northwind.AddCustomer",
+    "inputs": {
+      "code": "ALFKI",
+      "companyName": "Alfreds Futterkiste",
+      "contactName": "Maria Anders",
+      "city": "Berlin",
+      "country": "Germany"
+    }
+  },
+  {
+    "action": "northwind.AddCustomer",
+    "inputs": {
+      "code": "ANATR",
+      "companyName": "Ana Trujillo Emparedados y helados",
+      "contactName": "Ana Trujillo",
+      "city": "M\u00e9xico D.F.",
+      "country": "Mexico"
+    }
+  },
+  {
+    "action": "northwind.AddEmployee",
+    "inputs": {
+      "code": "davolio",
+      "firstName": "Nancy",
+      "lastName": "Davolio",
+      "jobTitle": "Sales Representative"
+    }
+  },
+  {
+    "action": "northwind.AddEmployee",
+    "inputs": {
+      "code": "fuller",
+      "firstName": "Andrew",
+      "lastName": "Fuller",
+      "jobTitle": "Vice President, Sales"
+    }
+  },
+  {
+    "action": "northwind.LinkEmployeeReportsTo",
+    "inputs": {
+      "employee": "davolio",
+      "reportsTo": "fuller"
+    }
+  },
+  {
+    "action": "northwind.AddOrder",
+    "inputs": {
+      "code": "10248",
+      "orderDate": "1996-07-04",
+      "shipCountry": "France",
+      "freight": 32,
+      "placedBy": "ALFKI"
+    }
+  },
+  {
+    "action": "northwind.LinkOrderHandledBy",
+    "inputs": {
+      "order": "10248",
+      "handledBy": "davolio"
+    }
+  },
+  {
+    "action": "northwind.AddOrderLine",
+    "inputs": {
+      "code": "10248-chai",
+      "quantity": 12,
+      "discount": 0,
+      "ofOrder": "10248",
+      "ofProduct": "chai"
+    }
+  },
+  {
+    "action": "northwind.AddOrderLine",
+    "inputs": {
+      "code": "10248-chang",
+      "quantity": 10,
+      "ofOrder": "10248",
+      "ofProduct": "chang"
+    }
+  }
+]

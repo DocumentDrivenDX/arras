@@ -1,0 +1,1198 @@
+{
+  "complete": true,
+  "format": "arras.graph",
+  "module": "catalog",
+  "records": [
+    {
+      "key": "answer-data-questions",
+      "properties": {
+        "description": "Turn a plain question into a checked query and an explained result.",
+        "name": "Answer questions from the warehouse",
+        "workArea": "Data"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "classify-data-sensitivity",
+      "properties": {
+        "description": "Label columns that hold personal or confidential values.",
+        "name": "Classify data sensitivity",
+        "workArea": "Data"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "correlate-deploys-with-errors",
+      "properties": {
+        "description": "Show which release preceded a change in error rate.",
+        "name": "Correlate deploys with error spikes",
+        "workArea": "Observability"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "detect-log-anomalies",
+      "properties": {
+        "description": "Surface log patterns that have not been seen before in a service.",
+        "name": "Detect unusual log patterns",
+        "workArea": "Observability"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "document-datasets",
+      "properties": {
+        "description": "Keep dataset and column descriptions current, with owners and freshness.",
+        "name": "Document datasets and columns",
+        "problem": "Most tables have no description, so analysts ask in chat which column to trust.",
+        "workArea": "Data"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "draft-release-notes",
+      "properties": {
+        "description": "Write release notes from merged changes, grouped by what a user sees.",
+        "name": "Draft release notes",
+        "workArea": "Developer productivity"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "estimate-cloud-cost",
+      "properties": {
+        "description": "Predict the monthly cost of a proposed deployment.",
+        "name": "Estimate cloud cost of a change",
+        "workArea": "Operations"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "explain-legacy-code",
+      "properties": {
+        "description": "Describe what a module does and what depends on it.",
+        "name": "Explain unfamiliar code",
+        "workArea": "Developer productivity"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "find-internal-docs",
+      "properties": {
+        "description": "Answer a question from the organization's own design notes and wikis.",
+        "name": "Find internal engineering documentation",
+        "problem": "The answer exists in a wiki page that nobody can find by title.",
+        "workArea": "Documentation"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "generate-test-cases",
+      "properties": {
+        "description": "Propose unit and edge-case tests for a changed function.",
+        "name": "Generate test cases for a change",
+        "workArea": "Developer productivity"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "keep-docs-in-sync",
+      "properties": {
+        "description": "Find documentation that a code change has made wrong.",
+        "name": "Keep documentation in sync with code",
+        "workArea": "Documentation"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "model-trace-search",
+      "properties": {
+        "description": "Find model calls by the words in a prompt or reply, then see whose session and which workflow.",
+        "name": "Search model gateway traces",
+        "workArea": "Observability"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "monitor-data-quality",
+      "properties": {
+        "description": "Notice late, empty or out-of-range loads before a report does.",
+        "name": "Monitor data quality",
+        "workArea": "Data"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "monitor-slo-burn",
+      "properties": {
+        "description": "Warn when an error budget is being spent faster than planned.",
+        "name": "Watch service level objective burn",
+        "workArea": "Observability"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "onboard-engineers",
+      "properties": {
+        "description": "Give a new engineer a reading order and a first task.",
+        "name": "Onboard new engineers",
+        "workArea": "Documentation"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "plan-capacity",
+      "properties": {
+        "description": "Project load and say when a service needs more room.",
+        "name": "Plan capacity",
+        "workArea": "Operations"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "public-doc-lookup",
+      "properties": {
+        "description": "Find and read vendor and open-source documentation for a library or service.",
+        "name": "Look up public documentation",
+        "problem": "Engineers paste snippets from search results without checking the version they apply to.",
+        "workArea": "Documentation"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "review-access-requests",
+      "properties": {
+        "description": "Check a request for access against role and recent use.",
+        "name": "Review access requests",
+        "workArea": "Security"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "review-code-changes",
+      "properties": {
+        "description": "Point a reviewer at the risky parts of a change and the tests that do not cover them.",
+        "name": "Assist code review",
+        "problem": "Reviewers skim large diffs and miss the few lines that carry the risk.",
+        "workArea": "Developer productivity"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "review-infrastructure-changes",
+      "properties": {
+        "description": "Flag infrastructure changes that open ports or widen permissions.",
+        "name": "Review infrastructure changes",
+        "workArea": "Security"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "review-pull-request-descriptions",
+      "properties": {
+        "description": "Check that a description says what changed, why and how it was tested.",
+        "name": "Review pull request descriptions",
+        "workArea": "Developer productivity"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "scan-dependencies",
+      "properties": {
+        "description": "List vulnerable dependencies and the services that ship them.",
+        "name": "Scan dependencies for known issues",
+        "workArea": "Security"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "schedule-on-call",
+      "properties": {
+        "description": "Build a fair rotation from availability and time zones.",
+        "name": "Schedule on-call rotations",
+        "workArea": "Operations"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "search-application-logs",
+      "properties": {
+        "description": "Find the log lines behind a reported symptom without knowing the service that wrote them.",
+        "name": "Search application logs by symptom",
+        "problem": "On-call engineers know the symptom, not the service, and lose time guessing which log index to open.",
+        "workArea": "Observability"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "summarize-incident-timelines",
+      "properties": {
+        "description": "Turn alerts, chat and deploy events into one ordered account of what happened.",
+        "name": "Summarize an incident timeline",
+        "workArea": "Incident response"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "trace-data-lineage",
+      "properties": {
+        "description": "Show where a column comes from and what reads it.",
+        "name": "Trace data lineage",
+        "workArea": "Data"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "trace-slow-requests",
+      "properties": {
+        "description": "Walk a request's trace and say where the time went.",
+        "name": "Explain a slow request",
+        "workArea": "Observability"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "translate-documentation",
+      "properties": {
+        "description": "Produce and review translations of user-facing documentation.",
+        "name": "Translate documentation",
+        "workArea": "Documentation"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "triage-incident-alerts",
+      "properties": {
+        "description": "Sort a stream of alerts into pages, tickets and noise against the team's runbook.",
+        "name": "Triage incoming alerts at volume",
+        "problem": "Alert volume outgrows the on-call rotation, so real pages are found late among duplicates.",
+        "workArea": "Incident response"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "write-runbooks",
+      "properties": {
+        "description": "Draft a runbook from past incidents and keep it current as the service changes.",
+        "name": "Write and update runbooks",
+        "problem": "Runbooks go stale because writing one is a separate task from fixing the incident.",
+        "workArea": "Incident response"
+      },
+      "type": "UseCase"
+    },
+    {
+      "key": "alert-triage-playbook",
+      "properties": {
+        "deliveryMode": "chat",
+        "name": "Alert triage against runbook",
+        "summary": "Compare an incoming alert with the team's runbook and say whether it needs a page, a ticket or neither.",
+        "workflow": "alert-triage-playbook"
+      },
+      "type": "Solution"
+    },
+    {
+      "key": "datamap-app",
+      "properties": {
+        "deliveryMode": "app",
+        "launchUrl": "https://datamap.example.test/",
+        "name": "Datamap",
+        "summary": "The organization's own app for describing datasets and their owners. It opens as an app of its own."
+      },
+      "type": "Solution"
+    },
+    {
+      "key": "datamap-review",
+      "properties": {
+        "deliveryMode": "chat",
+        "name": "Dataset description review",
+        "summary": "Check draft dataset and column descriptions against the documentation standard before they are published.",
+        "workflow": "datamap-review"
+      },
+      "type": "Solution"
+    },
+    {
+      "key": "doc-search",
+      "properties": {
+        "deliveryMode": "chat",
+        "name": "Documentation search",
+        "summary": "Find earlier design notes similar to a described problem.",
+        "workflow": "doc-search"
+      },
+      "type": "Solution"
+    },
+    {
+      "key": "log-query",
+      "properties": {
+        "deliveryMode": "chat",
+        "name": "Log query",
+        "summary": "Ask a question about the logs of one service and get an answer grounded in the matching lines.",
+        "workflow": "log-query"
+      },
+      "type": "Solution"
+    },
+    {
+      "key": "lumen-runbook-prompt",
+      "properties": {
+        "deliveryMode": "handoff",
+        "name": "Runbook drafting with Lumen Search",
+        "prompt": "Draft a first-pass runbook from the attached incident review, keeping our standard sections, and list every step you added.",
+        "summary": "Demonstration entry. Gives the user a ready runbook drafting prompt to run in Lumen Search."
+      },
+      "type": "Solution"
+    },
+    {
+      "key": "lumen-triage-prompt",
+      "properties": {
+        "deliveryMode": "handoff",
+        "name": "Run this prompt with Lumen Search",
+        "prompt": "Review the attached alert export against our standard severities for paging, ticketing and suppression. List each alert that departs from them and suggest the correct handling.",
+        "summary": "Gives the user a ready prompt and sends them to Lumen Search to run it."
+      },
+      "type": "Solution"
+    },
+    {
+      "key": "public-research",
+      "properties": {
+        "deliveryMode": "chat",
+        "name": "Public research",
+        "summary": "Look up public information on the web and read the pages: published documentation, release notes and general technical background.",
+        "workflow": "public-research"
+      },
+      "type": "Solution"
+    },
+    {
+      "key": "trace-search",
+      "properties": {
+        "audience": "Platform engineers",
+        "deliveryMode": "chat",
+        "name": "Trace search",
+        "summary": "Search the model gateway's traces and inference tables by keyword with read-only SQL: find calls by the words in a prompt or reply, then see whose session and which workflow.",
+        "workflow": "trace-search"
+      },
+      "type": "Solution"
+    },
+    {
+      "key": "beacon",
+      "properties": {
+        "availability": "live",
+        "category": "Alerting",
+        "lifecycleStatus": "Approved · live",
+        "name": "Beacon Triage",
+        "summary": "Groups and ranks alerts and proposes a response from the runbook.",
+        "vendor": "Beacon Systems"
+      },
+      "type": "Product"
+    },
+    {
+      "key": "ferrite",
+      "properties": {
+        "availability": "in_evaluation",
+        "category": "Coding assistant",
+        "lifecycleStatus": "Evaluating",
+        "name": "Ferrite Assist",
+        "summary": "An assistant for writing and explaining code in the editor.",
+        "vendor": "Ferrite Computing"
+      },
+      "type": "Product"
+    },
+    {
+      "key": "kestrel",
+      "properties": {
+        "availability": "live",
+        "category": "Log search",
+        "lifecycleStatus": "Approved · live",
+        "name": "Kestrel Logs",
+        "summary": "Keyword and field search over structured logs.",
+        "vendor": "Kestrel"
+      },
+      "type": "Product"
+    },
+    {
+      "key": "lumen",
+      "properties": {
+        "availability": "live",
+        "category": "Log search",
+        "caveat": "Does not index archived log files older than the retention window.",
+        "lifecycleStatus": "Approved · live",
+        "name": "Lumen Search",
+        "summary": "Search over application logs and traces with natural-language queries.",
+        "vendor": "Lumen Labs"
+      },
+      "type": "Product"
+    },
+    {
+      "key": "meridian",
+      "properties": {
+        "availability": "purchasing",
+        "category": "Runbooks",
+        "caveat": "Contract not signed; do not onboard teams yet.",
+        "lifecycleStatus": "Purchasing",
+        "name": "Meridian Runbooks",
+        "summary": "Runbook authoring with version history.",
+        "vendor": "Meridian Software"
+      },
+      "type": "Product"
+    },
+    {
+      "key": "orbit",
+      "properties": {
+        "availability": "live",
+        "category": "Data analysis",
+        "lifecycleStatus": "Approved · live",
+        "name": "Orbit Notebook",
+        "summary": "Shared notebooks with scheduled runs.",
+        "vendor": "Orbit"
+      },
+      "type": "Product"
+    },
+    {
+      "key": "pylon",
+      "properties": {
+        "availability": "limited",
+        "category": "Alerting",
+        "caveat": "Available to teams on the shared paging plan only.",
+        "lifecycleStatus": "Approved · limited",
+        "name": "Pylon Alerts",
+        "summary": "Alert routing with duplicate suppression.",
+        "vendor": "Pylon Software"
+      },
+      "type": "Product"
+    },
+    {
+      "key": "quill",
+      "properties": {
+        "availability": "in_evaluation",
+        "category": "Code review",
+        "caveat": "Evaluation uses a copy of the repositories, not the live ones.",
+        "lifecycleStatus": "Evaluating",
+        "name": "Quill Review",
+        "summary": "Reviews changes for risky patterns and missing tests.",
+        "vendor": "Quillworks"
+      },
+      "type": "Product"
+    },
+    {
+      "key": "sable",
+      "properties": {
+        "availability": "not_available",
+        "category": "Data catalog",
+        "caveat": "Withdrawn from the evaluation; no plan to reinstate.",
+        "lifecycleStatus": "Not available",
+        "name": "Sable Lineage",
+        "summary": "Column-level lineage across warehouse jobs.",
+        "vendor": "Sable Analytics"
+      },
+      "type": "Product"
+    },
+    {
+      "key": "strata",
+      "properties": {
+        "availability": "live",
+        "category": "Data catalog",
+        "lifecycleStatus": "Approved · live",
+        "name": "Strata Catalog",
+        "summary": "Dataset descriptions, owners and lineage.",
+        "vendor": "Strata Data"
+      },
+      "type": "Product"
+    },
+    {
+      "key": "tandem",
+      "properties": {
+        "availability": "in_evaluation",
+        "category": "Code review",
+        "lifecycleStatus": "Evaluating",
+        "name": "Tandem Review",
+        "summary": "Pairs a reviewer with suggested checks per change.",
+        "vendor": "Tandem Works"
+      },
+      "type": "Product"
+    },
+    {
+      "key": "tessera",
+      "properties": {
+        "availability": "limited",
+        "category": "Documentation",
+        "caveat": "Wiki spaces marked restricted are not indexed.",
+        "lifecycleStatus": "Approved · limited",
+        "name": "Tessera Docs",
+        "summary": "Search and question answering over internal documentation.",
+        "vendor": "Tessera"
+      },
+      "type": "Product"
+    },
+    {
+      "key": "beacon.summarize-incident-timelines",
+      "properties": {
+        "level": "full"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "beacon.triage-incident-alerts",
+      "properties": {
+        "level": "partial"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "beacon.write-runbooks",
+      "properties": {
+        "level": "adjacent"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "ferrite.draft-release-notes",
+      "properties": {
+        "level": "partial"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "ferrite.explain-legacy-code",
+      "properties": {
+        "level": "full"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "ferrite.generate-test-cases",
+      "properties": {
+        "level": "partial"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "kestrel.detect-log-anomalies",
+      "properties": {
+        "level": "adjacent"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "kestrel.search-application-logs",
+      "properties": {
+        "level": "partial"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "lumen.correlate-deploys-with-errors",
+      "properties": {
+        "level": "partial"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "lumen.detect-log-anomalies",
+      "properties": {
+        "level": "partial",
+        "notes": "Anomalies are per service, not across services."
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "lumen.search-application-logs",
+      "properties": {
+        "level": "full"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "lumen.summarize-incident-timelines",
+      "properties": {
+        "level": "adjacent"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "lumen.trace-slow-requests",
+      "properties": {
+        "level": "partial"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "meridian.onboard-engineers",
+      "properties": {
+        "level": "adjacent"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "meridian.write-runbooks",
+      "properties": {
+        "level": "full"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "orbit.answer-data-questions",
+      "properties": {
+        "level": "partial"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "orbit.monitor-data-quality",
+      "properties": {
+        "level": "partial"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "pylon.monitor-slo-burn",
+      "properties": {
+        "level": "partial"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "pylon.triage-incident-alerts",
+      "properties": {
+        "level": "full"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "quill.generate-test-cases",
+      "properties": {
+        "level": "partial"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "quill.review-code-changes",
+      "properties": {
+        "level": "full"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "quill.review-pull-request-descriptions",
+      "properties": {
+        "level": "adjacent"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "quill.scan-dependencies",
+      "properties": {
+        "level": "adjacent"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "sable.trace-data-lineage",
+      "properties": {
+        "level": "full"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "strata.classify-data-sensitivity",
+      "properties": {
+        "level": "partial"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "strata.document-datasets",
+      "properties": {
+        "level": "full"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "strata.monitor-data-quality",
+      "properties": {
+        "level": "adjacent"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "strata.trace-data-lineage",
+      "properties": {
+        "level": "partial"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "tandem.review-code-changes",
+      "properties": {
+        "level": "partial"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "tandem.review-pull-request-descriptions",
+      "properties": {
+        "level": "full"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "tessera.find-internal-docs",
+      "properties": {
+        "level": "full"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "tessera.keep-docs-in-sync",
+      "properties": {
+        "level": "adjacent"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "tessera.onboard-engineers",
+      "properties": {
+        "level": "partial"
+      },
+      "type": "CoverageAssertion"
+    },
+    {
+      "key": "pv-lumen-v1",
+      "properties": {
+        "label": "v1",
+        "status": "superseded"
+      },
+      "type": "ProductVersion"
+    },
+    {
+      "key": "pv-lumen-v2",
+      "properties": {
+        "label": "v2",
+        "status": "current"
+      },
+      "type": "ProductVersion"
+    },
+    {
+      "key": "fnd-seed-logs-1",
+      "properties": {
+        "kind": "capability",
+        "statement": "Lumen v1 finds the log lines behind a symptom accurately, at 0.94 across 40 sample incidents on error, service and time window, but misses lines in rotated archive files when the archive is appended after the live file.",
+        "status": "active"
+      },
+      "type": "Finding"
+    },
+    {
+      "relationship": "addresses",
+      "source": "alert-triage-playbook",
+      "target": "triage-incident-alerts"
+    },
+    {
+      "relationship": "addresses",
+      "source": "datamap-app",
+      "target": "document-datasets"
+    },
+    {
+      "relationship": "addresses",
+      "source": "datamap-review",
+      "target": "document-datasets"
+    },
+    {
+      "relationship": "addresses",
+      "source": "doc-search",
+      "target": "find-internal-docs"
+    },
+    {
+      "relationship": "addresses",
+      "source": "log-query",
+      "target": "search-application-logs"
+    },
+    {
+      "relationship": "addresses",
+      "source": "lumen-runbook-prompt",
+      "target": "write-runbooks"
+    },
+    {
+      "relationship": "addresses",
+      "source": "lumen-triage-prompt",
+      "target": "triage-incident-alerts"
+    },
+    {
+      "relationship": "addresses",
+      "source": "public-research",
+      "target": "public-doc-lookup"
+    },
+    {
+      "relationship": "addresses",
+      "source": "trace-search",
+      "target": "model-trace-search"
+    },
+    {
+      "relationship": "providedBy",
+      "source": "lumen-runbook-prompt",
+      "target": "lumen"
+    },
+    {
+      "relationship": "providedBy",
+      "source": "lumen-triage-prompt",
+      "target": "lumen"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "beacon.summarize-incident-timelines",
+      "target": "beacon"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "beacon.triage-incident-alerts",
+      "target": "beacon"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "beacon.write-runbooks",
+      "target": "beacon"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "ferrite.draft-release-notes",
+      "target": "ferrite"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "ferrite.explain-legacy-code",
+      "target": "ferrite"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "ferrite.generate-test-cases",
+      "target": "ferrite"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "kestrel.detect-log-anomalies",
+      "target": "kestrel"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "kestrel.search-application-logs",
+      "target": "kestrel"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "lumen.correlate-deploys-with-errors",
+      "target": "lumen"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "lumen.detect-log-anomalies",
+      "target": "lumen"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "lumen.search-application-logs",
+      "target": "lumen"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "lumen.summarize-incident-timelines",
+      "target": "lumen"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "lumen.trace-slow-requests",
+      "target": "lumen"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "meridian.onboard-engineers",
+      "target": "meridian"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "meridian.write-runbooks",
+      "target": "meridian"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "orbit.answer-data-questions",
+      "target": "orbit"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "orbit.monitor-data-quality",
+      "target": "orbit"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "pylon.monitor-slo-burn",
+      "target": "pylon"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "pylon.triage-incident-alerts",
+      "target": "pylon"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "quill.generate-test-cases",
+      "target": "quill"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "quill.review-code-changes",
+      "target": "quill"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "quill.review-pull-request-descriptions",
+      "target": "quill"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "quill.scan-dependencies",
+      "target": "quill"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "sable.trace-data-lineage",
+      "target": "sable"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "strata.classify-data-sensitivity",
+      "target": "strata"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "strata.document-datasets",
+      "target": "strata"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "strata.monitor-data-quality",
+      "target": "strata"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "strata.trace-data-lineage",
+      "target": "strata"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "tandem.review-code-changes",
+      "target": "tandem"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "tandem.review-pull-request-descriptions",
+      "target": "tandem"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "tessera.find-internal-docs",
+      "target": "tessera"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "tessera.keep-docs-in-sync",
+      "target": "tessera"
+    },
+    {
+      "relationship": "ofProduct",
+      "source": "tessera.onboard-engineers",
+      "target": "tessera"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "beacon.summarize-incident-timelines",
+      "target": "summarize-incident-timelines"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "beacon.triage-incident-alerts",
+      "target": "triage-incident-alerts"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "beacon.write-runbooks",
+      "target": "write-runbooks"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "ferrite.draft-release-notes",
+      "target": "draft-release-notes"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "ferrite.explain-legacy-code",
+      "target": "explain-legacy-code"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "ferrite.generate-test-cases",
+      "target": "generate-test-cases"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "kestrel.detect-log-anomalies",
+      "target": "detect-log-anomalies"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "kestrel.search-application-logs",
+      "target": "search-application-logs"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "lumen.correlate-deploys-with-errors",
+      "target": "correlate-deploys-with-errors"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "lumen.detect-log-anomalies",
+      "target": "detect-log-anomalies"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "lumen.search-application-logs",
+      "target": "search-application-logs"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "lumen.summarize-incident-timelines",
+      "target": "summarize-incident-timelines"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "lumen.trace-slow-requests",
+      "target": "trace-slow-requests"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "meridian.onboard-engineers",
+      "target": "onboard-engineers"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "meridian.write-runbooks",
+      "target": "write-runbooks"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "orbit.answer-data-questions",
+      "target": "answer-data-questions"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "orbit.monitor-data-quality",
+      "target": "monitor-data-quality"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "pylon.monitor-slo-burn",
+      "target": "monitor-slo-burn"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "pylon.triage-incident-alerts",
+      "target": "triage-incident-alerts"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "quill.generate-test-cases",
+      "target": "generate-test-cases"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "quill.review-code-changes",
+      "target": "review-code-changes"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "quill.review-pull-request-descriptions",
+      "target": "review-pull-request-descriptions"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "quill.scan-dependencies",
+      "target": "scan-dependencies"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "sable.trace-data-lineage",
+      "target": "trace-data-lineage"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "strata.classify-data-sensitivity",
+      "target": "classify-data-sensitivity"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "strata.document-datasets",
+      "target": "document-datasets"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "strata.monitor-data-quality",
+      "target": "monitor-data-quality"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "strata.trace-data-lineage",
+      "target": "trace-data-lineage"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "tandem.review-code-changes",
+      "target": "review-code-changes"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "tandem.review-pull-request-descriptions",
+      "target": "review-pull-request-descriptions"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "tessera.find-internal-docs",
+      "target": "find-internal-docs"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "tessera.keep-docs-in-sync",
+      "target": "keep-docs-in-sync"
+    },
+    {
+      "relationship": "ofUseCase",
+      "source": "tessera.onboard-engineers",
+      "target": "onboard-engineers"
+    },
+    {
+      "relationship": "versionOf",
+      "source": "pv-lumen-v1",
+      "target": "lumen"
+    },
+    {
+      "relationship": "versionOf",
+      "source": "pv-lumen-v2",
+      "target": "lumen"
+    },
+    {
+      "relationship": "about",
+      "source": "fnd-seed-logs-1",
+      "target": "lumen"
+    },
+    {
+      "relationship": "aboutVersion",
+      "source": "fnd-seed-logs-1",
+      "target": "pv-lumen-v1"
+    },
+    {
+      "relationship": "appliesTo",
+      "source": "fnd-seed-logs-1",
+      "target": "search-application-logs"
+    },
+    {
+      "relationship": "adjacentTo",
+      "source": "fnd-seed-logs-1",
+      "target": "summarize-incident-timelines"
+    }
+  ],
+  "version": 1
+}

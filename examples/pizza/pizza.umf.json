@@ -1,0 +1,1474 @@
+{
+  "umf": "0.10.0",
+  "id": "pizza-example",
+  "vocabularies": {
+    "umf.ddd": {
+      "version": "0.1.0"
+    },
+    "arras.view": {
+      "version": "0.1.0"
+    }
+  },
+  "extensions": {},
+  "modules": [
+    {
+      "id": "pizza",
+      "namespace": "pizza",
+      "extensions": {
+        "umf.ddd": {
+          "kind": "bounded-context",
+          "terms": []
+        },
+        "arras.view": {
+          "title": "Pizza",
+          "description": "Named pizzas, their toppings and bases, and where they come from"
+        }
+      },
+      "elements": [
+        {
+          "id": "Pizza",
+          "kind": "record",
+          "name": "Pizza",
+          "members": [
+            {
+              "module": "pizza",
+              "element": "Pizza.code"
+            },
+            {
+              "module": "pizza",
+              "element": "Pizza.name"
+            },
+            {
+              "module": "pizza",
+              "element": "Pizza.description"
+            },
+            {
+              "module": "pizza",
+              "element": "Pizza.price"
+            },
+            {
+              "module": "pizza",
+              "element": "Pizza.vegetarian"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "name": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "description": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                },
+                "price": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "decimal"
+                  },
+                  "cardinality": "optional"
+                },
+                "vegetarian": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "boolean"
+                  },
+                  "cardinality": "optional"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            },
+            "arras.view": {
+              "label": "Pizza",
+              "icon": "star",
+              "tone": "rose",
+              "title": "{name}",
+              "summary": "{description}",
+              "sections": [
+                {
+                  "label": "Menu",
+                  "properties": [
+                    "price",
+                    "vegetarian"
+                  ]
+                }
+              ],
+              "search": [
+                "name",
+                "description"
+              ]
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "pizza",
+                  "element": "Pizza.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "Pizza.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Pizza.name",
+          "kind": "field",
+          "name": "name",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Pizza.description",
+          "kind": "field",
+          "name": "description",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Pizza.price",
+          "kind": "field",
+          "name": "price",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "decimal",
+          "extensions": {
+            "arras.view": {
+              "format": "number"
+            }
+          },
+          "facets": {
+            "precision": 12,
+            "scale": 2
+          }
+        },
+        {
+          "id": "Pizza.vegetarian",
+          "kind": "field",
+          "name": "vegetarian",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "boolean",
+          "extensions": {
+            "arras.view": {
+              "format": "boolean"
+            }
+          }
+        },
+        {
+          "id": "Topping",
+          "kind": "record",
+          "name": "Topping",
+          "members": [
+            {
+              "module": "pizza",
+              "element": "Topping.code"
+            },
+            {
+              "module": "pizza",
+              "element": "Topping.name"
+            },
+            {
+              "module": "pizza",
+              "element": "Topping.category"
+            },
+            {
+              "module": "pizza",
+              "element": "Topping.spiciness"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "name": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "category": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                },
+                "spiciness": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            },
+            "arras.view": {
+              "label": "Topping",
+              "icon": "circle",
+              "tone": "green",
+              "title": "{name}",
+              "sections": [
+                {
+                  "label": "Kind",
+                  "properties": [
+                    "category",
+                    "spiciness"
+                  ]
+                }
+              ],
+              "search": [
+                "name",
+                "category"
+              ]
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "pizza",
+                  "element": "Topping.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "Topping.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Topping.name",
+          "kind": "field",
+          "name": "name",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Topping.category",
+          "kind": "field",
+          "name": "category",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Topping.spiciness",
+          "kind": "field",
+          "name": "spiciness",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {
+            "arras.view": {
+              "format": "badge",
+              "tones": {
+                "hot": "rose",
+                "mild": "green"
+              }
+            }
+          }
+        },
+        {
+          "id": "PizzaBase",
+          "kind": "record",
+          "name": "PizzaBase",
+          "members": [
+            {
+              "module": "pizza",
+              "element": "PizzaBase.code"
+            },
+            {
+              "module": "pizza",
+              "element": "PizzaBase.name"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "name": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            },
+            "arras.view": {
+              "label": "Base",
+              "icon": "circle",
+              "tone": "amber",
+              "title": "{name}",
+              "sections": [],
+              "search": [
+                "name"
+              ]
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "pizza",
+                  "element": "PizzaBase.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "PizzaBase.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "PizzaBase.name",
+          "kind": "field",
+          "name": "name",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Country",
+          "kind": "record",
+          "name": "Country",
+          "members": [
+            {
+              "module": "pizza",
+              "element": "Country.code"
+            },
+            {
+              "module": "pizza",
+              "element": "Country.name"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "name": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            },
+            "arras.view": {
+              "label": "Country",
+              "icon": "globe",
+              "tone": "slate",
+              "title": "{name}",
+              "sections": [],
+              "search": [
+                "name"
+              ]
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "pizza",
+                  "element": "Country.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "Country.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Country.name",
+          "kind": "field",
+          "name": "name",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        }
+      ],
+      "relationships": [
+        {
+          "id": "pizza-hastopping",
+          "name": "hasTopping",
+          "source": [
+            {
+              "module": "pizza",
+              "element": "Pizza"
+            }
+          ],
+          "target": [
+            {
+              "module": "pizza",
+              "element": "Topping",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "toppingOf",
+          "extensions": {
+            "arras.view": {
+              "label": "Toppings",
+              "inverseLabel": "On pizzas",
+              "order": 10
+            }
+          }
+        },
+        {
+          "id": "pizza-hasbase",
+          "name": "hasBase",
+          "source": [
+            {
+              "module": "pizza",
+              "element": "Pizza"
+            }
+          ],
+          "target": [
+            {
+              "module": "pizza",
+              "element": "PizzaBase",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "baseOf",
+          "extensions": {
+            "arras.view": {
+              "label": "Base",
+              "inverseLabel": "Bases for",
+              "order": 20
+            }
+          }
+        },
+        {
+          "id": "pizza-countryoforigin",
+          "name": "countryOfOrigin",
+          "source": [
+            {
+              "module": "pizza",
+              "element": "Pizza"
+            }
+          ],
+          "target": [
+            {
+              "module": "pizza",
+              "element": "Country",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "originOf",
+          "extensions": {
+            "arras.view": {
+              "label": "Country of origin",
+              "inverseLabel": "Pizzas from here",
+              "order": 30
+            }
+          }
+        }
+      ],
+      "actions": [
+        {
+          "id": "AddPizza",
+          "description": "Add pizza",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "description",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "price",
+              "type": {
+                "kind": "scalar",
+                "name": "decimal"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "vegetarian",
+              "type": {
+                "kind": "scalar",
+                "name": "boolean"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "hasBase",
+              "type": {
+                "kind": "ref",
+                "type": "PizzaBase"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "fresh",
+              "reason": "a pizza with that code exists",
+              "predicate": {
+                "op": "absent",
+                "type": "Pizza",
+                "key": {
+                  "input": "code"
+                }
+              }
+            },
+            {
+              "id": "hasBase_exists",
+              "reason": "no such hasBase",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "hasBase"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "as": "new",
+              "type": "Pizza",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                },
+                "description": {
+                  "input": "description"
+                },
+                "price": {
+                  "input": "price"
+                },
+                "vegetarian": {
+                  "input": "vegetarian"
+                }
+              }
+            },
+            {
+              "op": "link",
+              "type": "hasBase",
+              "source": {
+                "alias": "new"
+              },
+              "target": {
+                "input": "hasBase"
+              }
+            }
+          ]
+        },
+        {
+          "id": "CorrectPizza",
+          "description": "Correct the details of pizza",
+          "inputs": [
+            {
+              "name": "description",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "price",
+              "type": {
+                "kind": "scalar",
+                "name": "decimal"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "vegetarian",
+              "type": {
+                "kind": "scalar",
+                "name": "boolean"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "pizza",
+              "type": {
+                "kind": "ref",
+                "type": "Pizza"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "pizza_exists",
+              "reason": "no such pizza",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "pizza"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Pizza",
+              "key": {
+                "input": "pizza"
+              },
+              "properties": {
+                "description": {
+                  "input": "description"
+                },
+                "price": {
+                  "input": "price"
+                },
+                "vegetarian": {
+                  "input": "vegetarian"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "RenamePizza",
+          "description": "Change the name of pizza",
+          "inputs": [
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "pizza",
+              "type": {
+                "kind": "ref",
+                "type": "Pizza"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "pizza_exists",
+              "reason": "no such pizza",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "pizza"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Pizza",
+              "key": {
+                "input": "pizza"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "RetirePizza",
+          "description": "Remove pizza and its links",
+          "inputs": [
+            {
+              "name": "pizza",
+              "type": {
+                "kind": "ref",
+                "type": "Pizza"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "pizza_exists",
+              "reason": "no such pizza",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "pizza"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "delete",
+              "refType": "Pizza",
+              "key": {
+                "input": "pizza"
+              }
+            }
+          ]
+        },
+        {
+          "id": "AddTopping",
+          "description": "Add topping",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "category",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "spiciness",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "fresh",
+              "reason": "a topping with that code exists",
+              "predicate": {
+                "op": "absent",
+                "type": "Topping",
+                "key": {
+                  "input": "code"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "as": "new",
+              "type": "Topping",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                },
+                "category": {
+                  "input": "category"
+                },
+                "spiciness": {
+                  "input": "spiciness"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "CorrectTopping",
+          "description": "Correct the details of topping",
+          "inputs": [
+            {
+              "name": "category",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "spiciness",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "topping",
+              "type": {
+                "kind": "ref",
+                "type": "Topping"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "topping_exists",
+              "reason": "no such topping",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "topping"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Topping",
+              "key": {
+                "input": "topping"
+              },
+              "properties": {
+                "category": {
+                  "input": "category"
+                },
+                "spiciness": {
+                  "input": "spiciness"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "RenameTopping",
+          "description": "Change the name of topping",
+          "inputs": [
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "topping",
+              "type": {
+                "kind": "ref",
+                "type": "Topping"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "topping_exists",
+              "reason": "no such topping",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "topping"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Topping",
+              "key": {
+                "input": "topping"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "AddPizzaBase",
+          "description": "Add pizzaBase",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "fresh",
+              "reason": "a pizzaBase with that code exists",
+              "predicate": {
+                "op": "absent",
+                "type": "PizzaBase",
+                "key": {
+                  "input": "code"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "as": "new",
+              "type": "PizzaBase",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "RenamePizzaBase",
+          "description": "Change the name of pizzaBase",
+          "inputs": [
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "pizzaBase",
+              "type": {
+                "kind": "ref",
+                "type": "PizzaBase"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "pizzaBase_exists",
+              "reason": "no such pizzaBase",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "pizzaBase"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "PizzaBase",
+              "key": {
+                "input": "pizzaBase"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "AddCountry",
+          "description": "Add country",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "fresh",
+              "reason": "a country with that code exists",
+              "predicate": {
+                "op": "absent",
+                "type": "Country",
+                "key": {
+                  "input": "code"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "as": "new",
+              "type": "Country",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "RenameCountry",
+          "description": "Change the name of country",
+          "inputs": [
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "country",
+              "type": {
+                "kind": "ref",
+                "type": "Country"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "country_exists",
+              "reason": "no such country",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "country"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Country",
+              "key": {
+                "input": "country"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "LinkPizzaHasTopping",
+          "description": "Link pizza hasTopping topping",
+          "inputs": [
+            {
+              "name": "pizza",
+              "type": {
+                "kind": "ref",
+                "type": "Pizza"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "hasTopping",
+              "type": {
+                "kind": "ref",
+                "type": "Topping"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "pizza_exists",
+              "reason": "no such pizza",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "pizza"
+                }
+              }
+            },
+            {
+              "id": "hasTopping_exists",
+              "reason": "no such hasTopping",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "hasTopping"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "link",
+              "type": "hasTopping",
+              "source": {
+                "input": "pizza"
+              },
+              "target": {
+                "input": "hasTopping"
+              }
+            }
+          ]
+        },
+        {
+          "id": "UnlinkPizzaHasTopping",
+          "description": "Unlink pizza hasTopping topping",
+          "inputs": [
+            {
+              "name": "pizza",
+              "type": {
+                "kind": "ref",
+                "type": "Pizza"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "hasTopping",
+              "type": {
+                "kind": "ref",
+                "type": "Topping"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "pizza_exists",
+              "reason": "no such pizza",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "pizza"
+                }
+              }
+            },
+            {
+              "id": "hasTopping_exists",
+              "reason": "no such hasTopping",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "hasTopping"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "unlink",
+              "type": "hasTopping",
+              "source": {
+                "input": "pizza"
+              },
+              "target": {
+                "input": "hasTopping"
+              }
+            }
+          ]
+        },
+        {
+          "id": "LinkPizzaCountryOfOrigin",
+          "description": "Link pizza countryOfOrigin country",
+          "inputs": [
+            {
+              "name": "pizza",
+              "type": {
+                "kind": "ref",
+                "type": "Pizza"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "countryOfOrigin",
+              "type": {
+                "kind": "ref",
+                "type": "Country"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "pizza_exists",
+              "reason": "no such pizza",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "pizza"
+                }
+              }
+            },
+            {
+              "id": "countryOfOrigin_exists",
+              "reason": "no such countryOfOrigin",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "countryOfOrigin"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "link",
+              "type": "countryOfOrigin",
+              "source": {
+                "input": "pizza"
+              },
+              "target": {
+                "input": "countryOfOrigin"
+              }
+            }
+          ]
+        },
+        {
+          "id": "UnlinkPizzaCountryOfOrigin",
+          "description": "Unlink pizza countryOfOrigin country",
+          "inputs": [
+            {
+              "name": "pizza",
+              "type": {
+                "kind": "ref",
+                "type": "Pizza"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "countryOfOrigin",
+              "type": {
+                "kind": "ref",
+                "type": "Country"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "pizza_exists",
+              "reason": "no such pizza",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "pizza"
+                }
+              }
+            },
+            {
+              "id": "countryOfOrigin_exists",
+              "reason": "no such countryOfOrigin",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "countryOfOrigin"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "unlink",
+              "type": "countryOfOrigin",
+              "source": {
+                "input": "pizza"
+              },
+              "target": {
+                "input": "countryOfOrigin"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

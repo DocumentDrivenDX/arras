@@ -1,0 +1,23 @@
+# macOS
+.DS_Store
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# Local claude worktrees
+.claude/worktrees/
+
+# Build output
+dist/
+.hypothesis/
+
+# The UI as built for the wheel (ui/scripts, `npm run build:wheel`)
+src/arras/ui/static/
+src/arras/ui/npm/
+ui/dist-lib/
+ui/.pack/
+.ruff_cache/

@@ -1,0 +1,15 @@
+version: 1
+
+# One HELIX project: Arras itself. Artifacts live in docs/helix/.
+# Arras is a single-product repo, so it carries one instance. Add instances
+# here if the repo later splits into independently governed workstreams.
+flows:
+  - id: helix
+    instance: arras
+    root: docs/helix/
+
+defaults:
+  flow: helix
+  instance: arras
+
+autonomy: guided

@@ -1,0 +1,99 @@
+/* SPDX-License-Identifier: MIT OR Apache-2.0 */
+/* The command palette (src/console/CommandPalette.tsx). Colours come from the theme's variables (ADR-029). */
+.cp-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  align-items: start;
+  justify-items: center;
+  padding: 10vh 16px 16px;
+  background: color-mix(in srgb, var(--fg) 45%, transparent);
+}
+.cp-dialog {
+  box-sizing: border-box;
+  display: grid;
+  gap: 8px;
+  width: min(640px, 100%);
+  max-height: 80vh;
+  overflow: auto;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--fg);
+  box-shadow: var(--shadow);
+}
+.cp-scope,
+.cp-status,
+.cp-empty {
+  margin: 0;
+  color: var(--fg-muted);
+  font-size: 13px;
+}
+.cp-status:empty {
+  display: none;
+}
+.cp-list {
+  display: grid;
+  gap: 2px;
+  min-height: 0;
+}
+.cp-list[aria-busy="true"] {
+  opacity: 0.6;
+}
+.cp-heading {
+  padding: 8px 8px 2px;
+  color: var(--fg-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.cp-option {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.cp-active {
+  background: var(--accent-soft);
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.cp-kind {
+  min-width: 3.5em;
+  color: var(--fg-muted);
+  font-size: 12px;
+  text-transform: capitalize;
+}
+.cp-line {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.cp-excerpt {
+  flex-basis: 100%;
+  color: var(--fg-muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.cp-kind + .cp-line + .cp-excerpt {
+  flex-basis: auto;
+}
+.cp-excerpt mark {
+  background: var(--accent-soft);
+  color: var(--fg);
+  font-weight: 600;
+}
+.cp-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--fg-muted);
+  font-size: 12px;
+}

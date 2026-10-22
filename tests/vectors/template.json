@@ -1,0 +1,323 @@
+{
+ "note": "Shared by tests/test_view.py and the UI template tests: the QUERY-010 template grammar. `row` maps property to value for every case; `expected` is the text, `malformed` means the template is refused. The Python evaluator in src/arras/view.py is the reference.",
+ "row": {
+  "name": "Lumen",
+  "code": "h-1",
+  "empty": "",
+  "none": null,
+  "ws": "  \t ",
+  "n": 3,
+  "f": 2.5,
+  "zero": 0,
+  "t": true,
+  "fl": false,
+  "tags": [
+   "a",
+   "b"
+  ],
+  "nums": [
+   1,
+   2
+  ],
+  "bools": [
+   true,
+   false
+  ],
+  "none_list": [],
+  "ts": "2026-10-09T14:02:11Z",
+  "d": "2026-10-09",
+  "padded": " x "
+ },
+ "vectors": [
+  {
+   "note": "plain text",
+   "template": "just text",
+   "expected": "just text"
+  },
+  {
+   "note": "empty template",
+   "template": "",
+   "expected": ""
+  },
+  {
+   "note": "placeholder",
+   "template": "{name}",
+   "expected": "Lumen"
+  },
+  {
+   "note": "two placeholders",
+   "template": "{name} ({code})",
+   "expected": "Lumen (h-1)"
+  },
+  {
+   "note": "adjacent placeholders",
+   "template": "{name}{code}",
+   "expected": "Lumenh-1"
+  },
+  {
+   "note": "repeated placeholder",
+   "template": "{code}-{code}",
+   "expected": "h-1-h-1"
+  },
+  {
+   "note": "underscore and digits in name",
+   "template": "{a_1}",
+   "expected": ""
+  },
+  {
+   "note": "missing property drops placeholder",
+   "template": "a{missing}b",
+   "expected": "ab"
+  },
+  {
+   "note": "null value drops placeholder",
+   "template": "a{none}b",
+   "expected": "ab"
+  },
+  {
+   "note": "empty string drops placeholder",
+   "template": "a{empty}b",
+   "expected": "ab"
+  },
+  {
+   "note": "whitespace-only counts as empty",
+   "template": "a{ws}b",
+   "expected": "ab"
+  },
+  {
+   "note": "padded value is kept as is",
+   "template": "[{padded}]",
+   "expected": " x "
+  },
+  {
+   "note": "optional group shown",
+   "template": "{name}[ ({code})]",
+   "expected": "Lumen (h-1)"
+  },
+  {
+   "note": "optional group hidden on empty",
+   "template": "{name}[ ({empty})]",
+   "expected": "Lumen"
+  },
+  {
+   "note": "optional group hidden on null",
+   "template": "{name}[ ({none})]",
+   "expected": "Lumen"
+  },
+  {
+   "note": "optional group hidden on missing",
+   "template": "{name}[ ({missing})]",
+   "expected": "Lumen"
+  },
+  {
+   "note": "optional group hidden on whitespace",
+   "template": "{name}[ ({ws})]",
+   "expected": "Lumen"
+  },
+  {
+   "note": "optional group needs every placeholder",
+   "template": "[{name} {empty}]",
+   "expected": ""
+  },
+  {
+   "note": "optional group with all filled",
+   "template": "[{name} {code}]",
+   "expected": "Lumen h-1"
+  },
+  {
+   "note": "optional group without placeholders is shown",
+   "template": "a[ b]c",
+   "expected": "a bc"
+  },
+  {
+   "note": "empty optional group",
+   "template": "a[]b",
+   "expected": "ab"
+  },
+  {
+   "note": "two groups, one hidden",
+   "template": "[a {code}][ b {empty}]",
+   "expected": "a h-1"
+  },
+  {
+   "note": "nested groups, both filled",
+   "template": "[a {code}[ b {name}]]",
+   "expected": "a h-1 b Lumen"
+  },
+  {
+   "note": "nested groups, inner empty hides the outer",
+   "template": "[a {code}[ b {empty}]]",
+   "expected": ""
+  },
+  {
+   "note": "nested groups, outer placeholder empty keeps nothing",
+   "template": "[a {empty}[ b {code}]]",
+   "expected": ""
+  },
+  {
+   "note": "nested group around text only",
+   "template": "[x[y]]",
+   "expected": "xy"
+  },
+  {
+   "note": "lone backslash is plain text",
+   "template": "{name} \\ {code}",
+   "expected": "Lumen \\ h-1"
+  },
+  {
+   "note": "trailing backslash is plain text",
+   "template": "a\\",
+   "expected": "a\\"
+  },
+  {
+   "note": "backslash before a letter is plain text",
+   "template": "\\n{name}",
+   "expected": "\\nLumen"
+  },
+  {
+   "note": "escaped brace",
+   "template": "\\{name\\}",
+   "expected": "{name}"
+  },
+  {
+   "note": "escaped bracket",
+   "template": "\\[x\\]",
+   "expected": "[x]"
+  },
+  {
+   "note": "escaped backslash",
+   "template": "a\\\\b",
+   "expected": "a\\b"
+  },
+  {
+   "note": "escaped backslash before a placeholder",
+   "template": "\\\\{name}",
+   "expected": "\\Lumen"
+  },
+  {
+   "note": "escapes inside a group",
+   "template": "[\\[{code}\\]]",
+   "expected": "[h-1]"
+  },
+  {
+   "note": "escaped brace is not a placeholder",
+   "template": "\\{{name}",
+   "expected": "{Lumen"
+  },
+  {
+   "note": "unclosed placeholder",
+   "template": "{name",
+   "malformed": true
+  },
+  {
+   "note": "unopened closing brace",
+   "template": "name}",
+   "malformed": true
+  },
+  {
+   "note": "empty placeholder",
+   "template": "{}",
+   "malformed": true
+  },
+  {
+   "note": "placeholder with a space",
+   "template": "{na me}",
+   "malformed": true
+  },
+  {
+   "note": "placeholder starting with a digit",
+   "template": "{1a}",
+   "malformed": true
+  },
+  {
+   "note": "unclosed bracket",
+   "template": "[{name}",
+   "malformed": true
+  },
+  {
+   "note": "unopened closing bracket",
+   "template": "{name}]",
+   "malformed": true
+  },
+  {
+   "note": "unclosed nested bracket",
+   "template": "[a[b]",
+   "malformed": true
+  },
+  {
+   "note": "brace inside a placeholder",
+   "template": "{{name}}",
+   "malformed": true
+  },
+  {
+   "note": "list joined with comma and space",
+   "template": "{tags}",
+   "expected": "a, b"
+  },
+  {
+   "note": "list of numbers",
+   "template": "{nums}",
+   "expected": "1, 2"
+  },
+  {
+   "note": "list of booleans",
+   "template": "{bools}",
+   "expected": "true, false"
+  },
+  {
+   "note": "empty list is empty",
+   "template": "a[{none_list}]b",
+   "expected": "ab"
+  },
+  {
+   "note": "boolean true",
+   "template": "{t}",
+   "expected": "true"
+  },
+  {
+   "note": "boolean false is a value",
+   "template": "{fl}",
+   "expected": "false"
+  },
+  {
+   "note": "integer",
+   "template": "{n} items",
+   "expected": "3 items"
+  },
+  {
+   "note": "zero is a value",
+   "template": "{zero}",
+   "expected": "0"
+  },
+  {
+   "note": "fraction",
+   "template": "{f}",
+   "expected": "2.5"
+  },
+  {
+   "note": "timestamp is shown as given",
+   "template": "{ts}",
+   "expected": "2026-10-09T14:02:11Z"
+  },
+  {
+   "note": "date is shown as given",
+   "template": "{d}",
+   "expected": "2026-10-09"
+  },
+  {
+   "note": "markup is text",
+   "template": "<b>{name}</b>",
+   "expected": "<b>Lumen</b>"
+  },
+  {
+   "note": "title that evaluates empty",
+   "template": "{empty}",
+   "expected": ""
+  },
+  {
+   "note": "title of only a hidden group",
+   "template": "[{missing}]",
+   "expected": ""
+  }
+ ]
+}

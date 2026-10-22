@@ -1,0 +1,144 @@
+name: CI
+
+# The checks a change must pass before it merges. release.yml runs the same gate on a tag.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint, types and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --locked --extra truss
+      - run: uv run ruff check . && uv run ruff format --check .
+      - run: uv run pyright
+      # The wheel carries the UI: the page and the npm tarball built from ui/ (ADR-027).
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - run: npm ci && npm run build:wheel
+        working-directory: ui
+      - run: uv build
+      - name: The wheel installs on a clean interpreter and carries the UI
+        run: |
+          uv run --no-project --isolated --with dist/*.whl python -c "import importlib.util, arras, arras.ui, arras.adapters.truss; assert importlib.util.find_spec('truss') is None, 'the base wheel must not need Truss'; print(arras.CONTRACT_VERSIONS, arras.ui.npm_package().name); assert (arras.ui.STATIC / arras.ui.PAGE).is_file()"
+
+  ui:
+    name: Operator Console UI
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ui
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      # The integration tier and Playwright start the real dev host: Python through uv.
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+        working-directory: .
+      - run: npm ci
+      - run: npm audit --audit-level=high --omit=dev
+      # UMF's schema browser: the exact pin, the lockfile's integrity equal to the registry's, and the
+      # registry tarball equal to the GitHub release's digest (scripts/umf-schema-browser.ts).
+      - run: npm run check:umf -- --download
+      - run: npm run check
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm run test:integration
+      - run: npm run check:umf -- --dist dist
+      # The library build: its stylesheet must reach nothing outside `.arras-root` (ADR-027).
+      - run: npm run build:lib && npm run check:css -- dist-lib/styles.css
+      # Every bare import in the library build is a dependency or a peer of the packed manifest.
+      - run: npm run check:externals
+      - run: npx playwright install --with-deps chromium
+      # The visual project (screenshots) is macOS only and is left out of the Linux run
+      # (ui/README.md, "Visual baselines"). Locally `npm run e2e` runs every project.
+      - run: npx playwright test --project=chromium --project=schema-admin --project=browser
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-results
+          path: |
+            ui/test-results
+            ui/playwright-report
+          if-no-files-found: ignore
+
+  test:
+    name: Tests on Python ${{ matrix.python }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python }}
+      - run: uv sync --locked
+      # Weft's own parser, for the checks that hold Arras's statements and the memory adapter to it
+      # (tests/test_weft_parser.py, test_weft_relational.py, test_reserved_names.py). It is a test tool,
+      # never a dependency of the package: installed after the locked sync, which would remove it, from
+      # Weft's public GitHub release, the exact version pinned and the SHA256SUMS file itself pinned
+      # by digest before it vouches for the wheel.
+      - name: Install Weft's parser (weft-sql 0.4.49)
+        env:
+          WEFT_VERSION: "0.4.49"
+          WEFT_SUMS_SHA256: f33acf71786dedf72c72c2a20291a633b692eba7a75596264b44693b7fb519d8
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          base="https://github.com/DocumentDrivenDX/weft/releases/download/v${WEFT_VERSION}"
+          wheel="weft_sql-${WEFT_VERSION}-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+          curl -fsSL --retry 3 -o SHA256SUMS "$base/SHA256SUMS"
+          echo "${WEFT_SUMS_SHA256}  SHA256SUMS" | sha256sum -c -
+          curl -fsSL --retry 3 -o "$wheel" "$base/$wheel"
+          grep -E "^[0-9a-f]{64}  ${wheel}\$" SHA256SUMS | sha256sum -c -
+          uv pip install --python "$GITHUB_WORKSPACE/.venv/bin/python" "$wheel"
+      # includes the conformance corpus, the boundary check over the library and the host-style tests;
+      # --no-sync keeps Weft installed, and ARRAS_REQUIRE_WEFT turns a Weft check's skip into a failure
+      - run: uv run --no-sync pytest -q
+        env:
+          ARRAS_REQUIRE_WEFT: "1"
+
+  truss:
+    name: Truss adapter on PostgreSQL 18.6
+    runs-on: ubuntu-latest
+    # The conformance run seeds through Truss (about 0.35 s per imported record) and registers modules: minutes, not seconds.
+    # Truss prepares a module in its embedded V8: no Bun, no Node and no subprocess is needed on the runner.
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --locked --extra truss --group truss-test
+      # `-m truss` on the command line replaces the default `-m 'not truss'`; it exits 5 if nothing is
+      # selected. ARRAS_REQUIRE_TRUSS turns a harness that cannot run into a failure, not a skip.
+      - run: uv run --no-sync pytest -m truss -q
+        env:
+          ARRAS_REQUIRE_TRUSS: "1"

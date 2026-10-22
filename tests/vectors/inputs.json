@@ -1,0 +1,280 @@
+{
+ "note": "Shared by tests/test_inputs_vectors.py and ui/src/test/inputs.vectors.test.ts: the text a person types for a typed input, and whether the server and the UI must both accept it. The UI trims surrounding spaces before checking.",
+ "vectors": [
+  {
+   "type": "timestamp",
+   "value": "2026-10-09T14:02:11Z",
+   "ok": true
+  },
+  {
+   "type": "timestamp",
+   "value": "2026-10-09T14:02:11.123456+02:00",
+   "ok": true
+  },
+  {
+   "type": "timestamp",
+   "value": "2026-10-09t14:02:11z",
+   "ok": true
+  },
+  {
+   "type": "timestamp",
+   "value": "2026-10-09 14:02:11Z",
+   "ok": true
+  },
+  {
+   "type": "timestamp",
+   "value": "2026-10-09T14:02Z",
+   "ok": true
+  },
+  {
+   "type": "timestamp",
+   "value": "2026-02-28T23:59:59-05:30",
+   "ok": true
+  },
+  {
+   "type": "timestamp",
+   "value": "2024-02-29T00:00:00Z",
+   "ok": true
+  },
+  {
+   "type": "timestamp",
+   "value": "2026-02-30T00:00:00Z",
+   "ok": false
+  },
+  {
+   "type": "timestamp",
+   "value": "2026-10-09T24:00:00Z",
+   "ok": false
+  },
+  {
+   "type": "timestamp",
+   "value": "2026-10-09T14:02:11",
+   "ok": false
+  },
+  {
+   "type": "timestamp",
+   "value": "2026-10-09",
+   "ok": false
+  },
+  {
+   "type": "timestamp",
+   "value": "2026-13-01T00:00:00Z",
+   "ok": false
+  },
+  {
+   "type": "timestamp",
+   "value": "2026-10-09T14:02:60Z",
+   "ok": false
+  },
+  {
+   "type": "timestamp",
+   "value": "yesterday",
+   "ok": false
+  },
+  {
+   "type": "timestamp",
+   "value": "",
+   "ok": false
+  },
+  {
+   "type": "timestamp",
+   "value": "2025-02-29T00:00:00Z",
+   "ok": false
+  },
+  {
+   "type": "timestamp",
+   "value": "2026-10-09T14:61:00Z",
+   "ok": false
+  },
+  {
+   "type": "integer",
+   "value": "12",
+   "ok": true
+  },
+  {
+   "type": "integer",
+   "value": "-7",
+   "ok": true
+  },
+  {
+   "type": "integer",
+   "value": "+3",
+   "ok": true
+  },
+  {
+   "type": "integer",
+   "value": "0",
+   "ok": true
+  },
+  {
+   "type": "integer",
+   "value": "9007199254740993",
+   "ok": true
+  },
+  {
+   "type": "integer",
+   "value": "-9007199254740993",
+   "ok": true
+  },
+  {
+   "type": "integer",
+   "value": "1.5",
+   "ok": false
+  },
+  {
+   "type": "integer",
+   "value": "abc",
+   "ok": false
+  },
+  {
+   "type": "integer",
+   "value": "",
+   "ok": false
+  },
+  {
+   "type": "integer",
+   "value": "1e3",
+   "ok": false
+  },
+  {
+   "type": "integer",
+   "value": "0x10",
+   "ok": false
+  },
+  {
+   "type": "integer",
+   "value": " ",
+   "ok": false
+  },
+  {
+   "type": "decimal",
+   "value": "12.50",
+   "ok": true
+  },
+  {
+   "type": "decimal",
+   "value": "-0.5",
+   "ok": true
+  },
+  {
+   "type": "decimal",
+   "value": ".5",
+   "ok": true
+  },
+  {
+   "type": "decimal",
+   "value": "1e3",
+   "ok": true
+  },
+  {
+   "type": "decimal",
+   "value": "7",
+   "ok": true
+  },
+  {
+   "type": "decimal",
+   "value": "+1.25",
+   "ok": true
+  },
+  {
+   "type": "decimal",
+   "value": "NaN",
+   "ok": false
+  },
+  {
+   "type": "decimal",
+   "value": "Infinity",
+   "ok": false
+  },
+  {
+   "type": "decimal",
+   "value": "-Infinity",
+   "ok": false
+  },
+  {
+   "type": "decimal",
+   "value": "1e",
+   "ok": false
+  },
+  {
+   "type": "decimal",
+   "value": "abc",
+   "ok": false
+  },
+  {
+   "type": "decimal",
+   "value": "",
+   "ok": false
+  },
+  {
+   "type": "decimal",
+   "value": "1.2.3",
+   "ok": false
+  },
+  {
+   "type": "binary",
+   "value": "aGk=",
+   "ok": true
+  },
+  {
+   "type": "binary",
+   "value": "",
+   "ok": true
+  },
+  {
+   "type": "binary",
+   "value": "aGVsbG8=",
+   "ok": true
+  },
+  {
+   "type": "binary",
+   "value": "AAAA",
+   "ok": true
+  },
+  {
+   "type": "binary",
+   "value": "aGk",
+   "ok": false
+  },
+  {
+   "type": "binary",
+   "value": "!!!!",
+   "ok": false
+  },
+  {
+   "type": "binary",
+   "value": "aGk==",
+   "ok": false
+  },
+  {
+   "type": "binary",
+   "value": "a",
+   "ok": false
+  },
+  {
+   "type": "boolean",
+   "value": "true",
+   "ok": true
+  },
+  {
+   "type": "boolean",
+   "value": "false",
+   "ok": true
+  },
+  {
+   "type": "boolean",
+   "value": "yes",
+   "ok": false
+  },
+  {
+   "type": "boolean",
+   "value": "1",
+   "ok": false
+  },
+  {
+   "type": "boolean",
+   "value": "",
+   "ok": false
+  }
+ ]
+}

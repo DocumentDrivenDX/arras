@@ -1,0 +1,79 @@
+/* SPDX-License-Identifier: MIT OR Apache-2.0 */
+/* The History panel of an entity page (FR-69). Tokens only. */
+.gb-hist-open {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 12px;
+}
+.gb-hist {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  padding: 16px;
+  margin: 0 0 16px;
+  display: grid;
+  gap: 12px;
+}
+.gb-hist-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.gb-hist-bar h2 {
+  margin: 0;
+  font-size: var(--fs-heading);
+  line-height: 26px;
+  font-weight: 600;
+}
+.gb-hist p {
+  margin: 0;
+  color: var(--fg-muted);
+}
+.gb-hist-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.gb-hist-row {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.gb-hist-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  align-items: baseline;
+}
+.gb-hist-by {
+  font-weight: 600;
+}
+.gb-hist-head time,
+.gb-hist-group {
+  color: var(--fg-muted);
+  font-size: var(--fs-small);
+}
+.gb-hist-action {
+  font-weight: 500;
+}
+.gb-hist a {
+  color: var(--accent);
+}
+.gb-hist-touched {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+.gb-hist-na span {
+  color: var(--fg-muted);
+}
+@media (max-width: 760px) {
+  .gb-hist-shown .gb-page {
+    display: none;
+  }
+}

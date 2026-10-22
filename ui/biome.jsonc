@@ -1,0 +1,200 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "files": {
+    "includes": ["src/**", "e2e/**", "scripts/**", "*.ts", "!openapi.json", "!dist", "!coverage"]
+  },
+  "css": { "parser": { "tailwindDirectives": true } },
+  "formatter": { "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "complexity": {
+        // A ceiling at the worst function today, never raised: lower it as functions are split.
+        // A new function over it fails the lint (the Python side does the same with C901).
+        "noExcessiveCognitiveComplexity": {
+          "level": "error",
+          "options": { "maxAllowedComplexity": 15 }
+        }
+      },
+      "style": { "noNonNullAssertion": "error", "useImportType": "error" },
+      "correctness": {
+        "noUnusedImports": "error",
+        "noUnusedVariables": "error",
+        "noUnusedFunctionParameters": "error"
+      },
+      "suspicious": { "noConsole": "error" }
+    }
+  },
+  "overrides": [
+    {
+      // SD-011, Boundary rules: the Graph Browser imports api/, components/ui, kit/ (the action kit, SD-013), lib/relLabels (the shared label planner), lib/format, lib/inputs
+      // (the shared wire codec, for in-place edits), lib/download (saving an export), lib/template (the title template), lib/brand and lib/documentTitle (the name and the document title) and its own modules; never the console's areas,
+      // the console, its other libraries or the shell.
+      "includes": ["src/browser/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "**/areas/**",
+                      "**/console/**",
+                      "**/shell/**",
+                      "**/ArrasConsole",
+                      "**/lib/graph",
+                      "**/lib/impact",
+                      "**/route"
+                    ],
+                    "message": "The Graph Browser imports api/, components/ui, kit/, lib/relLabels, lib/format, lib/inputs, lib/download, lib/template, lib/brand, lib/documentTitle and its own modules only (SD-011)."
+                  },
+                  {
+                    "group": ["arras-ui", "arras-ui/**", "@/**", "src/**"],
+                    "message": "Import the browser's own modules by relative path; a package or alias path would reach past the boundary (SD-011)."
+                  },
+                  {
+                    "group": ["**/dev/**", "**/dev"],
+                    "message": "src/dev is the standalone host's toolbar: only main.tsx and src/dev itself import it, never the library or the page the package serves."
+                  },
+                  {
+                    "group": ["**/kit/**", "!**/kit/index"],
+                    "message": "Import the kit through its index (../kit), never one of its modules (SD-013)."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      // SD-013: outside kit/ only the kit's index is imported, never one of its modules. Nothing here imports
+      // src/dev (the standalone host's toolbar), which only main.tsx and src/dev itself do (the next override).
+      "includes": ["src/areas/**", "src/console/**", "src/shell/**", "src/*.ts", "src/*.tsx"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["**/dev/**", "**/dev"],
+                    "message": "src/dev is the standalone host's toolbar: only main.tsx and src/dev itself import it, never the library or the page the package serves."
+                  },
+                  {
+                    "group": ["**/kit/**", "!**/kit/index"],
+                    "message": "Import the kit through its index (../kit), never one of its modules (SD-013)."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      // SD-013, ADR-030: the action kit imports an allow-list: api/, lib/inputs, lib/format,
+      // lib/formFocus, lib/template, ds/ and its own modules. Anything else up the tree is refused; a
+      // package (react, @tanstack/react-query) is not a path up the tree and stays free.
+      "includes": ["src/kit/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "../**",
+                      "!../api",
+                      "!../api/**",
+                      "!../lib/inputs",
+                      "!../lib/format",
+                      "!../lib/formFocus",
+                      "!../lib/template",
+                      "!../ds"
+                    ],
+                    "message": "The kit imports api/, lib/inputs, lib/format, lib/formFocus, lib/template, ds/ and its own modules only (ADR-030)."
+                  },
+                  {
+                    "group": ["arras-ui", "arras-ui/**", "@/**", "src/**"],
+                    "message": "Import the kit's own modules by relative path; a package or alias path would reach past the boundary (ADR-030)."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      // ADR-029: the design-system seam is a leaf. It imports React and its own modules, nothing up the tree.
+      "includes": ["src/ds/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["../**", "arras-ui", "arras-ui/**", "@/**", "src/**"],
+                    "message": "The design-system seam imports React and its own modules only (ADR-029)."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      // The libraries the console and the browser stand on do not import src/dev either.
+      "includes": ["src/api/**", "src/components/**", "src/lib/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["**/dev/**", "**/dev"],
+                    "message": "src/dev is the standalone host's toolbar: only main.tsx and src/dev itself import it, never the library or the page the package serves."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      // The standalone host: main.tsx mounts src/dev's toolbar, and src/dev is its own module tree.
+      "includes": ["src/main.tsx", "src/dev/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["**/kit/**", "!**/kit/index"],
+                    "message": "Import the kit through its index (../kit), never one of its modules (SD-013)."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "assist": { "actions": { "source": { "organizeImports": "on" } } }
+}

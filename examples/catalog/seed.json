@@ -1,0 +1,890 @@
+[
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "search-application-logs",
+      "name": "Search application logs by symptom",
+      "workArea": "Observability",
+      "description": "Find the log lines behind a reported symptom without knowing the service that wrote them.",
+      "problem": "On-call engineers know the symptom, not the service, and lose time guessing which log index to open."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "summarize-incident-timelines",
+      "name": "Summarize an incident timeline",
+      "workArea": "Incident response",
+      "description": "Turn alerts, chat and deploy events into one ordered account of what happened."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "triage-incident-alerts",
+      "name": "Triage incoming alerts at volume",
+      "workArea": "Incident response",
+      "description": "Sort a stream of alerts into pages, tickets and noise against the team's runbook.",
+      "problem": "Alert volume outgrows the on-call rotation, so real pages are found late among duplicates."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "write-runbooks",
+      "name": "Write and update runbooks",
+      "workArea": "Incident response",
+      "description": "Draft a runbook from past incidents and keep it current as the service changes.",
+      "problem": "Runbooks go stale because writing one is a separate task from fixing the incident."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "review-code-changes",
+      "name": "Assist code review",
+      "workArea": "Developer productivity",
+      "description": "Point a reviewer at the risky parts of a change and the tests that do not cover them.",
+      "problem": "Reviewers skim large diffs and miss the few lines that carry the risk."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "draft-release-notes",
+      "name": "Draft release notes",
+      "workArea": "Developer productivity",
+      "description": "Write release notes from merged changes, grouped by what a user sees."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "generate-test-cases",
+      "name": "Generate test cases for a change",
+      "workArea": "Developer productivity",
+      "description": "Propose unit and edge-case tests for a changed function."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "explain-legacy-code",
+      "name": "Explain unfamiliar code",
+      "workArea": "Developer productivity",
+      "description": "Describe what a module does and what depends on it."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "document-datasets",
+      "name": "Document datasets and columns",
+      "workArea": "Data",
+      "description": "Keep dataset and column descriptions current, with owners and freshness.",
+      "problem": "Most tables have no description, so analysts ask in chat which column to trust."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "find-internal-docs",
+      "name": "Find internal engineering documentation",
+      "workArea": "Documentation",
+      "description": "Answer a question from the organization's own design notes and wikis.",
+      "problem": "The answer exists in a wiki page that nobody can find by title."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "public-doc-lookup",
+      "name": "Look up public documentation",
+      "workArea": "Documentation",
+      "description": "Find and read vendor and open-source documentation for a library or service.",
+      "problem": "Engineers paste snippets from search results without checking the version they apply to."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "model-trace-search",
+      "name": "Search model gateway traces",
+      "workArea": "Observability",
+      "description": "Find model calls by the words in a prompt or reply, then see whose session and which workflow."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "monitor-slo-burn",
+      "name": "Watch service level objective burn",
+      "workArea": "Observability",
+      "description": "Warn when an error budget is being spent faster than planned."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "correlate-deploys-with-errors",
+      "name": "Correlate deploys with error spikes",
+      "workArea": "Observability",
+      "description": "Show which release preceded a change in error rate."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "detect-log-anomalies",
+      "name": "Detect unusual log patterns",
+      "workArea": "Observability",
+      "description": "Surface log patterns that have not been seen before in a service."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "trace-slow-requests",
+      "name": "Explain a slow request",
+      "workArea": "Observability",
+      "description": "Walk a request's trace and say where the time went."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "review-access-requests",
+      "name": "Review access requests",
+      "workArea": "Security",
+      "description": "Check a request for access against role and recent use."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "scan-dependencies",
+      "name": "Scan dependencies for known issues",
+      "workArea": "Security",
+      "description": "List vulnerable dependencies and the services that ship them."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "review-infrastructure-changes",
+      "name": "Review infrastructure changes",
+      "workArea": "Security",
+      "description": "Flag infrastructure changes that open ports or widen permissions."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "classify-data-sensitivity",
+      "name": "Classify data sensitivity",
+      "workArea": "Data",
+      "description": "Label columns that hold personal or confidential values."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "trace-data-lineage",
+      "name": "Trace data lineage",
+      "workArea": "Data",
+      "description": "Show where a column comes from and what reads it."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "answer-data-questions",
+      "name": "Answer questions from the warehouse",
+      "workArea": "Data",
+      "description": "Turn a plain question into a checked query and an explained result."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "monitor-data-quality",
+      "name": "Monitor data quality",
+      "workArea": "Data",
+      "description": "Notice late, empty or out-of-range loads before a report does."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "estimate-cloud-cost",
+      "name": "Estimate cloud cost of a change",
+      "workArea": "Operations",
+      "description": "Predict the monthly cost of a proposed deployment."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "plan-capacity",
+      "name": "Plan capacity",
+      "workArea": "Operations",
+      "description": "Project load and say when a service needs more room."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "schedule-on-call",
+      "name": "Schedule on-call rotations",
+      "workArea": "Operations",
+      "description": "Build a fair rotation from availability and time zones."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "onboard-engineers",
+      "name": "Onboard new engineers",
+      "workArea": "Documentation",
+      "description": "Give a new engineer a reading order and a first task."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "keep-docs-in-sync",
+      "name": "Keep documentation in sync with code",
+      "workArea": "Documentation",
+      "description": "Find documentation that a code change has made wrong."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "translate-documentation",
+      "name": "Translate documentation",
+      "workArea": "Documentation",
+      "description": "Produce and review translations of user-facing documentation."
+    }
+  },
+  {
+    "action": "catalog.AddUseCase",
+    "inputs": {
+      "code": "review-pull-request-descriptions",
+      "name": "Review pull request descriptions",
+      "workArea": "Developer productivity",
+      "description": "Check that a description says what changed, why and how it was tested."
+    }
+  },
+  {
+    "action": "catalog.AddProduct",
+    "inputs": {
+      "code": "lumen",
+      "name": "Lumen Search",
+      "vendor": "Lumen Labs",
+      "category": "Log search",
+      "summary": "Search over application logs and traces with natural-language queries.",
+      "lifecycleStatus": "Approved · live",
+      "availability": "live",
+      "caveat": "Does not index archived log files older than the retention window."
+    }
+  },
+  {
+    "action": "catalog.AddProduct",
+    "inputs": {
+      "code": "beacon",
+      "name": "Beacon Triage",
+      "vendor": "Beacon Systems",
+      "category": "Alerting",
+      "summary": "Groups and ranks alerts and proposes a response from the runbook.",
+      "lifecycleStatus": "Approved · live",
+      "availability": "live"
+    }
+  },
+  {
+    "action": "catalog.AddProduct",
+    "inputs": {
+      "code": "pylon",
+      "name": "Pylon Alerts",
+      "vendor": "Pylon Software",
+      "category": "Alerting",
+      "summary": "Alert routing with duplicate suppression.",
+      "lifecycleStatus": "Approved · limited",
+      "availability": "limited",
+      "caveat": "Available to teams on the shared paging plan only."
+    }
+  },
+  {
+    "action": "catalog.AddProduct",
+    "inputs": {
+      "code": "quill",
+      "name": "Quill Review",
+      "vendor": "Quillworks",
+      "category": "Code review",
+      "summary": "Reviews changes for risky patterns and missing tests.",
+      "lifecycleStatus": "Evaluating",
+      "availability": "in_evaluation",
+      "caveat": "Evaluation uses a copy of the repositories, not the live ones."
+    }
+  },
+  {
+    "action": "catalog.AddProduct",
+    "inputs": {
+      "code": "strata",
+      "name": "Strata Catalog",
+      "vendor": "Strata Data",
+      "category": "Data catalog",
+      "summary": "Dataset descriptions, owners and lineage.",
+      "lifecycleStatus": "Approved · live",
+      "availability": "live"
+    }
+  },
+  {
+    "action": "catalog.AddProduct",
+    "inputs": {
+      "code": "tessera",
+      "name": "Tessera Docs",
+      "vendor": "Tessera",
+      "category": "Documentation",
+      "summary": "Search and question answering over internal documentation.",
+      "lifecycleStatus": "Approved · limited",
+      "availability": "limited",
+      "caveat": "Wiki spaces marked restricted are not indexed."
+    }
+  },
+  {
+    "action": "catalog.AddProduct",
+    "inputs": {
+      "code": "ferrite",
+      "name": "Ferrite Assist",
+      "vendor": "Ferrite Computing",
+      "category": "Coding assistant",
+      "summary": "An assistant for writing and explaining code in the editor.",
+      "lifecycleStatus": "Evaluating",
+      "availability": "in_evaluation"
+    }
+  },
+  {
+    "action": "catalog.AddProduct",
+    "inputs": {
+      "code": "kestrel",
+      "name": "Kestrel Logs",
+      "vendor": "Kestrel",
+      "category": "Log search",
+      "summary": "Keyword and field search over structured logs.",
+      "lifecycleStatus": "Approved · live",
+      "availability": "live"
+    }
+  },
+  {
+    "action": "catalog.AddProduct",
+    "inputs": {
+      "code": "meridian",
+      "name": "Meridian Runbooks",
+      "vendor": "Meridian Software",
+      "category": "Runbooks",
+      "summary": "Runbook authoring with version history.",
+      "lifecycleStatus": "Purchasing",
+      "availability": "purchasing",
+      "caveat": "Contract not signed; do not onboard teams yet."
+    }
+  },
+  {
+    "action": "catalog.AddProduct",
+    "inputs": {
+      "code": "orbit",
+      "name": "Orbit Notebook",
+      "vendor": "Orbit",
+      "category": "Data analysis",
+      "summary": "Shared notebooks with scheduled runs.",
+      "lifecycleStatus": "Approved · live",
+      "availability": "live"
+    }
+  },
+  {
+    "action": "catalog.AddProduct",
+    "inputs": {
+      "code": "sable",
+      "name": "Sable Lineage",
+      "vendor": "Sable Analytics",
+      "category": "Data catalog",
+      "summary": "Column-level lineage across warehouse jobs.",
+      "lifecycleStatus": "Not available",
+      "availability": "not_available",
+      "caveat": "Withdrawn from the evaluation; no plan to reinstate."
+    }
+  },
+  {
+    "action": "catalog.AddProduct",
+    "inputs": {
+      "code": "tandem",
+      "name": "Tandem Review",
+      "vendor": "Tandem Works",
+      "category": "Code review",
+      "summary": "Pairs a reviewer with suggested checks per change.",
+      "lifecycleStatus": "Evaluating",
+      "availability": "in_evaluation"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "lumen.search-application-logs",
+      "level": "full",
+      "product": "lumen",
+      "useCase": "search-application-logs"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "lumen.detect-log-anomalies",
+      "level": "partial",
+      "product": "lumen",
+      "useCase": "detect-log-anomalies",
+      "notes": "Anomalies are per service, not across services."
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "lumen.trace-slow-requests",
+      "level": "partial",
+      "product": "lumen",
+      "useCase": "trace-slow-requests"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "lumen.correlate-deploys-with-errors",
+      "level": "partial",
+      "product": "lumen",
+      "useCase": "correlate-deploys-with-errors"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "lumen.summarize-incident-timelines",
+      "level": "adjacent",
+      "product": "lumen",
+      "useCase": "summarize-incident-timelines"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "beacon.triage-incident-alerts",
+      "level": "partial",
+      "product": "beacon",
+      "useCase": "triage-incident-alerts"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "beacon.summarize-incident-timelines",
+      "level": "full",
+      "product": "beacon",
+      "useCase": "summarize-incident-timelines"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "beacon.write-runbooks",
+      "level": "adjacent",
+      "product": "beacon",
+      "useCase": "write-runbooks"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "pylon.triage-incident-alerts",
+      "level": "full",
+      "product": "pylon",
+      "useCase": "triage-incident-alerts"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "pylon.monitor-slo-burn",
+      "level": "partial",
+      "product": "pylon",
+      "useCase": "monitor-slo-burn"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "quill.review-code-changes",
+      "level": "full",
+      "product": "quill",
+      "useCase": "review-code-changes"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "quill.generate-test-cases",
+      "level": "partial",
+      "product": "quill",
+      "useCase": "generate-test-cases"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "quill.review-pull-request-descriptions",
+      "level": "adjacent",
+      "product": "quill",
+      "useCase": "review-pull-request-descriptions"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "quill.scan-dependencies",
+      "level": "adjacent",
+      "product": "quill",
+      "useCase": "scan-dependencies"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "tandem.review-code-changes",
+      "level": "partial",
+      "product": "tandem",
+      "useCase": "review-code-changes"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "tandem.review-pull-request-descriptions",
+      "level": "full",
+      "product": "tandem",
+      "useCase": "review-pull-request-descriptions"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "strata.document-datasets",
+      "level": "full",
+      "product": "strata",
+      "useCase": "document-datasets"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "strata.classify-data-sensitivity",
+      "level": "partial",
+      "product": "strata",
+      "useCase": "classify-data-sensitivity"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "strata.trace-data-lineage",
+      "level": "partial",
+      "product": "strata",
+      "useCase": "trace-data-lineage"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "strata.monitor-data-quality",
+      "level": "adjacent",
+      "product": "strata",
+      "useCase": "monitor-data-quality"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "sable.trace-data-lineage",
+      "level": "full",
+      "product": "sable",
+      "useCase": "trace-data-lineage"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "tessera.find-internal-docs",
+      "level": "full",
+      "product": "tessera",
+      "useCase": "find-internal-docs"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "tessera.onboard-engineers",
+      "level": "partial",
+      "product": "tessera",
+      "useCase": "onboard-engineers"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "tessera.keep-docs-in-sync",
+      "level": "adjacent",
+      "product": "tessera",
+      "useCase": "keep-docs-in-sync"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "ferrite.explain-legacy-code",
+      "level": "full",
+      "product": "ferrite",
+      "useCase": "explain-legacy-code"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "ferrite.generate-test-cases",
+      "level": "partial",
+      "product": "ferrite",
+      "useCase": "generate-test-cases"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "ferrite.draft-release-notes",
+      "level": "partial",
+      "product": "ferrite",
+      "useCase": "draft-release-notes"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "kestrel.search-application-logs",
+      "level": "partial",
+      "product": "kestrel",
+      "useCase": "search-application-logs"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "kestrel.detect-log-anomalies",
+      "level": "adjacent",
+      "product": "kestrel",
+      "useCase": "detect-log-anomalies"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "meridian.write-runbooks",
+      "level": "full",
+      "product": "meridian",
+      "useCase": "write-runbooks"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "meridian.onboard-engineers",
+      "level": "adjacent",
+      "product": "meridian",
+      "useCase": "onboard-engineers"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "orbit.answer-data-questions",
+      "level": "partial",
+      "product": "orbit",
+      "useCase": "answer-data-questions"
+    }
+  },
+  {
+    "action": "catalog.AssertCoverage",
+    "inputs": {
+      "code": "orbit.monitor-data-quality",
+      "level": "partial",
+      "product": "orbit",
+      "useCase": "monitor-data-quality"
+    }
+  },
+  {
+    "action": "catalog.AddSolution",
+    "inputs": {
+      "code": "alert-triage-playbook",
+      "name": "Alert triage against runbook",
+      "summary": "Compare an incoming alert with the team's runbook and say whether it needs a page, a ticket or neither.",
+      "useCase": "triage-incident-alerts",
+      "deliveryMode": "chat",
+      "workflow": "alert-triage-playbook"
+    }
+  },
+  {
+    "action": "catalog.AddSolution",
+    "inputs": {
+      "code": "datamap-app",
+      "name": "Datamap",
+      "summary": "The organization's own app for describing datasets and their owners. It opens as an app of its own.",
+      "useCase": "document-datasets",
+      "deliveryMode": "app",
+      "launchUrl": "https://datamap.example.test/"
+    }
+  },
+  {
+    "action": "catalog.AddSolution",
+    "inputs": {
+      "code": "datamap-review",
+      "name": "Dataset description review",
+      "summary": "Check draft dataset and column descriptions against the documentation standard before they are published.",
+      "useCase": "document-datasets",
+      "deliveryMode": "chat",
+      "workflow": "datamap-review"
+    }
+  },
+  {
+    "action": "catalog.AddSolution",
+    "inputs": {
+      "code": "doc-search",
+      "name": "Documentation search",
+      "summary": "Find earlier design notes similar to a described problem.",
+      "useCase": "find-internal-docs",
+      "deliveryMode": "chat",
+      "workflow": "doc-search"
+    }
+  },
+  {
+    "action": "catalog.AddSolution",
+    "inputs": {
+      "code": "log-query",
+      "name": "Log query",
+      "summary": "Ask a question about the logs of one service and get an answer grounded in the matching lines.",
+      "useCase": "search-application-logs",
+      "deliveryMode": "chat",
+      "workflow": "log-query"
+    }
+  },
+  {
+    "action": "catalog.AddSolution",
+    "inputs": {
+      "code": "lumen-runbook-prompt",
+      "name": "Runbook drafting with Lumen Search",
+      "summary": "Demonstration entry. Gives the user a ready runbook drafting prompt to run in Lumen Search.",
+      "useCase": "write-runbooks",
+      "deliveryMode": "handoff",
+      "prompt": "Draft a first-pass runbook from the attached incident review, keeping our standard sections, and list every step you added."
+    }
+  },
+  {
+    "action": "catalog.AddSolution",
+    "inputs": {
+      "code": "lumen-triage-prompt",
+      "name": "Run this prompt with Lumen Search",
+      "summary": "Gives the user a ready prompt and sends them to Lumen Search to run it.",
+      "useCase": "triage-incident-alerts",
+      "deliveryMode": "handoff",
+      "prompt": "Review the attached alert export against our standard severities for paging, ticketing and suppression. List each alert that departs from them and suggest the correct handling."
+    }
+  },
+  {
+    "action": "catalog.AddSolution",
+    "inputs": {
+      "code": "public-research",
+      "name": "Public research",
+      "summary": "Look up public information on the web and read the pages: published documentation, release notes and general technical background.",
+      "useCase": "public-doc-lookup",
+      "deliveryMode": "chat",
+      "workflow": "public-research"
+    }
+  },
+  {
+    "action": "catalog.AddSolution",
+    "inputs": {
+      "code": "trace-search",
+      "name": "Trace search",
+      "summary": "Search the model gateway's traces and inference tables by keyword with read-only SQL: find calls by the words in a prompt or reply, then see whose session and which workflow.",
+      "useCase": "model-trace-search",
+      "deliveryMode": "chat",
+      "workflow": "trace-search",
+      "audience": "Platform engineers"
+    }
+  },
+  {
+    "action": "catalog.SetSolutionProvider",
+    "inputs": {
+      "solution": "lumen-triage-prompt",
+      "product": "lumen"
+    }
+  },
+  {
+    "action": "catalog.SetSolutionProvider",
+    "inputs": {
+      "solution": "lumen-runbook-prompt",
+      "product": "lumen"
+    }
+  },
+  {
+    "action": "catalog.AddProductVersion",
+    "inputs": {
+      "code": "pv-lumen-v1",
+      "label": "v1",
+      "status": "superseded",
+      "product": "lumen"
+    }
+  },
+  {
+    "action": "catalog.AddProductVersion",
+    "inputs": {
+      "code": "pv-lumen-v2",
+      "label": "v2",
+      "status": "current",
+      "product": "lumen"
+    }
+  },
+  {
+    "action": "catalog.AddFinding",
+    "inputs": {
+      "code": "fnd-seed-logs-1",
+      "statement": "Lumen v1 finds the log lines behind a symptom accurately, at 0.94 across 40 sample incidents on error, service and time window, but misses lines in rotated archive files when the archive is appended after the live file.",
+      "kind": "capability",
+      "status": "active",
+      "product": "lumen"
+    }
+  },
+  {
+    "action": "catalog.SetFindingVersion",
+    "inputs": {
+      "finding": "fnd-seed-logs-1",
+      "productVersion": "pv-lumen-v1"
+    }
+  },
+  {
+    "action": "catalog.RelateFindingTo",
+    "inputs": {
+      "finding": "fnd-seed-logs-1",
+      "useCase": "summarize-incident-timelines"
+    }
+  },
+  {
+    "action": "catalog.ApplyFindingTo",
+    "inputs": {
+      "finding": "fnd-seed-logs-1",
+      "useCase": "search-application-logs"
+    }
+  }
+]

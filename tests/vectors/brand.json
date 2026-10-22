@@ -1,0 +1,4 @@
+{
+  "note": "The longest each brand field may be. arras.ui.Brand refuses a longer one (tests/test_ui.py); the page's reader cuts a longer one to the cap (ui/src/test/brand-caps.test.ts). Both read these numbers.",
+  "caps": { "name": 80, "title": 120, "wordmark": 2048, "tagline": 200 }
+}

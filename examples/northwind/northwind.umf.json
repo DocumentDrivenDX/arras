@@ -1,0 +1,2888 @@
+{
+  "umf": "0.10.0",
+  "id": "northwind-example",
+  "vocabularies": {
+    "umf.ddd": {
+      "version": "0.1.0"
+    },
+    "arras.view": {
+      "version": "0.1.0"
+    }
+  },
+  "extensions": {},
+  "modules": [
+    {
+      "id": "northwind",
+      "namespace": "northwind",
+      "extensions": {
+        "umf.ddd": {
+          "kind": "bounded-context",
+          "terms": []
+        },
+        "arras.view": {
+          "title": "Northwind",
+          "description": "Customers, orders, products and the people who sell them"
+        }
+      },
+      "elements": [
+        {
+          "id": "Category",
+          "kind": "record",
+          "name": "Category",
+          "members": [
+            {
+              "module": "northwind",
+              "element": "Category.code"
+            },
+            {
+              "module": "northwind",
+              "element": "Category.name"
+            },
+            {
+              "module": "northwind",
+              "element": "Category.description"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "name": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "description": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            },
+            "arras.view": {
+              "label": "Category",
+              "icon": "folder",
+              "tone": "teal",
+              "title": "{name}",
+              "summary": "{description}",
+              "sections": [],
+              "search": [
+                "name",
+                "description"
+              ]
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "northwind",
+                  "element": "Category.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "Category.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Category.name",
+          "kind": "field",
+          "name": "name",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Category.description",
+          "kind": "field",
+          "name": "description",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Supplier",
+          "kind": "record",
+          "name": "Supplier",
+          "members": [
+            {
+              "module": "northwind",
+              "element": "Supplier.code"
+            },
+            {
+              "module": "northwind",
+              "element": "Supplier.companyName"
+            },
+            {
+              "module": "northwind",
+              "element": "Supplier.country"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "companyName": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "country": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            },
+            "arras.view": {
+              "label": "Supplier",
+              "icon": "box",
+              "tone": "slate",
+              "title": "{companyName}",
+              "sections": [
+                {
+                  "label": "Where",
+                  "properties": [
+                    "country"
+                  ]
+                }
+              ],
+              "search": [
+                "companyName",
+                "country"
+              ]
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "northwind",
+                  "element": "Supplier.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "Supplier.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Supplier.companyName",
+          "kind": "field",
+          "name": "companyName",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Supplier.country",
+          "kind": "field",
+          "name": "country",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Product",
+          "kind": "record",
+          "name": "Product",
+          "members": [
+            {
+              "module": "northwind",
+              "element": "Product.code"
+            },
+            {
+              "module": "northwind",
+              "element": "Product.name"
+            },
+            {
+              "module": "northwind",
+              "element": "Product.quantityPerUnit"
+            },
+            {
+              "module": "northwind",
+              "element": "Product.unitPrice"
+            },
+            {
+              "module": "northwind",
+              "element": "Product.unitsInStock"
+            },
+            {
+              "module": "northwind",
+              "element": "Product.discontinued"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "name": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "quantityPerUnit": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                },
+                "unitPrice": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "decimal"
+                  },
+                  "cardinality": "one"
+                },
+                "unitsInStock": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "integer"
+                  },
+                  "cardinality": "optional"
+                },
+                "discontinued": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "boolean"
+                  },
+                  "cardinality": "optional"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            },
+            "arras.view": {
+              "label": "Product",
+              "icon": "package",
+              "tone": "blue",
+              "title": "{name}",
+              "summary": "{quantityPerUnit}",
+              "sections": [
+                {
+                  "label": "Stock and price",
+                  "properties": [
+                    "unitPrice",
+                    "unitsInStock",
+                    "discontinued"
+                  ]
+                }
+              ],
+              "search": [
+                "name",
+                "quantityPerUnit"
+              ]
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "northwind",
+                  "element": "Product.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "Product.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Product.name",
+          "kind": "field",
+          "name": "name",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Product.quantityPerUnit",
+          "kind": "field",
+          "name": "quantityPerUnit",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Product.unitPrice",
+          "kind": "field",
+          "name": "unitPrice",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "decimal",
+          "extensions": {
+            "arras.view": {
+              "label": "Unit price",
+              "format": "number"
+            }
+          },
+          "facets": {
+            "precision": 12,
+            "scale": 2
+          }
+        },
+        {
+          "id": "Product.unitsInStock",
+          "kind": "field",
+          "name": "unitsInStock",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "integer",
+          "extensions": {},
+          "facets": {
+            "integerWidth": {
+              "bits": 64,
+              "signed": true
+            }
+          }
+        },
+        {
+          "id": "Product.discontinued",
+          "kind": "field",
+          "name": "discontinued",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "boolean",
+          "extensions": {
+            "arras.view": {
+              "format": "boolean"
+            }
+          }
+        },
+        {
+          "id": "Customer",
+          "kind": "record",
+          "name": "Customer",
+          "members": [
+            {
+              "module": "northwind",
+              "element": "Customer.code"
+            },
+            {
+              "module": "northwind",
+              "element": "Customer.companyName"
+            },
+            {
+              "module": "northwind",
+              "element": "Customer.contactName"
+            },
+            {
+              "module": "northwind",
+              "element": "Customer.city"
+            },
+            {
+              "module": "northwind",
+              "element": "Customer.country"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "companyName": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "contactName": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                },
+                "city": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                },
+                "country": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            },
+            "arras.view": {
+              "label": "Customer",
+              "icon": "building",
+              "tone": "violet",
+              "title": "{companyName}[ ({code})]",
+              "summary": "{contactName}",
+              "sections": [
+                {
+                  "label": "Where",
+                  "properties": [
+                    "city",
+                    "country"
+                  ]
+                }
+              ],
+              "search": [
+                "companyName",
+                "contactName",
+                "city",
+                "country",
+                "code"
+              ]
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "northwind",
+                  "element": "Customer.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "Customer.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Customer.companyName",
+          "kind": "field",
+          "name": "companyName",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Customer.contactName",
+          "kind": "field",
+          "name": "contactName",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Customer.city",
+          "kind": "field",
+          "name": "city",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Customer.country",
+          "kind": "field",
+          "name": "country",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Employee",
+          "kind": "record",
+          "name": "Employee",
+          "members": [
+            {
+              "module": "northwind",
+              "element": "Employee.code"
+            },
+            {
+              "module": "northwind",
+              "element": "Employee.firstName"
+            },
+            {
+              "module": "northwind",
+              "element": "Employee.lastName"
+            },
+            {
+              "module": "northwind",
+              "element": "Employee.jobTitle"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "firstName": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "lastName": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "jobTitle": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            },
+            "arras.view": {
+              "label": "Employee",
+              "icon": "user",
+              "tone": "green",
+              "title": "{firstName} {lastName}",
+              "summary": "{jobTitle}",
+              "sections": [],
+              "search": [
+                "firstName",
+                "lastName",
+                "jobTitle"
+              ]
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "northwind",
+                  "element": "Employee.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "Employee.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Employee.firstName",
+          "kind": "field",
+          "name": "firstName",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Employee.lastName",
+          "kind": "field",
+          "name": "lastName",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Employee.jobTitle",
+          "kind": "field",
+          "name": "jobTitle",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Order",
+          "kind": "record",
+          "name": "Order",
+          "members": [
+            {
+              "module": "northwind",
+              "element": "Order.code"
+            },
+            {
+              "module": "northwind",
+              "element": "Order.orderDate"
+            },
+            {
+              "module": "northwind",
+              "element": "Order.shipCountry"
+            },
+            {
+              "module": "northwind",
+              "element": "Order.freight"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "orderDate": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                },
+                "shipCountry": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                },
+                "freight": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "decimal"
+                  },
+                  "cardinality": "optional"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            },
+            "arras.view": {
+              "label": "Order",
+              "icon": "file-text",
+              "tone": "amber",
+              "title": "Order {code}",
+              "sections": [
+                {
+                  "label": "Shipping",
+                  "properties": [
+                    "orderDate",
+                    "shipCountry",
+                    "freight"
+                  ]
+                }
+              ],
+              "search": [
+                "code",
+                "shipCountry"
+              ]
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "northwind",
+                  "element": "Order.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "Order.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Order.orderDate",
+          "kind": "field",
+          "name": "orderDate",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Order.shipCountry",
+          "kind": "field",
+          "name": "shipCountry",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Order.freight",
+          "kind": "field",
+          "name": "freight",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "decimal",
+          "extensions": {
+            "arras.view": {
+              "format": "number"
+            }
+          },
+          "facets": {
+            "precision": 12,
+            "scale": 2
+          }
+        },
+        {
+          "id": "OrderLine",
+          "kind": "record",
+          "name": "OrderLine",
+          "members": [
+            {
+              "module": "northwind",
+              "element": "OrderLine.code"
+            },
+            {
+              "module": "northwind",
+              "element": "OrderLine.quantity"
+            },
+            {
+              "module": "northwind",
+              "element": "OrderLine.discount"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "quantity": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "integer"
+                  },
+                  "cardinality": "one"
+                },
+                "discount": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "decimal"
+                  },
+                  "cardinality": "optional"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            },
+            "arras.view": {
+              "label": "Order line",
+              "icon": "tag",
+              "tone": "rose",
+              "title": "{code}",
+              "sections": [
+                {
+                  "label": "Line",
+                  "properties": [
+                    "quantity",
+                    "discount"
+                  ]
+                }
+              ],
+              "search": [
+                "code"
+              ]
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "northwind",
+                  "element": "OrderLine.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "OrderLine.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "OrderLine.quantity",
+          "kind": "field",
+          "name": "quantity",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "integer",
+          "extensions": {},
+          "facets": {
+            "integerWidth": {
+              "bits": 64,
+              "signed": true
+            }
+          }
+        },
+        {
+          "id": "OrderLine.discount",
+          "kind": "field",
+          "name": "discount",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "decimal",
+          "extensions": {
+            "arras.view": {
+              "format": "number",
+              "hideWhenEmpty": true
+            }
+          },
+          "facets": {
+            "precision": 12,
+            "scale": 2
+          }
+        }
+      ],
+      "relationships": [
+        {
+          "id": "product-incategory",
+          "name": "inCategory",
+          "source": [
+            {
+              "module": "northwind",
+              "element": "Product"
+            }
+          ],
+          "target": [
+            {
+              "module": "northwind",
+              "element": "Category",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "products",
+          "extensions": {
+            "arras.view": {
+              "label": "Category",
+              "inverseLabel": "Products",
+              "order": 10
+            }
+          }
+        },
+        {
+          "id": "product-suppliedby",
+          "name": "suppliedBy",
+          "source": [
+            {
+              "module": "northwind",
+              "element": "Product"
+            }
+          ],
+          "target": [
+            {
+              "module": "northwind",
+              "element": "Supplier",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "supplies",
+          "extensions": {
+            "arras.view": {
+              "label": "Supplier",
+              "inverseLabel": "Supplies",
+              "order": 20
+            }
+          }
+        },
+        {
+          "id": "order-placedby",
+          "name": "placedBy",
+          "source": [
+            {
+              "module": "northwind",
+              "element": "Order"
+            }
+          ],
+          "target": [
+            {
+              "module": "northwind",
+              "element": "Customer",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "orders",
+          "extensions": {
+            "arras.view": {
+              "label": "Customer",
+              "inverseLabel": "Orders",
+              "order": 10
+            }
+          }
+        },
+        {
+          "id": "order-handledby",
+          "name": "handledBy",
+          "source": [
+            {
+              "module": "northwind",
+              "element": "Order"
+            }
+          ],
+          "target": [
+            {
+              "module": "northwind",
+              "element": "Employee",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "handles",
+          "extensions": {
+            "arras.view": {
+              "label": "Handled by",
+              "inverseLabel": "Handles",
+              "order": 20
+            }
+          }
+        },
+        {
+          "id": "employee-reportsto",
+          "name": "reportsTo",
+          "source": [
+            {
+              "module": "northwind",
+              "element": "Employee"
+            }
+          ],
+          "target": [
+            {
+              "module": "northwind",
+              "element": "Employee",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "directReports",
+          "extensions": {
+            "arras.view": {
+              "label": "Reports to",
+              "inverseLabel": "Direct reports",
+              "order": 10
+            }
+          }
+        },
+        {
+          "id": "orderline-oforder",
+          "name": "ofOrder",
+          "source": [
+            {
+              "module": "northwind",
+              "element": "OrderLine"
+            }
+          ],
+          "target": [
+            {
+              "module": "northwind",
+              "element": "Order",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "lines",
+          "extensions": {
+            "arras.view": {
+              "label": "Order",
+              "inverseLabel": "Lines",
+              "order": 10
+            }
+          }
+        },
+        {
+          "id": "orderline-ofproduct",
+          "name": "ofProduct",
+          "source": [
+            {
+              "module": "northwind",
+              "element": "OrderLine"
+            }
+          ],
+          "target": [
+            {
+              "module": "northwind",
+              "element": "Product",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "orderedIn",
+          "extensions": {
+            "arras.view": {
+              "label": "Product",
+              "inverseLabel": "Ordered in",
+              "order": 20
+            }
+          }
+        }
+      ],
+      "actions": [
+        {
+          "id": "AddCategory",
+          "description": "Add category",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "description",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "fresh",
+              "reason": "a category with that code exists",
+              "predicate": {
+                "op": "absent",
+                "type": "Category",
+                "key": {
+                  "input": "code"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "as": "new",
+              "type": "Category",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                },
+                "description": {
+                  "input": "description"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "CorrectCategory",
+          "description": "Correct the details of category",
+          "inputs": [
+            {
+              "name": "description",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "category",
+              "type": {
+                "kind": "ref",
+                "type": "Category"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "category_exists",
+              "reason": "no such category",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "category"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Category",
+              "key": {
+                "input": "category"
+              },
+              "properties": {
+                "description": {
+                  "input": "description"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "RenameCategory",
+          "description": "Change the name of category",
+          "inputs": [
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "category",
+              "type": {
+                "kind": "ref",
+                "type": "Category"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "category_exists",
+              "reason": "no such category",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "category"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Category",
+              "key": {
+                "input": "category"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "AddSupplier",
+          "description": "Add supplier",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "companyName",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "country",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "fresh",
+              "reason": "a supplier with that code exists",
+              "predicate": {
+                "op": "absent",
+                "type": "Supplier",
+                "key": {
+                  "input": "code"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "as": "new",
+              "type": "Supplier",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "companyName": {
+                  "input": "companyName"
+                },
+                "country": {
+                  "input": "country"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "CorrectSupplier",
+          "description": "Correct the details of supplier",
+          "inputs": [
+            {
+              "name": "country",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "supplier",
+              "type": {
+                "kind": "ref",
+                "type": "Supplier"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "supplier_exists",
+              "reason": "no such supplier",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "supplier"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Supplier",
+              "key": {
+                "input": "supplier"
+              },
+              "properties": {
+                "country": {
+                  "input": "country"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "ChangeSupplierCompanyName",
+          "description": "Change the companyName of supplier",
+          "inputs": [
+            {
+              "name": "companyName",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "supplier",
+              "type": {
+                "kind": "ref",
+                "type": "Supplier"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "supplier_exists",
+              "reason": "no such supplier",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "supplier"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Supplier",
+              "key": {
+                "input": "supplier"
+              },
+              "properties": {
+                "companyName": {
+                  "input": "companyName"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "AddProduct",
+          "description": "Add product",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "quantityPerUnit",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "unitPrice",
+              "type": {
+                "kind": "scalar",
+                "name": "decimal"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "unitsInStock",
+              "type": {
+                "kind": "scalar",
+                "name": "integer"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "discontinued",
+              "type": {
+                "kind": "scalar",
+                "name": "boolean"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "inCategory",
+              "type": {
+                "kind": "ref",
+                "type": "Category"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "suppliedBy",
+              "type": {
+                "kind": "ref",
+                "type": "Supplier"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "fresh",
+              "reason": "a product with that code exists",
+              "predicate": {
+                "op": "absent",
+                "type": "Product",
+                "key": {
+                  "input": "code"
+                }
+              }
+            },
+            {
+              "id": "inCategory_exists",
+              "reason": "no such inCategory",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "inCategory"
+                }
+              }
+            },
+            {
+              "id": "suppliedBy_exists",
+              "reason": "no such suppliedBy",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "suppliedBy"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "as": "new",
+              "type": "Product",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                },
+                "quantityPerUnit": {
+                  "input": "quantityPerUnit"
+                },
+                "unitPrice": {
+                  "input": "unitPrice"
+                },
+                "unitsInStock": {
+                  "input": "unitsInStock"
+                },
+                "discontinued": {
+                  "input": "discontinued"
+                }
+              }
+            },
+            {
+              "op": "link",
+              "type": "inCategory",
+              "source": {
+                "alias": "new"
+              },
+              "target": {
+                "input": "inCategory"
+              }
+            },
+            {
+              "op": "link",
+              "type": "suppliedBy",
+              "source": {
+                "alias": "new"
+              },
+              "target": {
+                "input": "suppliedBy"
+              }
+            }
+          ]
+        },
+        {
+          "id": "CorrectProduct",
+          "description": "Correct the details of product",
+          "inputs": [
+            {
+              "name": "quantityPerUnit",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "unitsInStock",
+              "type": {
+                "kind": "scalar",
+                "name": "integer"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "discontinued",
+              "type": {
+                "kind": "scalar",
+                "name": "boolean"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "product",
+              "type": {
+                "kind": "ref",
+                "type": "Product"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "product_exists",
+              "reason": "no such product",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "product"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Product",
+              "key": {
+                "input": "product"
+              },
+              "properties": {
+                "quantityPerUnit": {
+                  "input": "quantityPerUnit"
+                },
+                "unitsInStock": {
+                  "input": "unitsInStock"
+                },
+                "discontinued": {
+                  "input": "discontinued"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "UpdateProduct",
+          "description": "Update product",
+          "inputs": [
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "unitPrice",
+              "type": {
+                "kind": "scalar",
+                "name": "decimal"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "product",
+              "type": {
+                "kind": "ref",
+                "type": "Product"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "product_exists",
+              "reason": "no such product",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "product"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Product",
+              "key": {
+                "input": "product"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                },
+                "unitPrice": {
+                  "input": "unitPrice"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "AddCustomer",
+          "description": "Add customer",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "companyName",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "contactName",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "city",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "country",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "fresh",
+              "reason": "a customer with that code exists",
+              "predicate": {
+                "op": "absent",
+                "type": "Customer",
+                "key": {
+                  "input": "code"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "as": "new",
+              "type": "Customer",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "companyName": {
+                  "input": "companyName"
+                },
+                "contactName": {
+                  "input": "contactName"
+                },
+                "city": {
+                  "input": "city"
+                },
+                "country": {
+                  "input": "country"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "CorrectCustomer",
+          "description": "Correct the details of customer",
+          "inputs": [
+            {
+              "name": "contactName",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "city",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "country",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "customer",
+              "type": {
+                "kind": "ref",
+                "type": "Customer"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "customer_exists",
+              "reason": "no such customer",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "customer"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Customer",
+              "key": {
+                "input": "customer"
+              },
+              "properties": {
+                "contactName": {
+                  "input": "contactName"
+                },
+                "city": {
+                  "input": "city"
+                },
+                "country": {
+                  "input": "country"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "ChangeCustomerCompanyName",
+          "description": "Change the companyName of customer",
+          "inputs": [
+            {
+              "name": "companyName",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "customer",
+              "type": {
+                "kind": "ref",
+                "type": "Customer"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "customer_exists",
+              "reason": "no such customer",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "customer"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Customer",
+              "key": {
+                "input": "customer"
+              },
+              "properties": {
+                "companyName": {
+                  "input": "companyName"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "AddEmployee",
+          "description": "Add employee",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "firstName",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "lastName",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "jobTitle",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "fresh",
+              "reason": "a employee with that code exists",
+              "predicate": {
+                "op": "absent",
+                "type": "Employee",
+                "key": {
+                  "input": "code"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "as": "new",
+              "type": "Employee",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "firstName": {
+                  "input": "firstName"
+                },
+                "lastName": {
+                  "input": "lastName"
+                },
+                "jobTitle": {
+                  "input": "jobTitle"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "CorrectEmployee",
+          "description": "Correct the details of employee",
+          "inputs": [
+            {
+              "name": "jobTitle",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "employee",
+              "type": {
+                "kind": "ref",
+                "type": "Employee"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "employee_exists",
+              "reason": "no such employee",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "employee"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Employee",
+              "key": {
+                "input": "employee"
+              },
+              "properties": {
+                "jobTitle": {
+                  "input": "jobTitle"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "UpdateEmployee",
+          "description": "Update employee",
+          "inputs": [
+            {
+              "name": "firstName",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "lastName",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "employee",
+              "type": {
+                "kind": "ref",
+                "type": "Employee"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "employee_exists",
+              "reason": "no such employee",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "employee"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Employee",
+              "key": {
+                "input": "employee"
+              },
+              "properties": {
+                "firstName": {
+                  "input": "firstName"
+                },
+                "lastName": {
+                  "input": "lastName"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "AddOrder",
+          "description": "Add order",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "orderDate",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "shipCountry",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "freight",
+              "type": {
+                "kind": "scalar",
+                "name": "decimal"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "placedBy",
+              "type": {
+                "kind": "ref",
+                "type": "Customer"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "fresh",
+              "reason": "a order with that code exists",
+              "predicate": {
+                "op": "absent",
+                "type": "Order",
+                "key": {
+                  "input": "code"
+                }
+              }
+            },
+            {
+              "id": "placedBy_exists",
+              "reason": "no such placedBy",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "placedBy"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "as": "new",
+              "type": "Order",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "orderDate": {
+                  "input": "orderDate"
+                },
+                "shipCountry": {
+                  "input": "shipCountry"
+                },
+                "freight": {
+                  "input": "freight"
+                }
+              }
+            },
+            {
+              "op": "link",
+              "type": "placedBy",
+              "source": {
+                "alias": "new"
+              },
+              "target": {
+                "input": "placedBy"
+              }
+            }
+          ]
+        },
+        {
+          "id": "CorrectOrder",
+          "description": "Correct the details of order",
+          "inputs": [
+            {
+              "name": "orderDate",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "shipCountry",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "freight",
+              "type": {
+                "kind": "scalar",
+                "name": "decimal"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "order",
+              "type": {
+                "kind": "ref",
+                "type": "Order"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "order_exists",
+              "reason": "no such order",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "order"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Order",
+              "key": {
+                "input": "order"
+              },
+              "properties": {
+                "orderDate": {
+                  "input": "orderDate"
+                },
+                "shipCountry": {
+                  "input": "shipCountry"
+                },
+                "freight": {
+                  "input": "freight"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "RetireOrder",
+          "description": "Remove order and its links",
+          "inputs": [
+            {
+              "name": "order",
+              "type": {
+                "kind": "ref",
+                "type": "Order"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "order_exists",
+              "reason": "no such order",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "order"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "delete",
+              "refType": "Order",
+              "key": {
+                "input": "order"
+              }
+            }
+          ]
+        },
+        {
+          "id": "AddOrderLine",
+          "description": "Add orderLine",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "quantity",
+              "type": {
+                "kind": "scalar",
+                "name": "integer"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "discount",
+              "type": {
+                "kind": "scalar",
+                "name": "decimal"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "ofOrder",
+              "type": {
+                "kind": "ref",
+                "type": "Order"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "ofProduct",
+              "type": {
+                "kind": "ref",
+                "type": "Product"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "fresh",
+              "reason": "a orderLine with that code exists",
+              "predicate": {
+                "op": "absent",
+                "type": "OrderLine",
+                "key": {
+                  "input": "code"
+                }
+              }
+            },
+            {
+              "id": "ofOrder_exists",
+              "reason": "no such ofOrder",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "ofOrder"
+                }
+              }
+            },
+            {
+              "id": "ofProduct_exists",
+              "reason": "no such ofProduct",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "ofProduct"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "as": "new",
+              "type": "OrderLine",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "quantity": {
+                  "input": "quantity"
+                },
+                "discount": {
+                  "input": "discount"
+                }
+              }
+            },
+            {
+              "op": "link",
+              "type": "ofOrder",
+              "source": {
+                "alias": "new"
+              },
+              "target": {
+                "input": "ofOrder"
+              }
+            },
+            {
+              "op": "link",
+              "type": "ofProduct",
+              "source": {
+                "alias": "new"
+              },
+              "target": {
+                "input": "ofProduct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "CorrectOrderLine",
+          "description": "Correct the details of orderLine",
+          "inputs": [
+            {
+              "name": "discount",
+              "type": {
+                "kind": "scalar",
+                "name": "decimal"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "orderLine",
+              "type": {
+                "kind": "ref",
+                "type": "OrderLine"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "orderLine_exists",
+              "reason": "no such orderLine",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "orderLine"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "OrderLine",
+              "key": {
+                "input": "orderLine"
+              },
+              "properties": {
+                "discount": {
+                  "input": "discount"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "ChangeOrderLineQuantity",
+          "description": "Change the quantity of orderLine",
+          "inputs": [
+            {
+              "name": "quantity",
+              "type": {
+                "kind": "scalar",
+                "name": "integer"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "orderLine",
+              "type": {
+                "kind": "ref",
+                "type": "OrderLine"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "orderLine_exists",
+              "reason": "no such orderLine",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "orderLine"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "OrderLine",
+              "key": {
+                "input": "orderLine"
+              },
+              "properties": {
+                "quantity": {
+                  "input": "quantity"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "RetireOrderLine",
+          "description": "Remove orderLine and its links",
+          "inputs": [
+            {
+              "name": "orderLine",
+              "type": {
+                "kind": "ref",
+                "type": "OrderLine"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "orderLine_exists",
+              "reason": "no such orderLine",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "orderLine"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "delete",
+              "refType": "OrderLine",
+              "key": {
+                "input": "orderLine"
+              }
+            }
+          ]
+        },
+        {
+          "id": "LinkOrderHandledBy",
+          "description": "Link order handledBy employee",
+          "inputs": [
+            {
+              "name": "order",
+              "type": {
+                "kind": "ref",
+                "type": "Order"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "handledBy",
+              "type": {
+                "kind": "ref",
+                "type": "Employee"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "order_exists",
+              "reason": "no such order",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "order"
+                }
+              }
+            },
+            {
+              "id": "handledBy_exists",
+              "reason": "no such handledBy",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "handledBy"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "link",
+              "type": "handledBy",
+              "source": {
+                "input": "order"
+              },
+              "target": {
+                "input": "handledBy"
+              }
+            }
+          ]
+        },
+        {
+          "id": "UnlinkOrderHandledBy",
+          "description": "Unlink order handledBy employee",
+          "inputs": [
+            {
+              "name": "order",
+              "type": {
+                "kind": "ref",
+                "type": "Order"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "handledBy",
+              "type": {
+                "kind": "ref",
+                "type": "Employee"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "order_exists",
+              "reason": "no such order",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "order"
+                }
+              }
+            },
+            {
+              "id": "handledBy_exists",
+              "reason": "no such handledBy",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "handledBy"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "unlink",
+              "type": "handledBy",
+              "source": {
+                "input": "order"
+              },
+              "target": {
+                "input": "handledBy"
+              }
+            }
+          ]
+        },
+        {
+          "id": "LinkEmployeeReportsTo",
+          "description": "Link employee reportsTo employee",
+          "inputs": [
+            {
+              "name": "employee",
+              "type": {
+                "kind": "ref",
+                "type": "Employee"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "reportsTo",
+              "type": {
+                "kind": "ref",
+                "type": "Employee"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "employee_exists",
+              "reason": "no such employee",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "employee"
+                }
+              }
+            },
+            {
+              "id": "reportsTo_exists",
+              "reason": "no such reportsTo",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "reportsTo"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "link",
+              "type": "reportsTo",
+              "source": {
+                "input": "employee"
+              },
+              "target": {
+                "input": "reportsTo"
+              }
+            }
+          ]
+        },
+        {
+          "id": "UnlinkEmployeeReportsTo",
+          "description": "Unlink employee reportsTo employee",
+          "inputs": [
+            {
+              "name": "employee",
+              "type": {
+                "kind": "ref",
+                "type": "Employee"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "reportsTo",
+              "type": {
+                "kind": "ref",
+                "type": "Employee"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "employee_exists",
+              "reason": "no such employee",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "employee"
+                }
+              }
+            },
+            {
+              "id": "reportsTo_exists",
+              "reason": "no such reportsTo",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "reportsTo"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "unlink",
+              "type": "reportsTo",
+              "source": {
+                "input": "employee"
+              },
+              "target": {
+                "input": "reportsTo"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

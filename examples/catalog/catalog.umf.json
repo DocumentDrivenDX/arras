@@ -1,0 +1,3375 @@
+{
+  "umf": "0.10.0",
+  "id": "catalog-example",
+  "vocabularies": {
+    "umf.ddd": {
+      "version": "0.1.0"
+    },
+    "arras.view": {
+      "version": "0.1.0"
+    }
+  },
+  "extensions": {},
+  "modules": [
+    {
+      "id": "catalog",
+      "namespace": "catalog",
+      "extensions": {
+        "umf.ddd": {
+          "kind": "bounded-context",
+          "terms": []
+        },
+        "arras.view": {
+          "title": "Product catalog",
+          "description": "Use cases, solutions, products and what an evaluation found"
+        }
+      },
+      "elements": [
+        {
+          "id": "UseCase",
+          "kind": "record",
+          "name": "UseCase",
+          "members": [
+            {
+              "module": "catalog",
+              "element": "UseCase.code"
+            },
+            {
+              "module": "catalog",
+              "element": "UseCase.name"
+            },
+            {
+              "module": "catalog",
+              "element": "UseCase.workArea"
+            },
+            {
+              "module": "catalog",
+              "element": "UseCase.description"
+            },
+            {
+              "module": "catalog",
+              "element": "UseCase.problem"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "name": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "workArea": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                },
+                "description": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                },
+                "problem": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            },
+            "arras.view": {
+              "label": "Use case",
+              "icon": "wrench",
+              "tone": "violet",
+              "title": "{name}",
+              "summary": "{description}",
+              "sections": [
+                {
+                  "label": "Where it applies",
+                  "properties": [
+                    "workArea"
+                  ]
+                },
+                {
+                  "label": "The problem",
+                  "properties": [
+                    "problem"
+                  ],
+                  "collapsed": true
+                }
+              ],
+              "search": [
+                "name",
+                "code",
+                "description",
+                "problem",
+                "workArea"
+              ]
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "catalog",
+                  "element": "UseCase.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "UseCase.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "UseCase.name",
+          "kind": "field",
+          "name": "name",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "UseCase.workArea",
+          "kind": "field",
+          "name": "workArea",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "UseCase.description",
+          "kind": "field",
+          "name": "description",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "UseCase.problem",
+          "kind": "field",
+          "name": "problem",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Solution",
+          "kind": "record",
+          "name": "Solution",
+          "members": [
+            {
+              "module": "catalog",
+              "element": "Solution.code"
+            },
+            {
+              "module": "catalog",
+              "element": "Solution.name"
+            },
+            {
+              "module": "catalog",
+              "element": "Solution.deliveryMode"
+            },
+            {
+              "module": "catalog",
+              "element": "Solution.summary"
+            },
+            {
+              "module": "catalog",
+              "element": "Solution.workflow"
+            },
+            {
+              "module": "catalog",
+              "element": "Solution.prompt"
+            },
+            {
+              "module": "catalog",
+              "element": "Solution.audience"
+            },
+            {
+              "module": "catalog",
+              "element": "Solution.launchUrl"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "name": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "deliveryMode": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "summary": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                },
+                "workflow": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                },
+                "prompt": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                },
+                "audience": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                },
+                "launchUrl": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            },
+            "arras.view": {
+              "label": "Solution",
+              "icon": "puzzle",
+              "tone": "blue",
+              "title": "{name}[ ({code})]",
+              "summary": "{summary}",
+              "sections": [
+                {
+                  "label": "Delivery",
+                  "properties": [
+                    "deliveryMode",
+                    "audience",
+                    "launchUrl"
+                  ]
+                },
+                {
+                  "label": "How it works",
+                  "properties": [
+                    "workflow",
+                    "prompt"
+                  ],
+                  "collapsed": true
+                }
+              ],
+              "search": [
+                "name",
+                "code",
+                "summary",
+                "audience",
+                "workflow",
+                "prompt"
+              ]
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "catalog",
+                  "element": "Solution.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "Solution.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Solution.name",
+          "kind": "field",
+          "name": "name",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Solution.deliveryMode",
+          "kind": "field",
+          "name": "deliveryMode",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {
+            "arras.view": {
+              "label": "Delivery",
+              "format": "badge",
+              "tones": {
+                "chat": "blue",
+                "handoff": "amber",
+                "app": "teal"
+              }
+            }
+          }
+        },
+        {
+          "id": "Solution.summary",
+          "kind": "field",
+          "name": "summary",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Solution.workflow",
+          "kind": "field",
+          "name": "workflow",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {
+            "arras.view": {
+              "hideWhenEmpty": true
+            }
+          }
+        },
+        {
+          "id": "Solution.prompt",
+          "kind": "field",
+          "name": "prompt",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {
+            "arras.view": {
+              "format": "code",
+              "hideWhenEmpty": true
+            }
+          }
+        },
+        {
+          "id": "Solution.audience",
+          "kind": "field",
+          "name": "audience",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Solution.launchUrl",
+          "kind": "field",
+          "name": "launchUrl",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {
+            "arras.view": {
+              "label": "Launch",
+              "format": "link",
+              "hideWhenEmpty": true
+            }
+          }
+        },
+        {
+          "id": "Product",
+          "kind": "record",
+          "name": "Product",
+          "members": [
+            {
+              "module": "catalog",
+              "element": "Product.code"
+            },
+            {
+              "module": "catalog",
+              "element": "Product.name"
+            },
+            {
+              "module": "catalog",
+              "element": "Product.vendor"
+            },
+            {
+              "module": "catalog",
+              "element": "Product.category"
+            },
+            {
+              "module": "catalog",
+              "element": "Product.summary"
+            },
+            {
+              "module": "catalog",
+              "element": "Product.lifecycleStatus"
+            },
+            {
+              "module": "catalog",
+              "element": "Product.availability"
+            },
+            {
+              "module": "catalog",
+              "element": "Product.caveat"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "name": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "vendor": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                },
+                "category": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                },
+                "summary": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                },
+                "lifecycleStatus": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                },
+                "availability": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                },
+                "caveat": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            },
+            "arras.view": {
+              "label": "Product",
+              "icon": "package",
+              "tone": "teal",
+              "title": "{name}",
+              "summary": "{summary}",
+              "sections": [
+                {
+                  "label": "Status",
+                  "properties": [
+                    "lifecycleStatus",
+                    "availability"
+                  ]
+                },
+                {
+                  "label": "About",
+                  "properties": [
+                    "vendor",
+                    "category"
+                  ]
+                },
+                {
+                  "label": "Caveat",
+                  "properties": [
+                    "caveat"
+                  ]
+                }
+              ],
+              "search": [
+                "name",
+                "code",
+                "vendor",
+                "category",
+                "summary"
+              ]
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "catalog",
+                  "element": "Product.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "Product.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Product.name",
+          "kind": "field",
+          "name": "name",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Product.vendor",
+          "kind": "field",
+          "name": "vendor",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Product.category",
+          "kind": "field",
+          "name": "category",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Product.summary",
+          "kind": "field",
+          "name": "summary",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Product.lifecycleStatus",
+          "kind": "field",
+          "name": "lifecycleStatus",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Product.availability",
+          "kind": "field",
+          "name": "availability",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {
+            "arras.view": {
+              "format": "badge",
+              "tones": {
+                "live": "green",
+                "limited": "amber",
+                "in_evaluation": "blue",
+                "purchasing": "violet",
+                "not_available": "slate"
+              }
+            }
+          }
+        },
+        {
+          "id": "Product.caveat",
+          "kind": "field",
+          "name": "caveat",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {
+            "arras.view": {
+              "hideWhenEmpty": true
+            }
+          }
+        },
+        {
+          "id": "CoverageAssertion",
+          "kind": "record",
+          "name": "CoverageAssertion",
+          "members": [
+            {
+              "module": "catalog",
+              "element": "CoverageAssertion.code"
+            },
+            {
+              "module": "catalog",
+              "element": "CoverageAssertion.level"
+            },
+            {
+              "module": "catalog",
+              "element": "CoverageAssertion.notes"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "level": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "notes": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            },
+            "arras.view": {
+              "label": "Coverage",
+              "pluralLabel": "Coverage",
+              "icon": "check-circle",
+              "tone": "green",
+              "title": "{code}",
+              "sections": [
+                {
+                  "label": "Notes",
+                  "properties": [
+                    "notes"
+                  ]
+                }
+              ],
+              "search": [
+                "code",
+                "notes"
+              ]
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "catalog",
+                  "element": "CoverageAssertion.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "CoverageAssertion.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "CoverageAssertion.level",
+          "kind": "field",
+          "name": "level",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {
+            "arras.view": {
+              "format": "badge",
+              "tones": {
+                "full": "green",
+                "partial": "amber",
+                "adjacent": "slate"
+              }
+            }
+          }
+        },
+        {
+          "id": "CoverageAssertion.notes",
+          "kind": "field",
+          "name": "notes",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {
+            "arras.view": {
+              "hideWhenEmpty": true
+            }
+          }
+        },
+        {
+          "id": "ProductVersion",
+          "kind": "record",
+          "name": "ProductVersion",
+          "members": [
+            {
+              "module": "catalog",
+              "element": "ProductVersion.code"
+            },
+            {
+              "module": "catalog",
+              "element": "ProductVersion.label"
+            },
+            {
+              "module": "catalog",
+              "element": "ProductVersion.status"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "label": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "status": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            },
+            "arras.view": {
+              "label": "Product version",
+              "icon": "tag",
+              "tone": "amber",
+              "title": "{label} ({code})",
+              "sections": [],
+              "search": [
+                "label",
+                "code"
+              ]
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "catalog",
+                  "element": "ProductVersion.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "ProductVersion.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "ProductVersion.label",
+          "kind": "field",
+          "name": "label",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "ProductVersion.status",
+          "kind": "field",
+          "name": "status",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {
+            "arras.view": {
+              "format": "badge",
+              "tones": {
+                "current": "green",
+                "superseded": "slate"
+              }
+            }
+          }
+        },
+        {
+          "id": "Finding",
+          "kind": "record",
+          "name": "Finding",
+          "members": [
+            {
+              "module": "catalog",
+              "element": "Finding.code"
+            },
+            {
+              "module": "catalog",
+              "element": "Finding.statement"
+            },
+            {
+              "module": "catalog",
+              "element": "Finding.kind"
+            },
+            {
+              "module": "catalog",
+              "element": "Finding.status"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "statement": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "kind": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "status": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            },
+            "arras.view": {
+              "label": "Finding",
+              "icon": "flag",
+              "tone": "rose",
+              "title": "{code}",
+              "summary": "{statement}",
+              "sections": [],
+              "search": [
+                "statement",
+                "code"
+              ]
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "catalog",
+                  "element": "Finding.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "Finding.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Finding.statement",
+          "kind": "field",
+          "name": "statement",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Finding.kind",
+          "kind": "field",
+          "name": "kind",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {
+            "arras.view": {
+              "format": "badge"
+            }
+          }
+        },
+        {
+          "id": "Finding.status",
+          "kind": "field",
+          "name": "status",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {
+            "arras.view": {
+              "format": "badge",
+              "tones": {
+                "active": "amber"
+              }
+            }
+          }
+        }
+      ],
+      "relationships": [
+        {
+          "id": "solution-addresses",
+          "name": "addresses",
+          "source": [
+            {
+              "module": "catalog",
+              "element": "Solution"
+            }
+          ],
+          "target": [
+            {
+              "module": "catalog",
+              "element": "UseCase",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "addressedBy",
+          "extensions": {
+            "arras.view": {
+              "label": "Addresses",
+              "inverseLabel": "Addressed by",
+              "order": 10
+            }
+          }
+        },
+        {
+          "id": "solution-providedby",
+          "name": "providedBy",
+          "source": [
+            {
+              "module": "catalog",
+              "element": "Solution"
+            }
+          ],
+          "target": [
+            {
+              "module": "catalog",
+              "element": "Product",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "provides",
+          "extensions": {
+            "arras.view": {
+              "label": "Provided by",
+              "inverseLabel": "Provides",
+              "order": 20
+            }
+          }
+        },
+        {
+          "id": "coverageassertion-ofproduct",
+          "name": "ofProduct",
+          "source": [
+            {
+              "module": "catalog",
+              "element": "CoverageAssertion"
+            }
+          ],
+          "target": [
+            {
+              "module": "catalog",
+              "element": "Product",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "coverage",
+          "extensions": {
+            "arras.view": {
+              "label": "Product",
+              "inverseLabel": "Coverage",
+              "order": 30
+            }
+          }
+        },
+        {
+          "id": "coverageassertion-ofusecase",
+          "name": "ofUseCase",
+          "source": [
+            {
+              "module": "catalog",
+              "element": "CoverageAssertion"
+            }
+          ],
+          "target": [
+            {
+              "module": "catalog",
+              "element": "UseCase",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "coveredBy",
+          "extensions": {
+            "arras.view": {
+              "label": "Use case",
+              "inverseLabel": "Covered by",
+              "order": 30
+            }
+          }
+        },
+        {
+          "id": "productversion-versionof",
+          "name": "versionOf",
+          "source": [
+            {
+              "module": "catalog",
+              "element": "ProductVersion"
+            }
+          ],
+          "target": [
+            {
+              "module": "catalog",
+              "element": "Product",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "versions",
+          "extensions": {
+            "arras.view": {
+              "label": "Version of",
+              "inverseLabel": "Versions",
+              "order": 40
+            }
+          }
+        },
+        {
+          "id": "finding-about",
+          "name": "about",
+          "source": [
+            {
+              "module": "catalog",
+              "element": "Finding"
+            }
+          ],
+          "target": [
+            {
+              "module": "catalog",
+              "element": "Product",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "findings",
+          "extensions": {
+            "arras.view": {
+              "label": "About",
+              "inverseLabel": "Findings",
+              "order": 40
+            }
+          }
+        },
+        {
+          "id": "finding-aboutversion",
+          "name": "aboutVersion",
+          "source": [
+            {
+              "module": "catalog",
+              "element": "Finding"
+            }
+          ],
+          "target": [
+            {
+              "module": "catalog",
+              "element": "ProductVersion",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "versionFindings",
+          "extensions": {
+            "arras.view": {
+              "label": "About version",
+              "inverseLabel": "Findings on this version"
+            }
+          }
+        },
+        {
+          "id": "finding-appliesto",
+          "name": "appliesTo",
+          "source": [
+            {
+              "module": "catalog",
+              "element": "Finding"
+            }
+          ],
+          "target": [
+            {
+              "module": "catalog",
+              "element": "UseCase",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "evidence",
+          "extensions": {
+            "arras.view": {
+              "label": "Evidence for",
+              "inverseLabel": "Evidence",
+              "order": 60
+            }
+          }
+        },
+        {
+          "id": "finding-adjacentto",
+          "name": "adjacentTo",
+          "source": [
+            {
+              "module": "catalog",
+              "element": "Finding"
+            }
+          ],
+          "target": [
+            {
+              "module": "catalog",
+              "element": "UseCase",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "adjacentEvidence",
+          "extensions": {
+            "arras.view": {
+              "label": "Bears on",
+              "inverseLabel": "Adjacent evidence",
+              "order": 70
+            }
+          }
+        }
+      ],
+      "actions": [
+        {
+          "id": "AddUseCase",
+          "description": "Add a use case: a kind of work someone in the organization needs done",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "workArea",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "description",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "problem",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "fresh",
+              "reason": "a useCase with that code exists",
+              "predicate": {
+                "op": "absent",
+                "type": "UseCase",
+                "key": {
+                  "input": "code"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "as": "new",
+              "type": "UseCase",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                },
+                "workArea": {
+                  "input": "workArea"
+                },
+                "description": {
+                  "input": "description"
+                },
+                "problem": {
+                  "input": "problem"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "AddSolution",
+          "description": "Add a solution: one way of doing a use case",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "deliveryMode",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "summary",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "workflow",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "prompt",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "audience",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "launchUrl",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "useCase",
+              "type": {
+                "kind": "ref",
+                "type": "UseCase"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "fresh",
+              "reason": "a solution with that code exists",
+              "predicate": {
+                "op": "absent",
+                "type": "Solution",
+                "key": {
+                  "input": "code"
+                }
+              }
+            },
+            {
+              "id": "useCase_exists",
+              "reason": "no such useCase",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "useCase"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "as": "new",
+              "type": "Solution",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                },
+                "deliveryMode": {
+                  "input": "deliveryMode"
+                },
+                "summary": {
+                  "input": "summary"
+                },
+                "workflow": {
+                  "input": "workflow"
+                },
+                "prompt": {
+                  "input": "prompt"
+                },
+                "audience": {
+                  "input": "audience"
+                },
+                "launchUrl": {
+                  "input": "launchUrl"
+                }
+              }
+            },
+            {
+              "op": "link",
+              "type": "addresses",
+              "source": {
+                "alias": "new"
+              },
+              "target": {
+                "input": "useCase"
+              }
+            }
+          ]
+        },
+        {
+          "id": "AddProduct",
+          "description": "Add a product: a tool the organization has, is trialling or is considering",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "vendor",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "category",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "summary",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "lifecycleStatus",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "availability",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "caveat",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "fresh",
+              "reason": "a product with that code exists",
+              "predicate": {
+                "op": "absent",
+                "type": "Product",
+                "key": {
+                  "input": "code"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "as": "new",
+              "type": "Product",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                },
+                "vendor": {
+                  "input": "vendor"
+                },
+                "category": {
+                  "input": "category"
+                },
+                "summary": {
+                  "input": "summary"
+                },
+                "lifecycleStatus": {
+                  "input": "lifecycleStatus"
+                },
+                "availability": {
+                  "input": "availability"
+                },
+                "caveat": {
+                  "input": "caveat"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "AssertCoverage",
+          "description": "Record how far a product covers a use case",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "level",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "notes",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "product",
+              "type": {
+                "kind": "ref",
+                "type": "Product"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "useCase",
+              "type": {
+                "kind": "ref",
+                "type": "UseCase"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "fresh",
+              "reason": "a coverageAssertion with that code exists",
+              "predicate": {
+                "op": "absent",
+                "type": "CoverageAssertion",
+                "key": {
+                  "input": "code"
+                }
+              }
+            },
+            {
+              "id": "product_exists",
+              "reason": "no such product",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "product"
+                }
+              }
+            },
+            {
+              "id": "useCase_exists",
+              "reason": "no such useCase",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "useCase"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "as": "new",
+              "type": "CoverageAssertion",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "level": {
+                  "input": "level"
+                },
+                "notes": {
+                  "input": "notes"
+                }
+              }
+            },
+            {
+              "op": "link",
+              "type": "ofProduct",
+              "source": {
+                "alias": "new"
+              },
+              "target": {
+                "input": "product"
+              }
+            },
+            {
+              "op": "link",
+              "type": "ofUseCase",
+              "source": {
+                "alias": "new"
+              },
+              "target": {
+                "input": "useCase"
+              }
+            }
+          ]
+        },
+        {
+          "id": "AddProductVersion",
+          "description": "Add a version of a product",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "label",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "status",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "product",
+              "type": {
+                "kind": "ref",
+                "type": "Product"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "fresh",
+              "reason": "a productVersion with that code exists",
+              "predicate": {
+                "op": "absent",
+                "type": "ProductVersion",
+                "key": {
+                  "input": "code"
+                }
+              }
+            },
+            {
+              "id": "product_exists",
+              "reason": "no such product",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "product"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "as": "new",
+              "type": "ProductVersion",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "label": {
+                  "input": "label"
+                },
+                "status": {
+                  "input": "status"
+                }
+              }
+            },
+            {
+              "op": "link",
+              "type": "versionOf",
+              "source": {
+                "alias": "new"
+              },
+              "target": {
+                "input": "product"
+              }
+            }
+          ]
+        },
+        {
+          "id": "AddFinding",
+          "description": "Add a finding: something an evaluation observed about a product",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "statement",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "kind",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "status",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "product",
+              "type": {
+                "kind": "ref",
+                "type": "Product"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "fresh",
+              "reason": "a finding with that code exists",
+              "predicate": {
+                "op": "absent",
+                "type": "Finding",
+                "key": {
+                  "input": "code"
+                }
+              }
+            },
+            {
+              "id": "product_exists",
+              "reason": "no such product",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "product"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "as": "new",
+              "type": "Finding",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "statement": {
+                  "input": "statement"
+                },
+                "kind": {
+                  "input": "kind"
+                },
+                "status": {
+                  "input": "status"
+                }
+              }
+            },
+            {
+              "op": "link",
+              "type": "about",
+              "source": {
+                "alias": "new"
+              },
+              "target": {
+                "input": "product"
+              }
+            }
+          ]
+        },
+        {
+          "id": "CorrectUseCase",
+          "description": "Correct the details of use case",
+          "inputs": [
+            {
+              "name": "workArea",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "description",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "problem",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "useCase",
+              "type": {
+                "kind": "ref",
+                "type": "UseCase"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "useCase_exists",
+              "reason": "no such useCase",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "useCase"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "UseCase",
+              "key": {
+                "input": "useCase"
+              },
+              "properties": {
+                "workArea": {
+                  "input": "workArea"
+                },
+                "description": {
+                  "input": "description"
+                },
+                "problem": {
+                  "input": "problem"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "RenameUseCase",
+          "description": "Change the name of use case",
+          "inputs": [
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "useCase",
+              "type": {
+                "kind": "ref",
+                "type": "UseCase"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "useCase_exists",
+              "reason": "no such useCase",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "useCase"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "UseCase",
+              "key": {
+                "input": "useCase"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "CorrectSolution",
+          "description": "Correct the details of solution",
+          "inputs": [
+            {
+              "name": "summary",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "workflow",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "prompt",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "audience",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "launchUrl",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "solution",
+              "type": {
+                "kind": "ref",
+                "type": "Solution"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "solution_exists",
+              "reason": "no such solution",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "solution"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Solution",
+              "key": {
+                "input": "solution"
+              },
+              "properties": {
+                "summary": {
+                  "input": "summary"
+                },
+                "workflow": {
+                  "input": "workflow"
+                },
+                "prompt": {
+                  "input": "prompt"
+                },
+                "audience": {
+                  "input": "audience"
+                },
+                "launchUrl": {
+                  "input": "launchUrl"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "UpdateSolution",
+          "description": "Update solution",
+          "inputs": [
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "deliveryMode",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "solution",
+              "type": {
+                "kind": "ref",
+                "type": "Solution"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "solution_exists",
+              "reason": "no such solution",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "solution"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Solution",
+              "key": {
+                "input": "solution"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                },
+                "deliveryMode": {
+                  "input": "deliveryMode"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "CorrectProduct",
+          "description": "Correct the details of product",
+          "inputs": [
+            {
+              "name": "vendor",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "category",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "summary",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "lifecycleStatus",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "availability",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "caveat",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "product",
+              "type": {
+                "kind": "ref",
+                "type": "Product"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "product_exists",
+              "reason": "no such product",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "product"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Product",
+              "key": {
+                "input": "product"
+              },
+              "properties": {
+                "vendor": {
+                  "input": "vendor"
+                },
+                "category": {
+                  "input": "category"
+                },
+                "summary": {
+                  "input": "summary"
+                },
+                "lifecycleStatus": {
+                  "input": "lifecycleStatus"
+                },
+                "availability": {
+                  "input": "availability"
+                },
+                "caveat": {
+                  "input": "caveat"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "RenameProduct",
+          "description": "Change the name of product",
+          "inputs": [
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "product",
+              "type": {
+                "kind": "ref",
+                "type": "Product"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "product_exists",
+              "reason": "no such product",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "product"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Product",
+              "key": {
+                "input": "product"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "ChangeCoverageLevel",
+          "description": "Change the level of coverage assertion",
+          "inputs": [
+            {
+              "name": "level",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "coverageAssertion",
+              "type": {
+                "kind": "ref",
+                "type": "CoverageAssertion"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "coverageAssertion_exists",
+              "reason": "no such coverageAssertion",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "coverageAssertion"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "CoverageAssertion",
+              "key": {
+                "input": "coverageAssertion"
+              },
+              "properties": {
+                "level": {
+                  "input": "level"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "CorrectCoverageAssertion",
+          "description": "Correct the details of coverage assertion",
+          "inputs": [
+            {
+              "name": "notes",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "coverageAssertion",
+              "type": {
+                "kind": "ref",
+                "type": "CoverageAssertion"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "coverageAssertion_exists",
+              "reason": "no such coverageAssertion",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "coverageAssertion"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "CoverageAssertion",
+              "key": {
+                "input": "coverageAssertion"
+              },
+              "properties": {
+                "notes": {
+                  "input": "notes"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "RelabelProductVersion",
+          "description": "Change the label of product version",
+          "inputs": [
+            {
+              "name": "label",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "productVersion",
+              "type": {
+                "kind": "ref",
+                "type": "ProductVersion"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "productVersion_exists",
+              "reason": "no such productVersion",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "productVersion"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "ProductVersion",
+              "key": {
+                "input": "productVersion"
+              },
+              "properties": {
+                "label": {
+                  "input": "label"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "CorrectProductVersion",
+          "description": "Correct the details of product version",
+          "inputs": [
+            {
+              "name": "status",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            },
+            {
+              "name": "productVersion",
+              "type": {
+                "kind": "ref",
+                "type": "ProductVersion"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "productVersion_exists",
+              "reason": "no such productVersion",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "productVersion"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "ProductVersion",
+              "key": {
+                "input": "productVersion"
+              },
+              "properties": {
+                "status": {
+                  "input": "status"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "UpdateFinding",
+          "description": "Update finding",
+          "inputs": [
+            {
+              "name": "statement",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "kind",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "status",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "finding",
+              "type": {
+                "kind": "ref",
+                "type": "Finding"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "finding_exists",
+              "reason": "no such finding",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "finding"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Finding",
+              "key": {
+                "input": "finding"
+              },
+              "properties": {
+                "statement": {
+                  "input": "statement"
+                },
+                "kind": {
+                  "input": "kind"
+                },
+                "status": {
+                  "input": "status"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "AddressUseCase",
+          "description": "Link solution addresses use case",
+          "inputs": [
+            {
+              "name": "solution",
+              "type": {
+                "kind": "ref",
+                "type": "Solution"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "useCase",
+              "type": {
+                "kind": "ref",
+                "type": "UseCase"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "solution_exists",
+              "reason": "no such solution",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "solution"
+                }
+              }
+            },
+            {
+              "id": "useCase_exists",
+              "reason": "no such useCase",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "useCase"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "link",
+              "type": "addresses",
+              "source": {
+                "input": "solution"
+              },
+              "target": {
+                "input": "useCase"
+              }
+            }
+          ]
+        },
+        {
+          "id": "UnaddressUseCase",
+          "description": "Unlink solution addresses use case",
+          "inputs": [
+            {
+              "name": "solution",
+              "type": {
+                "kind": "ref",
+                "type": "Solution"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "useCase",
+              "type": {
+                "kind": "ref",
+                "type": "UseCase"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "solution_exists",
+              "reason": "no such solution",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "solution"
+                }
+              }
+            },
+            {
+              "id": "useCase_exists",
+              "reason": "no such useCase",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "useCase"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "unlink",
+              "type": "addresses",
+              "source": {
+                "input": "solution"
+              },
+              "target": {
+                "input": "useCase"
+              }
+            }
+          ]
+        },
+        {
+          "id": "SetSolutionProvider",
+          "description": "Link solution providedBy product",
+          "inputs": [
+            {
+              "name": "solution",
+              "type": {
+                "kind": "ref",
+                "type": "Solution"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "product",
+              "type": {
+                "kind": "ref",
+                "type": "Product"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "solution_exists",
+              "reason": "no such solution",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "solution"
+                }
+              }
+            },
+            {
+              "id": "product_exists",
+              "reason": "no such product",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "product"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "link",
+              "type": "providedBy",
+              "source": {
+                "input": "solution"
+              },
+              "target": {
+                "input": "product"
+              }
+            }
+          ]
+        },
+        {
+          "id": "ClearSolutionProvider",
+          "description": "Unlink solution providedBy product",
+          "inputs": [
+            {
+              "name": "solution",
+              "type": {
+                "kind": "ref",
+                "type": "Solution"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "product",
+              "type": {
+                "kind": "ref",
+                "type": "Product"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "solution_exists",
+              "reason": "no such solution",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "solution"
+                }
+              }
+            },
+            {
+              "id": "product_exists",
+              "reason": "no such product",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "product"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "unlink",
+              "type": "providedBy",
+              "source": {
+                "input": "solution"
+              },
+              "target": {
+                "input": "product"
+              }
+            }
+          ]
+        },
+        {
+          "id": "SetFindingVersion",
+          "description": "Link finding aboutVersion product version",
+          "inputs": [
+            {
+              "name": "finding",
+              "type": {
+                "kind": "ref",
+                "type": "Finding"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "productVersion",
+              "type": {
+                "kind": "ref",
+                "type": "ProductVersion"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "finding_exists",
+              "reason": "no such finding",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "finding"
+                }
+              }
+            },
+            {
+              "id": "productVersion_exists",
+              "reason": "no such productVersion",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "productVersion"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "link",
+              "type": "aboutVersion",
+              "source": {
+                "input": "finding"
+              },
+              "target": {
+                "input": "productVersion"
+              }
+            }
+          ]
+        },
+        {
+          "id": "ClearFindingVersion",
+          "description": "Unlink finding aboutVersion product version",
+          "inputs": [
+            {
+              "name": "finding",
+              "type": {
+                "kind": "ref",
+                "type": "Finding"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "productVersion",
+              "type": {
+                "kind": "ref",
+                "type": "ProductVersion"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "finding_exists",
+              "reason": "no such finding",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "finding"
+                }
+              }
+            },
+            {
+              "id": "productVersion_exists",
+              "reason": "no such productVersion",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "productVersion"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "unlink",
+              "type": "aboutVersion",
+              "source": {
+                "input": "finding"
+              },
+              "target": {
+                "input": "productVersion"
+              }
+            }
+          ]
+        },
+        {
+          "id": "ApplyFindingTo",
+          "description": "Link finding appliesTo use case",
+          "inputs": [
+            {
+              "name": "finding",
+              "type": {
+                "kind": "ref",
+                "type": "Finding"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "useCase",
+              "type": {
+                "kind": "ref",
+                "type": "UseCase"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "finding_exists",
+              "reason": "no such finding",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "finding"
+                }
+              }
+            },
+            {
+              "id": "useCase_exists",
+              "reason": "no such useCase",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "useCase"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "link",
+              "type": "appliesTo",
+              "source": {
+                "input": "finding"
+              },
+              "target": {
+                "input": "useCase"
+              }
+            }
+          ]
+        },
+        {
+          "id": "UnapplyFindingTo",
+          "description": "Unlink finding appliesTo use case",
+          "inputs": [
+            {
+              "name": "finding",
+              "type": {
+                "kind": "ref",
+                "type": "Finding"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "useCase",
+              "type": {
+                "kind": "ref",
+                "type": "UseCase"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "finding_exists",
+              "reason": "no such finding",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "finding"
+                }
+              }
+            },
+            {
+              "id": "useCase_exists",
+              "reason": "no such useCase",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "useCase"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "unlink",
+              "type": "appliesTo",
+              "source": {
+                "input": "finding"
+              },
+              "target": {
+                "input": "useCase"
+              }
+            }
+          ]
+        },
+        {
+          "id": "RelateFindingTo",
+          "description": "Link finding adjacentTo use case",
+          "inputs": [
+            {
+              "name": "finding",
+              "type": {
+                "kind": "ref",
+                "type": "Finding"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "useCase",
+              "type": {
+                "kind": "ref",
+                "type": "UseCase"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "finding_exists",
+              "reason": "no such finding",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "finding"
+                }
+              }
+            },
+            {
+              "id": "useCase_exists",
+              "reason": "no such useCase",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "useCase"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "link",
+              "type": "adjacentTo",
+              "source": {
+                "input": "finding"
+              },
+              "target": {
+                "input": "useCase"
+              }
+            }
+          ]
+        },
+        {
+          "id": "UnrelateFindingTo",
+          "description": "Unlink finding adjacentTo use case",
+          "inputs": [
+            {
+              "name": "finding",
+              "type": {
+                "kind": "ref",
+                "type": "Finding"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "useCase",
+              "type": {
+                "kind": "ref",
+                "type": "UseCase"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "finding_exists",
+              "reason": "no such finding",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "finding"
+                }
+              }
+            },
+            {
+              "id": "useCase_exists",
+              "reason": "no such useCase",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "useCase"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "unlink",
+              "type": "adjacentTo",
+              "source": {
+                "input": "finding"
+              },
+              "target": {
+                "input": "useCase"
+              }
+            }
+          ]
+        },
+        {
+          "id": "RetireSolution",
+          "description": "Remove solution and its links",
+          "inputs": [
+            {
+              "name": "solution",
+              "type": {
+                "kind": "ref",
+                "type": "Solution"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "solution_exists",
+              "reason": "no such solution",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "solution"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "delete",
+              "refType": "Solution",
+              "key": {
+                "input": "solution"
+              }
+            }
+          ]
+        },
+        {
+          "id": "RetireCoverage",
+          "description": "Remove coverage assertion and its links",
+          "inputs": [
+            {
+              "name": "coverageAssertion",
+              "type": {
+                "kind": "ref",
+                "type": "CoverageAssertion"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "coverageAssertion_exists",
+              "reason": "no such coverageAssertion",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "coverageAssertion"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "delete",
+              "refType": "CoverageAssertion",
+              "key": {
+                "input": "coverageAssertion"
+              }
+            }
+          ]
+        },
+        {
+          "id": "RetireFinding",
+          "description": "Remove finding and its links",
+          "inputs": [
+            {
+              "name": "finding",
+              "type": {
+                "kind": "ref",
+                "type": "Finding"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "finding_exists",
+              "reason": "no such finding",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "finding"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "delete",
+              "refType": "Finding",
+              "key": {
+                "input": "finding"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

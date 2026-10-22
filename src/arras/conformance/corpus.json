@@ -1,0 +1,5460 @@
+{
+ "version": 13,
+ "module": "module.umf.json",
+ "covers": [
+  "key-lookups",
+  "bounded-lists",
+  "filters",
+  "relationship-predicates",
+  "alias-star",
+  "counts",
+  "joins",
+  "page-contract",
+  "unsupported-profiles",
+  "module",
+  "latest-from-record-store",
+  "at-least",
+  "empty-refused-unavailable",
+  "atomicity",
+  "idempotency",
+  "receipt",
+  "bulk-changes",
+  "refused-changes-nothing",
+  "dry-run",
+  "tokens",
+  "import",
+  "position-and-lag",
+  "replica-read-only",
+  "registry",
+  "attribution",
+  "groups",
+  "journal",
+  "documents",
+  "text-search",
+  "schema-grant",
+  "export"
+ ],
+ "fixtures": {
+  "basic": [
+   {
+    "op": "install"
+   },
+   {
+    "op": "grant",
+    "user": "alice",
+    "modules": {
+     "catalog": [
+      "read",
+      "write",
+      "schema"
+     ]
+    },
+    "admin": true
+   },
+   {
+    "op": "grant",
+    "user": "carol",
+    "modules": {
+     "catalog": [
+      "read"
+     ]
+    }
+   },
+   {
+    "op": "grant",
+    "user": "bob",
+    "modules": {
+     "catalog": [
+      "read",
+      "write"
+     ]
+    }
+   },
+   {
+    "op": "grant",
+    "user": "dave",
+    "modules": {}
+   },
+   {
+    "op": "seed",
+    "as": "alice",
+    "records": [
+     {
+      "type": "UseCase",
+      "key": "uc-1",
+      "properties": {
+       "name": "Pipeline mapping",
+       "workArea": "data"
+      }
+     },
+     {
+      "type": "UseCase",
+      "key": "uc-2",
+      "properties": {
+       "name": "Runbook review",
+       "workArea": "operations"
+      }
+     },
+     {
+      "type": "Solution",
+      "key": "sol-1",
+      "properties": {
+       "name": "Pipeline extractor"
+      }
+     },
+     {
+      "relationship": "addresses",
+      "source": "sol-1",
+      "target": "uc-1"
+     }
+    ]
+   },
+   {
+    "op": "sync"
+   }
+  ],
+  "empty": [
+   {
+    "op": "install"
+   },
+   {
+    "op": "grant",
+    "user": "alice",
+    "modules": {
+     "catalog": [
+      "read",
+      "write",
+      "schema"
+     ]
+    },
+    "admin": true
+   },
+   {
+    "op": "grant",
+    "user": "carol",
+    "modules": {
+     "catalog": [
+      "read"
+     ]
+    }
+   },
+   {
+    "op": "grant",
+    "user": "bob",
+    "modules": {
+     "catalog": [
+      "read",
+      "write"
+     ]
+    }
+   },
+   {
+    "op": "grant",
+    "user": "dave",
+    "modules": {}
+   },
+   {
+    "op": "sync"
+   }
+  ],
+  "journal": [
+   {
+    "op": "install"
+   },
+   {
+    "op": "grant",
+    "user": "alice",
+    "modules": {
+     "catalog": [
+      "read",
+      "write",
+      "journal",
+      "schema"
+     ]
+    },
+    "admin": true
+   },
+   {
+    "op": "grant",
+    "user": "carol",
+    "modules": {
+     "catalog": [
+      "read"
+     ]
+    }
+   },
+   {
+    "op": "grant",
+    "user": "bob",
+    "modules": {
+     "catalog": [
+      "read",
+      "write"
+     ]
+    }
+   },
+   {
+    "op": "grant",
+    "user": "dave",
+    "modules": {}
+   },
+   {
+    "op": "seed",
+    "as": "alice",
+    "records": [
+     {
+      "type": "UseCase",
+      "key": "uc-1",
+      "properties": {
+       "name": "Pipeline mapping",
+       "workArea": "data"
+      }
+     },
+     {
+      "type": "UseCase",
+      "key": "uc-2",
+      "properties": {
+       "name": "Runbook review",
+       "workArea": "operations"
+      }
+     },
+     {
+      "type": "Solution",
+      "key": "sol-1",
+      "properties": {
+       "name": "Pipeline extractor"
+      }
+     },
+     {
+      "relationship": "addresses",
+      "source": "sol-1",
+      "target": "uc-1"
+     }
+    ]
+   },
+   {
+    "op": "sync"
+   }
+  ],
+  "text": [
+   {
+    "op": "install"
+   },
+   {
+    "op": "grant",
+    "user": "alice",
+    "modules": {
+     "catalog": [
+      "read",
+      "write",
+      "schema"
+     ]
+    },
+    "admin": true
+   },
+   {
+    "op": "grant",
+    "user": "carol",
+    "modules": {
+     "catalog": [
+      "read"
+     ]
+    }
+   },
+   {
+    "op": "grant",
+    "user": "bob",
+    "modules": {
+     "catalog": [
+      "read",
+      "write"
+     ]
+    }
+   },
+   {
+    "op": "grant",
+    "user": "dave",
+    "modules": {}
+   },
+   {
+    "op": "seed",
+    "as": "alice",
+    "records": [
+     {
+      "type": "UseCase",
+      "key": "uc-pct",
+      "properties": {
+       "name": "100% sure_thing \\ back",
+       "workArea": "finance"
+      }
+     },
+     {
+      "type": "UseCase",
+      "key": "uc-plain",
+      "properties": {
+       "name": "100x sureXthing / back",
+       "workArea": "finance"
+      }
+     },
+     {
+      "type": "UseCase",
+      "key": "uc-case",
+      "properties": {
+       "name": "Pipeline MAPPING",
+       "workArea": "data"
+      }
+     },
+     {
+      "type": "UseCase",
+      "key": "uc-both",
+      "properties": {
+       "name": "Nothing here",
+       "workArea": "pipeline"
+      }
+     },
+     {
+      "type": "Solution",
+      "key": "sol-1",
+      "properties": {
+       "name": "Pipeline extractor"
+      }
+     }
+    ]
+   },
+   {
+    "op": "sync"
+   }
+  ]
+ },
+ "cases": [
+  {
+   "id": "read.key-lookup-whole-entity",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "key-lookups",
+    "alias-star"
+   ],
+   "description": "alias.* by key returns every property, the relationship keys, the version and attribution",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.*, RELATED_KEYS(u.addressedBy, 100) AS addressedBy FROM catalog.UseCase u WHERE u.code = 'uc-1' ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "requires": {
+      "profiles": [
+       "related-entity-page"
+      ]
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-1",
+        "name": "Pipeline mapping",
+        "workArea": "data",
+        "addressedBy": [
+         "sol-1"
+        ],
+        "_version": 1,
+        "_created_by": "alice",
+        "_updated_by": "alice",
+        "_original_author": null,
+        "_original_at": null
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "read.relationship-columns-follow-ends",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "alias-star",
+    "relationship-predicates"
+   ],
+   "limits": [
+    "Truss 0.0.45 appends a column named as each relationship to a whole entity (read profile complete-entity, the only way it returns the facts) and Weft refuses an explicit alias equal to that name as a repeated output name, so this statement is refused and a Truss adapter ends the case at its first step (truss-requirements R17.2)"
+   ],
+   "description": "a relationship is a column of the types at its ends, under its own name or its inverse",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT s.*, RELATED_KEYS(s.addresses, 100) AS addresses FROM catalog.Solution s WHERE s.code = 'sol-1' ORDER BY s.code LIMIT 100",
+     "whole": true,
+     "requires": {
+      "profiles": [
+       "related-entity-page"
+      ]
+     },
+     "expect": {
+      "rows": [
+       {
+        "addresses": [
+         "uc-1"
+        ]
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "read.missing-key-is-no-rows",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "key-lookups",
+    "empty-refused-unavailable"
+   ],
+   "description": "a query for an absent key is an empty answer, not an error",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u WHERE u.code = 'nope' ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "expect": {
+      "rows": []
+     }
+    }
+   ]
+  },
+  {
+   "id": "read.columns-and-filters",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "bounded-lists",
+    "filters",
+    "unsupported-profiles"
+   ],
+   "description": "required scalar columns, equality on a field; a backend that does not declare the columns answers Unsupported",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code, u.name FROM catalog.UseCase u WHERE u.name = 'Runbook review' ORDER BY u.code LIMIT 100",
+     "requires": {
+      "profiles": [
+       "entity-page"
+      ]
+     },
+     "expect": {
+      "columns": [
+       "code",
+       "name"
+      ],
+      "rows": [
+       {
+        "code": "uc-2",
+        "name": "Runbook review"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "read.relationship-filter-both-directions",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "relationship-predicates",
+    "unsupported-profiles"
+   ],
+   "description": "entities related to a key, by name and by inverse",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT s.code FROM catalog.Solution s WHERE HAS_RELATED(s.addresses, KEY('uc-1')) ORDER BY s.code LIMIT 100",
+     "requires": {
+      "profiles": [
+       "related-entity-page"
+      ]
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "sol-1"
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE HAS_RELATED(u.addressedBy, KEY('sol-1')) ORDER BY u.code LIMIT 100",
+     "requires": {
+      "profiles": [
+       "related-entity-page"
+      ]
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-1"
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE HAS_RELATED(u.addressedBy, KEY('nobody')) ORDER BY u.code LIMIT 100",
+     "requires": {
+      "profiles": [
+       "related-entity-page"
+      ]
+     },
+     "expect": {
+      "rows": []
+     }
+    }
+   ]
+  },
+  {
+   "id": "read.repeated-relationship-predicates-mean-both",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "relationship-predicates"
+   ],
+   "description": "two relationship predicates on one name select entities related to both",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "seed",
+     "as": "alice",
+     "records": [
+      {
+       "relationship": "addresses",
+       "source": "sol-1",
+       "target": "uc-2"
+      }
+     ]
+    },
+    {
+     "op": "sync"
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT s.code FROM catalog.Solution s WHERE HAS_RELATED(s.addresses, KEY('uc-1')) AND HAS_RELATED(s.addresses, KEY('uc-2')) ORDER BY s.code LIMIT 100",
+     "requires": {
+      "profiles": [
+       "related-entity-page"
+      ]
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "sol-1"
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT s.code FROM catalog.Solution s WHERE HAS_RELATED(s.addresses, KEY('uc-1')) AND HAS_RELATED(s.addresses, KEY('nope')) ORDER BY s.code LIMIT 100",
+     "requires": {
+      "profiles": [
+       "related-entity-page"
+      ]
+     },
+     "expect": {
+      "rows": []
+     }
+    }
+   ]
+  },
+  {
+   "id": "read.count-group-by",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "counts",
+    "unsupported-profiles"
+   ],
+   "description": "COUNT(*) grouped by one property, exact integers; a backend that does not declare count answers Unsupported",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "seed",
+     "as": "alice",
+     "records": [
+      {
+       "type": "UseCase",
+       "key": "uc-3",
+       "properties": {
+        "name": "Runbook review"
+       }
+      }
+     ]
+    },
+    {
+     "op": "sync"
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.name, COUNT(*) FROM catalog.UseCase u GROUP BY u.name ORDER BY u.name LIMIT 100",
+     "requires": {
+      "profiles": [
+       "count-summary"
+      ]
+     },
+     "expect": {
+      "rows": [
+       {
+        "name": "Pipeline mapping",
+        "count": 1
+       },
+       {
+        "name": "Runbook review",
+        "count": 2
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "read.inner-join-is-a-bag",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "joins",
+    "unsupported-profiles"
+   ],
+   "description": "an inner join on a.x = b.y keeps every matching combination (a bag: duplicates kept, unmatched rows dropped), in the statement's order and LIMIT; the general profile, which a backend that does not declare it answers Unsupported",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "seed",
+     "as": "alice",
+     "records": [
+      {
+       "type": "UseCase",
+       "key": "uc-3",
+       "properties": {
+        "name": "Runbook review"
+       }
+      },
+      {
+       "type": "Solution",
+       "key": "sol-2",
+       "properties": {
+        "name": "Runbook review"
+       }
+      }
+     ]
+    },
+    {
+     "op": "sync"
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code, s.code AS solution FROM catalog.UseCase u JOIN catalog.Solution s ON s.name = u.name ORDER BY u.code LIMIT 100",
+     "requires": {
+      "profiles": [
+       "general"
+      ]
+     },
+     "expect": {
+      "columns": [
+       "code",
+       "solution"
+      ],
+      "rows": [
+       {
+        "code": "uc-2",
+        "solution": "sol-2"
+       },
+       {
+        "code": "uc-3",
+        "solution": "sol-2"
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.name, u.code FROM catalog.UseCase u ORDER BY u.name, u.code LIMIT 2",
+     "requires": {
+      "profiles": [
+       "general"
+      ]
+     },
+     "expect": {
+      "rows": [
+       {
+        "name": "Pipeline mapping",
+        "code": "uc-1"
+       },
+       {
+        "name": "Runbook review",
+        "code": "uc-2"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "read.count-over-a-join-by-several-columns",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "counts",
+    "joins",
+    "unsupported-profiles"
+   ],
+   "description": "COUNT(*) over an inner join counts the bag's rows, grouped by more than one column and ordered by the whole grouping; count-summary admits inner joins",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "seed",
+     "as": "alice",
+     "records": [
+      {
+       "type": "UseCase",
+       "key": "uc-3",
+       "properties": {
+        "name": "Runbook review"
+       }
+      },
+      {
+       "type": "Solution",
+       "key": "sol-2",
+       "properties": {
+        "name": "Runbook review"
+       }
+      }
+     ]
+    },
+    {
+     "op": "sync"
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.name, v.code, COUNT(*) FROM catalog.UseCase u JOIN catalog.UseCase v ON v.name = u.name GROUP BY u.name, v.code ORDER BY u.name, v.code LIMIT 100",
+     "requires": {
+      "profiles": [
+       "count-summary"
+      ]
+     },
+     "expect": {
+      "rows": [
+       {
+        "name": "Pipeline mapping",
+        "code": "uc-1",
+        "count": 1
+       },
+       {
+        "name": "Runbook review",
+        "code": "uc-2",
+        "count": 2
+       },
+       {
+        "name": "Runbook review",
+        "code": "uc-3",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT COUNT(*) AS n FROM catalog.UseCase u JOIN catalog.UseCase v ON v.name = u.name",
+     "requires": {
+      "profiles": [
+       "count-summary"
+      ]
+     },
+     "expect": {
+      "rows": [
+       {
+        "n": 5
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "read.paging-by-key",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "page-contract"
+   ],
+   "description": "a page is the statement's: ORDER BY the key, LIMIT, and a keyset predicate for the next; the limit cap says it cut the result with truncated",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u ORDER BY u.code LIMIT 1",
+     "requires": {
+      "profiles": [
+       "entity-page"
+      ]
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-1"
+       }
+      ],
+      "truncated": false
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code > :last ORDER BY u.code LIMIT 1",
+     "params": {
+      "last": "uc-1"
+     },
+     "requires": {
+      "profiles": [
+       "entity-page"
+      ]
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-2"
+       }
+      ],
+      "truncated": false
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code > :last ORDER BY u.code LIMIT 1",
+     "params": {
+      "last": "uc-2"
+     },
+     "requires": {
+      "profiles": [
+       "entity-page"
+      ]
+     },
+     "expect": {
+      "rows": []
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "limit": 1,
+     "requires": {
+      "profiles": [
+       "entity-page"
+      ]
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-1"
+       }
+      ],
+      "truncated": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "read.relationship-columns-are-capped",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "alias-star",
+    "page-contract"
+   ],
+   "limits": [
+    "Truss 0.0.45 refuses a whole entity that has more than 100 related keys on a relationship (limits), whatever the statement asks, so a Truss adapter ends the case at the whole-entity read of the entity with 101 links (truss-requirements R17.2)"
+   ],
+   "description": "RELATED_KEYS returns at most the n keys the statement asks for",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "seed_many",
+     "as": "alice",
+     "type": "Solution",
+     "count": 101,
+     "key": "m{:03}",
+     "properties": {
+      "name": "n"
+     },
+     "link": {
+      "relationship": "addresses",
+      "target": "uc-2"
+     }
+    },
+    {
+     "op": "sync"
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.*, RELATED_KEYS(u.addressedBy, 100) AS addressedBy FROM catalog.UseCase u WHERE u.code = 'uc-2' ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "requires": {
+      "profiles": [
+       "related-entity-page"
+      ]
+     },
+     "expect": {
+      "row_len": {
+       "addressedBy": 100
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "read.the-named-module-scopes-the-statement",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "module"
+   ],
+   "description": "the caller names the module: one that does not exist is unknown_type, and a statement reading outside it is Unsupported",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "query",
+     "as": "carol",
+     "module": "nomodule",
+     "sql": "SELECT u.code FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "expect": {
+      "error": "Invalid",
+      "code": "unknown_type"
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT t.code FROM other.Thing t ORDER BY t.code LIMIT 100",
+     "expect": {
+      "error": "Unsupported"
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "module": "catalog",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'uc-1' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-1"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "access.no-token-is-refused",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "tokens"
+   ],
+   "description": "a call with no token is refused",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "query",
+     "as": "anon",
+     "sql": "SELECT u.code FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "expect": {
+      "error": "Refused"
+     }
+    }
+   ]
+  },
+  {
+   "id": "access.anothers-token-is-refused",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "tokens"
+   ],
+   "description": "a person presenting another person's token is refused, never answered from a shared identity",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "query",
+     "as": "dave@alice",
+     "sql": "SELECT u.code FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "query",
+     "as": "alice",
+     "sql": "SELECT u.code FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "expect": {
+      "row_count": 2
+     }
+    }
+   ]
+  },
+  {
+   "id": "access.no-grant-is-refused-not-empty",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "empty-refused-unavailable"
+   ],
+   "description": "a person with no access to the module is never answered empty: to them the module does not exist (unknown_type), so its existence is not revealed; that comes before any refusal that depends on the type",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "query",
+     "as": "dave",
+     "sql": "SELECT u.code FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "expect": {
+      "error": "Invalid",
+      "code": "unknown_type"
+     }
+    },
+    {
+     "op": "query",
+     "as": "dave",
+     "sql": "SELECT u.name, COUNT(*) FROM catalog.UseCase u GROUP BY u.name ORDER BY u.name LIMIT 100",
+     "expect": {
+      "error": "Invalid",
+      "code": "unknown_type"
+     }
+    }
+   ]
+  },
+  {
+   "id": "access.expired-token-is-refused-not-unavailable",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "tokens",
+    "empty-refused-unavailable"
+   ],
+   "description": "an expired token is Refused",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "expire",
+     "user": "carol"
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "expect": {
+      "error": "Refused"
+     }
+    }
+   ]
+  },
+  {
+   "id": "access.outage-is-unavailable-never-empty",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "empty-refused-unavailable"
+   ],
+   "description": "an unreachable backend is Unavailable with its reason, never an empty answer",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "outage",
+     "reason": "unreachable"
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "expect": {
+      "error": "Unavailable",
+      "reason": "unreachable"
+     }
+    },
+    {
+     "op": "outage",
+     "reason": "access_denied"
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "expect": {
+      "error": "Unavailable",
+      "reason": "access_denied"
+     }
+    },
+    {
+     "op": "outage",
+     "reason": null
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "expect": {
+      "row_count": 2
+     }
+    }
+   ]
+  },
+  {
+   "id": "access.no-token-is-refused-even-when-down",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "tokens"
+   ],
+   "description": "a call with no token is refused before the backend is reached",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "outage",
+     "reason": "unreachable"
+    },
+    {
+     "op": "query",
+     "as": "anon",
+     "sql": "SELECT u.code FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "expect": {
+      "error": "Refused"
+     }
+    }
+   ]
+  },
+  {
+   "id": "access.outage-during-a-write-changes-nothing",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "empty-refused-unavailable",
+    "atomicity"
+   ],
+   "description": "a write against an unreachable provider is Unavailable and nothing is applied",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "outage",
+     "reason": "unreachable"
+    },
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-9",
+      "name": "N"
+     },
+     "expect": {
+      "error": "Unavailable",
+      "reason": "unreachable"
+     }
+    },
+    {
+     "op": "import",
+     "as": "alice",
+     "load_id": "L",
+     "records": [],
+     "expect": {
+      "error": "Unavailable",
+      "reason": "unreachable"
+     }
+    },
+    {
+     "op": "outage",
+     "reason": null
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'uc-9' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": []
+     }
+    }
+   ]
+  },
+  {
+   "id": "access.non-member-write-is-refused",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "refused-changes-nothing",
+    "tokens"
+   ],
+   "description": "a person who is a member of no module is Refused a write and a dry run, and nothing changes",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "dave",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "x",
+      "name": "N"
+     },
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "apply",
+     "as": "dave",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "x",
+      "name": "N"
+     },
+     "dry_run": true,
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "expect": {
+      "row_count": 2
+     }
+    }
+   ]
+  },
+  {
+   "id": "freshness.status-states-availability",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "position-and-lag"
+   ],
+   "description": "status says whether the backend is available and why not",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "status",
+     "expect": {
+      "available": true
+     }
+    },
+    {
+     "op": "outage",
+     "reason": "unsupported_version"
+    },
+    {
+     "op": "status",
+     "expect": {
+      "available": false,
+      "reason": "unsupported_version"
+     }
+    }
+   ]
+  },
+  {
+   "id": "freshness.replica-status-states-its-position",
+   "tags": [
+    "reader-only"
+   ],
+   "covers": [
+    "position-and-lag"
+   ],
+   "description": "a replica states the position it reflects in status",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "status",
+     "expect": {
+      "available": true,
+      "has_position": true
+     }
+    },
+    {
+     "op": "outage",
+     "reason": "unreachable"
+    },
+    {
+     "op": "status",
+     "expect": {
+      "available": false,
+      "reason": "unreachable",
+      "has_position": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "freshness.unissued-token-is-invalid",
+   "tags": [
+    "reader-only"
+   ],
+   "covers": [
+    "at-least"
+   ],
+   "description": "a string that is not a position token, or that no backend issued, is invalid, never \"not yet reached\"",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "reached",
+     "as": "carol",
+     "token": "$foreign",
+     "expect": {
+      "error": "Invalid"
+     }
+    },
+    {
+     "op": "reached",
+     "as": "carol",
+     "token": "garbage",
+     "expect": {
+      "error": "Invalid"
+     }
+    }
+   ]
+  },
+  {
+   "id": "freshness.undeterminable-token-is-unavailable-not-false",
+   "tags": [
+    "store",
+    "reader-only"
+   ],
+   "covers": [
+    "at-least"
+   ],
+   "description": "when the backend cannot tell whether a real token is reached it is Unavailable, never False, and the answer returns once it can tell",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "provider_write",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-9",
+      "name": "N"
+     },
+     "expect": {
+      "ok": "written"
+     },
+     "save": {
+      "token": "t1"
+     }
+    },
+    {
+     "op": "outage",
+     "reason": "unreachable"
+    },
+    {
+     "op": "reached",
+     "as": "carol",
+     "token": "$t1",
+     "expect": {
+      "error": "Unavailable",
+      "reason": "unreachable"
+     }
+    },
+    {
+     "op": "outage",
+     "reason": null
+    },
+    {
+     "op": "sync"
+    },
+    {
+     "op": "reached",
+     "as": "carol",
+     "token": "$t1",
+     "expect": {
+      "value": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "freshness.replica-catches-up-to-a-token",
+   "tags": [
+    "reader-only"
+   ],
+   "covers": [
+    "at-least",
+    "position-and-lag"
+   ],
+   "description": "a replica has reached a receipt's token only once its feed carried the write",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "provider_write",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-9",
+      "name": "N"
+     },
+     "expect": {
+      "ok": "written"
+     },
+     "save": {
+      "token": "t1"
+     }
+    },
+    {
+     "op": "reached",
+     "as": "carol",
+     "token": "$t1",
+     "expect": {
+      "value": false
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'uc-9' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": []
+     }
+    },
+    {
+     "op": "sync"
+    },
+    {
+     "op": "reached",
+     "as": "carol",
+     "token": "$t1",
+     "expect": {
+      "value": true
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'uc-9' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-9"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "freshness.store-has-reached-its-own-tokens",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "at-least",
+    "latest-from-record-store"
+   ],
+   "description": "the store has reached every token it issued, and the write is visible",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-9",
+      "name": "N"
+     },
+     "expect": {
+      "receipt": {
+       "created": 1
+      }
+     },
+     "save": {
+      "token": "t1"
+     }
+    },
+    {
+     "op": "reached",
+     "as": "carol",
+     "token": "$t1",
+     "expect": {
+      "value": true
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'uc-9' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-9"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "freshness.non-member-reached-is-refused",
+   "tags": [
+    "store",
+    "reader-only"
+   ],
+   "covers": [
+    "at-least",
+    "empty-refused-unavailable"
+   ],
+   "description": "a person who is a member of nothing is Refused when asking whether a token was reached; a reader of the module is answered",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "provider_write",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-9",
+      "name": "N"
+     },
+     "expect": {
+      "ok": "written"
+     },
+     "save": {
+      "token": "t1"
+     }
+    },
+    {
+     "op": "sync"
+    },
+    {
+     "op": "reached",
+     "as": "dave",
+     "token": "$t1",
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "reached",
+     "as": "carol",
+     "token": "$t1",
+     "expect": {
+      "value": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "describe.capabilities-by-role",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "unsupported-profiles",
+    "latest-from-record-store"
+   ],
+   "description": "a provider declares mutable types, a reader that is not one read-only ones; a reader names the Weft version it hosts",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "describe",
+     "expect": {
+      "roles": "$roles",
+      "capabilities": {
+       "catalog.UseCase": {
+        "read": true,
+        "mutable": "$mutable"
+       }
+      },
+      "weft": {
+       "has_version": true
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "replica.refuses-every-change",
+   "tags": [
+    "reader-only"
+   ],
+   "covers": [
+    "replica-read-only"
+   ],
+   "description": "a replica raises Unsupported for apply, apply_batch, import, register and does not take attach from a reader",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "x",
+      "name": "N"
+     },
+     "expect": {
+      "error": "Unsupported"
+     }
+    },
+    {
+     "op": "apply_batch",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "atomic": false,
+     "items": [
+      {
+       "code": "x",
+       "name": "N"
+      }
+     ],
+     "expect": {
+      "error": "Unsupported"
+     }
+    },
+    {
+     "op": "import",
+     "as": "alice",
+     "records": [],
+     "load_id": "L",
+     "expect": {
+      "error": "Unsupported"
+     }
+    },
+    {
+     "op": "register",
+     "as": "alice",
+     "expect": {
+      "error": "Unsupported"
+     }
+    },
+    {
+     "op": "attach",
+     "as": "carol",
+     "expect": {
+      "error": "Refused"
+     }
+    }
+   ]
+  },
+  {
+   "id": "store.registers-under-the-schema-grant-and-never-attaches",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "registry",
+    "schema-grant"
+   ],
+   "description": "registering the held module changes nothing; a reader and a writer without the schema grant may not; a provider is not attached to",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "register",
+     "as": "alice",
+     "expect": {
+      "changed": false
+     }
+    },
+    {
+     "op": "register",
+     "as": "carol",
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "register",
+     "as": "bob",
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "attach",
+     "as": "alice",
+     "expect": {
+      "error": "Unsupported"
+     }
+    }
+   ]
+  },
+  {
+   "id": "action.applies-atomically-and-reads-back",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "atomicity",
+    "receipt"
+   ],
+   "limits": [
+    "a Truss adapter passes the apply and the `reached` step and ends at the related-keys query, which Truss refuses (truss-requirements R17.2)"
+   ],
+   "description": "an action's effects apply as one unit; the receipt counts them and the read side sees them",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddSolution",
+     "inputs": {
+      "code": "sol-2",
+      "name": "S",
+      "useCase": "uc-2"
+     },
+     "expect": {
+      "receipt": {
+       "created": 1,
+       "linked": 1,
+       "replayed": false
+      },
+      "refs": [
+       {
+        "key": "sol-2",
+        "version": 1
+       }
+      ]
+     },
+     "save": {
+      "token": "t1"
+     }
+    },
+    {
+     "op": "reached",
+     "as": "carol",
+     "token": "$t1",
+     "expect": {
+      "value": true
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT s.code, s.name FROM catalog.Solution s WHERE HAS_RELATED(s.addresses, KEY('uc-2')) ORDER BY s.code LIMIT 100",
+     "requires": {
+      "profiles": [
+       "related-entity-page"
+      ]
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "sol-2",
+        "name": "S"
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT s.*, RELATED_KEYS(s.addresses, 100) AS addresses FROM catalog.Solution s WHERE s.code = 'sol-2' ORDER BY s.code LIMIT 100",
+     "whole": true,
+     "requires": {
+      "profiles": [
+       "related-entity-page"
+      ]
+     },
+     "expect": {
+      "rows": [
+       {
+        "addresses": [
+         "uc-2"
+        ],
+        "_created_by": "alice",
+        "_version": 1
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "action.failed-precondition-changes-nothing",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "atomicity",
+    "refused-changes-nothing"
+   ],
+   "description": "every failed precondition is listed and nothing is applied",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddSolution",
+     "inputs": {
+      "code": "sol-2",
+      "name": "S",
+      "useCase": "nope"
+     },
+     "expect": {
+      "error": "PreconditionFailed",
+      "failure_ids": [
+       "use_case_exists"
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "alice",
+     "sql": "SELECT s.code FROM catalog.Solution s ORDER BY s.code LIMIT 100",
+     "expect": {
+      "row_count": 1
+     }
+    }
+   ]
+  },
+  {
+   "id": "action.conflict-rolls-back-the-unit",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "atomicity",
+    "refused-changes-nothing"
+   ],
+   "limits": [
+    "a Truss adapter passes the apply and the first queries and ends at the last one: Truss 0.0.45 refuses a whole entity with an explicit RELATED_KEYS alias equal to the relationship's name (truss-requirements R17.2)"
+   ],
+   "description": "a create on a held key is a Conflict and the unit changes nothing",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddSolution",
+     "inputs": {
+      "code": "sol-1",
+      "name": "S",
+      "useCase": "uc-2"
+     },
+     "expect": {
+      "error": "Conflict",
+      "reason": "exists"
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT s.code, s.name FROM catalog.Solution s WHERE s.code = 'sol-1' ORDER BY s.code LIMIT 100",
+     "expect": {
+      "rows": [
+       {
+        "code": "sol-1",
+        "name": "Pipeline extractor"
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT s.code FROM catalog.Solution s WHERE HAS_RELATED(s.addresses, KEY('uc-2')) ORDER BY s.code LIMIT 100",
+     "requires": {
+      "profiles": [
+       "related-entity-page"
+      ]
+     },
+     "expect": {
+      "rows": []
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT s.code FROM catalog.Solution s WHERE HAS_RELATED(s.addresses, KEY('uc-1')) ORDER BY s.code LIMIT 100",
+     "requires": {
+      "profiles": [
+       "related-entity-page"
+      ]
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "sol-1"
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT s.*, RELATED_KEYS(s.addresses, 100) AS addresses FROM catalog.Solution s WHERE s.code = 'sol-1' ORDER BY s.code LIMIT 100",
+     "whole": true,
+     "requires": {
+      "profiles": [
+       "related-entity-page"
+      ]
+     },
+     "expect": {
+      "rows": [
+       {
+        "addresses": [
+         "uc-1"
+        ],
+        "_version": 1
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "action.update-bumps-the-version-once",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "receipt",
+    "attribution"
+   ],
+   "limits": [
+    "Truss bumps a version once per update operation: the adapter merges the updates of one object in a plan into one operation, and an update that changes nothing keeps its version and is not counted as updated (truss-requirements R18.5)"
+   ],
+   "description": "an update is attributed to the caller and bumps the version",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "bob",
+     "action": "catalog.CorrectSolution",
+     "inputs": {
+      "solution": "sol-1",
+      "level": "full"
+     },
+     "expect": {
+      "receipt": {
+       "updated": 1
+      },
+      "refs": [
+       {
+        "key": "sol-1",
+        "version": 2
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT s.* FROM catalog.Solution s WHERE s.code = 'sol-1' ORDER BY s.code LIMIT 100",
+     "whole": true,
+     "expect": {
+      "rows": [
+       {
+        "coverageLevel": "full",
+        "_version": 2,
+        "_updated_by": "bob",
+        "_created_by": "alice"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "action.read-only-principal-is-refused",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "refused-changes-nothing",
+    "tokens"
+   ],
+   "description": "a principal without write access is Refused and nothing changes",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "carol",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "x",
+      "name": "N"
+     },
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "expect": {
+      "row_count": 2
+     }
+    }
+   ]
+  },
+  {
+   "id": "action.anothers-token-cannot-write",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "tokens",
+    "refused-changes-nothing"
+   ],
+   "description": "a write made with another person's token is refused",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "carol@alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "x",
+      "name": "N"
+     },
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'x' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": []
+     }
+    }
+   ]
+  },
+  {
+   "id": "action.idempotent-retry-returns-the-original",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "idempotency"
+   ],
+   "description": "the same key and inputs return the original receipt, replayed, applying nothing",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-9",
+      "name": "N"
+     },
+     "expect": {
+      "receipt": {
+       "replayed": false
+      }
+     },
+     "key": "k1",
+     "save": {
+      "token": "t1"
+     }
+    },
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-9",
+      "name": "N"
+     },
+     "expect": {
+      "receipt": {
+       "replayed": true,
+       "token_is": "$t1"
+      }
+     },
+     "key": "k1"
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'uc-9' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "row_count": 1
+     }
+    }
+   ]
+  },
+  {
+   "id": "action.keyed-retry-of-a-delete-replays",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "idempotency"
+   ],
+   "limits": [
+    "on Truss a keyed retry of a delete is a Conflict: the original named the deleted object and its cascaded edges, the retry cannot name them again (truss-requirements R18.3)"
+   ],
+   "description": "a keyed retry of a delete returns the original receipt, replayed, after the object is gone",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.RetireUseCase",
+     "inputs": {
+      "useCase": "uc-2"
+     },
+     "expect": {
+      "receipt": {
+       "deleted": 1,
+       "replayed": false
+      }
+     },
+     "key": "k1",
+     "save": {
+      "token": "t1"
+     }
+    },
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.RetireUseCase",
+     "inputs": {
+      "useCase": "uc-2"
+     },
+     "expect": {
+      "receipt": {
+       "replayed": true,
+       "token_is": "$t1"
+      }
+     },
+     "key": "k1"
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'uc-2' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": []
+     }
+    }
+   ]
+  },
+  {
+   "id": "action.keyed-retry-of-an-unlink-replays",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "idempotency"
+   ],
+   "limits": [
+    "on Truss a keyed retry of an unlink is a Conflict: the original named the stored edge, the retry can only name an edge that no longer exists (truss-requirements R18.3)"
+   ],
+   "description": "a keyed retry of an unlink returns the original receipt, replayed, after the edge is gone",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.UnlinkSolution",
+     "inputs": {
+      "solution": "sol-1",
+      "useCase": "uc-1"
+     },
+     "expect": {
+      "receipt": {
+       "unlinked": 1,
+       "replayed": false
+      }
+     },
+     "key": "k1",
+     "save": {
+      "token": "t1"
+     }
+    },
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.UnlinkSolution",
+     "inputs": {
+      "solution": "sol-1",
+      "useCase": "uc-1"
+     },
+     "expect": {
+      "receipt": {
+       "replayed": true,
+       "token_is": "$t1"
+      }
+     },
+     "key": "k1"
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT s.code FROM catalog.Solution s WHERE HAS_RELATED(s.addresses, KEY('uc-1')) ORDER BY s.code LIMIT 100",
+     "requires": {
+      "profiles": [
+       "related-entity-page"
+      ]
+     },
+     "expect": {
+      "rows": []
+     }
+    }
+   ]
+  },
+  {
+   "id": "action.keyed-retry-after-its-target-was-deleted-replays",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "idempotency"
+   ],
+   "limits": [
+    "on Truss a keyed retry of a plan whose target anyone has deleted since is a Conflict: the retry cannot rebuild the input the original was given (truss-requirements R18.3)"
+   ],
+   "description": "a keyed retry returns the original receipt, replayed, after someone deleted what the original named",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddSolution",
+     "inputs": {
+      "code": "sol-9",
+      "name": "N",
+      "useCase": "uc-2"
+     },
+     "expect": {
+      "receipt": {
+       "created": 1,
+       "linked": 1,
+       "replayed": false
+      }
+     },
+     "key": "k1",
+     "save": {
+      "token": "t1"
+     }
+    },
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.RetireUseCase",
+     "inputs": {
+      "useCase": "uc-2"
+     },
+     "expect": {
+      "receipt": {
+       "deleted": 1
+      }
+     },
+     "key": "k2"
+    },
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddSolution",
+     "inputs": {
+      "code": "sol-9",
+      "name": "N",
+      "useCase": "uc-2"
+     },
+     "expect": {
+      "receipt": {
+       "replayed": true,
+       "token_is": "$t1"
+      }
+     },
+     "key": "k1"
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'uc-2' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": []
+     }
+    }
+   ]
+  },
+  {
+   "id": "action.same-key-from-another-person-replays",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "idempotency"
+   ],
+   "limits": [
+    "on Truss a request is scoped to the person who made it: the same key from another person is a new request and applies afresh (truss-requirements R18.3)"
+   ],
+   "description": "the same key and inputs from another person return the original receipt, replayed, applying nothing",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-9",
+      "name": "N"
+     },
+     "expect": {
+      "receipt": {
+       "replayed": false
+      }
+     },
+     "key": "k1",
+     "save": {
+      "token": "t1"
+     }
+    },
+    {
+     "op": "apply",
+     "as": "bob",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-9",
+      "name": "N"
+     },
+     "expect": {
+      "receipt": {
+       "replayed": true,
+       "token_is": "$t1"
+      }
+     },
+     "key": "k1"
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'uc-9' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "row_count": 1
+     }
+    }
+   ]
+  },
+  {
+   "id": "action.key-reused-with-other-inputs-conflicts",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "idempotency",
+    "refused-changes-nothing"
+   ],
+   "description": "the same key with different inputs is a Conflict and applies nothing",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-9",
+      "name": "N"
+     },
+     "expect": {
+      "ok": "receipt"
+     },
+     "key": "k1"
+    },
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-8",
+      "name": "N"
+     },
+     "expect": {
+      "error": "Conflict",
+      "reason": "idempotency_key_reused"
+     },
+     "key": "k1"
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'uc-8' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": []
+     }
+    }
+   ]
+  },
+  {
+   "id": "action.dry-run-writes-nothing-and-keeps-the-key",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "dry-run",
+    "idempotency"
+   ],
+   "limits": [
+    "Truss states no read position for a rolled-back group, so a Truss adapter reports no freshness on a dry run (truss-requirements R18.11)"
+   ],
+   "description": "validate reports the resolved effects, writes nothing, and does not use up the key",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddSolution",
+     "inputs": {
+      "code": "sol-2",
+      "name": "S",
+      "useCase": "uc-2"
+     },
+     "expect": {
+      "validation": {
+       "ok": true,
+       "effects": [
+        "Create",
+        "Link"
+       ],
+       "replay": false
+      }
+     },
+     "dry_run": true,
+     "key": "k1"
+    },
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddSolution",
+     "inputs": {
+      "code": "sol-2",
+      "name": "S",
+      "useCase": "nope"
+     },
+     "expect": {
+      "validation": {
+       "ok": false,
+       "failure_ids": [
+        "use_case_exists"
+       ]
+      }
+     },
+     "dry_run": true
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT s.code FROM catalog.Solution s ORDER BY s.code LIMIT 100",
+     "expect": {
+      "row_count": 1
+     }
+    },
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddSolution",
+     "inputs": {
+      "code": "sol-2",
+      "name": "S",
+      "useCase": "uc-2"
+     },
+     "expect": {
+      "receipt": {
+       "created": 1,
+       "replayed": false
+      }
+     },
+     "key": "k1"
+    }
+   ]
+  },
+  {
+   "id": "action.deleted-keys-stay-deleted",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "import",
+    "refused-changes-nothing"
+   ],
+   "limits": [
+    "Truss's key-absent condition fails for a key a deleted object held; the adapter lets an `absent` precondition hold for it, as the memory adapter does, so the create that follows is the Conflict (truss-requirements R18.9)"
+   ],
+   "description": "after a delete, the key cannot be created again",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.RetireUseCase",
+     "inputs": {
+      "useCase": "uc-2"
+     },
+     "expect": {
+      "receipt": {
+       "deleted": 1
+      }
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'uc-2' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": []
+     }
+    },
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-2",
+      "name": "N"
+     },
+     "expect": {
+      "error": "Conflict",
+      "reason": "deleted"
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'uc-2' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": []
+     }
+    }
+   ]
+  },
+  {
+   "id": "action.atomic-batch-is-all-or-nothing",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "bulk-changes",
+    "atomicity",
+    "idempotency"
+   ],
+   "description": "an atomic batch applies as one group with one token, or not at all; a repeat with its key replays",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply_batch",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "atomic": true,
+     "key": "ab",
+     "items": [
+      {
+       "code": "b1",
+       "name": "B"
+      },
+      {
+       "code": "b2",
+       "name": "B"
+      }
+     ],
+     "expect": {
+      "batch": {
+       "succeeded": 2,
+       "failed": 0,
+       "one_token": true
+      }
+     }
+    },
+    {
+     "op": "apply_batch",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "atomic": true,
+     "key": "ab",
+     "items": [
+      {
+       "code": "b1",
+       "name": "B"
+      },
+      {
+       "code": "b2",
+       "name": "B"
+      }
+     ],
+     "expect": {
+      "batch": {
+       "succeeded": 2,
+       "replayed": [
+        0,
+        1
+       ]
+      }
+     }
+    },
+    {
+     "op": "apply_batch",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "atomic": true,
+     "items": [
+      {
+       "code": "b3",
+       "name": "B"
+      },
+      {
+       "code": "b1",
+       "name": "dup"
+      }
+     ],
+     "expect": {
+      "error": "PreconditionFailed",
+      "failure_ids": [
+       "fresh"
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'b3' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": []
+     }
+    }
+   ]
+  },
+  {
+   "id": "action.independent-batch-reports-each-item",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "bulk-changes",
+    "idempotency"
+   ],
+   "description": "an independent batch applies each item as its own group and says which refused; stop_on_error stops",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply_batch",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "atomic": false,
+     "key": "bk",
+     "items": [
+      {
+       "code": "b1",
+       "name": "B"
+      },
+      {
+       "code": "uc-1",
+       "name": "dup"
+      },
+      {
+       "code": "b2",
+       "name": "B"
+      }
+     ],
+     "expect": {
+      "batch": {
+       "succeeded": 2,
+       "failed": 1,
+       "refusals": {
+        "1": "PreconditionFailed"
+       }
+      }
+     }
+    },
+    {
+     "op": "apply_batch",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "atomic": false,
+     "key": "bk",
+     "items": [
+      {
+       "code": "b1",
+       "name": "B"
+      },
+      {
+       "code": "uc-1",
+       "name": "dup"
+      },
+      {
+       "code": "b2",
+       "name": "B"
+      }
+     ],
+     "expect": {
+      "batch": {
+       "succeeded": 2,
+       "failed": 1,
+       "replayed": [
+        0,
+        2
+       ]
+      }
+     }
+    },
+    {
+     "op": "apply_batch",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "atomic": false,
+     "stop_on_error": true,
+     "items": [
+      {
+       "code": "uc-1",
+       "name": "dup"
+      },
+      {
+       "code": "b9",
+       "name": "B"
+      }
+     ],
+     "expect": {
+      "batch": {
+       "items": 1,
+       "failed": 1
+      }
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'b9' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": []
+     }
+    }
+   ]
+  },
+  {
+   "id": "action.batch-shape-and-access",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "bulk-changes",
+    "refused-changes-nothing"
+   ],
+   "description": "a batch holds 1 to 100 items; a reader's batch is refused and changes nothing",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply_batch",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "atomic": false,
+     "items": [],
+     "expect": {
+      "error": "Invalid",
+      "code": "bound"
+     }
+    },
+    {
+     "op": "apply_batch",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "atomic": false,
+     "items": [
+      {
+       "code": "x0",
+       "name": "x"
+      },
+      {
+       "code": "x1",
+       "name": "x"
+      },
+      {
+       "code": "x2",
+       "name": "x"
+      },
+      {
+       "code": "x3",
+       "name": "x"
+      },
+      {
+       "code": "x4",
+       "name": "x"
+      },
+      {
+       "code": "x5",
+       "name": "x"
+      },
+      {
+       "code": "x6",
+       "name": "x"
+      },
+      {
+       "code": "x7",
+       "name": "x"
+      },
+      {
+       "code": "x8",
+       "name": "x"
+      },
+      {
+       "code": "x9",
+       "name": "x"
+      },
+      {
+       "code": "x10",
+       "name": "x"
+      },
+      {
+       "code": "x11",
+       "name": "x"
+      },
+      {
+       "code": "x12",
+       "name": "x"
+      },
+      {
+       "code": "x13",
+       "name": "x"
+      },
+      {
+       "code": "x14",
+       "name": "x"
+      },
+      {
+       "code": "x15",
+       "name": "x"
+      },
+      {
+       "code": "x16",
+       "name": "x"
+      },
+      {
+       "code": "x17",
+       "name": "x"
+      },
+      {
+       "code": "x18",
+       "name": "x"
+      },
+      {
+       "code": "x19",
+       "name": "x"
+      },
+      {
+       "code": "x20",
+       "name": "x"
+      },
+      {
+       "code": "x21",
+       "name": "x"
+      },
+      {
+       "code": "x22",
+       "name": "x"
+      },
+      {
+       "code": "x23",
+       "name": "x"
+      },
+      {
+       "code": "x24",
+       "name": "x"
+      },
+      {
+       "code": "x25",
+       "name": "x"
+      },
+      {
+       "code": "x26",
+       "name": "x"
+      },
+      {
+       "code": "x27",
+       "name": "x"
+      },
+      {
+       "code": "x28",
+       "name": "x"
+      },
+      {
+       "code": "x29",
+       "name": "x"
+      },
+      {
+       "code": "x30",
+       "name": "x"
+      },
+      {
+       "code": "x31",
+       "name": "x"
+      },
+      {
+       "code": "x32",
+       "name": "x"
+      },
+      {
+       "code": "x33",
+       "name": "x"
+      },
+      {
+       "code": "x34",
+       "name": "x"
+      },
+      {
+       "code": "x35",
+       "name": "x"
+      },
+      {
+       "code": "x36",
+       "name": "x"
+      },
+      {
+       "code": "x37",
+       "name": "x"
+      },
+      {
+       "code": "x38",
+       "name": "x"
+      },
+      {
+       "code": "x39",
+       "name": "x"
+      },
+      {
+       "code": "x40",
+       "name": "x"
+      },
+      {
+       "code": "x41",
+       "name": "x"
+      },
+      {
+       "code": "x42",
+       "name": "x"
+      },
+      {
+       "code": "x43",
+       "name": "x"
+      },
+      {
+       "code": "x44",
+       "name": "x"
+      },
+      {
+       "code": "x45",
+       "name": "x"
+      },
+      {
+       "code": "x46",
+       "name": "x"
+      },
+      {
+       "code": "x47",
+       "name": "x"
+      },
+      {
+       "code": "x48",
+       "name": "x"
+      },
+      {
+       "code": "x49",
+       "name": "x"
+      },
+      {
+       "code": "x50",
+       "name": "x"
+      },
+      {
+       "code": "x51",
+       "name": "x"
+      },
+      {
+       "code": "x52",
+       "name": "x"
+      },
+      {
+       "code": "x53",
+       "name": "x"
+      },
+      {
+       "code": "x54",
+       "name": "x"
+      },
+      {
+       "code": "x55",
+       "name": "x"
+      },
+      {
+       "code": "x56",
+       "name": "x"
+      },
+      {
+       "code": "x57",
+       "name": "x"
+      },
+      {
+       "code": "x58",
+       "name": "x"
+      },
+      {
+       "code": "x59",
+       "name": "x"
+      },
+      {
+       "code": "x60",
+       "name": "x"
+      },
+      {
+       "code": "x61",
+       "name": "x"
+      },
+      {
+       "code": "x62",
+       "name": "x"
+      },
+      {
+       "code": "x63",
+       "name": "x"
+      },
+      {
+       "code": "x64",
+       "name": "x"
+      },
+      {
+       "code": "x65",
+       "name": "x"
+      },
+      {
+       "code": "x66",
+       "name": "x"
+      },
+      {
+       "code": "x67",
+       "name": "x"
+      },
+      {
+       "code": "x68",
+       "name": "x"
+      },
+      {
+       "code": "x69",
+       "name": "x"
+      },
+      {
+       "code": "x70",
+       "name": "x"
+      },
+      {
+       "code": "x71",
+       "name": "x"
+      },
+      {
+       "code": "x72",
+       "name": "x"
+      },
+      {
+       "code": "x73",
+       "name": "x"
+      },
+      {
+       "code": "x74",
+       "name": "x"
+      },
+      {
+       "code": "x75",
+       "name": "x"
+      },
+      {
+       "code": "x76",
+       "name": "x"
+      },
+      {
+       "code": "x77",
+       "name": "x"
+      },
+      {
+       "code": "x78",
+       "name": "x"
+      },
+      {
+       "code": "x79",
+       "name": "x"
+      },
+      {
+       "code": "x80",
+       "name": "x"
+      },
+      {
+       "code": "x81",
+       "name": "x"
+      },
+      {
+       "code": "x82",
+       "name": "x"
+      },
+      {
+       "code": "x83",
+       "name": "x"
+      },
+      {
+       "code": "x84",
+       "name": "x"
+      },
+      {
+       "code": "x85",
+       "name": "x"
+      },
+      {
+       "code": "x86",
+       "name": "x"
+      },
+      {
+       "code": "x87",
+       "name": "x"
+      },
+      {
+       "code": "x88",
+       "name": "x"
+      },
+      {
+       "code": "x89",
+       "name": "x"
+      },
+      {
+       "code": "x90",
+       "name": "x"
+      },
+      {
+       "code": "x91",
+       "name": "x"
+      },
+      {
+       "code": "x92",
+       "name": "x"
+      },
+      {
+       "code": "x93",
+       "name": "x"
+      },
+      {
+       "code": "x94",
+       "name": "x"
+      },
+      {
+       "code": "x95",
+       "name": "x"
+      },
+      {
+       "code": "x96",
+       "name": "x"
+      },
+      {
+       "code": "x97",
+       "name": "x"
+      },
+      {
+       "code": "x98",
+       "name": "x"
+      },
+      {
+       "code": "x99",
+       "name": "x"
+      },
+      {
+       "code": "x100",
+       "name": "x"
+      }
+     ],
+     "expect": {
+      "error": "Invalid",
+      "code": "bound"
+     }
+    },
+    {
+     "op": "apply_batch",
+     "as": "carol",
+     "action": "catalog.AddUseCase",
+     "atomic": false,
+     "items": [
+      {
+       "code": "x",
+       "name": "x"
+      }
+     ],
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'x' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": []
+     }
+    }
+   ]
+  },
+  {
+   "id": "import.identity-skip-and-provenance",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "import"
+   ],
+   "description": "an import creates what is new, skips what is held and leaves it alone, rejects what fails, and records the load",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "import",
+     "as": "alice",
+     "load_id": "L1",
+     "records": [
+      {
+       "type": "UseCase",
+       "key": "uc-7",
+       "properties": {
+        "name": "Old"
+       },
+       "original_author": "ann",
+       "original_at": null
+      },
+      {
+       "type": "UseCase",
+       "key": "uc-1",
+       "properties": {
+        "name": "overwritten?"
+       }
+      },
+      {
+       "type": "UseCase",
+       "key": "uc-6",
+       "properties": {}
+      },
+      {
+       "relationship": "addresses",
+       "source": "ghost",
+       "target": "uc-7"
+      }
+     ],
+     "expect": {
+      "import": {
+       "created": 1,
+       "skipped": 1,
+       "rejected": 2,
+       "rejected_kinds": [
+        "entity",
+        "relationship"
+       ]
+      }
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code, u.name FROM catalog.UseCase u WHERE u.code = 'uc-7' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-7",
+        "name": "Old"
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code, u.name FROM catalog.UseCase u WHERE u.code = 'uc-1' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-1",
+        "name": "Pipeline mapping"
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'uc-6' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": []
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u WHERE u.code = 'uc-7' ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "expect": {
+      "rows": [
+       {
+        "_created_by": "alice",
+        "_original_author": "ann",
+        "_load_id": "L1"
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u WHERE u.code = 'uc-1' ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "expect": {
+      "rows": [
+       {
+        "name": "Pipeline mapping",
+        "_version": 1
+       }
+      ]
+     }
+    },
+    {
+     "op": "import",
+     "as": "alice",
+     "load_id": "L1",
+     "records": [
+      {
+       "type": "UseCase",
+       "key": "uc-7",
+       "properties": {
+        "name": "Old"
+       }
+      }
+     ],
+     "expect": {
+      "import": {
+       "created": 0,
+       "skipped": 1,
+       "rejected": 0
+      }
+     }
+    },
+    {
+     "op": "import",
+     "as": "alice",
+     "load_id": "L1",
+     "records": [
+      {
+       "type": "UseCase",
+       "key": "uc-7",
+       "properties": {
+        "name": "Old"
+       }
+      }
+     ],
+     "expect": {
+      "import": {
+       "created": 0,
+       "skipped": 1,
+       "rejected": 0
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "import.original-time-names-its-offset",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "import"
+   ],
+   "description": "an original_at that is not an ISO timestamp with an offset (a time with none, a bare date, or no time at all) rejects its record and stores nothing, while one that names its offset is kept",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "import",
+     "as": "alice",
+     "load_id": "L1",
+     "records": [
+      {
+       "type": "UseCase",
+       "key": "uc-5",
+       "properties": {
+        "name": "Naive"
+       },
+       "original_at": "2020-01-02T03:04:05"
+      },
+      {
+       "type": "UseCase",
+       "key": "uc-6",
+       "properties": {
+        "name": "Bare"
+       },
+       "original_at": "2020-01-02"
+      },
+      {
+       "type": "UseCase",
+       "key": "uc-7",
+       "properties": {
+        "name": "Zoned"
+       },
+       "original_at": "2020-01-02T03:04:05+02:00"
+      }
+     ],
+     "expect": {
+      "import": {
+       "created": 1,
+       "skipped": 0,
+       "rejected": 2,
+       "rejected_kinds": [
+        "entity",
+        "entity"
+       ]
+      }
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'uc-5' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": []
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'uc-6' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": []
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'uc-7' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-7"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "import.entities-before-relationships",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "import"
+   ],
+   "description": "entities are applied before relationship instances across the whole input",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "import",
+     "as": "alice",
+     "load_id": "L2",
+     "records": [
+      {
+       "relationship": "addresses",
+       "source": "sol-9",
+       "target": "uc-1"
+      },
+      {
+       "type": "Solution",
+       "key": "sol-9",
+       "properties": {
+        "name": "late"
+       }
+      }
+     ],
+     "expect": {
+      "import": {
+       "created": 2,
+       "skipped": 0,
+       "rejected": 0
+      }
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT s.code FROM catalog.Solution s WHERE s.code = 'sol-9' AND HAS_RELATED(s.addresses, KEY('uc-1')) ORDER BY s.code LIMIT 100",
+     "requires": {
+      "profiles": [
+       "related-entity-page"
+      ]
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "sol-9"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "import.administrative-principals-only",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "import",
+    "tokens"
+   ],
+   "description": "only an administrative principal may import, and a load is its caller's own",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "import",
+     "as": "bob",
+     "load_id": "L",
+     "records": [],
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "import",
+     "as": "carol",
+     "load_id": "L",
+     "records": [],
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "import",
+     "as": "anon",
+     "load_id": "L",
+     "records": [],
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "import",
+     "as": "alice",
+     "load_id": "L",
+     "initiated_by": "someone-else",
+     "records": [],
+     "expect": {
+      "error": "Invalid",
+      "code": "attribution"
+     }
+    }
+   ]
+  },
+  {
+   "id": "import.deleted-stays-deleted",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "import"
+   ],
+   "description": "an import never brings back an entity an action deleted",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.RetireUseCase",
+     "inputs": {
+      "useCase": "uc-2"
+     },
+     "expect": {
+      "receipt": {
+       "deleted": 1
+      }
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'uc-2' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": []
+     }
+    },
+    {
+     "op": "import",
+     "as": "alice",
+     "load_id": "L",
+     "records": [
+      {
+       "type": "UseCase",
+       "key": "uc-2",
+       "properties": {
+        "name": "back"
+       }
+      }
+     ],
+     "expect": {
+      "import": {
+       "created": 0,
+       "skipped": 1,
+       "rejected": 0
+      }
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.code FROM catalog.UseCase u WHERE u.code = 'uc-2' ORDER BY u.code LIMIT 100",
+     "expect": {
+      "rows": []
+     }
+    }
+   ]
+  },
+  {
+   "id": "action.receipt-names-its-group",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "receipt",
+    "groups",
+    "idempotency",
+    "atomicity"
+   ],
+   "limits": [
+    "Truss names no group, so a Truss adapter names one from the journal's source epoch and transaction id of the group's first event (truss-requirements R18.6)"
+   ],
+   "description": "every receipt names the group it committed in; a replay names the original group; an atomic batch is one group, an independent one a group per item",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-8",
+      "name": "N"
+     },
+     "key": "k1",
+     "expect": {
+      "receipt": {
+       "has_group": true,
+       "replayed": false
+      }
+     },
+     "save": {
+      "group": "g1"
+     }
+    },
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-8",
+      "name": "N"
+     },
+     "key": "k1",
+     "expect": {
+      "receipt": {
+       "replayed": true,
+       "group_is": "$g1"
+      }
+     }
+    },
+    {
+     "op": "apply_batch",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "atomic": true,
+     "items": [
+      {
+       "code": "b1",
+       "name": "N"
+      },
+      {
+       "code": "b2",
+       "name": "N"
+      },
+      {
+       "code": "b3",
+       "name": "N"
+      }
+     ],
+     "expect": {
+      "batch": {
+       "succeeded": 3,
+       "one_token": true,
+       "groups": 1
+      }
+     }
+    },
+    {
+     "op": "apply_batch",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "atomic": false,
+     "items": [
+      {
+       "code": "c1",
+       "name": "N"
+      },
+      {
+       "code": "c2",
+       "name": "N"
+      }
+     ],
+     "expect": {
+      "batch": {
+       "succeeded": 2,
+       "groups": 2
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "action.retry-with-generated-keys-matches",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "idempotency"
+   ],
+   "description": "an action whose keys are generated is retried under the same idempotency key and inputs: the original receipt returns, replayed, applying nothing; other inputs under the key are a Conflict",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.DraftSolution",
+     "inputs": {
+      "name": "Drafted"
+     },
+     "expect": {
+      "receipt": {
+       "created": 1,
+       "replayed": false
+      }
+     },
+     "key": "k1",
+     "save": {
+      "token": "t1"
+     }
+    },
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.DraftSolution",
+     "inputs": {
+      "name": "Drafted"
+     },
+     "expect": {
+      "receipt": {
+       "replayed": true,
+       "token_is": "$t1"
+      }
+     },
+     "key": "k1"
+    },
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.DraftSolution",
+     "inputs": {
+      "name": "Other"
+     },
+     "expect": {
+      "error": "Conflict"
+     },
+     "key": "k1"
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT s.name FROM catalog.Solution s WHERE s.name = 'Drafted' ORDER BY s.code LIMIT 100",
+     "expect": {
+      "row_count": 1
+     }
+    }
+   ]
+  },
+  {
+   "id": "journal.changes-are-committed-groups-newest-first",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "journal",
+    "groups",
+    "dry-run",
+    "refused-changes-nothing"
+   ],
+   "limits": [
+    "Truss 0.0.45 serves the changes steps from its mutation-group audit pages: the order is newest observed first and `at` is Truss's observation time, never a commit time or order, and a change's ops state no key or version (truss-requirements R20)"
+   ],
+   "description": "the journal lists each committed group newest first with the person and the action; a dry run, a refusal and a failed precondition leave nothing; it needs the journal grant",
+   "fixture": "journal",
+   "steps": [
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-8",
+      "name": "N"
+     },
+     "expect": {
+      "receipt": {
+       "has_group": true
+      }
+     },
+     "save": {
+      "group": "g1"
+     }
+    },
+    {
+     "op": "apply",
+     "as": "bob",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-9",
+      "name": "N"
+     },
+     "expect": {
+      "receipt": {
+       "has_group": true
+      }
+     },
+     "save": {
+      "group": "g2"
+     }
+    },
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-7",
+      "name": "N"
+     },
+     "dry_run": true,
+     "expect": {
+      "validation": {
+       "ok": true
+      }
+     }
+    },
+    {
+     "op": "apply",
+     "as": "carol",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-6",
+      "name": "N"
+     },
+     "expect": {
+      "error": "Refused",
+      "reason": "no_access"
+     }
+    },
+    {
+     "op": "apply",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-1",
+      "name": "N"
+     },
+     "expect": {
+      "error": "PreconditionFailed",
+      "failure_ids": [
+       "fresh"
+      ]
+     }
+    },
+    {
+     "op": "changes",
+     "as": "alice",
+     "expect": {
+      "changes": {
+       "ids": [
+        "$g2",
+        "$g1"
+       ],
+       "by": [
+        "bob",
+        "alice"
+       ],
+       "actions": [
+        "catalog.AddUseCase",
+        "catalog.AddUseCase"
+       ],
+       "next_cursor": false
+      }
+     }
+    },
+    {
+     "op": "changes",
+     "as": "alice",
+     "limit": 1,
+     "expect": {
+      "changes": {
+       "ids": [
+        "$g2"
+       ],
+       "next_cursor": true
+      }
+     },
+     "save": {
+      "cursor": "c1"
+     }
+    },
+    {
+     "op": "changes",
+     "as": "alice",
+     "limit": 1,
+     "after": "$c1",
+     "expect": {
+      "changes": {
+       "ids": [
+        "$g1"
+       ],
+       "next_cursor": false
+      }
+     }
+    },
+    {
+     "op": "changes",
+     "as": "alice",
+     "by": "alice",
+     "expect": {
+      "changes": {
+       "ids": [
+        "$g1"
+       ]
+      }
+     }
+    },
+    {
+     "op": "changes",
+     "as": "alice",
+     "group": "$g2",
+     "expect": {
+      "changes": {
+       "ids": [
+        "$g2"
+       ]
+      }
+     }
+    },
+    {
+     "op": "changes",
+     "as": "carol",
+     "expect": {
+      "error": "Refused",
+      "reason": "no_access"
+     }
+    }
+   ]
+  },
+  {
+   "id": "journal.loads-newest-first",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "journal",
+    "import"
+   ],
+   "limits": [
+    "Truss 0.0.45 serves the loads steps from its import-load audit summaries: consecutive invocations of one load id are one load, a load Truss shows only in part is `partial`, and `at` is the last observation (truss-requirements R20)"
+   ],
+   "description": "each import is one load, newest first, with who started it; reading them needs the journal grant",
+   "fixture": "journal",
+   "steps": [
+    {
+     "op": "import",
+     "as": "alice",
+     "load_id": "L2",
+     "records": [
+      {
+       "type": "UseCase",
+       "key": "uc-l2",
+       "properties": {
+        "name": "L"
+       }
+      }
+     ],
+     "expect": {
+      "import": {
+       "created": 1
+      }
+     }
+    },
+    {
+     "op": "loads",
+     "as": "alice",
+     "expect": {
+      "loads": {
+       "ids": [
+        "L2",
+        "seed"
+       ],
+       "by": [
+        "alice",
+        "alice"
+       ],
+       "next_cursor": false
+      }
+     }
+    },
+    {
+     "op": "loads",
+     "as": "alice",
+     "limit": 1,
+     "expect": {
+      "loads": {
+       "ids": [
+        "L2"
+       ],
+       "next_cursor": true
+      }
+     }
+    },
+    {
+     "op": "loads",
+     "as": "carol",
+     "expect": {
+      "error": "Refused",
+      "reason": "no_access"
+     }
+    }
+   ]
+  },
+  {
+   "id": "registry.document-is-verbatim",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "documents",
+    "registry"
+   ],
+   "description": "the registered document reads back exactly as it was installed, for a reader; registering the same document again keeps it",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "document",
+     "as": "carol",
+     "expect": {
+      "document": {
+       "verbatim": true,
+       "format": "json",
+       "module": "catalog",
+       "has_revision": true
+      }
+     }
+    },
+    {
+     "op": "register",
+     "as": "alice",
+     "expect": {
+      "changed": false
+     }
+    },
+    {
+     "op": "document",
+     "as": "alice",
+     "expect": {
+      "document": {
+       "verbatim": true
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "registry.document-is-refused-without-read",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "documents",
+    "empty-refused-unavailable"
+   ],
+   "description": "the document is read under the module's read grant: without it, or without a token, it is refused; down, it is unavailable",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "document",
+     "as": "dave",
+     "expect": {
+      "error": "Refused",
+      "reason": "no_access"
+     }
+    },
+    {
+     "op": "document",
+     "as": "anon",
+     "expect": {
+      "error": "Refused",
+      "reason": "token_expired"
+     }
+    },
+    {
+     "op": "outage",
+     "reason": "unreachable"
+    },
+    {
+     "op": "document",
+     "as": "carol",
+     "expect": {
+      "error": "Unavailable",
+      "reason": "unreachable"
+     }
+    }
+   ]
+  },
+  {
+   "id": "replica.holds-no-document",
+   "tags": [
+    "reader-only"
+   ],
+   "covers": [
+    "documents",
+    "replica-read-only"
+   ],
+   "description": "a replica is fed, never registered: it holds no document and says so",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "document",
+     "as": "carol",
+     "expect": {
+      "error": "Unsupported"
+     }
+    }
+   ]
+  },
+  {
+   "id": "text.every-word-in-some-property",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "text-search"
+   ],
+   "description": "a word matches as a substring of a named property and every word must match, each in any named property",
+   "fixture": "text",
+   "steps": [
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "pipeline",
+       "mapp"
+      ],
+      "properties": [
+       "name",
+       "workArea"
+      ]
+     },
+     "requires": {
+      "type": "catalog.UseCase",
+      "search": true
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-case"
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "pipeline",
+       "data"
+      ],
+      "properties": [
+       "name",
+       "workArea"
+      ]
+     },
+     "requires": {
+      "type": "catalog.UseCase",
+      "search": true
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-case"
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "pipeline",
+       "finance"
+      ],
+      "properties": [
+       "name",
+       "workArea"
+      ]
+     },
+     "requires": {
+      "type": "catalog.UseCase",
+      "search": true
+     },
+     "expect": {
+      "rows": []
+     }
+    }
+   ]
+  },
+  {
+   "id": "text.folds-case",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "text-search"
+   ],
+   "description": "the match is case-insensitive in both directions",
+   "fixture": "text",
+   "steps": [
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "mapping"
+      ],
+      "properties": [
+       "name"
+      ]
+     },
+     "requires": {
+      "type": "catalog.UseCase",
+      "search": true
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-case"
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "pipeline"
+      ],
+      "properties": [
+       "name",
+       "workArea"
+      ]
+     },
+     "requires": {
+      "type": "catalog.UseCase",
+      "search": true
+     },
+     "expect": {
+      "row_count": 2
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "nothing"
+      ],
+      "properties": [
+       "name"
+      ]
+     },
+     "requires": {
+      "type": "catalog.UseCase",
+      "search": true
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-both"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "text.only-the-named-properties",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "text-search"
+   ],
+   "description": "a word that is only in a property that is not named is not a match",
+   "fixture": "text",
+   "steps": [
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "pipeline"
+      ],
+      "properties": [
+       "workArea"
+      ]
+     },
+     "requires": {
+      "type": "catalog.UseCase",
+      "search": true
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-both"
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "data"
+      ],
+      "properties": [
+       "name"
+      ]
+     },
+     "requires": {
+      "type": "catalog.UseCase",
+      "search": true
+     },
+     "expect": {
+      "rows": []
+     }
+    }
+   ]
+  },
+  {
+   "id": "text.percent-underscore-backslash-are-literal",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "text-search"
+   ],
+   "description": "%, _ and backslash in a word match themselves and nothing else",
+   "fixture": "text",
+   "steps": [
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "100%"
+      ],
+      "properties": [
+       "name"
+      ]
+     },
+     "requires": {
+      "type": "catalog.UseCase",
+      "search": true
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-pct"
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "sure_thing"
+      ],
+      "properties": [
+       "name"
+      ]
+     },
+     "requires": {
+      "type": "catalog.UseCase",
+      "search": true
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-pct"
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "\\"
+      ],
+      "properties": [
+       "name"
+      ]
+     },
+     "requires": {
+      "type": "catalog.UseCase",
+      "search": true
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-pct"
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "%"
+      ],
+      "properties": [
+       "name"
+      ]
+     },
+     "requires": {
+      "type": "catalog.UseCase",
+      "search": true
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-pct"
+       }
+      ]
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "_"
+      ],
+      "properties": [
+       "name"
+      ]
+     },
+     "requires": {
+      "type": "catalog.UseCase",
+      "search": true
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-pct"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "text.rows-are-ordered-by-key-and-bounded",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "text-search"
+   ],
+   "description": "a text read is an ordinary alias.* read: ordered by key, bounded by the statement's LIMIT and the limit cap, which truncated reports",
+   "fixture": "text",
+   "steps": [
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "pipeline"
+      ],
+      "properties": [
+       "name",
+       "workArea"
+      ]
+     },
+     "requires": {
+      "type": "catalog.UseCase",
+      "search": true
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-both"
+       }
+      ],
+      "truncated": true
+     },
+     "limit": 1
+    }
+   ]
+  },
+  {
+   "id": "text.no-match-is-an-empty-answer",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "text-search"
+   ],
+   "description": "text that matches nothing is an empty answer with its position, not an error",
+   "fixture": "text",
+   "steps": [
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "zzzz"
+      ],
+      "properties": [
+       "name"
+      ]
+     },
+     "requires": {
+      "type": "catalog.UseCase",
+      "search": true
+     },
+     "expect": {
+      "rows": []
+     }
+    }
+   ]
+  },
+  {
+   "id": "text.rows-carry-attribution",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "text-search"
+   ],
+   "description": "a text read returns what alias.* returns, the version and attribution included",
+   "fixture": "text",
+   "steps": [
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "mapping"
+      ],
+      "properties": [
+       "name"
+      ]
+     },
+     "requires": {
+      "type": "catalog.UseCase",
+      "search": true
+     },
+     "expect": {
+      "rows": [
+       {
+        "code": "uc-case",
+        "_version": 1,
+        "_created_by": "alice"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "text.on-a-property-the-backend-does-not-list-is-unsupported",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "text-search"
+   ],
+   "description": "text over a property that is not searchable is Unsupported, never an empty answer",
+   "fixture": "text",
+   "steps": [
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "x"
+      ],
+      "properties": [
+       "nope"
+      ]
+     },
+     "requires": {
+      "type": "catalog.UseCase",
+      "search": true
+     },
+     "expect": {
+      "error": "Unsupported"
+     }
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "x"
+      ],
+      "properties": [
+       "name",
+       "nope"
+      ]
+     },
+     "requires": {
+      "type": "catalog.UseCase",
+      "search": true
+     },
+     "expect": {
+      "error": "Unsupported"
+     }
+    }
+   ]
+  },
+  {
+   "id": "text.refused-without-the-grant",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "text-search"
+   ],
+   "description": "a person with no read grant gets unknown_type, whatever the text, and one without a token is refused",
+   "fixture": "text",
+   "steps": [
+    {
+     "op": "query",
+     "as": "dave",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "pipeline"
+      ],
+      "properties": [
+       "name"
+      ]
+     },
+     "expect": {
+      "error": "Invalid",
+      "code": "unknown_type"
+     }
+    },
+    {
+     "op": "query",
+     "as": "anon",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "pipeline"
+      ],
+      "properties": [
+       "name"
+      ]
+     },
+     "expect": {
+      "error": "Refused",
+      "reason": "token_expired"
+     }
+    }
+   ]
+  },
+  {
+   "id": "text.unavailable-is-not-empty",
+   "tags": [
+    "reader"
+   ],
+   "covers": [
+    "text-search"
+   ],
+   "description": "a backend that is down is Unavailable, never an empty answer",
+   "fixture": "text",
+   "steps": [
+    {
+     "op": "outage",
+     "reason": "unreachable"
+    },
+    {
+     "op": "query",
+     "as": "carol",
+     "sql": "SELECT u.* FROM catalog.UseCase u ORDER BY u.code LIMIT 100",
+     "whole": true,
+     "text": {
+      "words": [
+       "pipeline"
+      ],
+      "properties": [
+       "name"
+      ]
+     },
+     "expect": {
+      "error": "Unavailable",
+      "reason": "unreachable"
+     }
+    }
+   ]
+  },
+  {
+   "id": "registry.validate-reports-without-applying",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "registry",
+    "schema-grant"
+   ],
+   "limits": [
+    "Truss 0.0.45 accepts the paired optional-field addition to an existing record (the member, the field and its umf.ddd entry) but still refuses a required property added in that form, so a Truss adapter answers Unsupported at the first dry run, whose edit adds a required property, and ends the case at its first step (truss-requirements R16.5)"
+   ],
+   "description": "a dry run names what registering would refuse and what it would change, and applies nothing: the registered document stays as it was",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "validate_register",
+     "as": "alice",
+     "edit": "add-required-property",
+     "expect": {
+      "registration": {
+       "ok": false,
+       "codes": [
+        "incompatible_change"
+       ],
+       "has_revision": true
+      }
+     }
+    },
+    {
+     "op": "register",
+     "as": "alice",
+     "edit": "add-required-property",
+     "expect": {
+      "error": "Invalid"
+     }
+    },
+    {
+     "op": "validate_register",
+     "as": "alice",
+     "edit": "add-optional-property",
+     "expect": {
+      "registration": {
+       "ok": true
+      },
+      "changed": true
+     }
+    },
+    {
+     "op": "document",
+     "as": "carol",
+     "expect": {
+      "document": {
+       "verbatim": true
+      }
+     }
+    },
+    {
+     "op": "validate_register",
+     "as": "alice",
+     "expect": {
+      "registration": {
+       "ok": true
+      },
+      "changed": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "registry.schema-is-not-write",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "registry",
+    "schema-grant"
+   ],
+   "description": "registering and its dry run are the schema grant's: write, read and no token are refused, before anything of the document is answered",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "validate_register",
+     "as": "bob",
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "validate_register",
+     "as": "carol",
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "validate_register",
+     "as": "anon",
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "register",
+     "as": "bob",
+     "edit": "add-optional-property",
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "document",
+     "as": "carol",
+     "expect": {
+      "document": {
+       "verbatim": true
+      }
+     }
+    },
+    {
+     "op": "validate_register",
+     "as": "alice",
+     "expect": {
+      "registration": {
+       "ok": true
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "registry.register-checks-the-revision-it-was-planned-against",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "registry",
+    "schema-grant"
+   ],
+   "description": "a registration naming a revision the record store no longer holds is a conflict and applies nothing; naming the current one applies it",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "register",
+     "as": "alice",
+     "edit": "add-optional-property",
+     "expected_revision": "stale",
+     "expect": {
+      "error": "Conflict"
+     }
+    },
+    {
+     "op": "document",
+     "as": "carol",
+     "expect": {
+      "document": {
+       "verbatim": true
+      }
+     }
+    },
+    {
+     "op": "register",
+     "as": "alice",
+     "edit": "add-optional-property",
+     "expected_revision": "current",
+     "expect": {
+      "changed": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "registry.rewritten-equal-document-registers-unchanged",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "registry",
+    "documents"
+   ],
+   "description": "a document that is the registered one rewritten byte for byte differently is unchanged: no new revision, the registered text stays as it was, and writes still apply",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "validate_register",
+     "as": "alice",
+     "edit": "rewrite",
+     "expect": {
+      "registration": {
+       "ok": true
+      },
+      "changed": false
+     }
+    },
+    {
+     "op": "register",
+     "as": "alice",
+     "edit": "rewrite",
+     "expect": {
+      "changed": false
+     }
+    },
+    {
+     "op": "document",
+     "as": "carol",
+     "expect": {
+      "document": {
+       "verbatim": true
+      }
+     }
+    },
+    {
+     "op": "register",
+     "as": "alice",
+     "edit": "rewrite",
+     "expected_revision": "current",
+     "expect": {
+      "changed": false
+     }
+    },
+    {
+     "op": "apply",
+     "as": "bob",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-9",
+      "name": "N"
+     },
+     "expect": {
+      "receipt": {
+       "created": 1
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "registry.registers-a-new-record-type",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "registry",
+    "documents"
+   ],
+   "description": "a document that adds a record type to the registered module is a compatible change: a dry run says so and applies nothing, registering it makes a new revision that readers see, and registering it again changes nothing",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "validate_register",
+     "as": "alice",
+     "edit": "add-record-type",
+     "expect": {
+      "registration": {
+       "ok": true
+      },
+      "changed": true
+     }
+    },
+    {
+     "op": "document",
+     "as": "carol",
+     "expect": {
+      "document": {
+       "verbatim": true
+      }
+     }
+    },
+    {
+     "op": "register",
+     "as": "alice",
+     "edit": "add-record-type",
+     "expected_revision": "current",
+     "expect": {
+      "changed": true
+     }
+    },
+    {
+     "op": "document",
+     "as": "carol",
+     "expect": {
+      "document": {
+       "verbatim": false,
+       "format": "json",
+       "has_revision": true
+      }
+     }
+    },
+    {
+     "op": "register",
+     "as": "alice",
+     "edit": "add-record-type",
+     "expected_revision": "current",
+     "expect": {
+      "changed": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "replica.refuses-validate-register",
+   "tags": [
+    "reader-only"
+   ],
+   "covers": [
+    "replica-read-only",
+    "schema-grant"
+   ],
+   "description": "a replica is fed, never registered: it has no dry run either, and says so",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "validate_register",
+     "as": "alice",
+     "expect": {
+      "error": "Unsupported"
+     }
+    }
+   ]
+  },
+  {
+   "id": "export.canonical-order-and-absent-properties",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "export"
+   ],
+   "description": "an export is every entity by type then key, then every relationship; a property that is not set, and an author or time the record never had, are absent, never null",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "import",
+     "as": "alice",
+     "load_id": "L1",
+     "records": [
+      {
+       "type": "UseCase",
+       "key": "uc-0",
+       "properties": {
+        "name": "Zero"
+       }
+      },
+      {
+       "type": "UseCase",
+       "key": "uc-7",
+       "properties": {
+        "name": "Old"
+       },
+       "original_author": "ann",
+       "original_at": "2020-01-02T03:04:05+00:00"
+      }
+     ],
+     "expect": {
+      "import": {
+       "created": 2,
+       "skipped": 0,
+       "rejected": 0
+      }
+     }
+    },
+    {
+     "op": "export",
+     "as": "carol",
+     "expect": {
+      "export": {
+       "records": [
+        {
+         "type": "UseCase",
+         "key": "uc-0",
+         "properties": {
+          "name": "Zero"
+         }
+        },
+        {
+         "type": "UseCase",
+         "key": "uc-1",
+         "properties": {
+          "name": "Pipeline mapping",
+          "workArea": "data"
+         }
+        },
+        {
+         "type": "UseCase",
+         "key": "uc-2",
+         "properties": {
+          "name": "Runbook review",
+          "workArea": "operations"
+         }
+        },
+        {
+         "type": "UseCase",
+         "key": "uc-7",
+         "properties": {
+          "name": "Old"
+         },
+         "original_author": "ann",
+         "original_at": "2020-01-02T03:04:05+00:00"
+        },
+        {
+         "type": "Solution",
+         "key": "sol-1",
+         "properties": {
+          "name": "Pipeline extractor"
+         }
+        },
+        {
+         "relationship": "addresses",
+         "source": "sol-1",
+         "target": "uc-1"
+        }
+       ],
+       "more": false,
+       "omitted": []
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "export.refused-without-read-never-empty",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "export",
+    "empty-refused-unavailable"
+   ],
+   "description": "a person with no read on the module, or no token, is Refused, never given an empty page; a backend that is down is Unavailable",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "export",
+     "as": "dave",
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "export",
+     "as": "anon",
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "export",
+     "as": "carol@alice",
+     "expect": {
+      "error": "Refused"
+     }
+    },
+    {
+     "op": "export",
+     "as": "carol",
+     "limit": 0,
+     "expect": {
+      "error": "Invalid",
+      "code": "bound"
+     }
+    },
+    {
+     "op": "export",
+     "as": "carol",
+     "limit": 501,
+     "expect": {
+      "error": "Invalid",
+      "code": "bound"
+     }
+    },
+    {
+     "op": "export",
+     "as": "carol",
+     "after": "not-a-cursor",
+     "expect": {
+      "error": "Invalid",
+      "code": "cursor"
+     }
+    },
+    {
+     "op": "outage",
+     "reason": "unreachable"
+    },
+    {
+     "op": "export",
+     "as": "carol",
+     "expect": {
+      "error": "Unavailable"
+     }
+    }
+   ]
+  },
+  {
+   "id": "export.pages-resume-after-the-last-record",
+   "tags": [
+    "store"
+   ],
+   "covers": [
+    "export"
+   ],
+   "description": "a page resumes after the last record it gave, so a write between pages neither repeats nor skips a record, and the pages together are the whole export",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "export",
+     "as": "carol",
+     "limit": 2,
+     "expect": {
+      "export": {
+       "records": [
+        {
+         "type": "UseCase",
+         "key": "uc-1",
+         "properties": {
+          "name": "Pipeline mapping",
+          "workArea": "data"
+         }
+        },
+        {
+         "type": "UseCase",
+         "key": "uc-2",
+         "properties": {
+          "name": "Runbook review",
+          "workArea": "operations"
+         }
+        }
+       ],
+       "more": true
+      }
+     },
+     "save": {
+      "cursor": "p1"
+     }
+    },
+    {
+     "op": "provider_write",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-0",
+      "name": "Before"
+     },
+     "expect": {
+      "ok": "written"
+     }
+    },
+    {
+     "op": "provider_write",
+     "as": "alice",
+     "action": "catalog.AddUseCase",
+     "inputs": {
+      "code": "uc-9",
+      "name": "After"
+     },
+     "expect": {
+      "ok": "written"
+     }
+    },
+    {
+     "op": "export",
+     "as": "carol",
+     "limit": 2,
+     "after": "$p1",
+     "expect": {
+      "export": {
+       "records": [
+        {
+         "type": "UseCase",
+         "key": "uc-9",
+         "properties": {
+          "name": "After"
+         }
+        },
+        {
+         "type": "Solution",
+         "key": "sol-1",
+         "properties": {
+          "name": "Pipeline extractor"
+         }
+        }
+       ],
+       "more": true
+      }
+     },
+     "save": {
+      "cursor": "p2"
+     }
+    },
+    {
+     "op": "export",
+     "as": "carol",
+     "limit": 2,
+     "after": "$p2",
+     "expect": {
+      "export": {
+       "records": [
+        {
+         "relationship": "addresses",
+         "source": "sol-1",
+         "target": "uc-1"
+        }
+       ],
+       "more": false
+      }
+     }
+    },
+    {
+     "op": "export",
+     "as": "carol",
+     "limit": 2,
+     "after": "$p1",
+     "expect": {
+      "export": {
+       "records": [
+        {
+         "type": "UseCase",
+         "key": "uc-9",
+         "properties": {
+          "name": "After"
+         }
+        },
+        {
+         "type": "Solution",
+         "key": "sol-1",
+         "properties": {
+          "name": "Pipeline extractor"
+         }
+        }
+       ],
+       "more": true
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "replica.export-is-unsupported",
+   "tags": [
+    "reader-only"
+   ],
+   "covers": [
+    "replica-read-only",
+    "export"
+   ],
+   "description": "a replica holds a copy, not the authoritative records, and says so rather than export them",
+   "fixture": "basic",
+   "steps": [
+    {
+     "op": "export",
+     "as": "carol",
+     "expect": {
+      "error": "Unsupported"
+     }
+    }
+   ]
+  }
+ ]
+}

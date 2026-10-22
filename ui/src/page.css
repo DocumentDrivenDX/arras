@@ -1,0 +1,11 @@
+/* SPDX-License-Identifier: MIT OR Apache-2.0 */
+/* The page of the stand-alone host (the dev host, and the page `arras.ui` serves): it gives the root
+   element the viewport. A host that embeds the components has its own page and does not import this. */
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  margin: 0;
+}

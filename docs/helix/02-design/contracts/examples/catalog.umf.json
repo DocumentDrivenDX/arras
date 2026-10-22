@@ -1,0 +1,243 @@
+{
+  "umf": "0.10.0",
+  "id": "catalog-example",
+  "vocabularies": {
+    "umf.ddd": {
+      "version": "0.1.0"
+    }
+  },
+  "extensions": {},
+  "modules": [
+    {
+      "id": "catalog",
+      "namespace": "catalog",
+      "extensions": {
+        "umf.ddd": {
+          "kind": "bounded-context",
+          "terms": []
+        }
+      },
+      "elements": [
+        {
+          "id": "UseCase",
+          "kind": "record",
+          "members": [
+            {
+              "module": "catalog",
+              "element": "UseCase.code"
+            },
+            {
+              "module": "catalog",
+              "element": "UseCase.name"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "name": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "catalog",
+                  "element": "UseCase.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "UseCase.code",
+          "kind": "field",
+          "nullability": "required",
+          "cardinality": "one",
+          "extensions": {},
+          "scalarType": "string",
+          "facets": {
+            "length": {
+              "max": 64,
+              "unit": "unicode-scalar"
+            }
+          }
+        },
+        {
+          "id": "UseCase.name",
+          "kind": "field",
+          "nullability": "required",
+          "cardinality": "one",
+          "extensions": {},
+          "scalarType": "string",
+          "facets": {
+            "length": {
+              "max": 200,
+              "unit": "unicode-scalar"
+            }
+          }
+        },
+        {
+          "id": "Solution",
+          "kind": "record",
+          "members": [
+            {
+              "module": "catalog",
+              "element": "Solution.code"
+            },
+            {
+              "module": "catalog",
+              "element": "Solution.name"
+            },
+            {
+              "module": "catalog",
+              "element": "Solution.coverageLevel"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "name": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "coverageLevel": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "catalog",
+                  "element": "Solution.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "Solution.code",
+          "kind": "field",
+          "nullability": "required",
+          "cardinality": "one",
+          "extensions": {},
+          "scalarType": "string",
+          "facets": {
+            "length": {
+              "max": 64,
+              "unit": "unicode-scalar"
+            }
+          }
+        },
+        {
+          "id": "Solution.name",
+          "kind": "field",
+          "nullability": "required",
+          "cardinality": "one",
+          "extensions": {},
+          "scalarType": "string",
+          "facets": {
+            "length": {
+              "max": 200,
+              "unit": "unicode-scalar"
+            }
+          }
+        },
+        {
+          "id": "Solution.coverageLevel",
+          "kind": "field",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "extensions": {},
+          "scalarType": "string",
+          "facets": {
+            "length": {
+              "max": 32,
+              "unit": "unicode-scalar"
+            }
+          }
+        }
+      ],
+      "relationships": [
+        {
+          "id": "solution-addresses",
+          "name": "addresses",
+          "source": [
+            {
+              "module": "catalog",
+              "element": "Solution"
+            }
+          ],
+          "target": [
+            {
+              "module": "catalog",
+              "element": "UseCase",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "addressedBy"
+        }
+      ]
+    }
+  ]
+}

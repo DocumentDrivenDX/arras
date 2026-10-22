@@ -1,0 +1,461 @@
+{
+  "note": "arras.graphfile.dumps and the UI's graphText must write these bytes (tests/test_graphfile.py, ui/src/test/graph-file.test.ts); loads and the UI's parseGraphFile refuse each of `rejected` (a number that is not an integer, `NaN` and `Infinity` among them), naming `path` and `token`; `dumps` and `graphText` refuse each of `unwritable`, with the message the readers give: a `{\"$number\": \"<token>\"}` in a graph stands for that number (a float in Python, a number in JavaScript), which a JSON file cannot hold",
+  "vectors": [
+    {
+      "name": "empty",
+      "graph": {
+        "module": "m",
+        "records": [],
+        "complete": true,
+        "omitted": []
+      },
+      "text": "{\n  \"complete\": true,\n  \"format\": \"arras.graph\",\n  \"module\": \"m\",\n  \"records\": [],\n  \"version\": 1\n}\n"
+    },
+    {
+      "name": "an entity and a link",
+      "graph": {
+        "module": "catalog",
+        "records": [
+          {
+            "type": "UseCase",
+            "key": "uc-1",
+            "properties": {
+              "name": "Alert review",
+              "workArea": "operations"
+            }
+          },
+          {
+            "relationship": "addresses",
+            "source": "s-1",
+            "target": "uc-1"
+          }
+        ],
+        "complete": true,
+        "omitted": []
+      },
+      "text": "{\n  \"complete\": true,\n  \"format\": \"arras.graph\",\n  \"module\": \"catalog\",\n  \"records\": [\n    {\n      \"key\": \"uc-1\",\n      \"properties\": {\n        \"name\": \"Alert review\",\n        \"workArea\": \"operations\"\n      },\n      \"type\": \"UseCase\"\n    },\n    {\n      \"relationship\": \"addresses\",\n      \"source\": \"s-1\",\n      \"target\": \"uc-1\"\n    }\n  ],\n  \"version\": 1\n}\n"
+    },
+    {
+      "name": "keys are sorted at every depth and values keep their types",
+      "graph": {
+        "module": "m",
+        "records": [
+          {
+            "type": "T",
+            "key": "k",
+            "properties": {
+              "z": 1,
+              "a": {
+                "y": [
+                  1,
+                  2,
+                  {
+                    "b": true,
+                    "a": null
+                  }
+                ],
+                "x": {}
+              },
+              "m": [],
+              "n": "-0.5",
+              "big": 9007199254740991,
+              "s": "1234567.50"
+            }
+          }
+        ],
+        "complete": true,
+        "omitted": []
+      },
+      "text": "{\n  \"complete\": true,\n  \"format\": \"arras.graph\",\n  \"module\": \"m\",\n  \"records\": [\n    {\n      \"key\": \"k\",\n      \"properties\": {\n        \"a\": {\n          \"x\": {},\n          \"y\": [\n            1,\n            2,\n            {\n              \"a\": null,\n              \"b\": true\n            }\n          ]\n        },\n        \"big\": 9007199254740991,\n        \"m\": [],\n        \"n\": \"-0.5\",\n        \"s\": \"1234567.50\",\n        \"z\": 1\n      },\n      \"type\": \"T\"\n    }\n  ],\n  \"version\": 1\n}\n"
+    },
+    {
+      "name": "text is written as it is, not escaped to ASCII",
+      "graph": {
+        "module": "m",
+        "records": [
+          {
+            "type": "T",
+            "key": "k",
+            "properties": {
+              "a": "é ü 日本語 😀",
+              "q": "say \"hi\"\n\ttab \\ slash",
+              "ctl": "\u0001\u001f",
+              "ls": "  "
+            }
+          }
+        ],
+        "complete": true,
+        "omitted": []
+      },
+      "text": "{\n  \"complete\": true,\n  \"format\": \"arras.graph\",\n  \"module\": \"m\",\n  \"records\": [\n    {\n      \"key\": \"k\",\n      \"properties\": {\n        \"a\": \"é ü 日本語 😀\",\n        \"ctl\": \"\\u0001\\u001f\",\n        \"ls\": \"  \",\n        \"q\": \"say \\\"hi\\\"\\n\\ttab \\\\ slash\"\n      },\n      \"type\": \"T\"\n    }\n  ],\n  \"version\": 1\n}\n"
+    },
+    {
+      "name": "keys sort by code point, not UTF-16 unit",
+      "graph": {
+        "module": "m",
+        "records": [
+          {
+            "type": "T",
+            "key": "k",
+            "properties": {
+              "￮": 1,
+              "😀": 2,
+              "b": 3,
+              "B": 4,
+              "_": 5,
+              "é": 6
+            }
+          }
+        ],
+        "complete": true,
+        "omitted": []
+      },
+      "text": "{\n  \"complete\": true,\n  \"format\": \"arras.graph\",\n  \"module\": \"m\",\n  \"records\": [\n    {\n      \"key\": \"k\",\n      \"properties\": {\n        \"B\": 4,\n        \"_\": 5,\n        \"b\": 3,\n        \"é\": 6,\n        \"￮\": 1,\n        \"😀\": 2\n      },\n      \"type\": \"T\"\n    }\n  ],\n  \"version\": 1\n}\n"
+    },
+    {
+      "name": "an incomplete export says which types were left out",
+      "graph": {
+        "module": "m",
+        "records": [
+          {
+            "type": "T",
+            "key": "a",
+            "properties": {}
+          }
+        ],
+        "complete": false,
+        "omitted": [
+          "Secret",
+          "Other"
+        ]
+      },
+      "text": "{\n  \"complete\": false,\n  \"format\": \"arras.graph\",\n  \"module\": \"m\",\n  \"omitted\": [\n    \"Secret\",\n    \"Other\"\n  ],\n  \"records\": [\n    {\n      \"key\": \"a\",\n      \"properties\": {},\n      \"type\": \"T\"\n    }\n  ],\n  \"version\": 1\n}\n"
+    },
+    {
+      "name": "integers beyond 2^53 are written digit for digit",
+      "graph": {
+        "module": "m",
+        "records": [
+          {
+            "type": "T",
+            "key": "k",
+            "properties": {
+              "above": 9007199254740993,
+              "below": -9007199254740993,
+              "edge": 9007199254740992,
+              "huge": 123456789012345678901234567890,
+              "safe": 9007199254740991,
+              "u64": 18446744073709551615
+            }
+          }
+        ],
+        "complete": true,
+        "omitted": []
+      },
+      "text": "{\n  \"complete\": true,\n  \"format\": \"arras.graph\",\n  \"module\": \"m\",\n  \"records\": [\n    {\n      \"key\": \"k\",\n      \"properties\": {\n        \"above\": 9007199254740993,\n        \"below\": -9007199254740993,\n        \"edge\": 9007199254740992,\n        \"huge\": 123456789012345678901234567890,\n        \"safe\": 9007199254740991,\n        \"u64\": 18446744073709551615\n      },\n      \"type\": \"T\"\n    }\n  ],\n  \"version\": 1\n}\n"
+    }
+  ],
+  "rejected": [
+    {
+      "name": "1.0 as a property",
+      "text": "{\"complete\": true, \"format\": \"arras.graph\", \"module\": \"m\", \"records\": [{\"key\": \"a\", \"properties\": {\"n\": 1}, \"type\": \"T\"}, {\"key\": \"b\", \"properties\": {\"n\": 1.0}, \"type\": \"T\"}], \"version\": 1}",
+      "path": "records[1].properties.n",
+      "token": "1.0"
+    },
+    {
+      "name": "1.5 as a property",
+      "text": "{\"complete\": true, \"format\": \"arras.graph\", \"module\": \"m\", \"records\": [{\"key\": \"a\", \"properties\": {\"n\": 1}, \"type\": \"T\"}, {\"key\": \"b\", \"properties\": {\"n\": 1.5}, \"type\": \"T\"}], \"version\": 1}",
+      "path": "records[1].properties.n",
+      "token": "1.5"
+    },
+    {
+      "name": "-0.5 as a property",
+      "text": "{\"complete\": true, \"format\": \"arras.graph\", \"module\": \"m\", \"records\": [{\"key\": \"a\", \"properties\": {\"n\": 1}, \"type\": \"T\"}, {\"key\": \"b\", \"properties\": {\"n\": -0.5}, \"type\": \"T\"}], \"version\": 1}",
+      "path": "records[1].properties.n",
+      "token": "-0.5"
+    },
+    {
+      "name": "1e3 as a property",
+      "text": "{\"complete\": true, \"format\": \"arras.graph\", \"module\": \"m\", \"records\": [{\"key\": \"a\", \"properties\": {\"n\": 1}, \"type\": \"T\"}, {\"key\": \"b\", \"properties\": {\"n\": 1e3}, \"type\": \"T\"}], \"version\": 1}",
+      "path": "records[1].properties.n",
+      "token": "1e3"
+    },
+    {
+      "name": "2E5 as a property",
+      "text": "{\"complete\": true, \"format\": \"arras.graph\", \"module\": \"m\", \"records\": [{\"key\": \"a\", \"properties\": {\"n\": 1}, \"type\": \"T\"}, {\"key\": \"b\", \"properties\": {\"n\": 2E5}, \"type\": \"T\"}], \"version\": 1}",
+      "path": "records[1].properties.n",
+      "token": "2E5"
+    },
+    {
+      "name": "1.0e0 as a property",
+      "text": "{\"complete\": true, \"format\": \"arras.graph\", \"module\": \"m\", \"records\": [{\"key\": \"a\", \"properties\": {\"n\": 1}, \"type\": \"T\"}, {\"key\": \"b\", \"properties\": {\"n\": 1.0e0}, \"type\": \"T\"}], \"version\": 1}",
+      "path": "records[1].properties.n",
+      "token": "1.0e0"
+    },
+    {
+      "name": "a list member",
+      "text": "{\"complete\": true, \"format\": \"arras.graph\", \"module\": \"m\", \"records\": [{\"key\": \"a\", \"properties\": {\"xs\": [1, 2, 3.5]}, \"type\": \"T\"}], \"version\": 1}",
+      "path": "records[0].properties.xs[2]",
+      "token": "3.5"
+    },
+    {
+      "name": "a key written with an escape",
+      "text": "{\"complete\": true, \"format\": \"arras.graph\", \"module\": \"m\", \"records\": [{\"key\": \"a\", \"properties\": {\"a\\\"b\": 1.5, \"c\": 2.5}, \"type\": \"T\"}], \"version\": 1}",
+      "path": "records[0].properties.a\"b",
+      "token": "1.5"
+    },
+    {
+      "name": "a string that looks like one is not a number, the number after it is",
+      "text": "{\"complete\": true, \"format\": \"arras.graph\", \"module\": \"m\", \"records\": [{\"key\": \"1.5\", \"properties\": {\"s\": \"2.5, 3.5\", \"n\": 4.5}, \"type\": \"T\"}], \"version\": 1}",
+      "path": "records[0].properties.n",
+      "token": "4.5"
+    },
+    {
+      "name": "the version as a float",
+      "text": "{\"complete\": true, \"format\": \"arras.graph\", \"module\": \"m\", \"records\": [], \"version\": 1.0}",
+      "path": "version",
+      "token": "1.0"
+    },
+    {
+      "name": "NaN as a property",
+      "text": "{\"complete\": true, \"format\": \"arras.graph\", \"module\": \"m\", \"records\": [{\"key\": \"a\", \"properties\": {\"n\": 1}, \"type\": \"T\"}, {\"key\": \"b\", \"properties\": {\"n\": NaN}, \"type\": \"T\"}], \"version\": 1}",
+      "path": "records[1].properties.n",
+      "token": "NaN"
+    },
+    {
+      "name": "Infinity as a property",
+      "text": "{\"complete\": true, \"format\": \"arras.graph\", \"module\": \"m\", \"records\": [{\"key\": \"a\", \"properties\": {\"n\": 1}, \"type\": \"T\"}, {\"key\": \"b\", \"properties\": {\"n\": Infinity}, \"type\": \"T\"}], \"version\": 1}",
+      "path": "records[1].properties.n",
+      "token": "Infinity"
+    },
+    {
+      "name": "-Infinity as a property",
+      "text": "{\"complete\": true, \"format\": \"arras.graph\", \"module\": \"m\", \"records\": [{\"key\": \"a\", \"properties\": {\"n\": 1}, \"type\": \"T\"}, {\"key\": \"b\", \"properties\": {\"n\": -Infinity}, \"type\": \"T\"}], \"version\": 1}",
+      "path": "records[1].properties.n",
+      "token": "-Infinity"
+    },
+    {
+      "name": "NaN as the whole document",
+      "text": "NaN",
+      "path": "the document",
+      "token": "NaN"
+    },
+    {
+      "name": "a string that says NaN is not a number, the number after it is",
+      "text": "{\"complete\": true, \"format\": \"arras.graph\", \"module\": \"m\", \"records\": [{\"key\": \"NaN\", \"properties\": {\"s\": \"Infinity\", \"n\": 1.5}, \"type\": \"T\"}], \"version\": 1}",
+      "path": "records[0].properties.n",
+      "token": "1.5"
+    }
+  ],
+  "unwritable": [
+    {
+      "name": "1.5 as a property",
+      "graph": {
+        "module": "m",
+        "records": [
+          {
+            "type": "T",
+            "key": "a",
+            "properties": {
+              "n": 1
+            }
+          },
+          {
+            "type": "T",
+            "key": "b",
+            "properties": {
+              "n": {
+                "$number": "1.5"
+              }
+            }
+          }
+        ],
+        "complete": true,
+        "omitted": []
+      },
+      "path": "records[1].properties.n",
+      "token": "1.5"
+    },
+    {
+      "name": "-0.5 as a property",
+      "graph": {
+        "module": "m",
+        "records": [
+          {
+            "type": "T",
+            "key": "a",
+            "properties": {
+              "n": 1
+            }
+          },
+          {
+            "type": "T",
+            "key": "b",
+            "properties": {
+              "n": {
+                "$number": "-0.5"
+              }
+            }
+          }
+        ],
+        "complete": true,
+        "omitted": []
+      },
+      "path": "records[1].properties.n",
+      "token": "-0.5"
+    },
+    {
+      "name": "NaN as a property",
+      "graph": {
+        "module": "m",
+        "records": [
+          {
+            "type": "T",
+            "key": "a",
+            "properties": {
+              "n": 1
+            }
+          },
+          {
+            "type": "T",
+            "key": "b",
+            "properties": {
+              "n": {
+                "$number": "NaN"
+              }
+            }
+          }
+        ],
+        "complete": true,
+        "omitted": []
+      },
+      "path": "records[1].properties.n",
+      "token": "NaN"
+    },
+    {
+      "name": "Infinity as a property",
+      "graph": {
+        "module": "m",
+        "records": [
+          {
+            "type": "T",
+            "key": "a",
+            "properties": {
+              "n": 1
+            }
+          },
+          {
+            "type": "T",
+            "key": "b",
+            "properties": {
+              "n": {
+                "$number": "Infinity"
+              }
+            }
+          }
+        ],
+        "complete": true,
+        "omitted": []
+      },
+      "path": "records[1].properties.n",
+      "token": "Infinity"
+    },
+    {
+      "name": "-Infinity as a property",
+      "graph": {
+        "module": "m",
+        "records": [
+          {
+            "type": "T",
+            "key": "a",
+            "properties": {
+              "n": 1
+            }
+          },
+          {
+            "type": "T",
+            "key": "b",
+            "properties": {
+              "n": {
+                "$number": "-Infinity"
+              }
+            }
+          }
+        ],
+        "complete": true,
+        "omitted": []
+      },
+      "path": "records[1].properties.n",
+      "token": "-Infinity"
+    },
+    {
+      "name": "a list member",
+      "graph": {
+        "module": "m",
+        "records": [
+          {
+            "type": "T",
+            "key": "a",
+            "properties": {
+              "n": 1
+            }
+          },
+          {
+            "type": "T",
+            "key": "b",
+            "properties": {
+              "xs": [
+                1,
+                2,
+                {
+                  "$number": "3.5"
+                }
+              ]
+            }
+          }
+        ],
+        "complete": true,
+        "omitted": []
+      },
+      "path": "records[1].properties.xs[2]",
+      "token": "3.5"
+    },
+    {
+      "name": "a nested member, the first of two",
+      "graph": {
+        "module": "m",
+        "records": [
+          {
+            "type": "T",
+            "key": "a",
+            "properties": {
+              "n": 1
+            }
+          },
+          {
+            "type": "T",
+            "key": "b",
+            "properties": {
+              "a": {
+                "b": [
+                  {
+                    "c": {
+                      "$number": "2.5"
+                    }
+                  }
+                ],
+                "d": {
+                  "$number": "4.5"
+                }
+              }
+            }
+          }
+        ],
+        "complete": true,
+        "omitted": []
+      },
+      "path": "records[1].properties.a.b[0].c",
+      "token": "2.5"
+    }
+  ]
+}

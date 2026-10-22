@@ -1,0 +1,16 @@
+[
+  { "style": "color-scheme: light", "os": "dark", "want": "light" },
+  { "style": "color-scheme: dark", "os": "light", "want": "dark" },
+  { "style": "color-scheme: light dark", "os": "dark", "want": "dark" },
+  { "style": "color-scheme: light dark", "os": "light", "want": "light" },
+  { "style": "color-scheme: dark light", "os": "dark", "want": "dark" },
+  { "style": "color-scheme: dark light", "os": "light", "want": "light" },
+  { "style": "color-scheme: dark only", "os": "light", "want": "dark" },
+  { "style": "color-scheme: dark only", "os": "dark", "want": "dark" },
+  { "style": "color-scheme: light only", "os": "dark", "want": "light" },
+  { "style": "color-scheme: light only", "os": "light", "want": "light" },
+  { "style": "color-scheme: light dark only", "os": "dark", "want": "dark" },
+  { "style": "color-scheme: light dark only", "os": "light", "want": "light" },
+  { "style": "color-scheme: dark light only", "os": "dark", "want": "dark" },
+  { "style": "color-scheme: dark light only", "os": "light", "want": "light" }
+]

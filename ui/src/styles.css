@@ -1,0 +1,382 @@
+/* SPDX-License-Identifier: MIT OR Apache-2.0 */
+@import "tailwindcss";
+@import "./browser/browser.css";
+@import "./browser/history.css";
+@import "./console/palette.css";
+@import "./ds/default.css";
+
+/* Everything below is scoped to `.arras-root` when the library is built (scripts/scope-css.ts): the tokens, the
+   reset, the utilities and the classes reach nothing outside it, and `html`, `body` and `:root` in this file
+   mean the root element. A host page's own rules (`src/page.css`) are separate. */
+
+/* The surface, text, border and accent tokens are the design system's role tokens (`--arras-*`, ds/contract.ts).
+   A host sets any of them on an ancestor of the root to restyle the interface; the literals are the built-in
+   values (ADR-029). */
+/* Tokens. Light by default. Dark follows the page's `prefers-color-scheme`, unless an ancestor says
+   `data-appearance="light"` or `"dark"` (the host's own switch). The root never
+   sets `data-appearance` itself: the colour scheme is the host's.
+   Contrast pairs are >= 4.5:1 (WCAG 2.1 AA). */
+:root {
+  --bg: var(--arras-color-ground, #f6f7f9);
+  --surface: var(--arras-color-surface, #ffffff);
+  --surface-2: var(--arras-color-surface-sunken, #eef0f4);
+  --fg: var(--arras-color-text, #151a23);
+  --fg-muted: var(--arras-color-text-muted, #4a5365);
+  --line: var(--arras-color-border, #d5d9e1);
+  --line-strong: color-mix(in srgb, var(--line) 55%, var(--fg));
+  /* The muted text the UMF schema browser draws on its own tinted badges (src/areas/umfBrowser.ts). */
+  --umf-muted: color-mix(in srgb, var(--fg-muted) 75%, var(--fg));
+  --accent: var(--arras-color-accent, #1f4fd8);
+  --accent-fg: var(--arras-color-on-accent, #ffffff);
+  --accent-soft: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  --ok: color-mix(in srgb, var(--state-live) 78%, var(--fg));
+  --ok-soft: color-mix(in srgb, var(--state-live) 7%, var(--surface));
+  --warn: color-mix(in srgb, var(--state-limited) 78%, var(--fg));
+  --warn-soft: color-mix(in srgb, var(--state-limited) 7%, var(--surface));
+  --bad: color-mix(in srgb, var(--state-closed) 78%, var(--fg));
+  --bad-soft: color-mix(in srgb, var(--state-closed) 7%, var(--surface));
+  --row-alt: #f8f9fb;
+  --row-focus: var(--accent-soft);
+  --shadow: 0 1px 2px rgba(21, 26, 35, 0.06), 0 4px 16px rgba(21, 26, 35, 0.06);
+  --state-live: var(--arras-state-live, #1a8a50);
+  --state-limited: var(--arras-state-limited, #b36a00);
+  --state-closed: var(--arras-state-closed, #c9263a);
+  --state-purchasing: var(--arras-state-purchasing, #2f62e0);
+  --brand: var(--arras-color-accent, #c42b83);
+  /* The eight tones of a view (CONTRACT-010) are drawn from the theme: its status colours and accent, mixed where
+     a slot has none, with the ink and the soft fill derived from the mark and the surface so they follow the
+     appearance (ADR-029). The literals are the fallbacks for a page with no theme. */
+  --slate-mark: var(--arras-color-text-muted, #64708a);
+  --slate-ink: color-mix(in srgb, var(--slate-mark) 65%, var(--fg));
+  --slate-soft: color-mix(in srgb, var(--slate-mark) 13%, var(--surface));
+  --blue-mark: var(--state-purchasing);
+  --blue-ink: color-mix(in srgb, var(--blue-mark) 65%, var(--fg));
+  --blue-soft: color-mix(in srgb, var(--blue-mark) 13%, var(--surface));
+  --teal-mark: color-mix(in srgb, var(--state-live) 50%, var(--state-purchasing));
+  --teal-ink: color-mix(in srgb, var(--teal-mark) 65%, var(--fg));
+  --teal-soft: color-mix(in srgb, var(--teal-mark) 13%, var(--surface));
+  --green-mark: var(--state-live);
+  --green-ink: color-mix(in srgb, var(--green-mark) 65%, var(--fg));
+  --green-soft: color-mix(in srgb, var(--green-mark) 13%, var(--surface));
+  --amber-mark: var(--state-limited);
+  --amber-ink: color-mix(in srgb, var(--amber-mark) 65%, var(--fg));
+  --amber-soft: color-mix(in srgb, var(--amber-mark) 13%, var(--surface));
+  --red-mark: var(--state-closed);
+  --red-ink: color-mix(in srgb, var(--red-mark) 65%, var(--fg));
+  --red-soft: color-mix(in srgb, var(--red-mark) 13%, var(--surface));
+  --violet-mark: color-mix(in srgb, var(--state-purchasing) 55%, var(--brand));
+  --violet-ink: color-mix(in srgb, var(--violet-mark) 65%, var(--fg));
+  --violet-soft: color-mix(in srgb, var(--violet-mark) 13%, var(--surface));
+  --rose-mark: var(--brand);
+  --rose-ink: color-mix(in srgb, var(--rose-mark) 65%, var(--fg));
+  --rose-soft: color-mix(in srgb, var(--rose-mark) 13%, var(--surface));
+  --r-control: var(--arras-radius-control, 6px);
+  --r-card: var(--arras-radius-card, 10px);
+  --fs-small: var(--arras-font-size-small, 12px);
+  --fs-heading: var(--arras-font-size-heading, 16px);
+  color-scheme: light;
+}
+/* The dark tokens, once for the host's explicit appearance and once for the page's preference. The host's word
+   is the nearest ancestor that gives one, as `data-appearance` or as an inline `color-scheme` of a single
+   `light` or `dark`, alone or with `only` (a host theme given only its tokens; the two-value `light dark` and
+   `dark light` say no scheme, as `declaredScheme` in `areas/umfBrowser.ts` reads them): a light provider inside a dark one decides
+   for what is inside it, so the dark rule applies only through an ancestor with no other such ancestor
+   between it and the root. A `color-scheme: dark` substring does not occur in `light dark`, and a
+   `color-scheme: light` one does not occur in `dark light`, so each single value excludes only the other
+   order of its own two-value form. */
+:is(
+  [data-appearance="dark"],
+  [style*="color-scheme: dark"]:not([style*="color-scheme: dark light"])
+):not(
+  :has(
+    :is(
+        [data-appearance="light"],
+        [data-appearance="dark"],
+        [style*="color-scheme: light"]:not([style*="color-scheme: light dark"]),
+        [style*="color-scheme: dark"]:not([style*="color-scheme: dark light"])
+      )
+      .arras-root
+  )
+) .arras-root {
+  --bg: var(--arras-color-ground, #0f131a);
+  --surface: var(--arras-color-surface, #161b24);
+  --surface-2: var(--arras-color-surface-sunken, #1e2531);
+  --fg: var(--arras-color-text, #e8ebf1);
+  --fg-muted: var(--arras-color-text-muted, #a8b0c0);
+  --line: var(--arras-color-border, #2d3545);
+  --accent: var(--arras-color-accent, #7aa2ff);
+  --accent-fg: var(--arras-color-on-accent, #0b1020);
+  --row-alt: #1a202b;
+  --bad: color-mix(in srgb, var(--state-closed) 50%, var(--fg));
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  .arras-root:not(
+    [data-appearance="dark"] *,
+    [data-appearance="light"] *,
+    [style*="color-scheme: dark"]:not([style*="color-scheme: dark light"]) *,
+    [style*="color-scheme: light"]:not([style*="color-scheme: light dark"]) *
+  ) {
+    --bg: var(--arras-color-ground, #0f131a);
+    --surface: var(--arras-color-surface, #161b24);
+    --surface-2: var(--arras-color-surface-sunken, #1e2531);
+    --fg: var(--arras-color-text, #e8ebf1);
+    --fg-muted: var(--arras-color-text-muted, #a8b0c0);
+    --line: var(--arras-color-border, #2d3545);
+    --accent: var(--arras-color-accent, #7aa2ff);
+    --accent-fg: var(--arras-color-on-accent, #0b1020);
+    --row-alt: #1a202b;
+    --bad: color-mix(in srgb, var(--state-closed) 50%, var(--fg));
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.35);
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface-2);
+  --color-fg: var(--fg);
+  --color-muted: var(--fg-muted);
+  --color-line: var(--line);
+  --color-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accentfg: var(--accent-fg);
+  --color-accentsoft: var(--accent-soft);
+  --color-ok: var(--ok);
+  --color-oksoft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warnsoft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-badsoft: var(--bad-soft);
+  --color-rowalt: var(--row-alt);
+  --color-rowfocus: var(--row-focus);
+  --font-sans: var(
+    --arras-font-body,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif
+  );
+  --font-mono: var(--arras-font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+}
+
+/* The root element: what `body` was on a page of its own. */
+:root {
+  display: block;
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+
+/* Every control shows a keyboard focus ring in the accent (the theme's own, so it keeps its contrast against
+   the surface in both appearances). Tabs and the module rail sit in scrolling strips that clip an outline
+   drawn outside the box, so theirs is drawn inside it. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+[role="tab"]:focus-visible,
+nav[aria-label="Modules"] button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.arras-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: max-content;
+  min-width: 100%;
+  font-size: 12px;
+}
+.arras-table th,
+.arras-table td {
+  padding: 3px 8px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 280px;
+  text-align: left;
+}
+.arras-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--surface-2);
+  font-weight: 600;
+  color: var(--fg-muted);
+  border-bottom: 1px solid var(--line-strong);
+}
+.arras-table thead tr.filters th {
+  top: 24px;
+  padding: 2px 4px;
+  background: var(--surface);
+}
+.arras-table tbody tr:nth-child(even) {
+  background: var(--row-alt);
+}
+.arras-table tbody tr:has(button[aria-current="true"]) {
+  background: var(--row-focus);
+}
+.arras-table tbody tr.focused {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.arras-cell-button {
+  all: unset;
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.arras-cell-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+/* The record's key column stays in view while the others scroll under it. */
+.arras-table tbody td:first-child,
+.arras-table thead th:first-child {
+  position: sticky;
+  left: 0;
+}
+.arras-table tbody td:first-child {
+  z-index: 1;
+  background: var(--surface);
+}
+.arras-table tbody tr:nth-child(even) td:first-child {
+  background: var(--row-alt);
+}
+.arras-table tbody tr:has(button[aria-current="true"]) td:first-child {
+  background: var(--row-focus);
+}
+.arras-table thead th:first-child {
+  z-index: 3;
+}
+.arras-table .arras-sort {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  max-width: 100%;
+}
+.arras-table .arras-sort:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.arras-table th[aria-sort="ascending"],
+.arras-table th[aria-sort="descending"] {
+  color: var(--fg);
+}
+
+/* Scroll cue: an edge fade where a scrolling box has more beyond it; only while there is more. It is a mask on
+   the scroller, so nothing is layered over the content and the text keeps its own background. */
+.arras-cue {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+}
+.arras-cue > :first-child {
+  --cue-start: var(--fg);
+  --cue-end: var(--fg);
+  mask-image: linear-gradient(
+    to right,
+    var(--cue-start),
+    var(--fg) 22px,
+    var(--fg) calc(100% - 22px),
+    var(--cue-end)
+  );
+}
+.arras-cue[data-cue-start="true"] > :first-child {
+  --cue-start: color-mix(in srgb, var(--fg) 40%, transparent);
+}
+.arras-cue[data-cue-end="true"] > :first-child {
+  --cue-end: color-mix(in srgb, var(--fg) 40%, transparent);
+}
+/* A table keeps its first column in view; the shadow falls on it rather than on a fade at the edge. */
+.arras-cue.arras-cue-table[data-cue-start="true"] > :first-child {
+  --cue-start: var(--fg);
+}
+.arras-cue[data-cue-start="true"] .arras-table :is(td, th):first-child {
+  box-shadow: 3px 0 4px -2px var(--line-strong);
+}
+.arras-table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.arras-mono {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+/* Graph nodes: keyboard focus is a heavier accent outline on the box (SVG ignores outline). */
+.arras-node:has(:focus-visible) .arras-node-box {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+.arras-node-hit {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  outline: none;
+}
+.arras-node:hover .arras-node-box {
+  stroke: var(--accent);
+}
+kbd {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  padding: 0 4px;
+  border: 1px solid var(--line-strong);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--fg);
+}
+/* Type scale and spacing tokens (px): used by areas through utilities and the classes below. */
+:root {
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-md: 13px;
+  --fs-lg: 15px;
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms;
+    transition-duration: 0.01ms;
+  }
+}
+
+/* The Query grid: a row that has focus, or is opened, shows its whole text instead of clipping it. */
+.arras-query tbody tr:focus-within td,
+.arras-query tbody tr[data-open] td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  max-width: 480px;
+}
+.arras-query .arras-cell-button {
+  white-space: inherit;
+  text-overflow: inherit;
+  overflow-wrap: inherit;
+}

@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Graph Browser mockup</title>
+<style>
+/* Tokens: the Operator Console's (ui/src/styles.css) plus the eight tones of DESIGN-GB. */
+.theme-light {
+  --bg:#f6f7f9; --surface:#fff; --surface-2:#eef0f4; --fg:#151a23; --fg-muted:#4a5365; --line:#d5d9e1; --line-strong:#aab1bf;
+  --accent:#1f4fd8; --accent-fg:#fff; --accent-soft:#e4ebfd; --ok:#0b6b3a; --warn:#8a4b00; --bad:#a31523;
+  --slate-ink:#3b4659; --slate-soft:#eceff4; --slate-mark:#64708a;
+  --blue-ink:#1b46b8; --blue-soft:#e4ebfd; --blue-mark:#2f62e0;
+  --teal-ink:#0b5f66; --teal-soft:#dcf3f4; --teal-mark:#117d86;
+  --green-ink:#0b5f33; --green-soft:#dff5e8; --green-mark:#1a8a50;
+  --amber-ink:#7a4300; --amber-soft:#fdf0d9; --amber-mark:#b36a00;
+  --red-ink:#9a1424; --red-soft:#fde6e8; --red-mark:#c9263a;
+  --violet-ink:#5b32b0; --violet-soft:#ece6fb; --violet-mark:#7a4fd6;
+  --rose-ink:#9c1f64; --rose-soft:#fbe4ef; --rose-mark:#c42b83;
+  --shadow:0 1px 2px rgba(21,26,35,.06),0 4px 16px rgba(21,26,35,.06);
+  color-scheme:light;
+}
+.theme-dark {
+  --bg:#0f131a; --surface:#161b24; --surface-2:#1e2531; --fg:#e8ebf1; --fg-muted:#a8b0c0; --line:#2d3545; --line-strong:#4a5469;
+  --accent:#7aa2ff; --accent-fg:#0b1020; --accent-soft:#1e2b4d; --ok:#6fdc9f; --warn:#f2b864; --bad:#ff8a95;
+  --slate-ink:#c3cada; --slate-soft:#252c3a; --slate-mark:#8c97ae;
+  --blue-ink:#a9c1ff; --blue-soft:#1e2b4d; --blue-mark:#6f98ff;
+  --teal-ink:#7fdbe2; --teal-soft:#0f3338; --teal-mark:#3fb6c0;
+  --green-ink:#7fe0aa; --green-soft:#12301f; --green-mark:#3fb978;
+  --amber-ink:#f5c26f; --amber-soft:#3a2a0f; --amber-mark:#d9962b;
+  --red-ink:#ffa3ad; --red-soft:#3d1419; --red-mark:#f0606f;
+  --violet-ink:#c9b4ff; --violet-soft:#2c2150; --violet-mark:#9c7bf0;
+  --rose-ink:#ffa6d1; --rose-soft:#3e1630; --rose-mark:#ee5fa8;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+* { box-sizing:border-box; }
+body { margin:0; background:#dfe3ea; font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; color:#151a23; }
+h1.sheet { font-size:20px; margin:24px 24px 4px; }
+p.note { margin:0 24px 16px; color:#4a5365; max-width:900px; }
+.board { display:flex; flex-direction:column; gap:32px; padding:0 24px 48px; }
+.label { font-size:12px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:#4a5365; margin:0 0 6px; }
+.frame { background:var(--bg); color:var(--fg); border:1px solid var(--line-strong); border-radius:10px; overflow:hidden; width:1200px; max-width:100%; }
+.frame.narrow { width:390px; }
+.frame.mid { width:760px; }
+.row { display:flex; gap:24px; flex-wrap:wrap; align-items:flex-start; }
+button, input { font:inherit; color:inherit; }
+:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+
+/* Shell */
+.top { display:flex; align-items:center; gap:16px; padding:12px 24px; background:var(--surface); border-bottom:1px solid var(--line); }
+.top .mod { font-weight:600; }
+.top .mod small { display:block; font-weight:400; color:var(--fg-muted); font-size:12px; line-height:1.2; }
+.search { flex:1; max-width:640px; display:flex; align-items:center; gap:8px; height:40px; padding:0 12px; border:1px solid var(--line-strong); border-radius:8px; background:var(--surface); }
+.search:focus-within { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+.search input { flex:1; border:0; background:transparent; outline:none; min-width:0; }
+.search svg { flex:none; color:var(--fg-muted); }
+.search kbd { font:12px ui-monospace,Menlo,monospace; color:var(--fg-muted); border:1px solid var(--line); border-radius:4px; padding:0 6px; }
+.fresh { margin-left:auto; font-size:12px; color:var(--fg-muted); display:flex; align-items:center; gap:6px; white-space:nowrap; }
+.dot { width:8px; height:8px; border-radius:50%; background:var(--ok); display:inline-block; }
+.dot.warn { background:var(--warn); }
+.main { padding:20px 24px 28px; }
+
+/* Chips */
+.chips { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 16px; }
+.chip { display:inline-flex; align-items:center; gap:6px; height:32px; padding:0 12px 0 8px; border-radius:16px; border:1px solid var(--line-strong); background:var(--surface); cursor:pointer; }
+.chip .ico { width:20px; height:20px; border-radius:6px; display:grid; place-items:center; }
+.chip .n { color:var(--fg-muted); font-variant-numeric:tabular-nums; }
+.chip.all { padding-left:12px; }
+.chip[aria-checked="true"] { background:var(--accent-soft); border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent); font-weight:600; }
+.chip[aria-checked="true"]::after { content:"✓"; color:var(--accent); font-weight:700; }
+.chip:focus-visible { outline:2px solid var(--fg); outline-offset:3px; }
+.chip.off { color:var(--fg-muted); border-style:dashed; }
+
+/* Tone tiles */
+.t-slate{--ink:var(--slate-ink);--soft:var(--slate-soft);--mark:var(--slate-mark)} .t-blue{--ink:var(--blue-ink);--soft:var(--blue-soft);--mark:var(--blue-mark)}
+.t-teal{--ink:var(--teal-ink);--soft:var(--teal-soft);--mark:var(--teal-mark)} .t-green{--ink:var(--green-ink);--soft:var(--green-soft);--mark:var(--green-mark)}
+.t-amber{--ink:var(--amber-ink);--soft:var(--amber-soft);--mark:var(--amber-mark)} .t-red{--ink:var(--red-ink);--soft:var(--red-soft);--mark:var(--red-mark)}
+.t-violet{--ink:var(--violet-ink);--soft:var(--violet-soft);--mark:var(--violet-mark)} .t-rose{--ink:var(--rose-ink);--soft:var(--rose-soft);--mark:var(--rose-mark)}
+.ico { background:var(--soft); color:var(--ink); }
+.badge { display:inline-flex; align-items:center; gap:4px; height:22px; padding:0 8px; border-radius:11px; background:var(--soft); color:var(--ink); font-size:12px; font-weight:600; }
+
+/* Hits */
+.hits { display:flex; flex-direction:column; gap:8px; }
+.hit { display:grid; grid-template-columns:40px 1fr auto; gap:12px; align-items:start; padding:12px 16px; background:var(--surface); border:1px solid var(--line); border-radius:10px; text-decoration:none; color:inherit; }
+.hit:hover { border-color:var(--line-strong); box-shadow:var(--shadow); }
+.hit:focus-visible { outline-offset:-2px; }
+.hit .ico { width:40px; height:40px; border-radius:10px; }
+.hit .t { font-weight:600; font-size:16px; }
+.hit .type { font-size:12px; color:var(--fg-muted); text-transform:uppercase; letter-spacing:.04em; }
+.hit .ex { color:var(--fg-muted); margin-top:2px; }
+mark { background:color-mix(in srgb, var(--warn) 25%, transparent); color:inherit; border-radius:2px; padding:0 1px; }
+.hit .meta { font-size:12px; color:var(--fg-muted); text-align:right; white-space:nowrap; }
+.note-line { font-size:13px; color:var(--fg-muted); margin:0 0 12px; }
+
+/* Node page */
+.crumbs { display:flex; align-items:center; gap:8px; color:var(--fg-muted); font-size:13px; margin-bottom:12px; }
+.crumbs a { color:var(--accent); text-decoration:none; } .crumbs a:hover { text-decoration:underline; }
+.page { display:grid; grid-template-columns:minmax(0,1fr) 400px; gap:24px; align-items:start; }
+.card { background:var(--surface); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); }
+.card-h { padding:20px 24px 16px; border-bottom:1px solid var(--line); border-top:4px solid var(--mark); border-radius:12px 12px 0 0; display:grid; grid-template-columns:56px 1fr; gap:16px; }
+.card-h .ico { width:56px; height:56px; border-radius:14px; }
+.eyebrow { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink); font-weight:700; }
+.card-h h2 { margin:2px 0 4px; font-size:26px; line-height:1.2; }
+.card-h .sum { margin:0; color:var(--fg-muted); font-size:16px; }
+.card-h .badges { margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; }
+.sec { padding:16px 24px; border-bottom:1px solid var(--line); }
+.sec:last-of-type { border-bottom:0; }
+.sec h3 { margin:0 0 8px; font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--fg-muted); }
+dl.props { margin:0; display:grid; grid-template-columns:160px 1fr; gap:8px 16px; }
+dl.props dt { color:var(--fg-muted); }
+dl.props dd { margin:0; min-width:0; overflow-wrap:anywhere; }
+dd a { color:var(--accent); }
+.unset { color:var(--fg-muted); font-style:italic; }
+.prose { margin:0; max-width:68ch; }
+.attr { padding:12px 24px; background:var(--surface-2); border-radius:0 0 12px 12px; font-size:13px; color:var(--fg-muted); display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+details > summary { cursor:pointer; list-style:none; display:flex; align-items:center; gap:6px; }
+details > summary::before { content:"▸"; color:var(--fg-muted); } details[open] > summary::before { content:"▾"; }
+
+/* Right column */
+.side { display:flex; flex-direction:column; gap:16px; }
+.pic { padding:12px 12px 8px; }
+.pic-h { display:flex; align-items:center; justify-content:space-between; padding:0 4px 4px; }
+.pic-h h3 { margin:0; font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--fg-muted); }
+.seg { display:inline-flex; border:1px solid var(--line-strong); border-radius:6px; overflow:hidden; }
+.seg button { padding:2px 10px; border:0; background:var(--surface); cursor:pointer; font-size:12px; font-weight:600; }
+.seg button[aria-pressed="true"] { background:var(--accent); color:var(--accent-fg); }
+svg.graph { width:100%; height:auto; display:block; }
+svg.graph text { font:12px ui-sans-serif,system-ui,sans-serif; fill:var(--fg); }
+svg.graph .edge { stroke:var(--line-strong); stroke-width:1.5; fill:none; }
+svg.graph .cap { font-size:10px; font-weight:700; letter-spacing:.06em; fill:var(--fg-muted); }
+svg.graph .elabel { fill:var(--fg-muted); font-size:11px; paint-order:stroke; stroke:var(--surface); stroke-width:4px; }
+svg.graph .node rect { fill:var(--surface); stroke:var(--mark); stroke-width:2; }
+svg.graph .node .tile { fill:var(--soft); stroke:none; }
+svg.graph .node .glyph { fill:none; stroke:var(--ink); stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+svg.graph .node.center rect { stroke-width:3; }
+svg.graph .node:hover rect, svg.graph .node:focus rect { fill:var(--soft); }
+svg.graph .node:focus { outline:none; }
+svg.graph .node:focus rect { stroke:var(--accent); stroke-width:3; }
+.pic-f { padding:6px 4px 4px; font-size:12px; color:var(--fg-muted); display:flex; justify-content:space-between; }
+.rel h3 { margin:0; padding:12px 16px 4px; font-size:13px; color:var(--fg-muted); text-transform:uppercase; letter-spacing:.06em; display:flex; justify-content:space-between; }
+.rel ul { list-style:none; margin:0; padding:0 8px 8px; }
+.rel li a, .rel li .na { display:grid; grid-template-columns:28px 1fr auto; gap:10px; align-items:center; padding:6px 8px; border-radius:8px; text-decoration:none; color:inherit; min-height:40px; }
+.rel li a:hover { background:var(--surface-2); }
+.rel li .ico { width:28px; height:28px; border-radius:8px; }
+.rel li .ty { font-size:12px; color:var(--fg-muted); }
+.rel li .go { color:var(--accent); font-weight:700; opacity:.0; } .rel li a:hover .go, .rel li a:focus-visible .go { opacity:1; }
+.rel li .na { color:var(--fg-muted); }
+.rel li .na .ico { background:var(--surface-2); color:var(--fg-muted); }
+.more { display:block; margin:0 16px 12px; padding:6px 0; color:var(--accent); background:none; border:0; cursor:pointer; text-align:left; }
+
+/* States */
+.state { display:grid; place-items:center; text-align:center; padding:48px 24px; gap:8px; }
+.state .big { width:56px; height:56px; border-radius:50%; background:var(--surface-2); display:grid; place-items:center; color:var(--fg-muted); }
+.state h2 { margin:8px 0 0; font-size:20px; } .state p { margin:0; color:var(--fg-muted); max-width:44ch; }
+.btn { height:36px; padding:0 14px; border-radius:8px; border:1px solid var(--line-strong); background:var(--surface); cursor:pointer; font-weight:600; }
+.btn.primary { background:var(--accent); border-color:var(--accent); color:var(--accent-fg); }
+.banner { display:flex; gap:10px; align-items:flex-start; padding:10px 14px; border-radius:8px; background:color-mix(in srgb, var(--warn) 14%, var(--surface)); border:1px solid color-mix(in srgb, var(--warn) 45%, var(--line)); margin-bottom:12px; font-size:13px; }
+.banner b { color:var(--warn); }
+.skel { background:linear-gradient(90deg,var(--surface-2),var(--line),var(--surface-2)); height:14px; border-radius:6px; }
+@media (prefers-reduced-motion: no-preference) { .skel { background-size:200% 100%; animation:sh 1.4s linear infinite; } @keyframes sh { to { background-position:-200% 0; } } }
+.stack { display:flex; flex-direction:column; gap:12px; }
+@media (max-width:760px) { .page { grid-template-columns:1fr; } }
+.frame.narrow .page { grid-template-columns:1fr; }
+.frame.narrow .top { flex-wrap:wrap; padding:10px 16px; } .frame.narrow .main { padding:16px; }
+.frame.narrow dl.props { grid-template-columns:1fr; gap:0 0; } .frame.narrow dl.props dt { margin-top:8px; }
+.frame.narrow .card-h { grid-template-columns:44px 1fr; padding:16px; } .frame.narrow .card-h .ico { width:44px; height:44px; }
+.frame.narrow .card-h h2 { font-size:22px; }
+.frame.mid .page { grid-template-columns:1fr; }
+.legend { display:flex; flex-wrap:wrap; gap:8px; }
+.sw { display:flex; flex-direction:column; align-items:center; gap:4px; font-size:12px; }
+.sw span { width:72px; height:32px; border-radius:8px; background:var(--soft); color:var(--ink); border:2px solid var(--mark); display:grid; place-items:center; font-weight:600; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M10 4a2 2 0 1 1 4 0v2h4v4h-2a2 2 0 1 0 0 4h2v4h-4v-2a2 2 0 1 0-4 0v2H6v-4h2a2 2 0 1 0 0-4H6V6h4V4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-package" viewBox="0 0 24 24"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Zm0 9 8-4.5M12 12 4 7.5M12 12v9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M6 21V4m0 1h11l-2 4 2 4H6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Zm3 12h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 2.5 20h19L12 4Zm0 6v5m0 3v.01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 11 18.7l1-1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
+
+<h1 class="sheet">Graph Browser: visual design mockup</h1>
+<p class="note">Static mockup of DESIGN-GB (<code>graph-browser-visual-design.md</code>). It uses the Operator Console's tokens plus the eight tones. Screens: 1 entry and results (light), 2 node page (light), 3 node page (dark), 4 narrow window, 5 states. The picture is drawn as the real component will draw it: a deterministic radial layout, one arc per relationship.</p>
+
+<div class="board">
+
+<!-- 1 Entry and results -->
+<section aria-labelledby="s1">
+  <p class="label" id="s1">1 · Entry and results (light)</p>
+  <div class="frame theme-light">
+    <div class="top">
+      <div class="mod">Product catalog<small>catalog · 6 types</small></div>
+      <label class="search"><svg width="18" height="18"><use href="#i-search"/></svg><input value="lumen alert" aria-label="Search the catalog"><kbd>/</kbd></label>
+      <div class="seg" role="group" aria-label="Mode" style="margin-left:auto"><button aria-pressed="true">✓ Explore</button><button aria-pressed="false">Operate</button></div><div class="fresh" style="margin-left:0"><span class="dot"></span>Truss · current</div>
+    </div>
+    <div class="main">
+      <div class="chips" role="radiogroup" aria-label="Narrow by type">
+        <button class="chip all" role="radio" aria-checked="true" tabindex="0">All <span class="n">4</span></button>
+        <button class="chip t-blue" role="radio" aria-checked="false" tabindex="-1"><span class="ico"><svg width="14" height="14"><use href="#i-puzzle"/></svg></span>Solutions <span class="n">3</span></button>
+        <button class="chip t-teal" role="radio" aria-checked="false" tabindex="-1"><span class="ico"><svg width="14" height="14"><use href="#i-package"/></svg></span>Products <span class="n">1</span></button>
+        <button class="chip t-amber" role="radio" aria-checked="false" tabindex="-1"><span class="ico"><svg width="14" height="14"><use href="#i-flag"/></svg></span>Findings <span class="n">0</span></button>
+        <button class="chip t-violet off" role="radio" aria-checked="false" tabindex="-1"><span class="ico"><svg width="14" height="14"><use href="#i-book"/></svg></span>Use cases <span class="n">not searched</span></button>
+      </div>
+      <div class="banner" role="status"><svg width="18" height="18" style="flex:none;color:var(--warn)"><use href="#i-alert"/></svg><div><b>Use case was not searched.</b> Its backend (ashlar) is unavailable. The other types answered.</div></div>
+      <p class="note-line">4 results for <b>lumen alert</b> · ranked</p>
+      <div class="hits">
+        <a class="hit t-blue" href="#"><span class="ico"><svg width="22" height="22"><use href="#i-puzzle"/></svg></span>
+          <div><div class="type">Solution</div><div class="t">Lumen alert correlation (S-017)</div><div class="ex">…uses <mark>Lumen</mark> for <mark>alert</mark> correlation…</div></div>
+          <div class="meta"><span class="badge t-teal">Embedded</span></div></a>
+        <a class="hit t-teal" href="#"><span class="ico"><svg width="22" height="22"><use href="#i-package"/></svg></span>
+          <div><div class="type">Product</div><div class="t">Lumen</div><div class="ex"><mark>Lumen</mark>: log search for <mark>alert</mark> work</div></div>
+          <div class="meta"><span class="badge t-green">Active</span></div></a>
+        <a class="hit t-blue" href="#"><span class="ico"><svg width="22" height="22"><use href="#i-puzzle"/></svg></span>
+          <div><div class="type">Solution</div><div class="t">Alert grouping with Lumen (S-022)</div><div class="ex">Groups an <mark>alert</mark> with similar earlier alerts using <mark>Lumen</mark>…</div></div>
+          <div class="meta"><span class="badge t-blue">Standalone</span></div></a>
+        <a class="hit t-blue" href="#"><span class="ico"><svg width="22" height="22"><use href="#i-puzzle"/></svg></span>
+          <div><div class="type">Solution</div><div class="t">Page triage (S-031)</div><div class="ex">…routes each <mark>alert</mark> by risk; optional <mark>Lumen</mark> check…</div></div>
+          <div class="meta"><span class="badge t-blue">Standalone</span></div></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 Node page light -->
+<section aria-labelledby="s2">
+  <p class="label" id="s2">2 · Node page with relationships and picture (light)</p>
+  <div class="frame theme-light">
+    <div class="top">
+      <div class="mod">Product catalog<small>catalog · 6 types</small></div>
+      <label class="search"><svg width="18" height="18"><use href="#i-search"/></svg><input placeholder="Search the catalog" aria-label="Search the catalog"><kbd>/</kbd></label>
+      <div class="seg" role="group" aria-label="Mode" style="margin-left:auto"><button aria-pressed="true">✓ Explore</button><button aria-pressed="false">Operate</button></div><div class="fresh" style="margin-left:0"><span class="dot"></span>Truss · current</div>
+    </div>
+    <div class="main">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="#">Search: lumen alert</a><span aria-hidden="true">›</span><a href="#">Solutions</a><span aria-hidden="true">›</span><span aria-current="page">S-017</span></nav>
+      <div class="page">
+        <article class="card t-blue" aria-labelledby="ttl">
+          <header class="card-h">
+            <span class="ico"><svg width="30" height="30"><use href="#i-puzzle"/></svg></span>
+            <div>
+              <div class="eyebrow">Solution</div>
+              <h2 id="ttl">Lumen alert correlation (S-017)</h2>
+              <p class="sum">Groups a batch of alerts against recent deploys and returns an ordered summary of likely causes.</p>
+              <div class="badges"><span class="badge t-teal">Embedded</span></div>
+            </div>
+          </header>
+          <section class="sec"><h3>Delivery</h3>
+            <dl class="props">
+              <dt>Audience</dt><dd>Platform engineers</dd>
+              <dt>Launch</dt><dd><a href="#">https://praxis.example/solutions/s-017</a></dd>
+              <dt>Caveat</dt><dd class="unset">Not set</dd>
+            </dl>
+          </section>
+          <section class="sec"><details open><summary><h3 style="margin:0">How it works</h3></summary>
+            <p class="prose" style="margin-top:8px">The engineer pastes an alert export. Lumen groups the alerts by likely cause and lists the recent deploys each group follows. The summary is returned in the engineer’s own session and is never stored.</p>
+          </details></section>
+          <section class="sec"><details><summary><h3 style="margin:0">More</h3></summary><dl class="props" style="margin-top:8px"><dt>Code</dt><dd>S-017</dd><dt>Prompt</dt><dd>Collapsed JSON</dd></dl></details></section>
+          <footer class="attr"><span>Last changed by <b>alice</b> · 9 Oct 2026, 14:12 · <button class="btn" style="height:24px;padding:0 8px;font-size:12px" title="2026-10-09T14:12:08-04:00">exact</button></span><span>Truss · current as of 09:30</span></footer>
+        </article>
+
+        <aside class="side" aria-label="Relationships">
+          <div class="card pic">
+            <div class="pic-h"><h3>Neighbourhood</h3></div>
+            <svg class="graph" viewBox="0 0 440 340" role="group" aria-label="Neighbourhood of Lumen alert correlation: 7 neighbours. The lists below have the same links.">
+<path class="edge" d="M160 150 C 150 150, 150 48, 138 48"/>
+<path class="edge" d="M160 150 C 150 150, 150 108, 138 108"/>
+<path class="edge" d="M160 150 C 150 150, 150 168, 138 168"/>
+<path class="edge" d="M160 150 C 150 150, 150 228, 138 228"/>
+<path class="edge" d="M280 150 L 316 150"/>
+<path class="edge" d="M200 174 C 200 220, 160 230, 145 270"/><path class="edge" d="M240 174 C 240 220, 280 230, 307 270"/>
+<text class="cap" x="4" y="18">ADDRESSES</text><text class="cap" x="316" y="122">PROVIDED BY</text><text class="cap" x="70" y="270">FINDINGS</text>
+<g class="node t-violet" tabindex="0" role="link" aria-label="Use case UC-004 Alert review"><rect x="4" y="30" width="134" height="36" rx="10"/><rect class="tile" x="8" y="34" width="28" height="28" rx="8"/><svg x="13" y="39" width="18" height="18" viewBox="0 0 24 24"><path class="glyph" d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Zm3 12h10"/></svg><text x="44" y="52.0">Alert review</text></g>
+<g class="node t-violet" tabindex="0" role="link" aria-label="Use case UC-011 Runbook check"><rect x="4" y="90" width="134" height="36" rx="10"/><rect class="tile" x="8" y="94" width="28" height="28" rx="8"/><svg x="13" y="99" width="18" height="18" viewBox="0 0 24 24"><path class="glyph" d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Zm3 12h10"/></svg><text x="44" y="112.0">Runbook check</text></g>
+<g class="node t-violet" tabindex="0" role="link" aria-label="Use case UC-019 Log extraction"><rect x="4" y="150" width="134" height="36" rx="10"/><rect class="tile" x="8" y="154" width="28" height="28" rx="8"/><svg x="13" y="159" width="18" height="18" viewBox="0 0 24 24"><path class="glyph" d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Zm3 12h10"/></svg><text x="44" y="172.0">Log extraction…</text></g>
+<g class="node t-violet" tabindex="0" role="link" aria-label="Use case UC-023 Release summary"><rect x="4" y="210" width="134" height="36" rx="10"/><rect class="tile" x="8" y="214" width="28" height="28" rx="8"/><svg x="13" y="219" width="18" height="18" viewBox="0 0 24 24"><path class="glyph" d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Zm3 12h10"/></svg><text x="44" y="232.0">Release summa…</text></g>
+<g class="node t-teal" tabindex="0" role="link" aria-label="Product Lumen"><rect x="316" y="132" width="120" height="36" rx="10"/><rect class="tile" x="320" y="136" width="28" height="28" rx="8"/><svg x="325" y="141" width="18" height="18" viewBox="0 0 24 24"><path class="glyph" d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Zm0 9 8-4.5M12 12 4 7.5M12 12v9"/></svg><text x="356" y="154.0">Lumen</text></g>
+<g transform="translate(0 12)"><g class="node t-amber" tabindex="0" role="link" aria-label="Finding F-014 Slow on long files"><rect x="70" y="270" width="150" height="36" rx="10"/><rect class="tile" x="74" y="274" width="28" height="28" rx="8"/><svg x="79" y="279" width="18" height="18" viewBox="0 0 24 24"><path class="glyph" d="M6 21V4m0 1h11l-2 4 2 4H6"/></svg><text x="110" y="292.0">Slow on long files</text></g>
+<g class="node t-amber" tabindex="0" role="link" aria-label="Finding F-009 Runbook gap on pages"><rect x="232" y="270" width="150" height="36" rx="10"/><rect class="tile" x="236" y="274" width="28" height="28" rx="8"/><svg x="241" y="279" width="18" height="18" viewBox="0 0 24 24"><path class="glyph" d="M6 21V4m0 1h11l-2 4 2 4H6"/></svg><text x="272" y="292.0">Runbook gap on…</text></g></g>
+<g class="node center t-blue" tabindex="0" role="link" aria-current="page" aria-label="Lumen alert correlation, this page"><rect x="160" y="126" width="120" height="48" rx="12"/><rect class="tile" x="166" y="132" width="36" height="36" rx="10"/><svg x="174" y="140" width="20" height="20" viewBox="0 0 24 24"><path class="glyph" d="M10 4a2 2 0 1 1 4 0v2h4v4h-2a2 2 0 1 0 0 4h2v4h-4v-2a2 2 0 1 0-4 0v2H6v-4h2a2 2 0 1 0 0-4H6V6h4V4Z"/></svg><text x="208" y="146" style="font-weight:700">Lumen…</text><text x="208" y="161" style="font-size:11px;fill:var(--fg-muted)">this page</text></g>
+</svg>
+            <div class="pic-f"><span>7 of 7 neighbours shown</span><span>Arrow keys move, Enter opens</span></div>
+          </div>
+
+          <div class="card rel">
+            <h3><span>Addresses use cases</span><span>4</span></h3>
+            <ul>
+              <li class="t-violet"><a href="#"><span class="ico"><svg width="16" height="16"><use href="#i-book"/></svg></span><span>Alert review<br><span class="ty">UseCase · UC-004</span></span><span class="go">→</span></a></li>
+              <li class="t-violet"><a href="#"><span class="ico"><svg width="16" height="16"><use href="#i-book"/></svg></span><span>Runbook check<br><span class="ty">UseCase · UC-011</span></span><span class="go">→</span></a></li>
+              <li class="t-violet"><a href="#"><span class="ico"><svg width="16" height="16"><use href="#i-book"/></svg></span><span>Log extraction<br><span class="ty">UseCase · UC-019</span></span><span class="go">→</span></a></li>
+              <li><span class="na"><span class="ico"><svg width="16" height="16"><use href="#i-lock"/></svg></span><span>Not available</span><span></span></span></li>
+            </ul>
+          </div>
+          <div class="card rel">
+            <h3><span>Provided by</span><span>1</span></h3>
+            <ul><li class="t-teal"><a href="#"><span class="ico"><svg width="16" height="16"><use href="#i-package"/></svg></span><span>Lumen<br><span class="ty">Product · P-003</span></span><span class="go">→</span></a></li></ul>
+          </div>
+          <div class="card rel">
+            <h3><span>Findings</span><span>2</span></h3>
+            <ul>
+              <li class="t-amber"><a href="#"><span class="ico"><svg width="16" height="16"><use href="#i-flag"/></svg></span><span>Runbook gap on pages<br><span class="ty">Finding · F-009</span></span><span class="go">→</span></a></li>
+              <li class="t-amber"><a href="#"><span class="ico"><svg width="16" height="16"><use href="#i-flag"/></svg></span><span>Slow on long files<br><span class="ty">Finding · F-014</span></span><span class="go">→</span></a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 Node page dark -->
+<section aria-labelledby="s3">
+  <p class="label" id="s3">3 · Node page (dark)</p>
+  <div class="frame theme-dark">
+    <div class="top">
+      <div class="mod">Product catalog<small>catalog · 6 types</small></div>
+      <label class="search"><svg width="18" height="18"><use href="#i-search"/></svg><input placeholder="Search the catalog" aria-label="Search the catalog"><kbd>/</kbd></label>
+      <div class="seg" role="group" aria-label="Mode" style="margin-left:auto"><button aria-pressed="true">✓ Explore</button><button aria-pressed="false">Operate</button></div><div class="fresh" style="margin-left:0"><span class="dot"></span>Truss · current</div>
+    </div>
+    <div class="main">
+      <div class="page">
+        <article class="card t-teal" aria-labelledby="ttl2">
+          <header class="card-h">
+            <span class="ico"><svg width="30" height="30"><use href="#i-package"/></svg></span>
+            <div>
+              <div class="eyebrow">Product</div>
+              <h2 id="ttl2">Lumen</h2>
+              <p class="sum">Log search and alert correlation.</p>
+              <div class="badges"><span class="badge t-green">Active</span><span class="badge t-slate">Vendor: Lumen Labs</span></div>
+            </div>
+          </header>
+          <section class="sec"><h3>Availability</h3>
+            <dl class="props"><dt>Availability</dt><dd>All teams, enterprise licence</dd><dt>Category</dt><dd>Log search</dd><dt>Caveat</dt><dd class="unset">Not set</dd></dl>
+          </section>
+          <footer class="attr"><span>Last changed by <b>bob</b> · 2 Oct 2026, 09:05</span><span>Truss · current as of 09:30</span></footer>
+        </article>
+        <aside class="side">
+          <div class="card rel">
+            <h3><span>Provides</span><span>3</span></h3>
+            <ul>
+              <li class="t-blue"><a href="#"><span class="ico"><svg width="16" height="16"><use href="#i-puzzle"/></svg></span><span>Lumen alert correlation<br><span class="ty">Solution · S-017</span></span><span class="go">→</span></a></li>
+              <li class="t-blue"><a href="#"><span class="ico"><svg width="16" height="16"><use href="#i-puzzle"/></svg></span><span>Alert grouping<br><span class="ty">Solution · S-022</span></span><span class="go">→</span></a></li>
+              <li class="t-blue"><a href="#"><span class="ico"><svg width="16" height="16"><use href="#i-puzzle"/></svg></span><span>Page triage<br><span class="ty">Solution · S-031</span></span><span class="go">→</span></a></li>
+            </ul>
+          </div>
+          <div class="card rel"><h3><span>Versions</span><span>0</span></h3><ul><li><span class="na" style="padding-left:16px">None</span></li></ul></div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 Narrow + mid -->
+<section aria-labelledby="s4">
+  <p class="label" id="s4">4 · Narrow window (390 px): list only, picture on request; and the top bar for a reader (no mode switch)</p>
+  <div class="row">
+    <div class="frame narrow theme-light">
+      <div class="top"><div class="mod">Product catalog</div><label class="search" style="flex-basis:100%;max-width:none"><svg width="18" height="18"><use href="#i-search"/></svg><input placeholder="Search" aria-label="Search the catalog"></label></div>
+      <div class="main">
+        <article class="card t-blue">
+          <header class="card-h"><span class="ico"><svg width="24" height="24"><use href="#i-puzzle"/></svg></span><div><div class="eyebrow">Solution</div><h2>Lumen alert correlation (S-017)</h2><p class="sum">Groups alerts against recent deploys.</p><div class="badges"><span class="badge t-teal">Embedded</span></div></div></header>
+          <section class="sec"><dl class="props"><dt>Audience</dt><dd>Platform engineers</dd><dt>Launch</dt><dd><a href="#">praxis.example/…/s-017</a></dd></dl></section>
+        </article>
+        <div class="card rel" style="margin-top:12px"><h3><span>Addresses use cases</span><span>4</span></h3>
+          <ul><li class="t-violet"><a href="#"><span class="ico"><svg width="16" height="16"><use href="#i-book"/></svg></span><span>Alert review<br><span class="ty">UseCase · UC-004</span></span><span class="go" style="opacity:1">→</span></a></li></ul>
+          <button class="more">Show more (3)</button>
+        </div>
+        <button class="btn" style="margin-top:12px;width:100%">Show neighbourhood picture</button>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:24px">
+      <div>
+        <p class="label">Tones (all pairs checked in light and dark)</p>
+        <div class="frame mid theme-light" style="padding:16px"><div class="legend">
+          <div class="sw t-slate"><span>slate</span></div><div class="sw t-blue"><span>blue</span></div><div class="sw t-teal"><span>teal</span></div><div class="sw t-green"><span>green</span></div>
+          <div class="sw t-amber"><span>amber</span></div><div class="sw t-red"><span>red</span></div><div class="sw t-violet"><span>violet</span></div><div class="sw t-rose"><span>rose</span></div></div></div>
+        <div class="frame mid theme-light" style="margin-top:8px"><div class="top"><div class="mod">Product catalog<small>catalog · 6 types</small></div><label class="search"><svg width="18" height="18"><use href="#i-search"/></svg><input placeholder="Search the catalog" aria-label="Search the catalog"></label><div class="fresh"><span class="dot"></span>Truss · current</div></div></div>
+        <p class="label" style="margin-top:6px">Reader (carol): no mode switch, no mention of Operate mode</p>
+        <div class="frame mid theme-dark" style="padding:16px;margin-top:8px"><div class="legend">
+          <div class="sw t-slate"><span>slate</span></div><div class="sw t-blue"><span>blue</span></div><div class="sw t-teal"><span>teal</span></div><div class="sw t-green"><span>green</span></div>
+          <div class="sw t-amber"><span>amber</span></div><div class="sw t-red"><span>red</span></div><div class="sw t-violet"><span>violet</span></div><div class="sw t-rose"><span>rose</span></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 States -->
+<section aria-labelledby="s5">
+  <p class="label" id="s5">5 · States: loading, no results, not available, backend down</p>
+  <div class="row">
+    <div class="frame mid theme-light"><div class="main"><div class="stack" aria-busy="true" aria-label="Loading">
+      <div class="skel" style="width:35%;height:20px"></div><div class="skel" style="width:80%"></div><div class="skel" style="width:60%"></div><div class="skel" style="height:80px"></div></div></div></div>
+    <div class="frame mid theme-light"><div class="state"><div class="big"><svg width="26" height="26"><use href="#i-search"/></svg></div><h2>No results for “zzzz”</h2><p>Searched Solution, Product and Finding. UseCase has no searchable property.</p><button class="btn primary">Clear type filters</button></div></div>
+    <div class="frame mid theme-light"><div class="state"><div class="big"><svg width="26" height="26"><use href="#i-lock"/></svg></div><h2>Not available</h2><p>This page does not exist or you cannot read it.</p><button class="btn">Back to search</button></div></div>
+    <div class="frame mid theme-dark"><div class="state"><div class="big"><svg width="26" height="26"><use href="#i-alert"/></svg></div><h2>The catalog did not answer</h2><p>Truss is not responding. Try again in a moment.</p><button class="btn primary">Retry</button></div></div>
+  </div>
+</section>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,123 @@
+[
+  {
+    "action": "pizza.AddCountry",
+    "inputs": {
+      "code": "italy",
+      "name": "Italy"
+    }
+  },
+  {
+    "action": "pizza.AddPizzaBase",
+    "inputs": {
+      "code": "thin",
+      "name": "Thin and crispy"
+    }
+  },
+  {
+    "action": "pizza.AddPizzaBase",
+    "inputs": {
+      "code": "deep",
+      "name": "Deep pan"
+    }
+  },
+  {
+    "action": "pizza.AddTopping",
+    "inputs": {
+      "code": "mozzarella",
+      "name": "Mozzarella",
+      "category": "cheese",
+      "spiciness": "mild"
+    }
+  },
+  {
+    "action": "pizza.AddTopping",
+    "inputs": {
+      "code": "tomato",
+      "name": "Tomato",
+      "category": "vegetable",
+      "spiciness": "mild"
+    }
+  },
+  {
+    "action": "pizza.AddTopping",
+    "inputs": {
+      "code": "jalapeno",
+      "name": "Jalape\u00f1o",
+      "category": "vegetable",
+      "spiciness": "hot"
+    }
+  },
+  {
+    "action": "pizza.AddTopping",
+    "inputs": {
+      "code": "pepperoni",
+      "name": "Pepperoni",
+      "category": "meat",
+      "spiciness": "hot"
+    }
+  },
+  {
+    "action": "pizza.AddPizza",
+    "inputs": {
+      "code": "margherita",
+      "name": "Margherita",
+      "description": "Tomato and mozzarella",
+      "price": 9,
+      "vegetarian": true,
+      "hasBase": "thin"
+    }
+  },
+  {
+    "action": "pizza.AddPizza",
+    "inputs": {
+      "code": "american-hot",
+      "name": "American Hot",
+      "description": "Pepperoni, jalape\u00f1o and mozzarella",
+      "price": 10,
+      "vegetarian": false,
+      "hasBase": "deep"
+    }
+  },
+  {
+    "action": "pizza.LinkPizzaHasTopping",
+    "inputs": {
+      "pizza": "margherita",
+      "hasTopping": "mozzarella"
+    }
+  },
+  {
+    "action": "pizza.LinkPizzaHasTopping",
+    "inputs": {
+      "pizza": "margherita",
+      "hasTopping": "tomato"
+    }
+  },
+  {
+    "action": "pizza.LinkPizzaHasTopping",
+    "inputs": {
+      "pizza": "american-hot",
+      "hasTopping": "pepperoni"
+    }
+  },
+  {
+    "action": "pizza.LinkPizzaHasTopping",
+    "inputs": {
+      "pizza": "american-hot",
+      "hasTopping": "jalapeno"
+    }
+  },
+  {
+    "action": "pizza.LinkPizzaHasTopping",
+    "inputs": {
+      "pizza": "american-hot",
+      "hasTopping": "mozzarella"
+    }
+  },
+  {
+    "action": "pizza.LinkPizzaCountryOfOrigin",
+    "inputs": {
+      "pizza": "margherita",
+      "countryOfOrigin": "italy"
+    }
+  }
+]

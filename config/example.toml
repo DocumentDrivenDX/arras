@@ -1,0 +1,22 @@
+# Every table a committed file may carry. Not loaded unless ARRAS_ENV=example; copy it to
+# `<env>.toml` and keep what differs from default.toml. Dev-owned and non-secret only: endpoints,
+# tokens and any ARRAS_* key are refused here.
+
+log_level = "DEBUG"
+user_claims = ["preferred_username", "email", "sub"]
+# dev_sandbox = false       # true serves the in-memory sandbox instead of backends
+# dev_user = "alice"         # the sandbox person
+
+# The placement of every module no [modules.<name>] table names.
+[placement]
+record = "primary"          # the reader that is the module's system of record
+replicas = ["mirror"]       # other readers, in the order a bulk read tries them
+
+# One module's own placement.
+[modules.catalog]
+record = "primary"
+replicas = ["mirror", "bulk"]
+
+# Which provider runs an action; an action not listed runs on the record store.
+[modules.catalog.providers]
+"catalog.ImportFromX" = "upstream"

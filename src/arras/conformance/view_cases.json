@@ -1,0 +1,1298 @@
+{
+ "version": 1,
+ "module": "module.umf.json",
+ "covers": [],
+ "cases": [
+  {
+   "id": "view.defaults-without-a-view",
+   "covers": [
+    "US-067-AC1",
+    "US-070-AC6"
+   ],
+   "description": "a document with no arras.view resolves to the derived defaults",
+   "set": [],
+   "expect": {
+    "ok": true,
+    "module": {
+     "title": "catalog",
+     "description": null
+    },
+    "types": {
+     "UseCase": {
+      "declared": false,
+      "label": "Use case",
+      "icon": "circle",
+      "tone": "slate",
+      "title": "{name}",
+      "summary": null,
+      "search": [
+       "name",
+       "code"
+      ],
+      "sections": [
+       {
+        "label": "Details",
+        "properties": [
+         "workArea"
+        ],
+        "collapsed": false
+       }
+      ],
+      "pluralLabel": "Use cases"
+     },
+     "Solution": {
+      "declared": false,
+      "label": "Solution",
+      "icon": "circle",
+      "tone": "blue",
+      "title": "{name}",
+      "summary": null,
+      "search": [
+       "name",
+       "code"
+      ],
+      "pluralLabel": "Solutions"
+     }
+    }
+   }
+  },
+  {
+   "id": "view.declared-resolves",
+   "covers": [
+    "US-070-AC1",
+    "US-070-AC2"
+   ],
+   "description": "a declared view is merged over the defaults",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "title": "Cases",
+      "description": "Use cases and solutions"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "label": "Work area",
+      "icon": "scale",
+      "tone": "violet",
+      "title": "{name}[ ({code})]",
+      "summary": "{workArea}",
+      "sections": [
+       {
+        "label": "Where",
+        "properties": [
+         "workArea"
+        ],
+        "collapsed": true
+       }
+      ],
+      "search": [
+       "name"
+      ],
+      "pluralLabel": "Areas of work"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      6,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "label": "Title",
+      "format": "text"
+     }
+    }
+   ],
+   "expect": {
+    "ok": true,
+    "module": {
+     "title": "Cases",
+     "description": "Use cases and solutions"
+    },
+    "types": {
+     "UseCase": {
+      "declared": true,
+      "label": "Work area",
+      "icon": "scale",
+      "tone": "violet",
+      "title": "{name}[ ({code})]",
+      "summary": "{workArea}",
+      "search": [
+       "name"
+      ],
+      "sections": [
+       {
+        "label": "Where",
+        "properties": [
+         "workArea"
+        ],
+        "collapsed": true
+       }
+      ],
+      "pluralLabel": "Areas of work"
+     },
+     "Solution": {
+      "declared": true,
+      "label": "Solution",
+      "icon": "circle",
+      "tone": "blue",
+      "pluralLabel": "Solutions"
+     }
+    }
+   }
+  },
+  {
+   "id": "view.search-empty-disables",
+   "covers": [
+    "US-070-AC2"
+   ],
+   "description": "an explicit empty search list makes the type not searchable",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "search": []
+     }
+    }
+   ],
+   "expect": {
+    "ok": true,
+    "types": {
+     "UseCase": {
+      "search": []
+     }
+    }
+   }
+  },
+  {
+   "id": "view.not-examined-without-vocabulary",
+   "covers": [
+    "US-070-AC6"
+   ],
+   "description": "terms in a document that does not declare the vocabulary are not examined",
+   "set": [
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "anything": 1
+     }
+    }
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "id": "view.unsupported-version",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "a vocabulary version this release does not know",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "9.0.0"
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_unsupported_version",
+      "path": "vocabularies.arras.view.version"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.unknown-term",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "a term outside the vocabulary",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "colour": "red"
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_unknown_term",
+      "path": "modules[0].elements[0].extensions.arras.view.colour"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.markup-is-not-a-term",
+   "covers": [
+    "US-070-AC5"
+   ],
+   "description": "markup, script and a URL to load are outside the vocabulary",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "<img src=x>": 1,
+      "script": "alert(1)",
+      "iconUrl": "https://x.example/a.png"
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_unknown_term",
+      "path": "modules[0].elements[0].extensions.arras.view.<img src=x>"
+     },
+     {
+      "code": "view_unknown_term",
+      "path": "modules[0].elements[0].extensions.arras.view.script"
+     },
+     {
+      "code": "view_unknown_term",
+      "path": "modules[0].elements[0].extensions.arras.view.iconUrl"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.colour-is-not-a-tone",
+   "covers": [
+    "US-070-AC5"
+   ],
+   "description": "a colour value is not a tone",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "tone": "#ff0000"
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_unknown_tone",
+      "path": "modules[0].elements[0].extensions.arras.view.tone"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.unknown-icon",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "an icon outside the set",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "icon": "rocket"
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_unknown_icon",
+      "path": "modules[0].elements[0].extensions.arras.view.icon"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.unknown-property-in-template",
+   "covers": [
+    "US-070-AC3"
+   ],
+   "description": "a template names a property the type does not have",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "title": "{nme}"
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_unknown_property",
+      "path": "modules[0].elements[0].extensions.arras.view.title"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.unknown-property-in-section",
+   "covers": [
+    "US-070-AC3"
+   ],
+   "description": "a section names a property the type does not have",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "sections": [
+       {
+        "label": "A",
+        "properties": [
+         "name",
+         "sumary"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_unknown_property",
+      "path": "modules[0].elements[0].extensions.arras.view.sections[0].properties[1]"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.unknown-property-in-search",
+   "covers": [
+    "US-070-AC3"
+   ],
+   "description": "search names a property the type does not have",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "search": [
+       "nope"
+      ]
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_unknown_property",
+      "path": "modules[0].elements[0].extensions.arras.view.search[0]"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.unclosed-placeholder",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "an unclosed template placeholder",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "title": "{name"
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_bad_template",
+      "path": "modules[0].elements[0].extensions.arras.view.title"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.template-too-long",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "a template over 200 characters",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "summary": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_bad_template",
+      "path": "modules[0].elements[0].extensions.arras.view.summary"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.format-mismatch",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "a format that does not suit the property's type",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      6,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "format": "number"
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_format_mismatch",
+      "path": "modules[0].elements[6].extensions.arras.view.format"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.tones-need-badge",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "tones without the badge format",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      6,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "tones": {
+       "a": "red"
+      }
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_format_mismatch",
+      "path": "modules[0].elements[6].extensions.arras.view.tones"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.unknown-tone-in-tones",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "a tone outside the set in a badge's map",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      6,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "format": "badge",
+      "tones": {
+       "a": "pink"
+      }
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_unknown_tone",
+      "path": "modules[0].elements[6].extensions.arras.view.tones.a"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.duplicate-in-sections",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "a property in two sections",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "sections": [
+       {
+        "label": "A",
+        "properties": [
+         "name"
+        ]
+       },
+       {
+        "label": "B",
+        "properties": [
+         "name"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_duplicate",
+      "path": "modules[0].elements[0].extensions.arras.view.sections[1].properties[0]"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.duplicate-in-search",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "a property twice in search",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "search": [
+       "name",
+       "name"
+      ]
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_duplicate",
+      "path": "modules[0].elements[0].extensions.arras.view.search[1]"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.too-many-sections",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "more than eight sections",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "sections": [
+       {
+        "label": "S0",
+        "properties": [
+         "name"
+        ]
+       },
+       {
+        "label": "S1",
+        "properties": [
+         "name"
+        ]
+       },
+       {
+        "label": "S2",
+        "properties": [
+         "name"
+        ]
+       },
+       {
+        "label": "S3",
+        "properties": [
+         "name"
+        ]
+       },
+       {
+        "label": "S4",
+        "properties": [
+         "name"
+        ]
+       },
+       {
+        "label": "S5",
+        "properties": [
+         "name"
+        ]
+       },
+       {
+        "label": "S6",
+        "properties": [
+         "name"
+        ]
+       },
+       {
+        "label": "S7",
+        "properties": [
+         "name"
+        ]
+       },
+       {
+        "label": "S8",
+        "properties": [
+         "name"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_too_large",
+      "path": "modules[0].elements[0].extensions.arras.view.sections"
+     },
+     {
+      "code": "view_duplicate",
+      "path": "modules[0].elements[0].extensions.arras.view.sections[1].properties[0]"
+     },
+     {
+      "code": "view_duplicate",
+      "path": "modules[0].elements[0].extensions.arras.view.sections[2].properties[0]"
+     },
+     {
+      "code": "view_duplicate",
+      "path": "modules[0].elements[0].extensions.arras.view.sections[3].properties[0]"
+     },
+     {
+      "code": "view_duplicate",
+      "path": "modules[0].elements[0].extensions.arras.view.sections[4].properties[0]"
+     },
+     {
+      "code": "view_duplicate",
+      "path": "modules[0].elements[0].extensions.arras.view.sections[5].properties[0]"
+     },
+     {
+      "code": "view_duplicate",
+      "path": "modules[0].elements[0].extensions.arras.view.sections[6].properties[0]"
+     },
+     {
+      "code": "view_duplicate",
+      "path": "modules[0].elements[0].extensions.arras.view.sections[7].properties[0]"
+     },
+     {
+      "code": "view_duplicate",
+      "path": "modules[0].elements[0].extensions.arras.view.sections[8].properties[0]"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.inverse-label-needs-an-inverse",
+   "covers": [
+    "US-070-AC3"
+   ],
+   "description": "inverseLabel on a relationship that has no inverse",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "relationships",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "inverseLabel": "x"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "relationships",
+      0,
+      "inverse"
+     ],
+     "remove": true
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_unknown_relationship",
+      "path": "modules[0].relationships[0].extensions.arras.view.inverseLabel"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.relationship-term-on-a-record",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "a relationship's term on a record",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "order": 3
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_unknown_relationship",
+      "path": "modules[0].elements[0].extensions.arras.view.order"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.action-has-no-view",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "a view on an action",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "actions",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "label": "x"
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_unknown_term",
+      "path": "modules[0].actions[0].extensions.arras.view"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.root-has-no-view",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "a view on the document root",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "title": "x"
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_unknown_term",
+      "path": "extensions.arras.view"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.record-too-large",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "a record's view over 16 KiB is reported at the record in the document",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "zzz": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_unknown_term",
+      "path": "modules[0].elements[0].extensions.arras.view.zzz"
+     },
+     {
+      "code": "view_too_large",
+      "path": "modules[0].elements[0].extensions.arras.view"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.plural-label-default",
+   "covers": [
+    "US-067-AC1"
+   ],
+   "description": "a declared singular label with no pluralLabel is pluralised by English rules, its last word only",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "label": "Work category"
+     }
+    }
+   ],
+   "expect": {
+    "ok": true,
+    "types": {
+     "UseCase": {
+      "label": "Work category",
+      "pluralLabel": "Work categories"
+     }
+    }
+   }
+  },
+  {
+   "id": "view.plural-label-too-long",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "a pluralLabel over 60 characters",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "pluralLabel": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_too_large",
+      "path": "modules[0].elements[0].extensions.arras.view.pluralLabel"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.plural-label-not-text",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "a pluralLabel that is empty",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      0,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "pluralLabel": ""
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_bad_template",
+      "path": "modules[0].elements[0].extensions.arras.view.pluralLabel"
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,516 @@
+{
+  "umf": "0.10.0",
+  "id": "sandbox",
+  "vocabularies": {
+    "umf.ddd": {
+      "version": "0.1.0"
+    }
+  },
+  "extensions": {},
+  "modules": [
+    {
+      "id": "catalog",
+      "namespace": "catalog",
+      "extensions": {
+        "umf.ddd": {
+          "kind": "bounded-context",
+          "terms": []
+        }
+      },
+      "elements": [
+        {
+          "id": "UseCase",
+          "kind": "record",
+          "name": "UseCase",
+          "members": [
+            {
+              "module": "catalog",
+              "element": "UseCase.code"
+            },
+            {
+              "module": "catalog",
+              "element": "UseCase.name"
+            },
+            {
+              "module": "catalog",
+              "element": "UseCase.workArea"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "name": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "workArea": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "catalog",
+                  "element": "UseCase.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "UseCase.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "UseCase.name",
+          "kind": "field",
+          "name": "name",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "UseCase.workArea",
+          "kind": "field",
+          "name": "workArea",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Solution",
+          "kind": "record",
+          "name": "Solution",
+          "members": [
+            {
+              "module": "catalog",
+              "element": "Solution.code"
+            },
+            {
+              "module": "catalog",
+              "element": "Solution.name"
+            },
+            {
+              "module": "catalog",
+              "element": "Solution.coverageLevel"
+            }
+          ],
+          "extensions": {
+            "umf.ddd": {
+              "kind": "entity",
+              "fields": {
+                "code": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "name": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "one"
+                },
+                "coverageLevel": {
+                  "type": {
+                    "kind": "scalar",
+                    "name": "string"
+                  },
+                  "cardinality": "optional"
+                }
+              },
+              "identity": {
+                "fields": [
+                  "code"
+                ],
+                "scope": "context"
+              }
+            }
+          },
+          "keys": [
+            {
+              "id": "identity",
+              "name": "Identity",
+              "fields": [
+                {
+                  "module": "catalog",
+                  "element": "Solution.code"
+                }
+              ],
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "Solution.code",
+          "kind": "field",
+          "name": "code",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Solution.name",
+          "kind": "field",
+          "name": "name",
+          "nullability": "required",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        },
+        {
+          "id": "Solution.coverageLevel",
+          "kind": "field",
+          "name": "coverageLevel",
+          "nullability": "absent-allowed",
+          "cardinality": "one",
+          "scalarType": "string",
+          "extensions": {}
+        }
+      ],
+      "relationships": [
+        {
+          "id": "solution-addresses",
+          "name": "addresses",
+          "source": [
+            {
+              "module": "catalog",
+              "element": "Solution"
+            }
+          ],
+          "target": [
+            {
+              "module": "catalog",
+              "element": "UseCase",
+              "key": "identity"
+            }
+          ],
+          "sourceMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetMultiplicity": {
+            "min": 0,
+            "max": "*"
+          },
+          "targetLifecycle": "independent",
+          "directed": true,
+          "inverse": "addressedBy"
+        }
+      ],
+      "actions": [
+        {
+          "id": "AddUseCase",
+          "description": "Add a use case",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "workArea",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "optional"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "fresh",
+              "reason": "a use case with that code exists",
+              "predicate": {
+                "op": "absent",
+                "type": "UseCase",
+                "key": {
+                  "input": "code"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "type": "UseCase",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                },
+                "workArea": {
+                  "input": "workArea"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "AddSolution",
+          "description": "Add a solution that addresses a use case",
+          "inputs": [
+            {
+              "name": "code",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "useCase",
+              "type": {
+                "kind": "ref",
+                "type": "UseCase"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "use_case_exists",
+              "reason": "no such use case",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "useCase"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "create",
+              "as": "s",
+              "type": "Solution",
+              "key": {
+                "input": "code"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                }
+              }
+            },
+            {
+              "op": "link",
+              "type": "addresses",
+              "source": {
+                "alias": "s"
+              },
+              "target": {
+                "input": "useCase"
+              }
+            }
+          ]
+        },
+        {
+          "id": "CorrectSolution",
+          "description": "Correct a solution's coverage level",
+          "inputs": [
+            {
+              "name": "solution",
+              "type": {
+                "kind": "ref",
+                "type": "Solution"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "level",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "exists",
+              "reason": "no such solution",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "solution"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "update",
+              "refType": "Solution",
+              "key": {
+                "input": "solution"
+              },
+              "properties": {
+                "coverageLevel": {
+                  "input": "level"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "RetireUseCase",
+          "description": "Delete a use case",
+          "inputs": [
+            {
+              "name": "useCase",
+              "type": {
+                "kind": "ref",
+                "type": "UseCase"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [
+            {
+              "id": "exists",
+              "reason": "no such use case",
+              "predicate": {
+                "op": "exists",
+                "ref": {
+                  "input": "useCase"
+                }
+              }
+            }
+          ],
+          "effects": [
+            {
+              "op": "delete",
+              "refType": "UseCase",
+              "key": {
+                "input": "useCase"
+              }
+            }
+          ]
+        },
+        {
+          "id": "UnlinkSolution",
+          "description": "Stop a solution addressing a use case",
+          "inputs": [
+            {
+              "name": "solution",
+              "type": {
+                "kind": "ref",
+                "type": "Solution"
+              },
+              "cardinality": "one"
+            },
+            {
+              "name": "useCase",
+              "type": {
+                "kind": "ref",
+                "type": "UseCase"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [],
+          "effects": [
+            {
+              "op": "unlink",
+              "type": "addresses",
+              "source": {
+                "input": "solution"
+              },
+              "target": {
+                "input": "useCase"
+              }
+            }
+          ]
+        },
+        {
+          "id": "DraftSolution",
+          "description": "Draft a solution under a generated key",
+          "inputs": [
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "name": "string"
+              },
+              "cardinality": "one"
+            }
+          ],
+          "preconditions": [],
+          "effects": [
+            {
+              "op": "create",
+              "type": "Solution",
+              "key": {
+                "generate": "uuid"
+              },
+              "properties": {
+                "name": {
+                  "input": "name"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
