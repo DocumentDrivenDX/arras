@@ -100,9 +100,11 @@ class _BrandTokens(HTMLParser):
 
 
 def branded(page: bytes, brand: Brand) -> bytes:
-    """Update the first real title and replace all real Arras brand metadata."""
+    """Brand head/title-anchored pages, preserving fragment-only input unchanged."""
     source = page.decode()
     tokens = _BrandTokens(source)
+    if tokens.head_end is None and tokens.title_end is None:
+        return page
     title = html.escape(brand.title or brand.name, quote=True)
     meta = f'<meta name="arras-brand" content="{html.escape(brand.meta(), quote=True)}">'
 

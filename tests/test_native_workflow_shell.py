@@ -111,11 +111,35 @@ def test_actual_workflow_block_skips_fallback_after_verifier_success(tmp_path: P
     assert stderr_log.read_text(encoding="utf-8") == "verifier-stderr\n"
 
 
+APT_MAIN_QUERY_COMMAND = "apt-config shell ARRAS_MAIN Dir::Etc::main/f"
+APT_MAIN_QUERY = "ARRAS_MAIN='/etc/apt/apt.conf'"
 APT_CONFIG_COMMAND = (
     "apt-config shell ARRAS_RETRIES Acquire::Retries ARRAS_HTTP_TIMEOUT "
-    "Acquire::http::Timeout ARRAS_HTTPS_TIMEOUT Acquire::https::Timeout"
+    "Acquire::http::Timeout ARRAS_HTTPS_TIMEOUT Acquire::https::Timeout "
+    "ARRAS_APTGET_RETRIES Binary::apt-get::Acquire::Retries "
+    "ARRAS_APTGET_HTTP_TIMEOUT Binary::apt-get::Acquire::http::Timeout "
+    "ARRAS_APTGET_HTTPS_TIMEOUT Binary::apt-get::Acquire::https::Timeout"
 )
-EXPECTED_APT_CONFIG = "ARRAS_RETRIES='2'\nARRAS_HTTP_TIMEOUT='20'\nARRAS_HTTPS_TIMEOUT='20'"
+EXPECTED_APT_CONFIG = (
+    "ARRAS_RETRIES='2'\n"
+    "ARRAS_HTTP_TIMEOUT='20'\n"
+    "ARRAS_HTTPS_TIMEOUT='20'\n"
+    "ARRAS_APTGET_RETRIES='2'\n"
+    "ARRAS_APTGET_HTTP_TIMEOUT='20'\n"
+    "ARRAS_APTGET_HTTPS_TIMEOUT='20'"
+)
+APT_POLICY = (
+    "\nAcquire {\n"
+    '  Retries "2";\n'
+    '  http::Timeout "20";\n'
+    '  https::Timeout "20";\n'
+    "};\n"
+    "Binary::apt-get::Acquire {\n"
+    '  Retries "2";\n'
+    '  http::Timeout "20";\n'
+    '  https::Timeout "20";\n'
+    "};\n"
+)
 
 
 def ci_apt_run_block() -> str:
@@ -142,12 +166,22 @@ def ci_apt_run_block() -> str:
 
 
 def run_ci_apt_block(
-    tmp_path: Path, *, apt_config: str, apt_config_exit: int = 0
+    tmp_path: Path,
+    *,
+    apt_config: str = EXPECTED_APT_CONFIG,
+    apt_config_exit: int = 0,
+    apt_main_query: str = APT_MAIN_QUERY,
+    apt_main_exit: int = 0,
+    existing_main: str | None = "// runner configuration\n",
+    main_is_regular: bool = True,
+    main_is_symlink: bool = False,
 ) -> tuple[subprocess.CompletedProcess[str], str, Path]:
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
     log = tmp_path / "calls.log"
     config = tmp_path / "apt.conf"
+    if existing_main is not None:
+        config.write_text(existing_main, encoding="utf-8")
     (bin_dir / "python3").write_text(
         '#!/bin/sh\nprintf "python3 %s\\n" "$*" >> "$CALL_LOG"\nexit 0\n',
         encoding="utf-8",
@@ -155,10 +189,10 @@ def run_ci_apt_block(
     (bin_dir / "sudo").write_text(
         "#!/bin/sh\n"
         'case "$1" in\n'
-        '  tee) shift; cat > "$APT_CONFIG_FILE"; printf \'sudo tee %s\\n\' "$*" >> "$CALL_LOG";;\n'
+        '  tee) shift; [ "$1" = "-a" ] && shift; target="$1"; printf \'sudo tee -a %s\\n\' "$target" >> "$CALL_LOG"; cat >> "$APT_CONFIG_FILE";;\n'
         '  python3) printf \'sudo python3 %s\\n\' "$*" >> "$CALL_LOG";;\n'
-        '  apt-config) shift; printf \'sudo apt-config %s\\n\' "$*" >> "$CALL_LOG"; printf \'%s\' "$APT_CONFIG"; exit "$APT_CONFIG_EXIT";;\n'
-        '  apt-get) printf \'sudo apt-get %s\\n\' "$*" >> "$CALL_LOG";;\n'
+        '  apt-config) shift; printf \'sudo apt-config %s\\n\' "$*" >> "$CALL_LOG"; case "$*" in *Dir::Etc::main/f*) printf \'%s\' "$APT_MAIN_QUERY"; exit "$APT_MAIN_EXIT";; *) printf \'%s\' "$APT_CONFIG"; exit "$APT_CONFIG_EXIT";; esac;;\n'
+        '  test) shift; printf \'sudo test %s\\n\' "$*" >> "$CALL_LOG"; case "$1" in -e) [ "$APT_MAIN_EXISTS" = "1" ];; -f) [ "$APT_MAIN_REGULAR" = "1" ];; -L) [ "$APT_MAIN_SYMLINK" = "1" ];; *) exit 98;; esac;;\n'
         "  *) printf '%s\\n' 'unexpected sudo invocation' >&2; exit 98;;\n"
         "esac\n",
         encoding="utf-8",
@@ -177,6 +211,11 @@ def run_ci_apt_block(
             "APT_CONFIG_FILE": str(config),
             "APT_CONFIG": apt_config,
             "APT_CONFIG_EXIT": str(apt_config_exit),
+            "APT_MAIN_QUERY": apt_main_query,
+            "APT_MAIN_EXIT": str(apt_main_exit),
+            "APT_MAIN_EXISTS": "1" if existing_main is not None else "0",
+            "APT_MAIN_REGULAR": "1" if main_is_regular else "0",
+            "APT_MAIN_SYMLINK": "1" if main_is_symlink else "0",
         }
     )
     result = subprocess.run(
@@ -190,16 +229,20 @@ def run_ci_apt_block(
     return result, log.read_text(encoding="utf-8"), config
 
 
-def test_ci_apt_setup_accepts_exact_bounded_tuple_and_keeps_steps_ordered(tmp_path: Path) -> None:
-    result, calls, config = run_ci_apt_block(tmp_path, apt_config=EXPECTED_APT_CONFIG)
+def test_ci_apt_policy_appends_to_main_and_checks_global_and_apt_get_values(tmp_path: Path) -> None:
+    previous = '// runner configuration\nAcquire::Retries "1";\n'
+    result, calls, config = run_ci_apt_block(tmp_path, existing_main=previous)
     assert result.returncode == 0, result.stderr
     assert result.stdout == result.stderr == ""
-    assert config.read_text(encoding="utf-8") == (
-        'Acquire::Retries "2";\nAcquire::http::Timeout "20";\nAcquire::https::Timeout "20";\n'
-    )
+    assert config.read_text(encoding="utf-8") == previous + APT_POLICY
     expected_calls = (
         "configure_ubuntu_apt_sources.py --self-test",
         "configure_ubuntu_apt_sources.py --apply",
+        APT_MAIN_QUERY_COMMAND,
+        "sudo test -e /etc/apt/apt.conf",
+        "sudo test -f /etc/apt/apt.conf",
+        "sudo test -L /etc/apt/apt.conf",
+        "sudo tee -a /etc/apt/apt.conf",
         APT_CONFIG_COMMAND,
         "timeout --signal=TERM --kill-after=30s 180s sudo apt-get update",
     )
@@ -222,12 +265,15 @@ def test_ci_apt_setup_accepts_exact_bounded_tuple_and_keeps_steps_ordered(tmp_pa
 @pytest.mark.parametrize(
     "apt_config",
     [
-        "ARRAS_RETRIES='3'\nARRAS_HTTP_TIMEOUT='20'\nARRAS_HTTPS_TIMEOUT='20'",
-        "ARRAS_RETRIES='2'\nARRAS_HTTP_TIMEOUT='20'",
+        "ARRAS_RETRIES='1'\nARRAS_HTTP_TIMEOUT='20'\nARRAS_HTTPS_TIMEOUT='20'\nARRAS_APTGET_RETRIES='2'\nARRAS_APTGET_HTTP_TIMEOUT='20'\nARRAS_APTGET_HTTPS_TIMEOUT='20'",
+        "ARRAS_RETRIES='2'\nARRAS_HTTPS_TIMEOUT='20'\nARRAS_APTGET_RETRIES='2'\nARRAS_APTGET_HTTP_TIMEOUT='20'\nARRAS_APTGET_HTTPS_TIMEOUT='20'",
+        "ARRAS_RETRIES='2'\nARRAS_HTTP_TIMEOUT='20'\nARRAS_HTTPS_TIMEOUT='20'\nARRAS_APTGET_RETRIES='1'\nARRAS_APTGET_HTTP_TIMEOUT='15'\nARRAS_APTGET_HTTPS_TIMEOUT='15'",
     ],
-    ids=("wrong-value", "missing-value"),
+    ids=("wrong-global-value", "missing-global-value", "binary-override"),
 )
-def test_ci_apt_setup_rejects_wrong_or_missing_tuple(tmp_path: Path, apt_config: str) -> None:
+def test_ci_apt_policy_rejects_wrong_missing_or_binary_override(
+    tmp_path: Path, apt_config: str
+) -> None:
     result, calls, _ = run_ci_apt_block(tmp_path, apt_config=apt_config)
     assert result.returncode == 1
     assert result.stdout == ""
@@ -236,12 +282,47 @@ def test_ci_apt_setup_rejects_wrong_or_missing_tuple(tmp_path: Path, apt_config:
     assert "timeout --signal=TERM --kill-after=30s 180s sudo apt-get update" not in calls
 
 
-def test_ci_apt_setup_fails_when_apt_config_command_fails(tmp_path: Path) -> None:
-    result, calls, _ = run_ci_apt_block(
-        tmp_path, apt_config=EXPECTED_APT_CONFIG, apt_config_exit=17
-    )
+def test_ci_apt_policy_fails_when_effective_query_fails(tmp_path: Path) -> None:
+    result, calls, _ = run_ci_apt_block(tmp_path, apt_config_exit=17)
     assert result.returncode == 1
     assert result.stdout == ""
     assert result.stderr == EXPECTED_APT_CONFIG + "\n"
     assert APT_CONFIG_COMMAND in calls
     assert "timeout --signal=TERM --kill-after=30s 180s sudo apt-get update" not in calls
+
+
+def test_ci_apt_policy_refuses_nonstandard_main_path(tmp_path: Path) -> None:
+    main_query = "ARRAS_MAIN='/tmp/apt.conf'"
+    result, calls, _ = run_ci_apt_block(tmp_path, apt_main_query=main_query)
+    assert result.returncode == 1
+    assert result.stdout == ""
+    assert result.stderr == main_query + "\n"
+    assert "sudo tee -a /etc/apt/apt.conf" not in calls
+    assert APT_CONFIG_COMMAND not in calls
+
+
+def test_ci_apt_policy_fails_when_main_file_is_not_regular(tmp_path: Path) -> None:
+    result, calls, _ = run_ci_apt_block(tmp_path, main_is_regular=False)
+    assert result.returncode == 1
+    assert result.stdout == ""
+    assert result.stderr == APT_MAIN_QUERY + "\n"
+    assert "sudo tee -a /etc/apt/apt.conf" not in calls
+
+
+def test_ci_apt_policy_creates_missing_standard_main_file(tmp_path: Path) -> None:
+    result, calls, config = run_ci_apt_block(tmp_path, existing_main=None)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == result.stderr == ""
+    assert config.read_text(encoding="utf-8") == APT_POLICY
+    assert "sudo test -e /etc/apt/apt.conf" in calls
+    assert "sudo test -f /etc/apt/apt.conf" not in calls
+    assert APT_CONFIG_COMMAND in calls
+
+
+def test_ci_apt_policy_refuses_broken_main_symlink(tmp_path: Path) -> None:
+    result, calls, _ = run_ci_apt_block(tmp_path, existing_main=None, main_is_symlink=True)
+    assert result.returncode == 1
+    assert result.stdout == ""
+    assert result.stderr == APT_MAIN_QUERY + "\n"
+    assert "sudo test -L /etc/apt/apt.conf" in calls
+    assert "sudo tee -a /etc/apt/apt.conf" not in calls

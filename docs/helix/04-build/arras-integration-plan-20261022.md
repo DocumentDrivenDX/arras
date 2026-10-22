@@ -946,10 +946,33 @@ Three canonical visible-name assertions now use the supplied profile, retaining
 their assertions. The neutral acceptance fixture's 18 root role properties use
 the host's resolved light/dark color scheme, and its launcher supplies the public
 distribution branding explicitly. Contrast thresholds and accessibility checks
-are unchanged. One remaining body-click geometry failure still needs a small
-actual browser probe before another full capture. Failed private run diagnostics
-will be preserved before owned-host cleanup. No images from the failed capture
-are accepted baselines, and the final ordinary comparison remains outstanding.
+are unchanged. A subsequent unchanged canonical keyboard test reproduced the
+body-click failure. Its post-authentication trace recorded body bounds
+`x=8,y=8,width=1264,height=274` and the actual viewport click at `(13,308)`:
+the body ended at y=282. Sol approved a fixture-owned external stylesheet giving
+`html`, `body` and `#root` full height and removing the body margin; library CSS
+and the canonical test remain unchanged. The corrected canonical case and full
+capture still require execution. Failed private run diagnostics are preserved
+before owned-host cleanup. No images from the failed capture are accepted
+baselines, and the final ordinary comparison remains outstanding.
+
+The reviewed fixture correction then passed the same unchanged canonical
+keyboard case in 2.5 seconds. After selecting the same person, body and host bounds
+were `(0,0,1280,720)` and the actual `(5,300)` click hit the graph-browser element.
+All owned fixture ports were closed after the probe. This one-case result permits
+another full capture; it does not qualify the full suite.
+
+Hosted [CI run 39856356661](https://github.com/DocumentDrivenDX/arras/actions/runs/39856356661)
+on `f7e0015807fb2c26cc1719b19683daf16a2b13ab` passed source/build and exact
+installed-artifact gates. Its Python run passed 2,771 tests with one failure,
+41 skips and 199 native deselections: the new HTML helper had changed bare
+fragment output. Sol approved preserving the prior byte-for-byte fragment behavior
+when neither real head nor title anchor exists; UI plus the original operate
+regression then passed 51 tests with zero Pyright errors. The APT semantic query
+also established actual effective values of 1/15/15 despite the intended 2/20/20
+drop-in. Configuration precedence, rather than display matching alone, therefore
+requires correction across CI and both release browser-install blocks. Exact
+required bounds remain unchanged, and this failed UI job never ran Chromium.
 
 ## Validation Plan
 

@@ -86,16 +86,39 @@ jobs:
           set -euo pipefail
           python3 .github/scripts/configure_ubuntu_apt_sources.py --self-test
           sudo python3 .github/scripts/configure_ubuntu_apt_sources.py --apply
-          sudo tee /etc/apt/apt.conf.d/zz-arras-network-bounds >/dev/null <<'EOF'
-          Acquire::Retries "2";
-          Acquire::http::Timeout "20";
-          Acquire::https::Timeout "20";
+          if ! apt_main_config="$(sudo apt-config shell ARRAS_MAIN Dir::Etc::main/f 2>/dev/null)"; then
+            printf '%s\n' "$apt_main_config" >&2
+            exit 1
+          fi
+          if [ "$apt_main_config" != "ARRAS_MAIN='/etc/apt/apt.conf'" ]; then
+            printf '%s\n' "$apt_main_config" >&2
+            exit 1
+          fi
+          apt_main_path=/etc/apt/apt.conf
+          if sudo test -e "$apt_main_path" || sudo test -L "$apt_main_path"; then
+            if ! sudo test -f "$apt_main_path" || sudo test -L "$apt_main_path"; then
+              printf '%s\n' "$apt_main_config" >&2
+              exit 1
+            fi
+          fi
+          sudo tee -a "$apt_main_path" >/dev/null <<'EOF'
+
+          Acquire {
+            Retries "2";
+            http::Timeout "20";
+            https::Timeout "20";
+          };
+          Binary::apt-get::Acquire {
+            Retries "2";
+            http::Timeout "20";
+            https::Timeout "20";
+          };
           EOF
-          if ! apt_config="$(sudo apt-config shell ARRAS_RETRIES Acquire::Retries ARRAS_HTTP_TIMEOUT Acquire::http::Timeout ARRAS_HTTPS_TIMEOUT Acquire::https::Timeout 2>/dev/null)"; then
+          if ! apt_config="$(sudo apt-config shell ARRAS_RETRIES Acquire::Retries ARRAS_HTTP_TIMEOUT Acquire::http::Timeout ARRAS_HTTPS_TIMEOUT Acquire::https::Timeout ARRAS_APTGET_RETRIES Binary::apt-get::Acquire::Retries ARRAS_APTGET_HTTP_TIMEOUT Binary::apt-get::Acquire::http::Timeout ARRAS_APTGET_HTTPS_TIMEOUT Binary::apt-get::Acquire::https::Timeout 2>/dev/null)"; then
             printf '%s\n' "$apt_config" >&2
             exit 1
           fi
-          expected_apt_config="$(printf "ARRAS_RETRIES='2'\nARRAS_HTTP_TIMEOUT='20'\nARRAS_HTTPS_TIMEOUT='20'")"
+          expected_apt_config="$(printf "ARRAS_RETRIES='2'\nARRAS_HTTP_TIMEOUT='20'\nARRAS_HTTPS_TIMEOUT='20'\nARRAS_APTGET_RETRIES='2'\nARRAS_APTGET_HTTP_TIMEOUT='20'\nARRAS_APTGET_HTTPS_TIMEOUT='20'")"
           if [ "$apt_config" != "$expected_apt_config" ]; then
             printf '%s\n' "$apt_config" >&2
             exit 1

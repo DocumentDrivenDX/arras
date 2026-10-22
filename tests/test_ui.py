@@ -670,8 +670,10 @@ def test_branded_fragment_fallback_is_token_aware_and_preserves_source() -> None
 
     plain_fragment = b"text\r\n<!-- no head or title -->"
     appended = ui.branded(plain_fragment, brand)
-    assert appended.startswith(plain_fragment)
-    assert _brand_meta_values(appended) == [brand.meta()]
+    assert appended == plain_fragment
+
+    branded_fragment = b'text\r\n<meta name="arras-brand" content="old">'
+    assert ui.branded(branded_fragment, brand) == branded_fragment
 
 
 def test_a_custom_brand_renders_its_title_and_escaped_json(static: Path) -> None:

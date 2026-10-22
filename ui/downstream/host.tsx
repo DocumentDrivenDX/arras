@@ -5,6 +5,7 @@ import { AcceptanceHost } from "@documentdrivendx/arras-ui/testkit/host";
 import { NeutralThemeProvider } from "@arras-fixtures/neutral-theme";
 import "@documentdrivendx/arras-ui/styles.css";
 import "@arras-fixtures/neutral-theme/theme.css";
+import "./host-frame.css";
 
 createRoot(document.getElementById("root")!).render(
   <NeutralThemeProvider>

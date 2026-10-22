@@ -287,6 +287,8 @@ def test_the_requirements_note_names_the_corpus_limits_the_harness_pins() -> Non
 
 def test_release_playwright_apt_setup_is_prevalidated_bounded_and_effective() -> None:
     release = (ROOT / ".github/workflows/release.yml").read_text()
+    assert release.count("apt-config shell ARRAS_MAIN Dir::Etc::main/f") == 2
+    assert release.count("Binary::apt-get::Acquire {") == 2
     ui_release = release_job(release, "ui-qualification")
     setup_start = ui_release.index("name: Configure bounded Ubuntu apt access for Playwright")
     browser_install = ui_release.index("npx --no-install playwright install chromium", setup_start)
@@ -296,12 +298,19 @@ def test_release_playwright_apt_setup_is_prevalidated_bounded_and_effective() ->
     ordered = (
         "configure_ubuntu_apt_sources.py --self-test",
         "sudo python ../.github/scripts/configure_ubuntu_apt_sources.py --apply",
-        "zz-arras-network-bounds",
-        'Acquire::Retries "2";',
-        'Acquire::http::Timeout "20";',
-        'Acquire::https::Timeout "20";',
-        "sudo apt-config shell ARRAS_RETRIES Acquire::Retries ARRAS_HTTP_TIMEOUT Acquire::http::Timeout ARRAS_HTTPS_TIMEOUT Acquire::https::Timeout",
-        'test "$apt_config" = "$expected_apt_config"',
+        "apt-config shell ARRAS_MAIN Dir::Etc::main/f",
+        "ARRAS_MAIN='/etc/apt/apt.conf'",
+        'sudo test -e "$apt_main_path"',
+        'sudo tee -a "$apt_main_path"',
+        "Acquire {",
+        'Retries "2";',
+        'http::Timeout "20";',
+        'https::Timeout "20";',
+        "Binary::apt-get::Acquire {",
+        "apt-config shell ARRAS_RETRIES Acquire::Retries ARRAS_HTTP_TIMEOUT Acquire::http::Timeout ARRAS_HTTPS_TIMEOUT Acquire::https::Timeout",
+        "ARRAS_APTGET_RETRIES Binary::apt-get::Acquire::Retries",
+        "expected_apt_config=",
+        'if [ "$apt_config" != "$expected_apt_config" ]; then',
         "timeout --signal=TERM --kill-after=30s 5m sudo apt-get update",
         "timeout --signal=TERM --kill-after=30s 15m npx --no-install playwright install-deps chromium",
         "timeout --signal=TERM --kill-after=30s 15m npx --no-install playwright install chromium",
@@ -309,6 +318,8 @@ def test_release_playwright_apt_setup_is_prevalidated_bounded_and_effective() ->
     )
     positions = [setup.index(item) for item in ordered]
     assert positions == sorted(positions)
+    assert 'if sudo test -e "$apt_main_path" || sudo test -L "$apt_main_path"; then' in setup
+    assert 'if ! sudo test -f "$apt_main_path" || sudo test -L "$apt_main_path"; then' in setup
     assert "npx playwright install --with-deps chromium" not in setup
     assert "npm ci" in ui_release and "npm ci" not in setup
     assert "const browser = await chromium.launch({ headless: true })" in setup

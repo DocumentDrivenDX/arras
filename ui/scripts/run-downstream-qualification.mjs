@@ -178,7 +178,7 @@ const assertSameFileTree = (expectedRoot, actualRoot, reason) => {
       `${reason}: ${name} bytes differ`,
     );
 };
-for (const name of ["host.html", "host.tsx", "controls.html", "controls.tsx"])
+for (const name of ["host.html", "host.tsx", "controls.html", "controls.tsx", "host-frame.css"])
   cpSync(join(ui, "downstream", name), join(hostRoot, name));
 cpSync(join(hostRoot, "host.html"), join(hostRoot, "index.html"));
 cpSync(join(themeTarTemp, "src/theme.css"), join(hostRoot, "theme.css"));
