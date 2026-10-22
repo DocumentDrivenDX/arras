@@ -237,7 +237,7 @@ MUTANTS: list[tuple[str, str, str, str]] = [
         'str(uuid.uuid5(_NAMESPACE, f"{request}"))',
     ),
     ("plan GHOST_ID", "plan.py", 'GHOST_ID = "9223372036854775807"', 'GHOST_ID = "1"'),
-    ("query WFT-PROFILE unsupported", "query.py", '"WFT-TYPE", "WFT-PROFILE"}', '"WFT-TYPE"}'),
+    ("query WFT-PROFILE unsupported", "query.py", '"WFT-PROFILE", ', ""),
     ("query FACTS _load_id", "query.py", '    "_load_id": "string",\n', ""),
     ("reach TOKEN_BOUND", "reach.py", "TOKEN_BOUND = 16_384", "TOKEN_BOUND = 16_385"),
     ("values unsigned top", "values.py", "(0, 2**d.bits - 1)", "(0, 2**d.bits - 2)"),

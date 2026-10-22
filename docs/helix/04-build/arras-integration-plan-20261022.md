@@ -894,6 +894,25 @@ next candidate and UI build; the whole native suite and final installed-artifact
 gates still need to pass. The installed example's stale TOML selector assertion
 has a reviewed public-launcher/bootstrap replacement, pending fresh wheel proof.
 
+The subsequent [candidate CI run 39851655422](https://github.com/DocumentDrivenDX/arras/actions/runs/39851655422)
+on `72cb53a988683bb67e1e383c81086d0c1be0a3f6` passed all **199 native
+Linux tests**, with 2,883 default deselections, in 348.78 seconds. Its source
+quality/build, exact artifact comparison and fresh installed-example job also
+passed. The default suite still found a historical/current limit-inventory
+mismatch and a stale mutation selector; UI unit checks found a duplicated default
+brand literal in the Node testkit. These require their own reviewed corrections.
+
+The first actual full packed themed capture was stopped on a common fixture
+failure: its compiled host did not mount the schema browser's static assets,
+causing iframe 404s. The wheel's prebuilt page contained those assets. No visual
+baseline changed and no full-suite qualification was claimed. The reviewed fix
+copies the exact installed dependency assets into the compiled host and compares
+its complete file inventory and bytes against both the installed dependency and
+wheel-carried resources. A pure branding-values module also gives browser and
+Node configuration one default without importing React into the Node entry.
+Baseline capture must report `updated-unreviewed`; only a visually reviewed,
+ordinary comparison run may produce final `compared` evidence.
+
 ## Validation Plan
 
 - A0: focused `tests/test_umf.py` and `tests/test_core.py`; existing module/host

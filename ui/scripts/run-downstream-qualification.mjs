@@ -16,7 +16,7 @@ import {
 } from "node:fs";
 import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ui = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -156,6 +156,27 @@ assert.equal(
   realpathSync(join(npmScope, "arras-ui", "package.json")),
   "the theme must resolve the wheel-carried Arras package from the same host node_modules",
 );
+const regularFiles = (root, directory = root) =>
+  readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(directory, entry.name);
+    if (entry.isSymbolicLink())
+      throw new Error(`installed schema-browser asset is a symlink: ${path}`);
+    if (entry.isDirectory()) return regularFiles(root, path);
+    if (!entry.isFile())
+      throw new Error(`installed schema-browser asset is not a regular file: ${path}`);
+    return [relative(root, path).split("\\").join("/")];
+  });
+const assertSameFileTree = (expectedRoot, actualRoot, reason) => {
+  const expectedFiles = regularFiles(expectedRoot).sort();
+  const actualFiles = regularFiles(actualRoot).sort();
+  assert.deepEqual(actualFiles, expectedFiles, `${reason}: file inventory differs`);
+  for (const name of expectedFiles)
+    assert.deepEqual(
+      readFileSync(join(actualRoot, name)),
+      readFileSync(join(expectedRoot, name)),
+      `${reason}: ${name} bytes differ`,
+    );
+};
 for (const name of ["host.html", "host.tsx", "controls.html", "controls.tsx"])
   cpSync(join(ui, "downstream", name), join(hostRoot, name));
 cpSync(join(hostRoot, "host.html"), join(hostRoot, "index.html"));
@@ -185,6 +206,31 @@ execFileSync(
   process.execPath,
   [join(modules, "vite/bin/vite.js"), "build", "--config", join(hostRoot, "vite.config.ts")],
   { cwd: hostRoot, env: { ...process.env, ARRAS_DOWNSTREAM_ROOT: hostRoot }, stdio: "inherit" },
+);
+const schemaBrowserAssetIndex = hostRequire.resolve(
+  "@documentdrivendx/umf-schema-browser/assets/index.html",
+);
+const schemaBrowserRoot = dirname(dirname(schemaBrowserAssetIndex));
+const schemaBrowserPackage = JSON.parse(
+  readFileSync(join(schemaBrowserRoot, "package.json"), "utf8"),
+);
+assert.equal(
+  schemaBrowserPackage.version,
+  pkg.dependencies["@documentdrivendx/umf-schema-browser"],
+  "host schema-browser assets must come from Arras's exact installed dependency pin",
+);
+const builtSchemaBrowserAssets = join(hostDist, "umf-explorer");
+const installedSchemaBrowserAssets = join(schemaBrowserRoot, "assets");
+const packedSchemaBrowserAssets = join(arrasPackageDir, "support/acceptance/dist/umf-explorer");
+assertSameFileTree(
+  installedSchemaBrowserAssets,
+  builtSchemaBrowserAssets,
+  "compiled host schema-browser assets differ from the installed dependency",
+);
+assertSameFileTree(
+  packedSchemaBrowserAssets,
+  builtSchemaBrowserAssets,
+  "compiled host schema-browser assets differ from the wheel-carried public assets",
 );
 cpSync(hostDist, controlsDist, { recursive: true });
 cpSync(join(hostDist, "controls.html"), join(controlsDist, "index.html"));

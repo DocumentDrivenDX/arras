@@ -78,7 +78,7 @@ def _no_ref(ref: Ref) -> Failure:
 def unavailable_group(backend: str, reason: str) -> ArrasError:
     if reason == "profile":
         return Unsupported(
-            "a value or operation Truss 0.0.45 groups do not take",
+            "a value or operation outside this adapter’s selected Truss group profile",
             ["scalar values, rootless objects and edges"],
         )
     if reason == "resource":

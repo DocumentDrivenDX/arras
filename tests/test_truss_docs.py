@@ -260,17 +260,29 @@ def test_the_requirements_note_names_the_corpus_limits_the_harness_pins() -> Non
     from truss_harness import TrussHarness
 
     text = (DOCS / "02-design/truss-requirements.md").read_text()
-    sentence = next(
-        s for s in re.split(r"(?<=\))[,.] ", text) if "corpus cases end at documented limits" in s
+    selected_start = text.index("## Selected public cohort")
+    selected_end = text.find("\n## ", selected_start + 1)
+    assert selected_end != -1
+    selected = text[selected_start:selected_end]
+    limits_paragraph = next(
+        " ".join(paragraph.split())
+        for paragraph in selected.split("\n\n")
+        if "corpus cases end at documented limits" in " ".join(paragraph.split())
     )
     words = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"]
-    stated = re.search(r"(\w+) corpus cases end at documented limits", sentence)
+    stated = re.search(r"(\w+) corpus cases end at documented limits", limits_paragraph)
     assert stated is not None
     count = stated.group(1).lower()
     assert (words.index(count) + 1 if count in words else int(count)) == len(TrussHarness.LIMITS)
-    limits_part = text[text.index(stated.group(0)) :].split("\n", 1)[0]
-    named = set(re.findall(r"`([a-z]+\.[a-z0-9.-]+)`", limits_part.split("), and ")[0]))
+    named = set(re.findall(r"`([a-z]+\.[a-z0-9.-]+)`", limits_paragraph))
     assert named == set(TrussHarness.LIMITS)
+    assert "72 provider" in selected and "64 passed" in selected
+    assert "seven reader-only corpus cases were inapplicable" in selected
+
+    historical_start = text.index("## Historical state — release v0.0.45")
+    historical_end = text.index("## Truss's response,", historical_start)
+    historical = text[historical_start:historical_end]
+    assert "63 cases pass, nine end at documented limits" in historical
 
 
 def test_release_playwright_apt_setup_is_prevalidated_bounded_and_effective() -> None:

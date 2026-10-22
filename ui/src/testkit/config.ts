@@ -4,7 +4,7 @@ import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { PlaywrightTestConfig } from "@playwright/test";
-import type { Brand } from "../lib/brand";
+import { type Brand, DEFAULT_BRAND } from "../lib/brand-values";
 import { resolveAcceptanceTestDir } from "./layout";
 import { materializePackedAcceptanceSuite, verifyPackedAcceptanceResources } from "./resources";
 
@@ -29,7 +29,6 @@ export interface AcceptanceRuntimeOptions {
 }
 
 const DEFAULT_SURFACES = { light: "rgb(246, 247, 249)", dark: "rgb(15, 19, 26)" };
-const DEFAULT_BRAND = { name: "Arras" };
 const OPTION_KEYS = new Set([
   "baseURL",
   "schemaBaseURL",

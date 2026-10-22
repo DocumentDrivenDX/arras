@@ -1,17 +1,18 @@
 # SPDX-License-Identifier: MIT OR Apache-2.0
 """The Truss adapter's lifecycle (CONTRACT-005, D3): install-or-verify and module-access
-configuration, both on the host's installing connection and never as a person. A Truss installation
-is never upgraded in place (Truss refuses `upgrade_in_transaction` for every source): a database that
-holds another release is recreated, and `migrate` reports it as `unsupported_version`.
+configuration, both on the host's installing connection and never as a person. This adapter does
+not upgrade an existing installation: `migrate` verifies the selected release and reports another
+release as `unsupported_version`. Upstream administrative migrations are separate and are not
+invoked here.
 
 Each runs in one read-write transaction that first takes a transaction-scoped advisory lock
 (`Connections.installer_write`), so two instances migrating together run one install: the loser
 waits, then its status read sees the committed install. `migrate` is install-or-verify only; module
 access is `configure_access`, one locked transaction per module, because Truss refuses a whole grant
 batch for any module it has not accepted and the installer cannot list the accepted ones. The decision to install comes from Truss's
-status read in that transaction, never from parsing an install error: Truss 0.0.45 reports every
-failure inside an operation as the one opaque `invalid_transaction`, which only the status read tells
-apart from a Truss that is already present.
+status read in that transaction, never from parsing an install error. In the original Truss 0.0.45
+implementation, failures inside a group operation surfaced as the opaque `invalid_transaction`;
+this is historical implementation evidence, not a guarantee about other upstream releases.
 
 The owner and registrar role names exist only in the install's result. They are in memory here until
 the commit. A commit of unknown outcome is settled by a status read on a new connection: `ran=True`

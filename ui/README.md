@@ -184,6 +184,12 @@ createRoot(document.getElementById("root")!).render(
 );
 ```
 
+`AcceptanceHost` embeds the UMF schema browser, so the compiled host must also serve the installed
+`@documentdrivendx/umf-schema-browser` package's `assets/` directory byte-for-byte at `/umf-explorer/`.
+The downstream qualification fixture's [Vite config](downstream/vite.config.ts) copies that installed
+dependency into the host output and verifies it against the exact dependency pin and wheel-carried assets;
+it never copies browser files from the Arras source checkout.
+
 ```sh
 # From the external host project, using the environment with the selected wheel and devhost extra installed.
 python -m arras.devhost --ui ./dist --port 8766

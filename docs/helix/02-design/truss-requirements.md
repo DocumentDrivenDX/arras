@@ -46,9 +46,23 @@ The public releases and exact assets are recorded by the owning qualification
 lanes. Truss's public native platform declaration is Linux x86_64; public Weft
 wheel availability on macOS arm64 or Linux aarch64 does not itself qualify Truss
 or an embedding host on those platforms. Upstream native qualification is not a
-host-adapter corpus result. Host qualification on this exact pair remains pending
-until its own recorded run completes; no pass count or old corpus limit is
-transferred from the historical tables below.
+host-adapter corpus result. Focused macOS adapter corpus evidence on this exact
+pair is recorded below; it does not qualify the full suite or another platform.
+Historical v0.0.45 counts and limits are not carried forward. The final full
+macOS suite and installed Linux qualification remain pending.
+
+On the focused macOS run against Truss 0.0.48 and Weft 0.4.51, 72 provider
+cases were applicable: 64 passed and eight ended at expected documented limits;
+the seven reader-only corpus cases were inapplicable. Eight corpus cases end at
+documented limits (`read.relationship-columns-follow-ends`,
+`read.relationship-columns-are-capped`,
+`action.applies-atomically-and-reads-back`,
+`action.conflict-rolls-back-the-unit`,
+`action.keyed-retry-of-a-delete-replays`,
+`action.keyed-retry-of-an-unlink-replays`,
+`action.keyed-retry-after-its-target-was-deleted-replays`,
+`action.same-key-from-another-person-replays`), matching the current
+`TrussHarness.LIMITS` mapping.
 
 Truss 0.0.48 declares `truss-runtime-migration/0.1`, limited to
 `offline-administrative-unprotected-umf010` from its three named prior runtime
