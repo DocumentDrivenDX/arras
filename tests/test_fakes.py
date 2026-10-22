@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: MIT OR Apache-2.0
 # pyright: basic
+import json
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -27,7 +28,21 @@ from arras.types import Statement
 from arras.umf import parse_module
 
 EXAMPLE = Path(__file__).parents[1] / "docs/helix/02-design/contracts/examples/catalog.umf.json"
-DOC = EXAMPLE.read_bytes()
+# Generic memory CRUD tests use a consciously plain derivative: only the five string-length
+# declarations are removed. The source catalog stays intact and is exercised by the profile tests.
+CONSTRAINED_DOC = EXAMPLE.read_bytes()
+
+
+def plain_test_document() -> bytes:
+    raw = json.loads(CONSTRAINED_DOC)
+    for element in raw["modules"][0]["elements"]:
+        facets = element.get("facets")
+        if isinstance(facets, dict) and set(facets) == {"length"}:
+            element.pop("facets")
+    return json.dumps(raw).encode()
+
+
+DOC = plain_test_document()
 MODULE = parse_module(DOC)
 
 

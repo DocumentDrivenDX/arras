@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "purpose": "Offline declarations of dependency origins, consumer imports, sensitive-content patterns, and fixture provenance.",
+  "dependencies": {
+    "python": {
+      "required": ["graphql-core"],
+      "optional_extras": {
+        "devhost": ["uvicorn"],
+        "otel": ["opentelemetry-api"],
+        "truss": ["truss-toolkit"]
+      },
+      "imports": {
+        "graphql": {"distribution": "graphql-core", "source": "required"},
+        "uvicorn": {"distribution": "uvicorn", "source": "optional:devhost"},
+        "opentelemetry": {"distribution": "opentelemetry-api", "source": "optional:otel"},
+        "truss": {"distribution": "truss-toolkit", "source": "optional:truss"},
+        "psycopg": {
+          "distribution": "psycopg",
+          "source": "transitive:truss",
+          "parent": "truss-toolkit",
+          "parent_extra": "native"
+        }
+      },
+      "registry": "https://pypi.org/simple",
+      "artifact_hosts": ["files.pythonhosted.org", "github.com"],
+      "release_page": "tools/find-links/index.html",
+      "release_hosts": ["github.com"]
+    },
+    "npm": {
+      "registry_host": "registry.npmjs.org",
+      "required_runtime": {
+        "@documentdrivendx/umf-schema-browser": "2.0.0",
+        "@tailwindcss/vite": "^4.3.3",
+        "@tanstack/react-query": "^5.104.0",
+        "@vitejs/plugin-react": "^6.1.1",
+        "react": "^19.3.0",
+        "react-dom": "^19.3.0",
+        "tailwindcss": "^4.3.3",
+        "vite": "^8.3.2"
+      },
+      "optional_peers": {
+        "@axe-core/playwright": {
+          "version": "4.13.0",
+          "category": "optional-peer",
+          "dev_dependency_version": "4.13.0"
+        },
+        "@playwright/test": {
+          "version": "1.63.0",
+          "category": "optional-peer",
+          "dev_dependency_version": "1.63.0"
+        }
+      }
+    }
+  },
+  "public_api_manifest": "src/arras/public-api.json",
+  "consumer_roots": ["examples/extension_host/src"],
+  "sensitive_scan_files": [
+    "README.md",
+    "CLAUDE.md",
+    "ui/README.md",
+    "src/arras",
+    "examples/extension_host/src",
+    ".github/workflows"
+  ],
+  "fixtures": {
+    "roots": [
+      "examples",
+      "src/arras/conformance",
+      "tests/vectors",
+      "ui/src/test"
+    ],
+    "entries": [
+      {"path":"examples/catalog/catalog.graph.json","provenance":"invented-example","source":"examples/catalog/README.md","sha256":"7b1ba1f7081703ce1a413e593a0efa2ad6e002b0686e43a80030e4103c356a9d"},
+      {"path":"examples/catalog/catalog.umf.json","provenance":"invented-example","source":"examples/catalog/README.md","sha256":"49276d13a7e6fbfbc7a1f4aedd5e180bbec219b6f005d28371b75f5a5a196f96"},
+      {"path":"examples/catalog/seed.json","provenance":"invented-example","source":"examples/catalog/README.md","sha256":"b09db16af7d31a99f404d1c515426e175ddc07c22cc18e6707433bc27f6e8f05"},
+      {"path":"examples/northwind/northwind.umf.json","provenance":"abridged-public-sample","source":"examples/northwind/README.md","sha256":"da3689829785ed03cb89774e0ba72b1a62e2dbd7918b9a9b41e54495824d5b89"},
+      {"path":"examples/northwind/seed.json","provenance":"abridged-public-sample","source":"https://github.com/microsoft/sql-server-samples/blob/master/samples/databases/northwind-pubs/instnwnd.sql","sha256":"a39404a71b22d33376f0ff04b2388a8da755df10e496edc1c1f1f7dbeb203972"},
+      {"path":"examples/pizza/pizza.umf.json","provenance":"invented-instances-tutorial-structure","source":"examples/pizza/README.md","sha256":"294e3965ebfdf2810fa55c8b59ec43d646515b199e3cd75ac9da3c9d5d8851e9"},
+      {"path":"examples/pizza/seed.json","provenance":"invented-instances-tutorial-structure","source":"examples/pizza/README.md","sha256":"aca9b9da996c7b2fb1e8261e8cdc7caff8d4aa2e4251716a676b3b026e822779"},
+      {"path":"examples/extension_host/src/extension_host/resources/module.umf.json","provenance":"repository-authored-example","source":"examples/extension_host/README.md","sha256":"46a2b99557e0f0d810c04bb0f8f8018ad10cc89fe48255749f5be20693ecd461"},
+      {"path":"examples/extension_host/src/extension_host/resources/seed.json","provenance":"repository-authored-example","source":"examples/extension_host/README.md","sha256":"41fa55c3aada33b62297d27ae443ab92b697aa6c51592876f2e8d627b9878982"},
+      {"path":"examples/extension_host/src/extension_host/resources/graph.json","provenance":"repository-authored-example","source":"examples/extension_host/README.md","sha256":"f2a6a1ba12a46d89ec7c616997204208dbb1d917e5ef9cc35b3d964299ef526a"},
+      {"path":"examples/extension_host/doctor-request.json","provenance":"repository-authored-example","source":"examples/extension_host/README.md","license":"MIT OR Apache-2.0 (see LICENSE.md)","sha256":"188319713b913b823ee7ee2be11db1d62888c6e1936f03a6694bb817c0735ba2"},
+      {"path":"src/arras/conformance/corpus.json","provenance":"authored-conformance-corpus","source":"docs/helix/02-design/contracts/CONTRACT-004-backend-contract.md","sha256":"f6456cd2b61a0979d076886cc1bb5c785fc889e96cf75c8f876df38e13bfae31"},
+      {"path":"src/arras/conformance/module.umf.json","provenance":"authored-conformance-fixture","source":"tests/test_conformance.py","sha256":"2aab3c0e8d8ba9a6d1e6bad6d852e1586bb1d3bf3b6aa7937871bed823aad289"},
+      {"path":"src/arras/conformance/view_cases.json","provenance":"authored-conformance-fixture","source":"tests/test_view_conformance.py","sha256":"1b017c65e87c8a0141ffe7483b979194547c5cd01b23af2307dfbd0a26b87273"},
+      {"path":"tests/vectors/brand.json","provenance":"authored-test-vector","source":"tests/test_ui.py","sha256":"011675fd71c12bf7812d36a34b355b225dedf30e5b016c4863e8570df6a6c254"},
+      {"path":"tests/vectors/graphfile.json","provenance":"authored-test-vector","source":"tests/test_graphfile.py","sha256":"e8e06d9d01dce42a338cabd418374c8a228605c3ac31bf6bc3825811aabf5d43"},
+      {"path":"tests/vectors/inputs.json","provenance":"authored-test-vector","source":"tests/test_inputs_vectors.py","sha256":"5a461fafac10a7f030d51c5469d944b15507fb2e9560bb15b23dac7ca8b030a8"},
+      {"path":"tests/vectors/template.json","provenance":"authored-test-vector","source":"tests/test_template_vectors.py","sha256":"de94910397420b903b15889e2fa2a56e7380e6e7edd327d992e15e0080c58aa3"},
+      {"path":"ui/src/test/layout.vectors.json","provenance":"authored-ui-test-vector","source":"ui/src/test/layout.test.ts","sha256":"ddbc25b0afe031b085238f1d1cd83c50d7be938b19099ce6aeec2064716f3f96"},
+      {"path":"ui/src/test/scheme.vectors.json","provenance":"authored-ui-test-vector","source":"ui/src/test/umf-browser.test.ts","sha256":"bb4be74b9fd4a10811bd6f735bdce21ae4d9c907854a58ade52db10630d84eae"}
+    ]
+  }
+}

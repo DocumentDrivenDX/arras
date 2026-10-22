@@ -51,6 +51,7 @@ from arras.errors import (
     Conflict,
     Invalid,
     NotYetCurrent,
+    PolicyRefused,
     Refused,
     Unavailable,
     Unsupported,
@@ -125,7 +126,10 @@ Freshness_ = GraphQLObjectType(
 def error_code(e: BaseException) -> tuple[str, dict[str, Any]]:
     """The `extensions.code` for an interface error, and what else to say about it."""
     if isinstance(e, Refused):
-        return "REFUSED", {"backend": e.backend, "reason": e.reason}
+        more: dict[str, Any] = {"backend": e.backend, "reason": e.reason}
+        if isinstance(e, PolicyRefused):
+            more["policy_code"] = e.policy_code
+        return "REFUSED", more
     if isinstance(e, Unavailable):
         return "UNAVAILABLE", {"backend": e.backend, "reason": e.reason}
     if isinstance(e, Unsupported):

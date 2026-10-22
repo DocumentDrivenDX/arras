@@ -25,7 +25,7 @@ from arras.backend import Provider
 from arras.errors import ArrasError, Unavailable, Unsupported
 
 ROOT = Path(__file__).resolve().parent.parent
-WEFT_VERSION = "0.4.49"
+WEFT_VERSION = "0.4.51"
 
 
 def _pyproject() -> dict[str, object]:
@@ -46,7 +46,7 @@ def test_the_toolkit_and_weft_resolve_from_the_committed_find_links_page() -> No
     page = (ROOT / "tools/find-links/index.html").read_text()
     assert f"/truss/releases/download/v{TOOLKIT_VERSION}/" in page
     assert f"/weft/releases/download/v{WEFT_VERSION}/" in page
-    assert len(re.findall(r"#sha256=[0-9a-f]{64}\"", page)) == 6 + 12  # plus pgserver-pg18
+    assert len(re.findall(r"#sha256=[0-9a-f]{64}\"", page)) == 4 + 12  # plus pgserver-pg18
 
 
 def test_the_weft_pin_is_one_version_everywhere() -> None:
@@ -209,7 +209,7 @@ def test_a_missing_or_other_toolkit_names_the_extra(monkeypatch: pytest.MonkeyPa
     with pytest.raises(ImportError, match=r"arras\[truss\]"):
         require_toolkit()
     monkeypatch.setattr(metadata, "version", lambda name: "0.0.2")
-    with pytest.raises(ImportError, match="0.0.2 is installed but 0.0.45 is pinned"):
+    with pytest.raises(ImportError, match="0.0.2 is installed but 0.0.48 is pinned"):
         require_toolkit()
     monkeypatch.setattr(metadata, "version", lambda name: TOOLKIT_VERSION)
     assert require_toolkit() == TOOLKIT_VERSION
@@ -219,7 +219,7 @@ def test_a_missing_or_other_toolkit_names_the_extra(monkeypatch: pytest.MonkeyPa
 def test_the_installed_extra_is_the_pinned_tuple() -> None:
     import psycopg
 
-    assert require_toolkit() == "0.0.45"
+    assert require_toolkit() == "0.0.48"
     assert metadata.version("weft-sql") == WEFT_VERSION
     assert metadata.version("psycopg") == "3.3.6"
     assert psycopg.pq.version() == 180006  # libpq 18.6

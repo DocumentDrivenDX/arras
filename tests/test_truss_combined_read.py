@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT OR Apache-2.0
 # pyright: basic
 # ruff: noqa: F811
-"""A read is one operation in one read-only transaction (Truss 0.0.45's
+"""A read is one operation in one read-only transaction (Truss 0.0.48's
 `query_with_catalog_in_transaction`, plan B9).
 
 Once a person was shown a module, the next `latest` read presents what they were shown with the

@@ -31,7 +31,7 @@ ddx:
 
 ## Context
 
-This is interaction 10 of the [client interactions draft](../client-interactions-draft.md): praxis (the Databricks app that embeds Arras) reads an entitlement for a user and a source record and denies access unless the read finds one. The entitlement source depends on the preconditions in ADR-005 (the architecture decision on durable knowledge state, which gates structure derived from sensitive source records). This story is drafted so the interface leaves room for that source.
+This is interaction 10 of the [client interactions draft](../client-interactions-draft.md): the embedding host reads an entitlement for a user and a source record and denies access unless the read finds one. The entitlement source depends on the preconditions in ADR-005 (the architecture decision on durable knowledge state, which gates structure derived from sensitive source records). This story is drafted so the interface leaves room for that source.
 
 ## Walkthrough
 

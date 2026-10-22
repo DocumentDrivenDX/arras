@@ -45,6 +45,7 @@ class External:
         self.socket = str(params["host"])
         self.params = params
         self.superuser = secrets.token_urlsafe(18)
+        self.credentials: dict[str, str] = {}
         with psycopg.connect(**params, autocommit=True) as su:
             su.execute(
                 sql.SQL("CREATE ROLE {} LOGIN CREATEROLE PASSWORD {}").format(
@@ -66,6 +67,16 @@ class External:
             hba.write_text("local all all scram-sha-256\n")
             su.execute("SELECT pg_reload_conf()")
         self.url = f"postgresql://{INSTALLER}:{self.password}@/{DATABASE}?host={self.socket}"
+
+    def credential_source(self, role: str, *, create: bool) -> str:
+        token = self.credentials.get(role)
+        if token is not None:
+            return token
+        if not create:
+            raise ValueError("credential is missing")
+        token = secrets.token_urlsafe(24)
+        self.credentials[role] = token
+        return token
 
     def sql(self, statement: str, db: str = DATABASE) -> list[Any]:
         import psycopg
@@ -94,7 +105,11 @@ def server() -> Iterator[External]:
 
 
 def attach(server: External, *, reset: bool = False) -> TrussBox:
-    box = TrussBox(url=server.url, reset=reset)
+    box = TrussBox(
+        url=server.url,
+        credential_source=server.credential_source,
+        reset=reset,
+    )
     try:
         box.load(catalog_document(), SANDBOX_STEPS)
         box.finish()
@@ -107,6 +122,16 @@ def attach(server: External, *, reset: bool = False) -> TrussBox:
 def codes(box: TrussBox) -> list[str]:
     alice = box.arras.session(box.people["alice"])
     return sorted(str(r["code"]) for r in alice.query("catalog", COUNT, limit=100).rows)
+
+
+def _role_state(server: External, role: str) -> tuple[Any, ...]:
+    role_literal = role.replace("'", "''")
+    return tuple(
+        server.sql(
+            "SELECT rolcanlogin, rolvaliduntil::text, rolpassword FROM pg_authid "
+            f"WHERE rolname = '{role_literal}'"
+        )[0]
+    )
 
 
 def test_attaching_twice_installs_and_seeds_once_and_keeps_its_state(server: External) -> None:
@@ -128,8 +153,10 @@ def test_attaching_twice_installs_and_seeds_once_and_keeps_its_state(server: Ext
         assert second.truss.migration is not None and not second.truss.migration.ran  # no reinstall
         assert second.seeded is False  # no reseed
         assert codes(second) == ["uc-alerts", "uc-kept", "uc-pipeline"]
-        assert second.people["alice"].token != old_token  # a new token password every start
+        assert second.people["alice"].token == old_token
         assert second.people["alice"].user == "arrasdev_alice"
+        # A's previously issued principal still authenticates via a fresh connection after B attaches.
+        assert len(first.arras.session(first.people["alice"]).query("catalog", COUNT).rows) == 3
         # the roles and the module's grants work as a person: carol reads, cannot write
         carol = second.arras.session(second.people["carol"])
         assert len(carol.query("catalog", COUNT, limit=100).rows) == 3
@@ -142,8 +169,9 @@ def test_attaching_twice_installs_and_seeds_once_and_keeps_its_state(server: Ext
         second.close()
 
 
-def test_a_start_gives_the_people_their_grants_again(server: External) -> None:
-    # a made-up person and a control's change are the run's: the next start gives the grants again
+def test_a_start_preserves_grants_and_expiry_and_explicit_role_selection_is_managed(
+    server: External,
+) -> None:
     attach(server).close()
     third = attach(server)
     try:
@@ -152,23 +180,56 @@ def test_a_start_gives_the_people_their_grants_again(server: External) -> None:
         assert who.user == "arrasdev_erin"
         third.set_token("carol", live=False)  # an expired token
         third.set_access("bob", "catalog", ["write"], grant=False)
+        server.sql("CREATE ROLE independent_membership NOLOGIN")
+        server.sql("GRANT independent_membership TO arrasdev_erin")
+        third.set_token("erin", live=False)
     finally:
         third.close()
+    try:
+        with pytest.raises(ValueError, match="credential"):
+            attach(server)
+        assert server.sql(
+            "SELECT rolvaliduntil < now() FROM pg_roles WHERE rolname = 'arrasdev_carol'"
+        ) == [(True,)]
+    finally:
+        # Restore the fixture's deliberately expired principal as an explicit administrator action,
+        # even when an assertion fails.
+        server.sql("ALTER ROLE arrasdev_carol VALID UNTIL 'infinity'")
     fourth = attach(server)
     try:
-        bob = fourth.arras.session(fourth.people["bob"])
-        bob.invoke("catalog.AddUseCase", {"code": "uc-bob", "name": "Bob", "workArea": "finance"})
-        assert len(fourth.arras.session(fourth.people["carol"]).query("catalog", COUNT).rows) == 4
-        erin = fourth.person(
-            "erin", "viewer"
-        )  # a role of an earlier run, taken over with new grants
-        assert erin.user == "arrasdev_erin"
         from arras.errors import ArrasError
 
-        with pytest.raises(ArrasError):  # an editor before, a viewer now: the old grant is gone
+        assert server.sql(
+            "SELECT rolvaliduntil < now() FROM pg_roles WHERE rolname = 'arrasdev_erin'"
+        ) == [(True,)]
+        erin_before = _role_state(server, "arrasdev_erin")
+        with pytest.raises(ValueError, match="credential"):
+            fourth.person("erin", "viewer")  # an expired person is refused, never repaired
+        assert _role_state(server, "arrasdev_erin") == erin_before
+        assert server.sql(
+            "SELECT 1 FROM pg_auth_members m JOIN pg_roles r ON r.oid = m.roleid "
+            "JOIN pg_roles u ON u.oid = m.member WHERE r.rolname = 'independent_membership' "
+            "AND u.rolname = 'arrasdev_erin'"
+        ) == [(1,)]
+        # Explicitly restore expiry, then select a new managed role. Only generated Arras roles
+        # are reconciled; the independent membership remains.
+        fourth.truss.expire("erin", restore=True)
+        erin = fourth.person("erin", "viewer")
+        bob = fourth.arras.session(fourth.people["bob"])
+        with pytest.raises(ArrasError):
+            bob.invoke(
+                "catalog.AddUseCase", {"code": "uc-bob", "name": "Bob", "workArea": "finance"}
+            )
+        assert len(fourth.arras.session(fourth.people["carol"]).query("catalog", COUNT).rows) == 3
+        with pytest.raises(ArrasError):
             fourth.arras.session(erin).invoke(
                 "catalog.AddUseCase", {"code": "uc-erin", "name": "Erin", "workArea": "finance"}
             )
+        assert server.sql(
+            "SELECT 1 FROM pg_auth_members m JOIN pg_roles r ON r.oid = m.roleid "
+            "JOIN pg_roles u ON u.oid = m.member WHERE r.rolname = 'independent_membership' "
+            "AND u.rolname = 'arrasdev_erin'"
+        ) == [(1,)]
     finally:
         fourth.close()
 
@@ -224,11 +285,12 @@ def test_reset_drops_what_the_dev_host_made_and_starts_clean(server: External) -
 
 
 def test_a_role_it_did_not_make_is_never_taken_over(server: External) -> None:
+    attach(server).close()
     server.sql("DROP ROLE IF EXISTS arrasdev_dave")  # an earlier run's, made by the installer
     server.sql("CREATE ROLE arrasdev_dave LOGIN PASSWORD 'not-the-dev-hosts'")
     try:
-        with pytest.raises(ValueError, match="did not make"):
-            TrussBox(url=server.url).close()
+        with pytest.raises(ValueError, match="not administered"):
+            TrussBox(url=server.url, credential_source=server.credential_source)
     finally:
         server.sql("DROP ROLE arrasdev_dave")
 

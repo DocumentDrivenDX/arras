@@ -33,7 +33,7 @@ ddx:
 |--------|-------------|
 | Problem | The library takes everything as parameters and reads no environment (CONTRACT-005). The MCP process is the one place configuration arrives from outside. Its keys must not be read where they are used, with no schema, no check that a key is known and no way to see the surface (a misspelled endpoint would be a silent `not_configured`), and a stack of environment variables is a poor place for what developers own: where each module lives, the log level, the user claims. |
 | Requirements | One place reads files and the environment. Every key has exactly one owner. A bad configuration stops the process at start, naming the file and key and never a value. The surface is a contract between whoever deploys the process and whoever develops it. The process is disposable (starts fast, stops on a signal). |
-| Decision Drivers | Twelve-factor config split by owner, with committed per-environment files for what developers own and the environment for what operations inject; ADR-017 (the token is the person's own, never a backend credential); the host, praxis, supplies the backends. |
+| Decision Drivers | Twelve-factor config split by owner, with committed per-environment files for what developers own and the environment for what operations inject; ADR-017 (the token is the person's own, never a backend credential); the embedding host supplies the backends and their credential sources. |
 
 ## Decision
 
@@ -54,6 +54,54 @@ Layer 2 overrides layer 3 key by key and tables merge. The format is TOML, read 
 6. **Handles become adapters in one place.** `arras.mcp.backends.build_backends` is the composition root. A handle that is a `postgresql://` URI becomes a Truss backend over the person's own token (`arras.adapters.truss.endpoint`; no new key, so the schema, `.env.example` and the example file are unchanged); a URI that is not a usable endpoint (a credential, an unknown parameter, plaintext to a remote host) is a start error naming the key. A configured handle no adapter reads, or whose extra is missing, is reported as unbuilt with the reason, so the process starts degraded and says why rather than treating a handle as a connection. The process holds no installing connection, so it cannot read the Truss backend's install state: the status is `not_configured` until a call as a person has been made and is then what that call showed (available, or unavailable with the reason); Truss limits its install-state read to the installer and the registrar (R22). Before it connects the process clears the libpq environment (`PG*`): no connection keyword switches the service file off, so scrubbing is the one way that no ambient variable reaches the connection.
 7. **The schema is published.** `.env.example` lists every environment key, ops keys blank and dev keys at their defaults; `config/default.toml` holds the defaults; `config/example.toml` shows every table and is read only when `ARRAS_ENV=example`. A test keeps all three equal to the schema.
 8. **The process is disposable.** It starts from configuration alone, logs one startup line to stderr naming the environment and the files read (never values), and on SIGTERM or SIGINT finishes the frame in flight, stops reading, flushes and exits with status 0.
+
+### Distribution configuration follows the same reader
+
+A downstream distribution supplies immutable bootstrap defaults through
+`DistributionConfig` (CONTRACT-005); the process resolves its presentation and
+aliases through the existing typed reader (CONTRACT-007). Reuse the existing
+`Brand` value and runtime UI injection. Keep value definitions in a leaf module
+with no environment/file/backend I/O and no import of a UI host. A wrapper calls
+the supported `arras.mcp.launch` function and supplies its own command name;
+configuration or document metadata never names executable modules to import.
+
+The launcher's `env_prefix` is a bootstrap choice: it must be known before
+`CONFIG_DIR`, `ENV` and `OPS_FILE` aliases select the files. Therefore a loaded
+file cannot change it. Presentation defaults may be overridden by the existing
+committed file layers, field by field. Both credential namespaces are checked for
+ambiguity before alias precedence; a conflicting token or token-file source is a
+startup refusal, not a silent identity choice. Exact fields, bounds, precedence
+and errors live in CONTRACT-005/007 rather than a second schema in this ADR.
+
+This keeps one schema/reader and one Brand model. The alternative of inferring an
+environment prefix from display text or reading an alias-selection key from a
+file creates a bootstrap cycle and can redirect credential resolution. Separate
+wrapper-specific parsers would duplicate ownership and redaction rules. The
+trade-off is explicit bootstrap configuration in the thin wrapper. A second
+reader, duplicated Brand, dynamic import path, or global telemetry namespace mutation
+is a drift signal. CONTRACT-008 preserves canonical definitions and default output
+while its explicit context-local projection satisfies downstream signal naming.
+
+### Typed telemetry names use the same precedence
+
+`DistributionConfig.telemetry` is the inert `TelemetryNames` value bound by
+CONTRACT-005. `[distribution.telemetry]` accepts only `service_name`,
+`attribute_namespace`, `log_prefix` and `event_prefix`; omitted fields retain
+bootstrap defaults, and committed default/environment layers merge field by field.
+Omit the optional service name instead of TOML null. No telemetry environment alias,
+secret, exporter URL, provider import string or second configuration reader is added.
+The existing reader and doctor reuse the same bounded validators; errors name only
+safe file/key/reason information. The offline doctor checks names, not provider
+availability, Resource matching or delivery.
+
+A launcher invokes its explicit host `telemetry_factory` with these validated
+**effective** names before backend/token-source/build effects. Factory/provider
+objects are never loaded from TOML or metadata. An explicit service name needs a
+matching host-owned provider Resource (ADR-018); absent a factory, construct the
+normal context so aliases apply and an unsatisfied service requirement refuses.
+Help and invalid input do not invoke the hook. The host remains responsible for
+provider/exporter lifecycle, and runtime emission failure never changes a business
+operation or silently redirects it to a different global provider.
 
 ## Alternatives
 

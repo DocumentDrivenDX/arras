@@ -1,0 +1,445 @@
+name: Installed downstream qualification
+
+on:
+  workflow_call:
+    inputs:
+      wheel_url:
+        description: HTTPS URL of the Arras wheel to verify and install.
+        required: true
+        type: string
+      wheel_sha256:
+        description: Expected SHA-256 digest of that wheel.
+        required: true
+        type: string
+      consumer_project_path:
+        description: Relative consumer project directory installed without dependencies after optional setup.
+        required: true
+        type: string
+      consumer_setup_path:
+        description: Optional Python script to install the consumer project's dependencies before installation.
+        required: false
+        type: string
+        default: ""
+      consumer_test_path:
+        description: Relative, explicit pytest target in the caller workspace.
+        required: true
+        type: string
+      native_test_path:
+        description: Optional explicit native pytest target; this reports only its consumer test result.
+        required: false
+        type: string
+        default: ""
+      native_setup_path:
+        description: Required Python setup script path when native_test_path is selected.
+        required: false
+        type: string
+        default: ""
+      theme_test_path:
+        description: Optional explicit renderer/theme pytest target; this reports only its consumer test result.
+        required: false
+        type: string
+        default: ""
+      theme_setup_path:
+        description: Optional Python dependency setup script, allowed only with a theme test target.
+        required: false
+        type: string
+        default: ""
+    outputs:
+      native_qualification:
+        description: Result of the explicitly selected native consumer target; does not certify an adapter cohort.
+        value: ${{ jobs.installed.outputs.native_qualification }}
+      theme_qualification:
+        description: Result of the selected theme consumer target; not browser or rendered-theme qualification.
+        value: ${{ jobs.installed.outputs.theme_qualification }}
+
+permissions:
+  contents: read
+
+jobs:
+  installed:
+    name: Install verified wheel and run explicit qualification stages
+    runs-on: ubuntu-latest
+    outputs:
+      native_qualification: ${{ steps.native.outputs.status }}
+      theme_qualification: ${{ steps.theme.outputs.status }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate wheel metadata and consumer paths before download
+        env:
+          WHEEL_URL: ${{ inputs.wheel_url }}
+          WHEEL_SHA256: ${{ inputs.wheel_sha256 }}
+          CONSUMER_PROJECT_PATH: ${{ inputs.consumer_project_path }}
+          CONSUMER_SETUP_PATH: ${{ inputs.consumer_setup_path }}
+          CONSUMER_TEST_PATH: ${{ inputs.consumer_test_path }}
+          NATIVE_TEST_PATH: ${{ inputs.native_test_path }}
+          NATIVE_SETUP_PATH: ${{ inputs.native_setup_path }}
+          THEME_TEST_PATH: ${{ inputs.theme_test_path }}
+          THEME_SETUP_PATH: ${{ inputs.theme_setup_path }}
+        run: |
+          python - <<'PY'
+          import os
+          import hashlib
+          import re
+          from pathlib import Path, PurePosixPath
+          from urllib.parse import urlsplit
+
+          url = os.environ["WHEEL_URL"]
+          parsed = urlsplit(url)
+          basename = PurePosixPath(parsed.path).name
+          if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password or parsed.query or parsed.fragment:
+              raise SystemExit("wheel URL must be credential-free HTTPS without query or fragment")
+          if not re.fullmatch(r"arras-[0-9]+\.[0-9]+\.[0-9]+-py3-none-any\.whl", basename):
+              raise SystemExit("wheel URL basename must be an Arras pure-Python wheel")
+          if not re.fullmatch(r"[0-9a-fA-F]{64}", os.environ["WHEEL_SHA256"]):
+              raise SystemExit("wheel SHA-256 must be exactly 64 hexadecimal characters")
+
+          workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+          def checked_path(value: str, *, directory: bool) -> Path:
+              relative = PurePosixPath(value)
+              if (
+                  not value
+                  or any(ord(char) < 32 or ord(char) == 127 for char in value)
+                  or relative.is_absolute()
+                  or ".." in relative.parts
+                  or "\\" in value
+              ):
+                  raise SystemExit("path must be a safe relative workspace path")
+              target = (workspace / Path(*relative.parts)).resolve()
+              if target != workspace and workspace not in target.parents:
+                  raise SystemExit("path resolves outside the caller workspace")
+              if not (target.is_dir() if directory else target.is_file()):
+                  raise SystemExit("path does not exist with the required kind")
+              return target
+
+          checked_path(os.environ["CONSUMER_PROJECT_PATH"], directory=True)
+          checked_path(os.environ["CONSUMER_TEST_PATH"], directory=False)
+          def setup_digest(name: str) -> str:
+              value = os.environ.get(name, "")
+              if not value:
+                  return ""
+              path = checked_path(value, directory=False)
+              if path.suffix != ".py":
+                  raise SystemExit(f"{name} must name a Python script")
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+
+          native_test = os.environ.get("NATIVE_TEST_PATH", "")
+          native_setup = os.environ.get("NATIVE_SETUP_PATH", "")
+          if bool(native_test) != bool(native_setup):
+              raise SystemExit("native test and native setup paths must be supplied together")
+          theme_test = os.environ.get("THEME_TEST_PATH", "")
+          theme_setup = os.environ.get("THEME_SETUP_PATH", "")
+          if theme_setup and not theme_test:
+              raise SystemExit("theme setup path requires a theme test target")
+          for name in ("NATIVE_TEST_PATH", "THEME_TEST_PATH"):
+              value = os.environ.get(name, "")
+              if value:
+                  checked_path(value, directory=False)
+          setup_digests = {
+              "ARRAS_CONSUMER_SETUP_SHA256": setup_digest("CONSUMER_SETUP_PATH"),
+              "ARRAS_NATIVE_SETUP_SHA256": setup_digest("NATIVE_SETUP_PATH"),
+              "ARRAS_THEME_SETUP_SHA256": setup_digest("THEME_SETUP_PATH"),
+          }
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env:
+              env.write(f"ARRAS_WHEEL_NAME={basename}\n")
+              env.write(f"ARRAS_WHEEL_SHA256={os.environ['WHEEL_SHA256'].lower()}\n")
+              for key, digest in setup_digests.items():
+                  env.write(f"{key}={digest}\n")
+          PY
+      - name: Download wheel over HTTPS
+        env:
+          WHEEL_URL: ${{ inputs.wheel_url }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/arras-downstream"
+          curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' \
+            --retry 3 --output "$RUNNER_TEMP/arras-downstream/$ARRAS_WHEEL_NAME" "$WHEEL_URL"
+      - name: Verify wheel digest before installation
+        env:
+          WHEEL_SHA256: ${{ inputs.wheel_sha256 }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import os
+          from pathlib import Path
+
+          wheel = Path(os.environ["RUNNER_TEMP"]) / "arras-downstream" / os.environ["ARRAS_WHEEL_NAME"]
+          actual = hashlib.sha256(wheel.read_bytes()).hexdigest()
+          if actual.lower() != os.environ["WHEEL_SHA256"].lower():
+              raise SystemExit("downloaded Arras wheel SHA-256 does not match the caller's digest")
+          PY
+      - name: Create clean environment and install verified wheel
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/arras-downstream/venv"
+          "$RUNNER_TEMP/arras-downstream/venv/bin/python" -m pip install \
+            --index-url https://pypi.org/simple \
+            "$RUNNER_TEMP/arras-downstream/$ARRAS_WHEEL_NAME" pytest
+        env:
+          PIP_CONFIG_FILE: /dev/null
+          PIP_INDEX_URL: https://pypi.org/simple
+          PIP_EXTRA_INDEX_URL: ""
+          PIP_DISABLE_PIP_VERSION_CHECK: "1"
+          PIP_NO_INPUT: "1"
+      - name: Prepare supplied-wheel payload verifier
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/arras-downstream/verify-installed-wheel.py" <<'PY'
+          import hashlib
+          import os
+          import sys
+          import zipfile
+          from email.parser import BytesParser
+          from importlib import metadata
+          from pathlib import Path
+
+          wheel_path = Path(sys.argv[1])
+          wheel_digest = hashlib.sha256(wheel_path.read_bytes()).hexdigest()
+          if wheel_digest != os.environ["ARRAS_WHEEL_SHA256"].lower():
+              raise SystemExit("supplied Arras wheel changed after its SHA-256 was verified")
+          with zipfile.ZipFile(wheel_path) as wheel:
+              names = wheel.namelist()
+              metadata_names = [name for name in names if name.endswith(".dist-info/METADATA")]
+              if len(metadata_names) != 1:
+                  raise SystemExit("supplied wheel must contain one distribution METADATA file")
+              wheel_metadata = BytesParser().parsebytes(wheel.read(metadata_names[0]))
+              if wheel_metadata.get("Name", "").lower().replace("_", "-") != "arras":
+                  raise SystemExit("supplied wheel metadata is not Arras")
+              dist = metadata.distribution("arras")
+              if dist.version != wheel_metadata.get("Version"):
+                  raise SystemExit("installed Arras version differs from the supplied wheel")
+              checked = 0
+              for name in names:
+                  if name.endswith(".dist-info/RECORD") or name.endswith(".dist-info/direct_url.json"):
+                      continue
+                  installed = Path(dist.locate_file(name))
+                  if not installed.is_file() or installed.read_bytes() != wheel.read(name):
+                      raise SystemExit(f"installed Arras payload differs from supplied wheel: {name}")
+                  checked += 1
+          print(f"verified {checked} installed Arras wheel payload files; sha256={wheel_digest}")
+          PY
+      - name: Optional consumer dependency setup
+        env:
+          CONSUMER_SETUP_PATH: ${{ inputs.consumer_setup_path }}
+          CONSUMER_PROJECT_PATH: ${{ inputs.consumer_project_path }}
+          PIP_CONFIG_FILE: /dev/null
+          PIP_INDEX_URL: https://pypi.org/simple
+          PIP_EXTRA_INDEX_URL: ""
+          PIP_DISABLE_PIP_VERSION_CHECK: "1"
+          PIP_NO_INPUT: "1"
+        run: |
+          set -euo pipefail
+          if [ -n "$CONSUMER_SETUP_PATH" ]; then
+            cd "$RUNNER_TEMP"
+            "$RUNNER_TEMP/arras-downstream/venv/bin/python" -I \
+              "$GITHUB_WORKSPACE/$CONSUMER_SETUP_PATH"
+            "$RUNNER_TEMP/arras-downstream/venv/bin/python" -m pip list --format=json \
+              > "$RUNNER_TEMP/arras-downstream/consumer-packages.json"
+            python - "$RUNNER_TEMP/arras-downstream/consumer-packages.json" <<'PY'
+            import json
+            import os
+            import sys
+            from pathlib import Path
+
+            packages = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+            with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as output:
+                output.write(f"Consumer setup script: {os.environ['CONSUMER_SETUP_PATH']}\n")
+                output.write(f"Consumer setup SHA-256: {os.environ['ARRAS_CONSUMER_SETUP_SHA256']}\n")
+                output.write("Installed distributions after consumer setup:\n")
+                for package in sorted(packages, key=lambda item: item["name"].lower()):
+                    output.write(f"- {package['name']}=={package['version']}\n")
+            PY
+          else
+            echo "Consumer dependency setup script: not supplied."
+          fi
+      - name: Install consumer project without implicit dependency resolution
+        env:
+          CONSUMER_PROJECT_PATH: ${{ inputs.consumer_project_path }}
+          PIP_CONFIG_FILE: /dev/null
+          PIP_INDEX_URL: https://pypi.org/simple
+          PIP_EXTRA_INDEX_URL: ""
+          PIP_DISABLE_PIP_VERSION_CHECK: "1"
+          PIP_NO_INPUT: "1"
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/arras-downstream/venv/bin/python" -m pip install \
+            --no-deps --index-url https://pypi.org/simple \
+            "$GITHUB_WORKSPACE/$CONSUMER_PROJECT_PATH"
+      - name: Confirm supplied Arras wheel payload after consumer setup
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/arras-downstream/venv/bin/python" -I \
+            "$RUNNER_TEMP/arras-downstream/verify-installed-wheel.py" \
+            "$RUNNER_TEMP/arras-downstream/$ARRAS_WHEEL_NAME"
+      - name: Confirm imports resolve to the installed wheel outside the checkout
+        run: |
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/arras-downstream/venv/bin/python" -I - <<'PY'
+          import arras
+          from pathlib import Path
+
+          source = Path(arras.__file__).resolve()
+          workspace = Path(__import__("os").environ["GITHUB_WORKSPACE"]).resolve()
+          if workspace == source or workspace in source.parents:
+              raise SystemExit("Arras resolved from the checkout, not the installed wheel")
+          print(f"installed Arras import: {source}")
+          PY
+      - name: Memory conformance (memory profile only)
+        run: |
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/arras-downstream/venv/bin/python" -I -m arras.conformance --backend memory-store
+          "$RUNNER_TEMP/arras-downstream/venv/bin/python" -I -m arras.conformance --backend memory-replica
+      - name: Install and run explicit consumer test target
+        env:
+          CONSUMER_TEST_PATH: ${{ inputs.consumer_test_path }}
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/arras-downstream/venv/bin/python" -I -m pytest \
+            --import-mode=importlib \
+            --junitxml="$RUNNER_TEMP/arras-downstream/consumer.xml" \
+            "$GITHUB_WORKSPACE/$CONSUMER_TEST_PATH"
+          python - "$RUNNER_TEMP/arras-downstream/consumer.xml" consumer <<'PY'
+          import sys
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          stage = sys.argv[2]
+          root = ET.parse(Path(sys.argv[1])).getroot()
+          suites = [root] if root.tag == "testsuite" else list(root.iter("testsuite"))
+          if not suites:
+              raise SystemExit(f"{stage} report contains no test suites")
+          counts = {key: sum(int(suite.get(key, "0")) for suite in suites)
+                    for key in ("tests", "errors", "failures", "skipped")}
+          print(f"{stage} test report: {counts}")
+          if counts["tests"] < 1 or any(counts[key] for key in ("errors", "failures", "skipped")):
+              raise SystemExit(f"{stage} consumer target did not pass with executed tests")
+          PY
+      - name: Optional native consumer target
+        id: native
+        env:
+          NATIVE_TEST_PATH: ${{ inputs.native_test_path }}
+          NATIVE_SETUP_PATH: ${{ inputs.native_setup_path }}
+          ARRAS_REQUIRE_TRUSS: "1"
+          PIP_CONFIG_FILE: /dev/null
+          PIP_INDEX_URL: https://pypi.org/simple
+          PIP_EXTRA_INDEX_URL: ""
+          PIP_DISABLE_PIP_VERSION_CHECK: "1"
+          PIP_NO_INPUT: "1"
+        run: |
+          set -euo pipefail
+          if [ -z "$NATIVE_TEST_PATH" ]; then
+            echo "status=not_run" >> "$GITHUB_OUTPUT"
+            echo "No native consumer target was requested."
+            exit 0
+          fi
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/arras-downstream/venv/bin/python" -I \
+            "$GITHUB_WORKSPACE/$NATIVE_SETUP_PATH"
+          "$RUNNER_TEMP/arras-downstream/venv/bin/python" -m pip list --format=json \
+            > "$RUNNER_TEMP/arras-downstream/native-packages.json"
+          python - "$RUNNER_TEMP/arras-downstream/native-packages.json" <<'PY'
+          import json
+          import os
+          import sys
+          from pathlib import Path
+
+          packages = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as output:
+              output.write(f"Native setup script: {os.environ['NATIVE_SETUP_PATH']}\n")
+              output.write(f"Native setup SHA-256: {os.environ['ARRAS_NATIVE_SETUP_SHA256']}\n")
+              output.write("Installed distributions after native setup:\n")
+              for package in sorted(packages, key=lambda item: item["name"].lower()):
+                  output.write(f"- {package['name']}=={package['version']}\n")
+          PY
+          "$RUNNER_TEMP/arras-downstream/venv/bin/python" -I \
+            "$RUNNER_TEMP/arras-downstream/verify-installed-wheel.py" \
+            "$RUNNER_TEMP/arras-downstream/$ARRAS_WHEEL_NAME"
+          "$RUNNER_TEMP/arras-downstream/venv/bin/python" -I -m pytest \
+            --import-mode=importlib \
+            --junitxml="$RUNNER_TEMP/arras-downstream/native.xml" \
+            "$GITHUB_WORKSPACE/$NATIVE_TEST_PATH"
+          python - "$RUNNER_TEMP/arras-downstream/native.xml" native <<'PY'
+          import sys
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          stage = sys.argv[2]
+          root = ET.parse(Path(sys.argv[1])).getroot()
+          suites = [root] if root.tag == "testsuite" else list(root.iter("testsuite"))
+          if not suites:
+              raise SystemExit(f"{stage} report contains no test suites")
+          counts = {key: sum(int(suite.get(key, "0")) for suite in suites)
+                    for key in ("tests", "errors", "failures", "skipped")}
+          print(f"{stage} test report: {counts}")
+          if counts["tests"] < 1 or any(counts[key] for key in ("errors", "failures", "skipped")):
+              raise SystemExit(f"{stage} consumer target did not pass with executed tests")
+          PY
+          echo "status=consumer-target-passed" >> "$GITHUB_OUTPUT"
+      - name: Optional theme consumer target
+        id: theme
+        env:
+          THEME_TEST_PATH: ${{ inputs.theme_test_path }}
+          THEME_SETUP_PATH: ${{ inputs.theme_setup_path }}
+          PIP_CONFIG_FILE: /dev/null
+          PIP_INDEX_URL: https://pypi.org/simple
+          PIP_EXTRA_INDEX_URL: ""
+          PIP_DISABLE_PIP_VERSION_CHECK: "1"
+          PIP_NO_INPUT: "1"
+        run: |
+          set -euo pipefail
+          if [ -z "$THEME_TEST_PATH" ]; then
+            echo "status=not_run" >> "$GITHUB_OUTPUT"
+            echo "No theme consumer target was requested."
+            exit 0
+          fi
+          cd "$RUNNER_TEMP"
+          if [ -n "$THEME_SETUP_PATH" ]; then
+            "$RUNNER_TEMP/arras-downstream/venv/bin/python" -I \
+              "$GITHUB_WORKSPACE/$THEME_SETUP_PATH"
+            "$RUNNER_TEMP/arras-downstream/venv/bin/python" -m pip list --format=json \
+              > "$RUNNER_TEMP/arras-downstream/theme-packages.json"
+            python - "$RUNNER_TEMP/arras-downstream/theme-packages.json" <<'PY'
+            import json
+            import os
+            import sys
+            from pathlib import Path
+
+            packages = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+            with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as output:
+                output.write(f"Theme setup script: {os.environ['THEME_SETUP_PATH']}\n")
+                output.write(f"Theme setup SHA-256: {os.environ['ARRAS_THEME_SETUP_SHA256']}\n")
+                output.write("Installed distributions after theme setup:\n")
+                for package in sorted(packages, key=lambda item: item["name"].lower()):
+                    output.write(f"- {package['name']}=={package['version']}\n")
+            PY
+          fi
+          if [ -n "$THEME_SETUP_PATH" ]; then
+            "$RUNNER_TEMP/arras-downstream/venv/bin/python" -I \
+              "$RUNNER_TEMP/arras-downstream/verify-installed-wheel.py" \
+              "$RUNNER_TEMP/arras-downstream/$ARRAS_WHEEL_NAME"
+          fi
+          "$RUNNER_TEMP/arras-downstream/venv/bin/python" -I -m pytest \
+            --import-mode=importlib \
+            --junitxml="$RUNNER_TEMP/arras-downstream/theme.xml" \
+            "$GITHUB_WORKSPACE/$THEME_TEST_PATH"
+          python - "$RUNNER_TEMP/arras-downstream/theme.xml" theme <<'PY'
+          import sys
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          stage = sys.argv[2]
+          root = ET.parse(Path(sys.argv[1])).getroot()
+          suites = [root] if root.tag == "testsuite" else list(root.iter("testsuite"))
+          if not suites:
+              raise SystemExit(f"{stage} report contains no test suites")
+          counts = {key: sum(int(suite.get(key, "0")) for suite in suites)
+                    for key in ("tests", "errors", "failures", "skipped")}
+          print(f"{stage} test report: {counts}")
+          if counts["tests"] < 1 or any(counts[key] for key in ("errors", "failures", "skipped")):
+              raise SystemExit(f"{stage} consumer target did not pass with executed tests")
+          PY
+          echo "status=consumer-target-passed" >> "$GITHUB_OUTPUT"

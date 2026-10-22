@@ -37,9 +37,9 @@ ddx:
 
 ## Purpose
 
-Defines the stdio MCP (Model Context Protocol, Anthropic's open protocol for agent tools) server that exposes the ontology interface to an agent host, so praxis (which consumes MCP through a local stdio adapter only) and any other MCP client can read and change the ontology with no Python import. It is a binding of the library (CONTRACT-001, CONTRACT-003): it adds no operation, no access decision and no state.
+Defines the stdio MCP (Model Context Protocol, Anthropic's open protocol for agent tools) server that exposes the ontology interface to an agent host, so an MCP client can read and change the ontology through its local stdio adapter with no Python import. It is a binding of the library (CONTRACT-001, CONTRACT-003): it adds no operation, no access decision and no state.
 
-Terms. stdio is the standard input and output streams of a process, which carry the MCP frames. praxis is the Databricks app that embeds Arras. An ADR is an architecture decision record; ADR-016 and ADR-017 are Arras's, and `praxis ADR-023` and `praxis ADR-024` are decision records of praxis's own repository. A backend is a named store with the roles reader and provider (CONTRACT-004). UMF is the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions. JSON Schema is the JSON vocabulary for describing the shape of JSON data.
+Terms. stdio is the standard input and output streams of a process, which carry the MCP frames. An ADR is an architecture decision record; ADR-016 defines this binding and ADR-017 governs person-token backend access. A backend is a named store with the roles reader and provider (CONTRACT-004). UMF is the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions. JSON Schema is the JSON vocabulary for describing the shape of JSON data.
 
 ## Scope and Boundaries
 
@@ -84,15 +84,107 @@ The set of configured backend names (`expected`) is the names that have an endpo
 | `validate_action` | `{action: string, inputs: object}` | The `Validation` of CONTRACT-003: violations, failed preconditions and resolved effects, nothing written. |
 | `<module>_<snake_action>`, one per declared action | `{inputs: object, idempotency_key?: string}` or, for a batch, `{items: object[], atomic?: bool, stop_on_error?: bool, idempotency_key?: string}` | A `Receipt` or a `BatchReceipt` (CONTRACT-003); a receipt carries its `group`, the id of the atomic group the change committed in. |
 
-- Every declared action has its own tool, named from its module-qualified name in snake case (`catalog_set_coverage` for `catalog.SetCoverage`). A name that collides is disambiguated by suffix and `describe` lists the mapping; a call is routed by the mapping the last `tools/list` gave out, so a name never comes to mean another action between listing and call, and a status or revision change sends `tools/list_changed` (checked after a call or a `ping`, at most every few seconds). Without a usable token a call to any tool but `describe` is `refused`, whatever its name. No generic `invoke` tool exists, so the host can classify and approve each tool by name (`praxis ADR-024`).
+- Every declared action has its own tool, named from its module-qualified name in snake case (`catalog_set_coverage` for `catalog.SetCoverage`). A name that collides is disambiguated by suffix and `describe` lists the mapping; a call is routed by the mapping the last `tools/list` gave out, so a name never comes to mean another action between listing and call, and a status or revision change sends `tools/list_changed` (checked after a call or a `ping`, at most every few seconds). Without a usable token a call to any tool but `describe` is `refused`, whatever its name. No generic `invoke` tool exists, so the host can classify and approve each tool by name under its own operator policy.
 - An action tool's input schema is JSON Schema derived from the action's UMF input types: a string, a boolean, an integer (as a JSON integer when it fits 53 bits, otherwise a decimal string), a decimal (a decimal string), a timestamp (RFC 3339 text), binary (base64 text), a list as an array. The converter (`arras.inputs.convert_inputs`, shared with CONTRACT-009) takes exactly these text forms: an integer as ASCII digits with an optional sign; a decimal as digits with an optional sign, point and exponent, never `NaN` or `Infinity`; a timestamp as an RFC 3339 date-time with a calendar date, in-range hour, minute and second, and a required offset, accepting `t`, `z`, a space for `T` and omitted seconds; binary as padded base64. Anything else is a `type` violation at the input's path. Required inputs are `required`. Enumerations and bounds are carried when UMF declares them. The `batch` form (`items`, 1 to 100) is declared in the same schema as an alternative to `inputs`.
 - `query` says in its description that the statement is Weft SQL and carries one worked example drawn from the registry.
 
-**Annotations.** Arras sets `readOnlyHint` on `describe`, `query` and `validate_action`. For an action tool it sets `destructiveHint` (and only ever to true) when any effect is `delete` or `unlink`, or the action has a handler, `idempotentHint` always (an action is idempotent under a key) and `openWorldHint` false. The host's operator catalog decides tool class and reversibility; annotations only tighten (praxis ADR-024).
+**Annotations.** Arras sets `readOnlyHint` on `describe`, `query` and `validate_action`. For an action tool it sets `destructiveHint` (and only ever to true) when any effect is `delete` or `unlink`, or the action has a handler, `idempotentHint` always (an action is idempotent under a key) and `openWorldHint` false. The host's operator catalog decides tool class and reversibility; these protocol annotations can only tighten that classification.
 
 **Answers.** An answer is compact JSON: rows as objects, no echo of the request, relationship columns as arrays of keys, `freshness` as `{backend, as_of: {value, at}, consistency}`, the library's `Freshness` and `Position` (CONTRACT-001), so an MCP result equals the library's. A result whose body is larger than 50 KB is cut at a row boundary and returned `truncated`; the caller continues with a keyset predicate in its own statement (`WHERE x.key > :last`). A single row beyond that is returned whole. The structured copy of the body is not counted. Integers beyond 53 bits and binary values go out as they come in: decimal text and base64. Nothing is returned that the user's token could not read.
 
 **Errors.** A refusal is an MCP tool result with `isError: true` and a structured body, not a protocol error: `{code, message, hint}` where `code` is `invalid`, `refused`, `unavailable`, `unsupported` or `not_yet_current` (CONTRACT-001), or `precondition_failed` or `conflict` (CONTRACT-003) and `hint` says what to do next in a sentence an agent can act on (for example the closest column name when a column is unknown, or "call validate_action first" for a failed precondition). A violation carries its field or precondition and the value that failed. Protocol errors are for malformed MCP requests only.
+
+### Distribution configuration, aliases and exposed tool names — EX-02
+
+The `DistributionConfig` value and callable `arras.mcp.launch` are defined by
+CONTRACT-005. Default construction preserves `serverInfo.name = "arras"`, the
+existing tool spellings and the canonical `ARRAS_*` environment. The process uses
+`Config.distribution.mcp_server_name` for serverInfo. Existing
+`serverInfo.version` semantics are unchanged; distribution configuration supplies
+no version override. Presentation never determines the token's user, groups, backend credentials or
+an action's qualified identity.
+
+Committed developer configuration accepts only these additional tables/keys:
+
+```toml
+[distribution]
+mcp_server_name = "Example Distribution"
+mcp_tool_prefix = "example"
+
+[distribution.brand]
+name = "Example Distribution"
+title = "Example Workspace"
+wordmark = "Example"
+tagline = "A generic downstream interface"
+logo = "theme"
+
+[distribution.telemetry]
+attribute_namespace = "example"
+log_prefix = "example"
+event_prefix = "example"
+# service_name = "example-service"  # requires the explicit host provider factory
+```
+
+All fields are optional. Missing fields use the launcher's immutable defaults;
+`default.toml` overrides those defaults and `<env>.toml` overrides `default.toml`,
+merging distribution/brand/telemetry tables by field. Telemetry values and the
+post-validation provider factory obey CONTRACT-005/008 and ADR-018/019. Existing ops ownership and file
+precedence remain unchanged. Brand optional fields are omitted rather than written
+as TOML null. An unknown distribution/brand/telemetry key, invalid type/value, or a loaded
+`distribution.env_prefix` refuses startup. This cut adds no environment key for
+presentation fields; the existing reader owns these TOML tables.
+
+**Environment aliases.** For an explicitly selected prefix `P`, each recognized
+`ARRAS_<suffix>` key/pattern has the optional spelling `P_<suffix>`. Read alias
+and canonical namespaces once, before selecting files or building a token source.
+A nonblank alias wins per key over the canonical fallback, except credential
+ambiguity MUST refuse as below. Keep original key spellings for diagnostic
+provenance; normalize into the existing schema, not a second loader. A misspelled
+key in either selected namespace refuses startup. The existing explicitly ignored
+admin/test prefixes remain ignored with their corresponding selected-prefix
+spellings. Unrelated environment namespaces are not examined. With `P=ARRAS`
+there is one namespace, not two copies. An empty/whitespace-only key remains unset
+as in the existing loader.
+
+Before alias precedence, examine every nonblank `TOKEN` and `TOKEN_FILE` in both
+selected namespaces. Any token plus any token-file selection refuses, even when
+one would otherwise be shadowed. Two different normalized token values refuse;
+two different normalized token-file path strings refuse. Identical duplicates
+of the same credential kind may be accepted. Normalization is the existing
+outer-whitespace trim; do not read token files or resolve paths to decide that
+conflicting strings are equivalent. Report conflicting key names, never token,
+path, source content or callback exception text. No fallback or conflict policy
+may join one person's credential to another credential source. Existing token
+refresh and claim selection continue after this single check.
+
+**Tool mapping.** Let `n` be the existing fixed/action tool name after the current
+action collision-suffix rule. With empty prefix, expose `n`; otherwise expose
+`<prefix>_<n>`. This mapping is injective and covers fixed tools, generated action
+tools, tool names returned by describe/validation metadata and dispatch lookup.
+An exposed name is at most 128 ASCII characters; this is an Arras bound, not a
+claim about every MCP implementation. Refuse invalid prefix, an overlong name or
+a duplicate exposed mapping before emitting an affected tools list or accepting
+its calls; never truncate or silently replace an action. At startup inspect all
+actions currently visible to the process's person before serving the first frame.
+A degraded start retains its existing availability behavior; it MUST NOT report
+unreadable modules as collision-checked or use an installer to enumerate them.
+Later registry changes are checked on refresh before their tools become callable.
+
+When configured with a nonempty prefix, only the exposed names dispatch; bare
+fixed/action names and unknown prefixed names do not obtain an alias fallback.
+`validate_action` still takes the canonical qualified `action` argument, and
+receipts, error codes and audit attribution keep that qualified identity. Prefix
+selection changes no schema, inputs, access, action collision ordering or
+idempotency scope. A protocol-invalid unknown tool has no write effects.
+
+Validation MUST demonstrate prefixed initialize/list/describe/query/validate and
+actual action invocation, all returned tool references, changed-registry names,
+collisions/bounds, tokenless/degraded behavior and refusal of bare names. Cover
+alias/fallback file selection and endpoints, unknown keys in both namespaces,
+blank handling and every TOKEN/TOKEN_FILE conflict combination with zero token
+reads/backend effects and scrubbed errors. Default tests remain positive controls.
+Opt-in exposure/alias configuration is additive under MCP v2; removing default
+names or changing canonical action identity remains breaking.
 
 ## Precedence and Compatibility
 
@@ -102,6 +194,17 @@ The set of configured backend names (`expected`) is the names that have an endpo
 - Deprecation: as CONTRACT-001.
 
 ## Error Semantics
+
+A typed `arras.policy.PolicyRefused` (CONTRACT-005) is still a `refused` tool
+result with the existing hint/message and canonical native `no_access` meaning.
+It additionally carries `policy_code`, the validated stable identifier chosen by
+the host policy (or constant `policy_error` for a malformed/throwing callback).
+Ordinary backend refusals do not acquire this field. No policy evidence, inputs,
+annotations, credential values or exception text is serialized. This optional
+field is additive; it does not create a protocol error or rename an error code.
+Tests must pass an actual policy-wrapped backend through MCP, preserve the caller
+identity, and prove denial applies nothing while the safe code reaches the
+structured result. A policy allow cannot bypass a native grant refusal.
 
 | Condition | Outcome | Retry | Recovery |
 |-----------|---------|-------|----------|
@@ -122,4 +225,4 @@ The set of configured backend names (`expected`) is the names that have an endpo
 
 ## Non-Normative Notes
 
-The host consumes MCP through a local stdio adapter only (`praxis ADR-023`) and takes tool class and reversibility from its operator catalog per tool name, failing closed (`praxis ADR-024`); that is why every action is its own tool. A per-session process is the simplest way to carry one person's token: it has no multi-user state to get wrong. Open: how praxis hands a refreshed token to a running process (a file the process re-reads is proposed), and the token claim that names the user.
+The host consumes this binding through a local stdio adapter and classifies tool use and reversibility by tool name under its own fail-closed operator policy; each action is therefore exposed as its own tool. A per-session process carries one person's token without sharing multi-user state (ADR-016/017). The token-file reread and user-claim selection rules above define supported refresh mechanisms; the embedding host owns credential delivery and deployment wiring.

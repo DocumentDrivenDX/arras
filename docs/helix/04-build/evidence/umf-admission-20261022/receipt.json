@@ -1,0 +1,544 @@
+{
+  "cases": [
+    {
+      "action_count_first_module": 0,
+      "actions_preserved": true,
+      "complete": true,
+      "diagnostics": [],
+      "document_type": "Document",
+      "name": "core-only",
+      "round_trip_preserves_document": true,
+      "valid": true
+    },
+    {
+      "action_count_first_module": 0,
+      "actions_preserved": true,
+      "complete": false,
+      "diagnostics": [
+        {
+          "code": "UNKNOWN_EXTENSION",
+          "message": "Exact extension version unavailable; content retained",
+          "path": "/vocabularies/umf.ddd",
+          "severity": "warning"
+        }
+      ],
+      "document_type": "Document",
+      "name": "ddd-unregistered-0.1.0",
+      "round_trip_preserves_document": true,
+      "valid": true
+    },
+    {
+      "action_count_first_module": 0,
+      "actions_preserved": true,
+      "complete": false,
+      "diagnostics": [
+        {
+          "code": "UNKNOWN_EXTENSION",
+          "message": "Exact extension version unavailable; content retained",
+          "path": "/vocabularies/arras.view",
+          "severity": "warning"
+        }
+      ],
+      "document_type": "Document",
+      "name": "arras.view-unregistered-0.1.0",
+      "round_trip_preserves_document": true,
+      "valid": true
+    },
+    {
+      "action_count_first_module": 0,
+      "actions_preserved": true,
+      "complete": false,
+      "diagnostics": [
+        {
+          "code": "UNKNOWN_EXTENSION",
+          "message": "Exact extension version unavailable; content retained",
+          "path": "/vocabularies/umf.ddd",
+          "severity": "warning"
+        }
+      ],
+      "document_type": "Document",
+      "name": "unknown-vocabulary-version",
+      "round_trip_preserves_document": true,
+      "valid": true
+    },
+    {
+      "name": "unknown-core-version",
+      "read_error": "ValidationError",
+      "read_error_message": "1 validation error for Document\n  Value error, Unsupported UMF core version: 0.11.0 [type=value_error, input_value={'umf': '0.11.0', 'id': '...ons': {}, 'modules': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/value_error"
+    },
+    {
+      "action_count_first_module": 0,
+      "actions_preserved": true,
+      "complete": false,
+      "diagnostics": [
+        {
+          "code": "UNKNOWN_EXTENSION",
+          "message": "Exact extension version unavailable; content retained",
+          "path": "/vocabularies/acme.catalog",
+          "severity": "warning"
+        }
+      ],
+      "document_type": "Document",
+      "name": "custom-extension-unregistered",
+      "round_trip_preserves_document": true,
+      "valid": true
+    },
+    {
+      "action_count_first_module": 0,
+      "actions_preserved": true,
+      "complete": true,
+      "diagnostics": [],
+      "document_type": "Document",
+      "name": "custom-extension-registered-with-semantics",
+      "round_trip_preserves_document": true,
+      "valid": true
+    },
+    {
+      "action_count_first_module": 0,
+      "actions_preserved": true,
+      "complete": false,
+      "diagnostics": [
+        {
+          "code": "SEMANTICS_UNCHECKED",
+          "message": "Structure checked; semantics not validated",
+          "path": "/modules/0/extensions/acme.catalog",
+          "severity": "warning"
+        }
+      ],
+      "document_type": "Document",
+      "name": "custom-extension-registered-without-semantics",
+      "round_trip_preserves_document": true,
+      "valid": true
+    },
+    {
+      "action_count_first_module": 0,
+      "actions_preserved": true,
+      "complete": false,
+      "diagnostics": [
+        {
+          "code": "EXTENSION_STRUCTURE",
+          "message": "3 is not of type 'string'",
+          "path": "/modules/0/extensions/acme.catalog/title",
+          "severity": "error"
+        }
+      ],
+      "document_type": "Document",
+      "name": "custom-extension-registered-schema-invalid",
+      "round_trip_preserves_document": true,
+      "valid": false
+    },
+    {
+      "action_count_first_module": 6,
+      "actions_preserved": true,
+      "complete": false,
+      "diagnostics": [
+        {
+          "code": "UNKNOWN_EXTENSION",
+          "message": "Exact extension version unavailable; content retained",
+          "path": "/vocabularies/umf.ddd",
+          "severity": "warning"
+        },
+        {
+          "code": "UNKNOWN_CORE_FIELD",
+          "message": "Field retained without interpretation",
+          "path": "/modules/0/actions",
+          "severity": "warning"
+        }
+      ],
+      "document_type": "Document",
+      "name": "arras-legacy-current-action-fixture",
+      "round_trip_preserves_document": true,
+      "valid": true
+    },
+    {
+      "complete": false,
+      "diagnostics": [
+        {
+          "code": "UNKNOWN_EXTENSION",
+          "message": "Exact extension version unavailable; content retained",
+          "path": "/vocabularies/future",
+          "severity": "warning"
+        }
+      ],
+      "independent_expected": {
+        "complete": false,
+        "diagnostics": [
+          {
+            "code": "UNKNOWN_EXTENSION",
+            "message": "Exact extension version unavailable; content retained",
+            "path": "/vocabularies/future",
+            "severity": "warning"
+          }
+        ],
+        "valid": true
+      },
+      "matches_independent_expected": true,
+      "name": "umf-current-conformance:keys/primary-and-alternate",
+      "read_document": {
+        "action_count_first_module": 0,
+        "actions_preserved": true,
+        "complete": false,
+        "diagnostics": [
+          {
+            "code": "UNKNOWN_EXTENSION",
+            "message": "Exact extension version unavailable; content retained",
+            "path": "/vocabularies/future",
+            "severity": "warning"
+          }
+        ],
+        "document_type": "Document",
+        "name": "umf-current-conformance:keys/primary-and-alternate:read-document",
+        "round_trip_preserves_document": true,
+        "valid": true
+      },
+      "source_case_id": "keys/primary-and-alternate",
+      "valid": true,
+      "validation_input": "raw-json-value"
+    },
+    {
+      "complete": true,
+      "diagnostics": [],
+      "independent_expected": {
+        "complete": true,
+        "diagnostics": [],
+        "valid": true
+      },
+      "matches_independent_expected": true,
+      "name": "umf-current-conformance:schema-properties/valid",
+      "read_document": {
+        "action_count_first_module": 0,
+        "actions_preserved": true,
+        "complete": true,
+        "diagnostics": [],
+        "document_type": "Document",
+        "name": "umf-current-conformance:schema-properties/valid:read-document",
+        "round_trip_preserves_document": true,
+        "valid": true
+      },
+      "source_case_id": "schema-properties/valid",
+      "valid": true,
+      "validation_input": "raw-json-value"
+    },
+    {
+      "complete": false,
+      "diagnostics": [
+        {
+          "code": "CORE_SCHEMA_PROPERTIES",
+          "message": "Minimum exceeds maximum",
+          "path": "/modules/0/elements/2/facets/length",
+          "severity": "error"
+        },
+        {
+          "code": "CORE_SCHEMA_PROPERTIES",
+          "message": "Literal length outside bounds",
+          "path": "/modules/0/elements/2/examples/0",
+          "severity": "error"
+        },
+        {
+          "code": "CORE_SCHEMA_PROPERTIES",
+          "message": "Literal length outside bounds",
+          "path": "/modules/0/elements/2/default/value",
+          "severity": "error"
+        }
+      ],
+      "independent_expected": {
+        "complete": false,
+        "diagnostics": [
+          {
+            "code": "CORE_SCHEMA_PROPERTIES",
+            "message": "Minimum exceeds maximum",
+            "path": "/modules/0/elements/2/facets/length",
+            "severity": "error"
+          },
+          {
+            "code": "CORE_SCHEMA_PROPERTIES",
+            "message": "Literal length outside bounds",
+            "path": "/modules/0/elements/2/examples/0",
+            "severity": "error"
+          },
+          {
+            "code": "CORE_SCHEMA_PROPERTIES",
+            "message": "Literal length outside bounds",
+            "path": "/modules/0/elements/2/default/value",
+            "severity": "error"
+          }
+        ],
+        "valid": false
+      },
+      "matches_independent_expected": true,
+      "name": "umf-current-conformance:schema-properties/inverted-length",
+      "read_document": {
+        "action_count_first_module": 0,
+        "actions_preserved": true,
+        "complete": false,
+        "diagnostics": [
+          {
+            "code": "CORE_SCHEMA_PROPERTIES",
+            "message": "Minimum exceeds maximum",
+            "path": "/modules/0/elements/2/facets/length",
+            "severity": "error"
+          },
+          {
+            "code": "CORE_SCHEMA_PROPERTIES",
+            "message": "Literal length outside bounds",
+            "path": "/modules/0/elements/2/examples/0",
+            "severity": "error"
+          },
+          {
+            "code": "CORE_SCHEMA_PROPERTIES",
+            "message": "Literal length outside bounds",
+            "path": "/modules/0/elements/2/default/value",
+            "severity": "error"
+          }
+        ],
+        "document_type": "Document",
+        "name": "umf-current-conformance:schema-properties/inverted-length:read-document",
+        "round_trip_preserves_document": true,
+        "valid": false
+      },
+      "source_case_id": "schema-properties/inverted-length",
+      "valid": false,
+      "validation_input": "raw-json-value"
+    },
+    {
+      "action_count_first_module": 0,
+      "actions_preserved": true,
+      "complete": true,
+      "derivation": [
+        "deep-copy keys/primary-and-alternate document",
+        "remove only top-level vocabularies.future declaration",
+        "remove only top-level extensions.future payload"
+      ],
+      "diagnostics": [],
+      "document_type": "Document",
+      "identity_structure": {
+        "field_ids": [
+          "id",
+          "number"
+        ],
+        "keys": [
+          {
+            "field_refs": [
+              {
+                "element": "id",
+                "module": "m"
+              }
+            ],
+            "id": "pk",
+            "primary": true
+          },
+          {
+            "field_refs": [
+              {
+                "element": "number",
+                "module": "m"
+              }
+            ],
+            "id": "alternate",
+            "primary": false
+          }
+        ],
+        "module_count": 1,
+        "record_ids": [
+          "Order"
+        ]
+      },
+      "name": "derived-core-only-record-key-field",
+      "round_trip_preserves_document": true,
+      "source_case_id": "keys/primary-and-alternate",
+      "source_conformance_file": "/Users/erik/.codex/worktrees/1243/umf/fixtures/metamodel/current-conformance.json",
+      "source_conformance_file_sha256": "bb008a98b8448050748e65f867e7863475ccad9501a5b9229ae9e6d336691544",
+      "source_document_sha256": "fe41c73a958fb037c40da37509412312579569ac23a75c9a6f23fa06770b93b1",
+      "source_independent_expected": {
+        "complete": false,
+        "diagnostics": [
+          {
+            "code": "UNKNOWN_EXTENSION",
+            "message": "Exact extension version unavailable; content retained",
+            "path": "/vocabularies/future",
+            "severity": "warning"
+          }
+        ],
+        "valid": true
+      },
+      "valid": true
+    },
+    {
+      "action_count": 1,
+      "action_count_first_module": 0,
+      "actions_preserved": true,
+      "canonical_actions_preserved": true,
+      "complete": false,
+      "diagnostics": [
+        {
+          "code": "UNKNOWN_EXTENSION",
+          "message": "Exact extension version unavailable; content retained",
+          "path": "/vocabularies/umf.actions",
+          "severity": "warning"
+        }
+      ],
+      "document_type": "Document",
+      "fixture_path": "/Users/erik/.codex/worktrees/1243/umf/docs/helix/03-test/fixtures/bulk-update/model.json",
+      "fixture_sha256": "1b78acfa477a19da0bad939c47e77f58bd103fd118a7d609bae503def1879bf1",
+      "name": "official-umf.actions-fixture",
+      "round_trip_preserves_document": true,
+      "valid": true
+    }
+  ],
+  "current_conformance_corpus_comparison": {
+    "case_count": 139,
+    "match_count": 139,
+    "mismatch_count": 0,
+    "mismatches": []
+  },
+  "current_conformance_read_document_admission": {
+    "admitted_count": 122,
+    "error_types": [
+      "ValidationError"
+    ],
+    "rejected_case_ids": [
+      "schema-properties/unknown-default-behavior",
+      "keys/empty-keys",
+      "keys/empty-components",
+      "keys/missing-id",
+      "keys/missing-name",
+      "keys/empty-name",
+      "keys/string-primary",
+      "keys/non-record-keys",
+      "keys/non-record-members",
+      "keys/missing-members",
+      "relationships/missing-target-key",
+      "relationships/invalid-max--1",
+      "relationships/invalid-max-0",
+      "relationships/invalid-max-1.5",
+      "relationships/invalid-max-many",
+      "relationships/empty-source",
+      "structure/current-missing-vocabularies"
+    ],
+    "rejected_count": 17
+  },
+  "fixtures": {
+    "arras_current_action_count": 6,
+    "arras_current_action_fixture_path": "/Users/erik/Projects/arras/src/arras/conformance/module.umf.json",
+    "arras_current_action_fixture_sha256": "2aab3c0e8d8ba9a6d1e6bad6d852e1586bb1d3bf3b6aa7937871bed823aad289",
+    "current_conformance_case_count": 139,
+    "current_conformance_path": "/Users/erik/.codex/worktrees/1243/umf/fixtures/metamodel/current-conformance.json",
+    "current_conformance_profile": "umf.current-conformance/1",
+    "current_conformance_sha256": "bb008a98b8448050748e65f867e7863475ccad9501a5b9229ae9e6d336691544",
+    "official_actions_fixture_action_count": 1,
+    "official_actions_fixture_path": "/Users/erik/.codex/worktrees/1243/umf/docs/helix/03-test/fixtures/bulk-update/model.json",
+    "official_actions_fixture_sha256": "1b78acfa477a19da0bad939c47e77f58bd103fd118a7d609bae503def1879bf1"
+  },
+  "installation": {
+    "all_distributions": [
+      "annotated-types==0.8.0",
+      "attrs==26.1.0",
+      "jsonschema-specifications==2025.9.1",
+      "jsonschema==4.26.0",
+      "mini-racer==0.14.1",
+      "psycopg-binary==3.2.13",
+      "psycopg==3.2.13",
+      "pydantic==2.14.1",
+      "pydantic_core==2.50.1",
+      "referencing==0.37.0",
+      "rpds-py==2026.9.1",
+      "ruamel.yaml==0.19.1",
+      "typing-inspection==0.4.4",
+      "typing_extensions==4.16.0",
+      "umf-codegen==0.1.0a3",
+      "umf-core==0.10.0",
+      "umf_access==0.1.0.dev6",
+      "weft-sql==0.4.49"
+    ],
+    "base_prefix": "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none",
+    "direct_url": {
+      "archive_info": {},
+      "url": "file:///private/tmp/umf-u123-published-download/umf_core-0.10.0-py3-none-any.whl"
+    },
+    "distribution": "umf-core",
+    "implementation": "CPython",
+    "import_file": "/private/tmp/umf-u123-postrelease-venv/lib/python3.11/site-packages/umf/__init__.py",
+    "installed_wheel_record_verified_before_umf_import": true,
+    "isolated_venv": true,
+    "python": "3.11.17",
+    "requirements_installed": {
+      "annotated-types": "0.8.0",
+      "attrs": "26.1.0",
+      "jsonschema": "4.26.0",
+      "jsonschema-specifications": "2025.9.1",
+      "pydantic": "2.14.1",
+      "pydantic_core": "2.50.1",
+      "referencing": "0.37.0",
+      "rpds-py": "2026.9.1",
+      "ruamel.yaml": "0.19.1",
+      "typing-inspection": "0.4.4",
+      "typing_extensions": "4.16.0"
+    },
+    "venv": "/private/tmp/umf-u123-postrelease-venv",
+    "venv_reused_read_only_this_probe": true,
+    "version": "0.10.0",
+    "wheel_record_file_count": 25,
+    "wheel_record_mismatch_paths": []
+  },
+  "probe": "arras-umf-admission-installed-wheel-probe/1",
+  "public_api": {
+    "Diagnostic": "(code: str, path: str, message: str, severity: str = 'error') -> None",
+    "Extension": "(id: str, version: str, scopes: tuple[str, ...], schema: dict | bool, semantics: collections.abc.Callable[[object, dict], list[umf.registry.Diagnostic]] | None = None) -> None",
+    "Registry": "()",
+    "Registry.get": "(self, id: str, version: str)",
+    "Registry.register": "(self, extension: umf.registry.Extension) -> None",
+    "Validation_fields": [
+      "valid",
+      "complete",
+      "diagnostics"
+    ],
+    "__all__": [
+      "CoreItemTypeReference",
+      "CoreSemanticTypeReference",
+      "Diagnostic",
+      "Document",
+      "Element",
+      "Extension",
+      "Module",
+      "Reference",
+      "Registry",
+      "Validation",
+      "Vocabulary",
+      "core_schema",
+      "current_core_version",
+      "dataset_source_schema",
+      "domain_pack_schema",
+      "read_document",
+      "read_json_value",
+      "schema_validator",
+      "semantic_type_reference_schema",
+      "validate_document",
+      "write_document",
+      "write_json_value"
+    ],
+    "read_document": "(text: str, format: str = 'json') -> umf.models.Document",
+    "specialized_projection_or_action_plan_exports": [],
+    "validate_document": "(value, registry: umf.registry.Registry | None = None) -> umf.registry.Validation",
+    "write_document": "(document: umf.models.Document, format: str = 'json') -> str"
+  },
+  "supported_a2_recommendation": {
+    "actions_boundary": "The official umf.actions fixture round-trips as valid/incomplete with UNKNOWN_EXTENSION; Arras legacy module.actions round-trips as valid/incomplete with UNKNOWN_CORE_FIELD. This probe establishes preservation only, not action parsing, authorization, planning, or execution.",
+    "execution_gate": "Require both valid and complete before execution; valid alone includes retained unknown declarations and is not evidence their meaning was interpreted.",
+    "extension_boundary": "Supply only explicitly authoritative exact-version Registry entries for consumer vocabularies; the installed wheel does not register umf.ddd, arras.view, or umf.actions.",
+    "facet_boundary": "The tested core conformance vectors validate field facet definitions and their declared default/example literals. This is metadata validation evidence, not a claim of runtime instance enforcement.",
+    "not_established": [
+      "DDD or arras.view semantic support by the released core wheel",
+      "UMF action plan/execution APIs",
+      "native adapter behavior"
+    ],
+    "use_official_core": "Use read_document and validate_document for core 0.10.0 parsing and core structure/metadata constraints; retain the independent 139-case conformance gate."
+  },
+  "wheel": {
+    "expected_sha256": "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9",
+    "github_asset_id": 664083471,
+    "path": "/private/tmp/umf-u123-published-download/umf_core-0.10.0-py3-none-any.whl",
+    "release": "umf-v0.5.4",
+    "sha256": "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9",
+    "size_bytes": 71258
+  }
+}

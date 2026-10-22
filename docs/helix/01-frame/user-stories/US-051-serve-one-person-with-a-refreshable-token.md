@@ -71,7 +71,7 @@ One MCP (Model Context Protocol, Anthropic's open protocol for agent tools) serv
 - **Feature Spec**: FEAT-009
 - **Feature Requirements**: MCP-03
 - **PRD Requirements**: FR-45, FR-18, FR-28
-- **External**: [CONTRACT-007](../../02-design/contracts/CONTRACT-007-mcp-binding.md), Launch; [ADR-017](../../02-design/adr/ADR-017-backends-are-reached-with-the-users-own-token.md); open with praxis (the Databricks app that embeds Arras): how a refreshed token reaches the process.
+- **External**: [CONTRACT-007](../../02-design/contracts/CONTRACT-007-mcp-binding.md), Launch; [ADR-017](../../02-design/adr/ADR-017-backends-are-reached-with-the-users-own-token.md); open with the embedding host: how a refreshed token reaches the process.
 
 ## Out of Scope
 

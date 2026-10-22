@@ -45,6 +45,16 @@ from arras.searchplan import TextMatch
 from arras.types import Principal, Revision, Statement
 from arras.umf import parse_module
 
+from . import _checks
+
+_Fail = _checks.Failure
+_check_capabilities = _checks.check_capabilities
+_check_refs = _checks.check_refs
+_check_row_len = _checks.check_row_len
+_check_rows = _checks.check_rows
+_check_weft = _checks.check_weft
+_eq = _checks.eq
+
 KNOWN_TAGS = frozenset({"store", "reader", "reader-only", "host-specific"})
 SETUP_OPS = frozenset({"grant", "install", "seed", "seed_many", "sync", "outage", "expire"})
 STEP_OPS = frozenset(
@@ -254,61 +264,8 @@ class _Written:
     token: str
 
 
-class _Fail(AssertionError):
-    def __init__(self, message: str, cause: ArrasError | None = None) -> None:
-        super().__init__(message)
-        self.cause = cause  # the backend's error a step ended in, when it did
-
-
 class _HarnessError(Exception):
     pass
-
-
-def _eq(label: str, got: Any, want: Any) -> None:
-    if got != want:
-        raise _Fail(f"{label}: {got!r} != {want!r}")
-
-
-def _check_rows(want: list[dict[str, Any]], out: Any) -> None:
-    got_rows: list[dict[str, Any]] = list(out.rows)
-    _eq("row count", len(got_rows), len(want))
-    for i, (row, w) in enumerate(zip(got_rows, want, strict=True)):
-        for k, v in w.items():
-            if k not in row:
-                raise _Fail(f"row {i} has no {k!r}")
-            _eq(f"row {i}.{k}", row[k], v)
-
-
-def _check_row_len(want: dict[str, int], out: Any) -> None:
-    for col, n in want.items():
-        _eq(f"len({col})", len(out.rows[0][col]), n)
-
-
-def _check_refs(want: list[dict[str, Any]], out: Any) -> None:
-    for i, w in enumerate(want):
-        for k, v in w.items():
-            _eq(f"refs[{i}].{k}", getattr(out.refs[i], k), v)
-
-
-def _check_weft(want: dict[str, Any], out: Any) -> None:
-    """`version` present, and the profiles a backend declares (`profiles` as a set)."""
-    weft = out.weft
-    if weft is None:
-        raise _Fail("describe names no Weft version")
-    for k, v in want.items():
-        if k == "has_version":
-            _eq("weft.version present", bool(weft.version), v)
-        elif k == "profiles_include":
-            missing = sorted(set(v) - set(weft.profiles))
-            _eq("weft.profiles missing", missing, [])
-        else:
-            raise _Fail(f"unknown weft expectation {k!r}")
-
-
-def _check_capabilities(want: dict[str, dict[str, Any]], out: Any) -> None:
-    for t, caps in want.items():
-        for k, v in caps.items():
-            _eq(f"{t}.{k}", getattr(out.capabilities[t], k), v)
 
 
 def run_corpus(make_harness: Callable[[], Harness], *, only: Sequence[str] | None = None) -> Report:
@@ -321,51 +278,128 @@ def run_corpus(make_harness: Callable[[], Harness], *, only: Sequence[str] | Non
     refusal, matched on the error the backend raised; it fails when it passes (the limit is gone,
     remove it), fails at another step or with another refusal, or is named for no case of the corpus."""
     corpus = load_corpus()
-    probe = make_harness()
-    limits: Mapping[str, Limit] = getattr(probe, "limits", {})
-    report = Report(roles=probe.roles, corpus_version=corpus["version"])
-    if corpus["version"] > probe.corpus_version:
-        report.newer_corpus = True
+    probe, limits, report = _probe_harness(make_harness, corpus["version"])
+    if probe is None or report.results or report.newer_corpus:
         return report
     for c in corpus["cases"]:
         if bad := set(c["tags"]) - KNOWN_TAGS:
             report.results.append(Result(c["id"], "failed", f"unknown tags {sorted(bad)}"))
             continue
-        if not (tags(probe.roles) & set(c["tags"])) or (only is not None and c["id"] not in only):
+        if not (tags(report.roles) & set(c["tags"])) or (only is not None and c["id"] not in only):
             report.skipped.append(c["id"])
             continue
-        try:
-            _Runner(make_harness(), corpus, c).run()
-            if c["id"] in limits:
-                msg = f"passes, so its limit ({limits[c['id']]}) is gone: remove it"
-                report.results.append(Result(c["id"], "failed", msg))
-                continue
-            status = "host_specific" if "host-specific" in c["tags"] else "passed"
-            report.results.append(Result(c["id"], status))
-        except _Fail as e:
-            want = limits.get(c["id"])
-            if want is None:
-                report.results.append(Result(c["id"], "failed", str(e)))
-            elif str(e).startswith(want.step) and _matches(want, e.cause):
-                report.results.append(Result(c["id"], "limit", f"{e} [{want}]"))
-            elif str(e).startswith(want.step):
-                got = (
-                    f"{type(e.cause).__name__}({_detail(e.cause)})"
-                    if e.cause
-                    else f"no refusal ({e})"
-                )
-                msg = f"{want.step}: expected {want.error}({want.detail or ''}), got {got}"
-                report.results.append(Result(c["id"], "failed", msg))
-            else:
-                msg = f"{e} (the documented limit ends it at {want})"
-                report.results.append(Result(c["id"], "failed", msg))
-        except _HarnessError as e:
-            report.results.append(Result(c["id"], "harness_error", str(e)))
-    if only is None:
-        known = {c["id"] for c in corpus["cases"]}
-        for case in sorted(set(limits) - known):
-            report.results.append(Result(case, "failed", "a limit names no case of the corpus"))
+        harness = _case_harness(make_harness, c["id"], report)
+        if harness is None:
+            continue
+        _run_case(harness, corpus, c, limits, report)
+    _check_limit_names(corpus, limits, only, report)
     return report
+
+
+def _check_limit_names(
+    corpus: Mapping[str, Any],
+    limits: Mapping[str, Limit],
+    only: Sequence[str] | None,
+    report: Report,
+) -> None:
+    if only is not None:
+        return
+    known = {c["id"] for c in corpus["cases"]}
+    for case in sorted(set(limits) - known):
+        report.results.append(Result(case, "failed", "a limit names no case of the corpus"))
+
+
+def _run_case(
+    harness: Harness,
+    corpus: Mapping[str, Any],
+    case: Mapping[str, Any],
+    limits: Mapping[str, Limit],
+    report: Report,
+) -> None:
+    case_id = case["id"]
+    try:
+        try:
+            _Runner(harness, dict(corpus), dict(case)).run()
+            if case_id in limits:
+                msg = f"passes, so its limit ({limits[case_id]}) is gone: remove it"
+                report.results.append(Result(case_id, "failed", msg))
+                return
+            status = "host_specific" if "host-specific" in case["tags"] else "passed"
+            report.results.append(Result(case_id, status))
+        except _Fail as error:
+            report.results.append(_failed_case(case_id, error, limits.get(case_id)))
+        except _HarnessError as error:
+            report.results.append(Result(case_id, "harness_error", str(error)))
+        except Exception as error:
+            report.results.append(
+                Result(case_id, "harness_error", f"harness failed: {type(error).__name__}")
+            )
+    finally:
+        _close_harness(harness, report, f"{case_id}.cleanup")
+
+
+def _failed_case(case: str, error: _Fail, want: Limit | None) -> Result:
+    if want is None:
+        return Result(case, "failed", str(error))
+    if str(error).startswith(want.step) and _matches(want, error.cause):
+        return Result(case, "limit", f"{error} [{want}]")
+    if str(error).startswith(want.step):
+        got = (
+            f"{type(error.cause).__name__}({_detail(error.cause)})"
+            if error.cause
+            else f"no refusal ({error})"
+        )
+        msg = f"{want.step}: expected {want.error}({want.detail or ''}), got {got}"
+        return Result(case, "failed", msg)
+    return Result(case, "failed", f"{error} (the documented limit ends it at {want})")
+
+
+def _case_harness(make_harness: Callable[[], Harness], case: str, report: Report) -> Harness | None:
+    try:
+        return make_harness()
+    except Exception as error:
+        report.results.append(
+            Result(case, "harness_error", f"factory failed: {type(error).__name__}")
+        )
+        return None
+
+
+def _probe_harness(
+    make_harness: Callable[[], Harness], corpus_version: int
+) -> tuple[Harness | None, Mapping[str, Limit], Report]:
+    report = Report(corpus_version=corpus_version)
+    limits: Mapping[str, Limit] = {}
+    try:
+        probe = make_harness()
+    except Exception as error:
+        report.results.append(
+            Result("harness-probe", "harness_error", f"factory failed: {type(error).__name__}")
+        )
+        return None, limits, report
+    try:
+        report.roles = probe.roles
+        limits = dict(getattr(probe, "limits", {}))
+        report.newer_corpus = corpus_version > probe.corpus_version
+    except Exception as error:
+        report.results.append(
+            Result("harness-probe", "harness_error", f"probe failed: {type(error).__name__}")
+        )
+    finally:
+        _close_harness(probe, report, "harness-probe")
+    return probe, limits, report
+
+
+def _close_harness(harness: Harness, report: Report, case: str) -> None:
+    """Close an optional acquired harness once and make cleanup failure visible."""
+    try:
+        close = getattr(harness, "close", None)
+        if not callable(close):
+            return
+        close()
+    except Exception as error:
+        report.results.append(
+            Result(case, "harness_error", f"close failed: {type(error).__name__}")
+        )
 
 
 # The facts a backend appends to a whole-entity row as columns (CONTRACT-001, CONTRACT-004).
@@ -384,7 +418,7 @@ class _Runner:
         self.corpus = corpus
         self.text: str = corpus["_module_text"]
         self.module = parse_module(self.text)
-        self.vars: dict[str, Any] = {"foreign": h.foreign_token()}
+        self.vars: dict[str, Any] = {}
         n = itertools.count()
         self.new_key: Callable[[], str] = lambda: f"gen-{next(n)}"
 
@@ -420,6 +454,13 @@ class _Runner:
                 return sorted(self.h.roles)
             if name == "mutable":
                 return "provider" in self.h.roles
+            if name == "foreign" and name not in self.vars:
+                try:
+                    self.vars[name] = self.h.foreign_token()
+                except Exception as error:
+                    raise _HarnessError(
+                        f"foreign token setup failed: {type(error).__name__}"
+                    ) from None
             if name not in self.vars:
                 raise _Fail(f"{v} was never saved")
             return self.vars[name]
@@ -492,6 +533,8 @@ class _Runner:
             return self.act(s)
         except ArrasError as e:
             return e
+        except _HarnessError:
+            raise
         except _Fail:
             raise
         except Exception as e:

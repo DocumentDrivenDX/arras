@@ -8,11 +8,9 @@ The Operator Console (FEAT-010, ADR-021): a React component library and a standa
 module's schema, reads data with its freshness, runs read-only queries as a grid, changes data only by validating and invoking the module's
 declared actions, and (when the backend serves it) reads who changed what.
 
-Stack follows praxis: React 19, TypeScript 6, Vite 8, Tailwind 4, TanStack Query 5, Vitest 5. It does not yet
-depend on `@databricks/appkit-ui`; that is listed as an optional peer dependency and is adopted when the
-console is embedded in praxis. The UI draws its buttons, fields, dropdowns and notices through a
-design-system seam with a built-in default and no design-system package to install; a host may supply its own
-(see "Theme and design system").
+The package stack is React 19, TypeScript 6, Vite 8, Tailwind 4, TanStack Query 5, Vitest 5. The UI draws
+its buttons, fields, dropdowns and notices through a design-system seam with a built-in default and no
+design-system package to install; a host may supply its own (see "Theme and design system").
 
 ## Boundary
 
@@ -122,6 +120,7 @@ statement; the serving backend refuses one that writes, and the grid has no edit
 | `npm run build:wheel` | `build:embed`, `build:lib`, the scoped-CSS check, then `pack:wheel`: the npm tarball the Python wheel carries (ADR-027) |
 | `npm run check:css -- <file>...` | Fails if a built stylesheet has a selector outside `.arras-root` (run on `dist-lib/styles.css`) |
 | `npm run check:externals` | Fails if the library build imports a package its packed manifest does not declare |
+| `npm run check:public-manifest` | Compares the explicit Python package catalog with packed ESM/type exports, export targets and peer metadata; drift and omission controls fail |
 | `npm run check:umf` | UMF's schema browser: the exact pin, the lockfile and the installed package (see "UMF source") |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run check` | Biome: lint, format check and import order (the CI gate) |
@@ -134,6 +133,86 @@ statement; the serving backend refuses one that writes, and the grid has no edit
 | `npm run e2e` | Playwright whole-stack tests, four projects in order (one worker, no `dependencies` chain, so a failing project does not skip the next) on dev hosts (port 8123, and 8124 for `schema-admin.spec.ts`, which registers a revision of `catalog`; both serve `ui/dist`): `chromium` (every spec except those of the other projects: the console, the shell, the cross-mode links and Explore's New, Retire and Actions), `schema-admin`, `browser` (the Graph Browser's `browser.spec.ts`, `browse-history.spec.ts` and `routes.spec.ts`) and `visual` (screenshots). Run `npm run build` and `npx playwright install chromium` first |
 | `npm run e2e:visual` | The screenshots alone, against the baselines in `e2e/__screenshots__` (0.5% pixel threshold) |
 | `npm run e2e:visual:update` | Rewrite the baselines; review each changed PNG against the mockup in `docs/helix/02-design/graph-browser-mockup/` before committing |
+
+### Packed public API catalog
+
+`../src/arras/public-api.json` is the reviewed schema-versioned catalog for Python and the packed UI
+boundary. `npm run check:public-manifest` runs during `npm run build:wheel`: it compares every advertised
+UI runtime/type symbol and export target with the packed declarations and package metadata, including
+React peers and optional AppKit metadata. The check is a drift test; it does not regenerate the catalog
+or add package exports. `tests/test_public_api_manifest.py` checks the corresponding Python boundary.
+
+### Downstream acceptance suite
+
+The npm package exposes a portable acceptance testkit for host-owned themes and embedded deployments.
+Install the exact `@documentdrivendx/arras-ui` cohort alongside the optional `@playwright/test` 1.63.0
+and `@axe-core/playwright` 4.13.0 peers, then import the factory and browser host from the public
+subpaths:
+
+```ts
+import { createAcceptanceConfig, type AcceptanceConfigOptions } from "@documentdrivendx/arras-ui/testkit";
+
+const options: AcceptanceConfigOptions = {
+  baseURL: "http://127.0.0.1:8766",
+  schemaBaseURL: "http://127.0.0.1:8777",
+  outputDir: "./test-results/arras-acceptance",
+  themeId: "neutral-theme",
+  expectedBrand: { name: "Neutral Host", title: "Neutral Host Console", logo: "theme" },
+  expectedSurface: { light: "rgb(248, 250, 252)", dark: "rgb(2, 6, 23)" },
+  // Required on Darwin; points to reviewed, theme-specific snapshots.
+  baselineDir: "./tests/arras-baselines/neutral-theme",
+};
+
+export default createAcceptanceConfig(options);
+```
+
+`createAcceptanceConfig` belongs in the consumer's Node-side `playwright.config.ts`. The host component is
+imported separately by the consumer's browser entry and wrapped in its own theme provider; the downstream
+example's [host entry](downstream/host.tsx) shows that split. Build that host to a static directory (the
+example emits `dist/`) before starting the fixture servers:
+
+```tsx
+// Browser entry, compiled into the host's static dist directory.
+import { createRoot } from "react-dom/client";
+import { AcceptanceHost } from "@documentdrivendx/arras-ui/testkit/host";
+import { NeutralThemeProvider } from "@arras-fixtures/neutral-theme";
+import "@documentdrivendx/arras-ui/styles.css";
+import "@arras-fixtures/neutral-theme/theme.css";
+
+createRoot(document.getElementById("root")!).render(
+  <NeutralThemeProvider><AcceptanceHost /></NeutralThemeProvider>,
+);
+```
+
+```sh
+# From the external host project, using the environment with the selected wheel and devhost extra installed.
+python -m arras.devhost --ui ./dist --port 8766
+# In a second terminal, start an independent disposable sandbox for schema registration tests.
+python -m arras.devhost --ui ./dist --port 8777
+```
+
+Both standard dev hosts serve the same compiled `AcceptanceHost` page and provide disposable in-memory
+fixture data; the second host is isolated so schema-admin tests cannot affect the main host's state. Point
+`baseURL` at port 8766 and `schemaBaseURL` at port 8777. These are acceptance fixtures, not a production
+backend or a consumer module endpoint.
+
+Run it with the ordinary Playwright CLI from the consumer project, for example
+`npx playwright test --config playwright.config.ts`. The factory verifies the package-carried resource
+inventory and every file digest, then materializes that verified suite in a temporary directory under
+the consumer project so Node resolves its installed peers and module type normally. A global teardown
+removes the materialized copy. It never falls back to an Arras checkout. The canonical suite contains
+17 specs and requires all three nonvisual projects (`chromium`, `schema-admin`, `browser`); the `visual`
+project runs on Darwin only and compares theme-specific snapshots. Darwin callers must supply
+`baselineDir`. Linux reports visual comparison as skipped while still running every nonvisual project.
+Snapshot updates are disabled by the factory. Create or change baselines only through an explicit,
+reviewed update workflow; do not reuse the default-theme snapshots for a different theme.
+
+`baseURL` and `schemaBaseURL` must be distinct credential-free root HTTP(S) origins. `outputDir` is
+consumer-owned and should be unique for simultaneous runs. `themeId` defaults to `default`; `expectedBrand` defaults to `{ name: "Arras" }`, and
+`expectedSurface` defaults to the built-in light/dark RGB colors. The testkit has no browser-download
+step: provision Chromium using the consumer's normal Playwright setup. The `AcceptanceHost` browser
+entry is intended for a consumer-owned compiled host; the suite itself exercises its public HTTP
+surface and does not depend on private Arras source modules.
 
 ### Visual baselines
 
@@ -430,7 +509,7 @@ pages and the assets with UMF's strict profile plus `frame-ancestors 'self'`:
 
 (plus `X-Frame-Options: SAMEORIGIN`, `nosniff`, `Referrer-Policy: no-referrer`); `npm run dev` sets it on the
 assets only (Vite's own page needs inline scripts). **No `'unsafe-eval'`**: the browser's validators
-are compiled at UMF's build (1.1.0 on), so praxis allows no `'unsafe-eval'` on the console's page. Measured under Playwright (`e2e/umf-explorer.spec.ts` fails on any violation in the page or the frame):
+are compiled at UMF's build (1.1.0 on), so the embedding CSP allows no `'unsafe-eval'` on the console's page. Measured under Playwright (`e2e/umf-explorer.spec.ts` fails on any violation in the page or the frame):
 
 - `script-src 'self'`: the console's bundle, the browser's `explorer.js` and its chunks. Narrowed to the
   console's own `/assets/`, the browser's script is refused, `ready` rejects after 30 s and the console shows its
@@ -469,7 +548,8 @@ implementation is plain React and CSS in `src/ds/default.tsx` and `src/ds/defaul
 design-system package to install, no registry to reach and no peer dependency for it. Surfaces import the
 widgets from `src/ds` (`import { Button, Notice } from "../ds"`) and never from a package.
 
-**The contract** (`src/ds/contract.ts`, exported from `arras-ui`):
+**The contract** (`src/ds/contract.ts`, exported from the packed
+`@documentdrivendx/arras-ui` root):
 
 | Widget | Props beyond the element's own |
 |--------|-------------------------------|
@@ -495,9 +575,9 @@ the host does not supply is the built-in one. Embedded components (`ArrasApp`, `
 install no theme of their own and use the provider's implementation, or the built-in one when there is no provider:
 
 ```tsx
-import { ArrasApp } from "arras-ui/shell";
-import { DesignSystemProvider, type ButtonProps } from "arras-ui";
-import "arras-ui/styles.css";
+import { ArrasApp } from "@documentdrivendx/arras-ui/shell";
+import { DesignSystemProvider, type ButtonProps } from "@documentdrivendx/arras-ui";
+import "@documentdrivendx/arras-ui/styles.css";
 
 const HostButton = ({ variant = "primary", busy, children, ...rest }: ButtonProps) => (
   <MyButton kind={variant} loading={busy} {...rest}>{children}</MyButton>
@@ -511,6 +591,16 @@ const HostButton = ({ variant = "primary", busy, children, ...rest }: ButtonProp
 A host that only wants its colours sets the role tokens on an ancestor of the interface, in its own stylesheet
 (`.my-app { --arras-color-accent: #0b5; }`). `useDesignSystem()` returns the implementation in context. The
 built-in widgets read the same tokens, so a host that replaces only some widgets keeps the rest in its colours.
+
+The package root explicitly exports `DesignSystemProvider`, `useDesignSystem`,
+`defaultDesignSystem`, `ROLE_TOKENS` and the contract's twelve types; no design-system
+subpath or second context is needed. After `npm run build:lib` and `npm run pack:wheel`,
+`npm run test:packed-consumer` checks the actual tarball's public TypeScript and runtime
+imports from a temporary consumer, using the workspace's exact installed dependencies.
+Its render proves a root-hook host widget and built-in fallback beneath the public browser's
+palette slot; a structural check proves all three entrypoints reach the shared context chunk.
+It also checks the eighteen tokens and host React/ReactDOM peer identity. This local artifact
+check leaves fresh registry installation and publication qualification separate.
 
 **Light and dark.** The built-in values follow the page's `prefers-color-scheme`, unless an ancestor says
 `data-appearance="light"` or `"dark"` (see "Styles in a host page"). The stand-alone pages (`src/main.tsx`, the

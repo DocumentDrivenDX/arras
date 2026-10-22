@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Locator, type Page, test } from "@playwright/test";
+import { ORIGIN } from "./acceptance";
 import { ensureHub } from "./gb-fixtures";
 
 // The route audit, whole stack (FR-74, SD-013): every page type is its address, so a refresh
@@ -11,7 +12,6 @@ import { ensureHub } from "./gb-fixtures";
 // src/integration/route-audit.int.test.tsx.
 
 const HUB_120 = "uc-hub-120";
-const ORIGIN = "http://127.0.0.1:8123";
 
 test.beforeAll(async ({ playwright }) => {
   const request = await playwright.request.newContext({ baseURL: ORIGIN });

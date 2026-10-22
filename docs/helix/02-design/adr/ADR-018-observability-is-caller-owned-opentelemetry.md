@@ -5,7 +5,7 @@ ddx:
   activity: design
   status: accepted
   owner: Erik LaBianca
-  updated: 2026-10-09
+  updated: 2026-10-22
   authoring:
     home: repo
   links:
@@ -31,7 +31,7 @@ ddx:
 
 | Aspect | Description |
 |--------|-------------|
-| Problem | Arras exists to state what a read is (its consistency and freshness) and to attribute every change. An operator cannot see any of it while it runs: which backend served a read, how stale it was, why a backend went unavailable, which change was refused and why. Arras is a library inside the praxis app and a stdio process beside it, so it cannot own an exporter, a collector or a log file. |
+| Problem | Arras exists to state what a read is (its consistency and freshness) and to attribute every change. An operator cannot see any of it while it runs: which backend served a read, how stale it was, why a backend went unavailable, which change was refused and why. Arras is a library inside the embedding application and a stdio process beside it, so it cannot own an exporter, a collector or a log file. |
 | Requirements | A host or an operator can answer, after a failure, what was asked, of which backend, with what outcome and how long it took, without Arras holding a sink. Nothing that identifies a person's data leaves: ADR-005 keeps sensitive source records out, and ADR-017 makes the user's token the person's own. |
 | Decision Drivers | OpenTelemetry (OTel) is the telemetry model the concern `o11y-otel` names; a library accepts caller-owned instrumentation; the MCP process's stdout carries protocol frames only. |
 
@@ -47,12 +47,35 @@ Arras emits **named events with a few allowlisted attributes**, to the standard 
 5. **The caller's trace continues across the stdio boundary.** An MCP request's `_meta.traceparent` becomes the parent of the spans a tool call produces. With no valid header there is no trace id; one is never made up.
 6. **Transitions are said once.** A backend's availability is reported when it changes, not on every probe.
 
+### Scoped downstream names preserve caller ownership
+
+CONTRACT-005/008 add immutable distribution telemetry names and an explicit
+`TelemetryContext`. Output aliases for attribute namespaces and event/log prefixes
+are applied after the existing allowlists; canonical definitions and default output
+remain unchanged. This fulfills generic downstream naming without a fork or a
+second instrumentation stack. No global provider/logger mutation is permitted.
+
+`service.name` belongs to the OpenTelemetry **Resource**, not to span attributes.
+An explicit name therefore requires a caller-owned provider with that exact Resource
+attribute; missing/mismatched Resource information refuses before observed work.
+A launcher accepts a host factory only after validated effective ADR-019 naming is
+available. The factory constructs/configures the provider and exporters; Arras only
+uses it in a context-local scope and never shuts it down. Without an explicit name
+or provider, prior optional global-API behavior remains available.
+
+ASGI dispatch and MCP serve/frame scopes carry that selection through awaited work;
+operations retain their entry selection through finish. Detached tasks/threads need
+explicit host activation. Default-deny values and failure isolation apply equally to
+projected output. Qualification requires actual independent SDK receiver Resources,
+concurrent/nested context restoration and an installed public consumer, rather than
+an assertion that a configured string or span attribute changed a service Resource.
+
 ## Alternatives
 
 | Option | Pros | Cons | Evaluation |
 |--------|------|------|------------|
 | Arras configures an OTel SDK and exporter | Works out of the box | A library that owns a collector route fights the host's; a hard SDK dependency in a shared app | Rejected |
-| Plain logging only, no OTel | No dependency | No traces across praxis, the MCP process and Arras | Rejected as the only route; kept as the fallback |
+| Plain logging only, no OTel | No dependency | No traces across the embedding host, the MCP process and Arras | Rejected as the only route; kept as the fallback |
 | **Events to the logger, spans through the optional API** | Host decides; one emission; no dependency required | Two projections to keep consistent | **Selected** |
 
 ## Consequences

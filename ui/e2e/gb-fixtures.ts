@@ -5,8 +5,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { type APIRequestContext, expect } from "@playwright/test";
+import { ORIGIN } from "./acceptance";
 
-const ORIGIN = "http://127.0.0.1:8123";
 const ALICE = { "x-arras-user": "alice", origin: ORIGIN };
 
 async function post(request: APIRequestContext, path: string, data: unknown) {

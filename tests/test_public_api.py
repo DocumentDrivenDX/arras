@@ -196,9 +196,9 @@ def test_attach_checks_the_module_can_be_served() -> None:
 
 def test_only_the_mcp_binding_and_the_dev_hosts_entry_point_read_the_environment() -> None:
     """The library takes parameters. `mcp/config.py` is the one binding that reads the environment
-    for a deployed process; `devhost.py` reads exactly one variable (`ARRAS_TRUSS_DEV_URL`, the
-    developer's persistent server) in `python -m arras.devhost`, a development tool no host imports
-    (`devhost.truss_url` takes the mapping as a parameter)."""
+    for a deployed process; the development entry point reads `ARRAS_TRUSS_DEV_URL` and
+    `ARRAS_TRUSS_DEV_CREDENTIALS` only while composing persistent Truss in `python -m arras.devhost`,
+    a tool no host imports (`devhost.truss_url` takes the mapping as a parameter)."""
     import ast
 
     root = Path(arras.__file__).parent

@@ -31,7 +31,7 @@ ddx:
 
 ## Context
 
-Every backend call is made with the user's own token (ADR-017, the architecture decision record that backends are reached with the user's own token), so the person on a change is the one the backend authenticated. Praxis (a Databricks app that embeds Arras) calls Arras with the signed-in user's token. The provider (in production Truss, the hot, mutable store on Lakebase, Databricks managed Postgres) records the connecting database role and the person as the change's origin actor.
+Every backend call is made with the user's own token (ADR-017, the architecture decision record that backends are reached with the user's own token), so the person on a change is the one the backend authenticated. The embedding application calls Arras with the signed-in user's token. The provider (in production Truss, the hot, mutable store on Lakebase, Databricks managed Postgres) records the connecting database role and the person as the change's origin actor.
 
 ## Walkthrough
 

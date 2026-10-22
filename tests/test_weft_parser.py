@@ -56,7 +56,7 @@ def _weft() -> Callable[[str], str] | None:
 
 
 INSTALL = (
-    "install the `weft-sql` 0.4.49 wheel from Weft's GitHub release into this environment "
+    "install the `weft-sql` 0.4.51 wheel from Weft's GitHub release into this environment "
     "(README, Development; the Weft delegation build plan)"
 )
 
@@ -203,7 +203,7 @@ def _named(document: str) -> str:
     """The document as Weft reads a model: every record and field carries a `name` (Weft's
     CONTRACT-001, Naming), and an integer field its width. Arras's registered documents name
     elements by `id` only, so the check derives the names the way a backend's model would carry
-    them, and does not alter the document Arras holds. Weft 0.4.49 reads a UMF 0.10 record or field
+    them, and does not alter the document Arras holds. Weft 0.4.51 reads a UMF 0.10 record or field
     that carries an extension (Arras's `umf.ddd` entity semantics, `arras.view`) as outside the
     raw scalar profile (`WFT-TYPE`), so the model it is shown has no extensions: a read names
     records, fields and their scalar types only."""

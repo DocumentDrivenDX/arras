@@ -5,6 +5,7 @@ which statements `LocalTruss` and `TrussBox` send, in which order, and what they
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 from types import SimpleNamespace
 from typing import Any
 
@@ -12,6 +13,8 @@ import pytest
 
 pytest.importorskip("psycopg")
 
+from arras.adapters.truss import local as local_module  # noqa: E402
+from arras.adapters.truss.endpoint import Endpoint  # noqa: E402
 from arras.adapters.truss.local import PERSISTENT_PREFIX, LocalTruss  # noqa: E402
 from arras.devtruss import BATCH, TrussBox  # noqa: E402
 from arras.errors import Conflict  # noqa: E402
@@ -53,6 +56,9 @@ class Su:
 
     def execute(self, query: Any, params: Any = None) -> Answer:
         text = query if isinstance(query, str) else query.as_string()
+        if "pg_advisory_xact_lock" in text:
+            self.log.append(text)
+            return Answer([])
         if "pg_roles WHERE rolname = %s" in text and "FROM pg_auth_members" not in text:
             return Answer([(1,)] if params[0] in self.roles else [])
         if "r.rolname = %s AND u.rolname = current_user" in text:
@@ -64,13 +70,37 @@ class Su:
             return Answer([(self.owner,)] if self.owner else [])
         if "SELECT g.rolname" in text:
             return Answer([(g,) for g in self.held.get(params[0], [])])
+        if text.startswith("CREATE ROLE"):
+            role = text.split()[2].strip('"')
+            self.roles.add(role)
+            self.administered.add(role)
         self.log.append(text)
         return Answer([])
 
+    @contextmanager
+    def transaction(self):
+        yield self
 
-def attached(su: Su) -> LocalTruss:
-    local = LocalTruss(url=URL)
+
+class Credentials:
+    def __init__(self, tokens: dict[str, str] | None = None) -> None:
+        self.tokens = tokens or {}
+        self.calls: list[tuple[str, bool]] = []
+
+    def __call__(self, role: str, *, create: bool) -> str:
+        self.calls.append((role, create))
+        if role in self.tokens:
+            return self.tokens[role]
+        if not create:
+            raise ValueError("missing")
+        self.tokens[role] = "stable-token"
+        return self.tokens[role]
+
+
+def attached(su: Su, credential_source: Credentials | None = None) -> LocalTruss:
+    local = LocalTruss(url=URL, credential_source=credential_source)
     local._su = su
+    local._endpoint = Endpoint("localhost", "db")
     return local
 
 
@@ -90,46 +120,70 @@ def test_reset_needs_a_server_to_attach_to() -> None:
         LocalTruss(reset=True)
 
 
-def test_a_missing_role_is_created_and_returns_the_prefixed_principal() -> None:
+def test_a_missing_role_is_created_and_returns_the_prefixed_principal(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     su = Su()
-    local = attached(su)
+    credentials = Credentials()
+    local = attached(su, credentials)
     who = local.person("alice")
     assert who.user == "arrasdev_alice" and who.token == local.token("alice")
-    assert len(su.log) == 1 and su.log[0].startswith('CREATE ROLE "arrasdev_alice" LOGIN PASSWORD')
-    assert local.person("alice") == who and len(su.log) == 1  # made once per run
+    assert any(q.startswith('CREATE ROLE "arrasdev_alice" LOGIN PASSWORD') for q in su.log)
+    assert credentials.calls == [("arrasdev_alice", True)]
+    assert local.created_people == {"alice"} and local.created_roles == {"arrasdev_alice"}
+
+    @contextmanager
+    def authenticate(endpoint: Any, user: str, password: str):
+        assert password == "stable-token"
+        yield SimpleNamespace(execute=lambda query: Answer([(user,)]))
+
+    monkeypatch.setattr(local_module, "connect", authenticate)
+    assert local.person("alice") == who
+    assert sum(q.startswith('CREATE ROLE "arrasdev_alice"') for q in su.log) == 1
+    assert credentials.calls == [("arrasdev_alice", True), ("arrasdev_alice", False)]
 
 
-def test_a_role_of_an_earlier_run_is_taken_over_with_a_new_password_and_no_memberships() -> None:
+def test_a_persistent_role_reuses_its_credential_without_touching_role_state(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     su = Su(
         roles={"arrasdev_alice"},
         administered={"arrasdev_alice"},
         held={"arrasdev_alice": ["arrasdev_catalog_writer", "truss_registrar_1"]},
     )
-    local = attached(su)
+    credentials = Credentials({"arrasdev_alice": "old-stable-token"})
+    local = attached(su, credentials)
+
+    @contextmanager
+    def authenticate(endpoint: Any, user: str, password: str):
+        assert (user, password) == ("arrasdev_alice", "old-stable-token")
+        yield SimpleNamespace(execute=lambda query: Answer([(user,)]))
+
+    monkeypatch.setattr(local_module, "connect", authenticate)
     who = local.person("alice")
-    assert who.token == local.token("alice")
-    alter, *revokes = su.log
-    assert alter.startswith('ALTER ROLE "arrasdev_alice" LOGIN PASSWORD') and alter.endswith(
-        "VALID UNTIL 'infinity'"
-    )
-    assert revokes == [
-        'REVOKE "arrasdev_catalog_writer" FROM "arrasdev_alice"',
-        'REVOKE "truss_registrar_1" FROM "arrasdev_alice"',
+    assert who.token == local.token("alice") == "old-stable-token"
+    assert local.person("alice") == who
+    assert credentials.calls == [("arrasdev_alice", False)] * 2
+    assert not any(q.startswith(("CREATE ROLE", "ALTER ROLE", "GRANT", "REVOKE")) for q in su.log)
+    assert su.held["arrasdev_alice"] == [
+        "arrasdev_catalog_writer",
+        "truss_registrar_1",
     ]
+    assert local.created_people == set() and local.created_roles == set()
 
 
 def test_a_role_the_installing_role_does_not_administer_is_never_touched() -> None:
     su = Su(roles={"arrasdev_alice"})
-    with pytest.raises(ValueError, match="did not make"):
-        attached(su).person("alice")
-    assert su.log == []
+    with pytest.raises(ValueError, match="not administered"):
+        attached(su, Credentials({"arrasdev_alice": "stable-token"})).person("alice")
+    assert not any(q.startswith(("CREATE ROLE", "ALTER ROLE", "GRANT", "REVOKE")) for q in su.log)
     su = Su(
         roles={"arrasdev_catalog_reader", "arrasdev_catalog_writer"},
         administered={"arrasdev_catalog_writer"},
     )
     with pytest.raises(ValueError, match="did not make"):
         attached(su).module_roles("catalog")
-    assert su.log == []
+    assert not any(q.startswith(("CREATE ROLE", "ALTER ROLE", "GRANT", "REVOKE")) for q in su.log)
 
 
 def test_a_throwaway_refuses_a_role_that_is_there_already() -> None:
@@ -137,6 +191,89 @@ def test_a_throwaway_refuses_a_role_that_is_there_already() -> None:
     local._su = Su(roles={"alice"})
     with pytest.raises(ValueError, match="is a role of the database already"):
         local.person("alice")
+
+
+def test_persistent_person_requires_stored_credentials_and_never_repairs() -> None:
+    su = Su(roles={"arrasdev_alice"}, administered={"arrasdev_alice"})
+    with pytest.raises(ValueError, match="credential source"):
+        attached(su).person("alice")
+    credentials = Credentials()
+    with pytest.raises(ValueError, match="stored credential.*missing"):
+        attached(su, credentials).person("alice")
+    assert credentials.calls == [("arrasdev_alice", False)]
+    assert not any(q.startswith(("CREATE ROLE", "ALTER ROLE", "GRANT", "REVOKE")) for q in su.log)
+
+
+def test_credential_source_must_return_a_nonempty_string() -> None:
+    class InvalidCredential:
+        def __call__(self, role: str, *, create: bool) -> Any:
+            return 7
+
+    su = Su()
+    local = LocalTruss(url=URL, credential_source=InvalidCredential())
+    local._su = su
+    with pytest.raises(ValueError, match="no usable host-owned credential"):
+        local.person("alice")
+    assert not any(q.startswith(("CREATE ROLE", "ALTER ROLE")) for q in su.log)
+
+
+def test_unrelated_unique_violation_during_create_is_not_treated_as_role_race() -> None:
+    class UniqueViolation(Exception):
+        sqlstate = "23505"
+        diag = SimpleNamespace(constraint_name="unrelated_index")
+
+    class BrokenCreate(Su):
+        def execute(self, query: Any, params: Any = None) -> Answer:
+            text = query if isinstance(query, str) else query.as_string()
+            if text.startswith('CREATE ROLE "arrasdev_alice"'):
+                self.log.append(text)
+                raise UniqueViolation
+            return super().execute(query, params)
+
+    su = BrokenCreate()
+    with pytest.raises(UniqueViolation):
+        attached(su, Credentials()).person("alice")
+    assert not su.roles
+    assert len(su.log) == 2  # the advisory lock and failed CREATE only
+
+
+def test_refused_existing_person_credential_is_scrubbed_and_never_repaired(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    su = Su(roles={"arrasdev_alice"}, administered={"arrasdev_alice"})
+    credentials = Credentials({"arrasdev_alice": "wrong-secret"})
+    local = attached(su, credentials)
+
+    @contextmanager
+    def reject(endpoint: Any, user: str, password: str):
+        error: Any = RuntimeError(f"password authentication failed: {password}")
+        error.sqlstate = "28P01"
+        raise error
+        yield  # pragma: no cover
+
+    monkeypatch.setattr(local_module, "connect", reject)
+    with pytest.raises(ValueError, match="stored credential") as error:
+        local.person("alice")
+    assert "wrong-secret" not in str(error.value)
+    assert not any(q.startswith(("CREATE ROLE", "ALTER ROLE", "GRANT", "REVOKE")) for q in su.log)
+
+
+def test_database_outage_during_credential_probe_is_not_reported_as_rotation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    su = Su(roles={"arrasdev_alice"}, administered={"arrasdev_alice"})
+    local = attached(su, Credentials({"arrasdev_alice": "private-token"}))
+
+    @contextmanager
+    def unavailable(endpoint: Any, user: str, password: str):
+        raise RuntimeError(f"connection failed while using {password}")
+        yield  # pragma: no cover
+
+    monkeypatch.setattr(local_module, "connect", unavailable)
+    with pytest.raises(ValueError, match="authentication is unavailable") as error:
+        local.person("alice")
+    assert "private-token" not in str(error.value)
+    assert "rotation" not in str(error.value)
 
 
 def test_module_roles_are_created_when_absent() -> None:

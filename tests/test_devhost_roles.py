@@ -249,7 +249,7 @@ def test_minting_and_knowing_modules_race_without_error(app: DevHost) -> None:
 
 def test_the_sandbox_readers_are_not_operators_and_made_up_people_are(app: DevHost) -> None:
     refused = {"error": "REFUSED", "reason": "not_operator"}
-    for user in ("carol", "dave"):  # no praxis group: the Graph Browser's user mode only
+    for user in ("carol", "dave"):  # no sample-host group: the Graph Browser's user mode only
         assert call(app, "GET", "/api/operate/viewer", user=user)[1]["modes"] == ["user"]
         assert (
             call(

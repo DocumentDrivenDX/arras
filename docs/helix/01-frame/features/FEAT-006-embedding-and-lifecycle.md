@@ -29,15 +29,15 @@ ddx:
 
 Embedding and Lifecycle implements PRD FR-31 to FR-35 and FR-48 to FR-50. A host Python application starts Arras as a library. The host registers its backends under names it chooses, states each module's placement, supplies for each backend a connection source that yields a connection for a given person, names an administrative principal for registration, attachment and imports, and for the Truss adapter supplies an installing connection. Arras installs or verifies the adapters' stores through their own installers and reports whether each backend is available.
 
-The host is praxis, the Databricks app that embeds Arras. Truss is the hot mutable store on Lakebase (Databricks managed Postgres). Ashlar is the warehouse store on Unity Catalog (Databricks' data catalog and access-control layer). MCP (Model Context Protocol, Anthropic's open protocol for agent tools) is the protocol of the stdio binding specified in FEAT-009.
+The host is the application that embeds Arras. Truss is the hot mutable store on Lakebase (Databricks managed Postgres). Ashlar is the warehouse store on Unity Catalog (Databricks' data catalog and access-control layer). MCP (Model Context Protocol, Anthropic's open protocol for agent tools) is the protocol of the stdio binding specified in FEAT-009.
 
 ## Ideal Future State
 
-The praxis app adds Arras as a library, builds a Truss adapter from a per-principal connection source and an Ashlar adapter from a warehouse source, registers them under names it chooses with each module's placement, names an administrative principal and an installing connection and starts. A backend that is down is reported with its reason while the host keeps serving. The install runs once however many instances call `migrate`; `start` installs nothing. The stdio MCP binding is the only code that reads the environment or configuration files.
+The embedding application adds Arras as a library, builds a Truss adapter from a per-principal connection source and an Ashlar adapter from a warehouse source, registers them under names it chooses with each module's placement, names an administrative principal and an installing connection and starts. A backend that is down is reported with its reason while the host keeps serving. The install runs once however many instances call `migrate`; `start` installs nothing. The stdio MCP binding is the only code that reads the environment or configuration files.
 
 ## Problem Statement
 
-- **Current situation**: No store is embedded in praxis. A host could keep a database inside its own project for the catalog.
+- **Current situation**: No store is embedded in the embedding host. A host could keep a database inside its own project for the catalog.
 - **Pain points**: A slow or failing backend must not break a shared app's startup, and installs must not collide.
 - **Desired outcome**: A library the host controls, with bounded startup and per-backend status.
 
@@ -116,7 +116,7 @@ EMB-08. The MCP process builds one typed configuration from a published schema a
 
 ## Success Metrics
 
-- Praxis starts and serves with either backend unavailable.
+- The embedding host starts and serves with either backend unavailable.
 - One install under two concurrent starts.
 
 ## Constraints and Assumptions

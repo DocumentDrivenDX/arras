@@ -24,10 +24,13 @@ import time
 from collections.abc import Callable, Generator, Mapping
 from contextlib import ExitStack, contextmanager
 from contextvars import ContextVar
+from dataclasses import dataclass
 from typing import Any, ParamSpec, TypeVar
 
+from arras.distribution import DistributionConfig, TelemetryNames
 from arras.errors import UNAVAILABLE_REASONS, ArrasError, NotYetCurrent, Unavailable
 
+_DEFAULT_NAMES = TelemetryNames()
 log = logging.getLogger("arras.telemetry")
 
 # The event catalog. A signal with another name is refused at the emitting call.
@@ -85,6 +88,7 @@ _SAFE = re.compile(r"[A-Za-z0-9_.:\-]*")
 _dropped = 0
 _lock = threading.Lock()
 _current: ContextVar[Operation | None] = ContextVar("arras_operation", default=None)
+_active: ContextVar[TelemetryContext | None] = ContextVar("arras_telemetry_context", default=None)
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -93,6 +97,127 @@ R = TypeVar("R")
 def dropped() -> int:
     """How many signals could not be emitted, so a quiet sink is not read as a healthy one."""
     return _dropped
+
+
+@dataclass(frozen=True, init=False)
+class TelemetryContext:
+    """Host-scoped output names and optional caller-owned tracer provider."""
+
+    names: TelemetryNames
+    _tracer_provider: Any
+
+    def __init__(self, names: TelemetryNames = _DEFAULT_NAMES, *, tracer_provider: Any = None):
+        if not _is_names(names):
+            raise ValueError("names: expected TelemetryNames")
+        if names.service_name is not None:
+            if tracer_provider is None:
+                raise ValueError("tracer_provider: required for explicit service_name")
+            try:
+                resource = tracer_provider.resource
+                attributes = resource.attributes
+                service_name = attributes.get("service.name")
+                if service_name != names.service_name:
+                    raise ValueError
+            except Exception:
+                raise ValueError(
+                    "tracer_provider: unreadable or mismatched service.name Resource"
+                ) from None
+        if tracer_provider is not None:
+            try:
+                get_tracer = getattr(tracer_provider, "get_tracer", None)
+            except Exception:
+                raise ValueError("tracer_provider: unreadable get_tracer") from None
+            if not callable(get_tracer):
+                raise ValueError("tracer_provider: expected get_tracer")
+        object.__setattr__(self, "names", names)
+        object.__setattr__(self, "_tracer_provider", tracer_provider)
+
+    @contextmanager
+    def activate(self) -> Generator[None]:
+        token = _active.set(self)
+        try:
+            yield
+        finally:
+            _active.reset(token)
+
+    def wrap_asgi(self, app: Callable[..., Any]) -> Callable[..., Any]:
+        async def wrapped(scope: Any, receive: Any, send: Any) -> Any:
+            with self.activate():
+                return await app(scope, receive, send)
+
+        return wrapped
+
+
+def _context_for(  # pyright: ignore[reportUnusedFunction]
+    telemetry_context: TelemetryContext | None,
+    distribution: DistributionConfig | None,
+) -> TelemetryContext:
+    """Resolve a host scope and ensure explicitly selected names agree."""
+    if telemetry_context is not None and not _is_context(telemetry_context):
+        raise ValueError("telemetry_context: expected TelemetryContext")
+    if distribution is not None:
+        names = distribution.telemetry
+        if telemetry_context is not None and telemetry_context.names != names:
+            raise ValueError("telemetry_context: names do not match distribution")
+        return telemetry_context or TelemetryContext(names)
+    return telemetry_context or TelemetryContext()
+
+
+def _make_context(  # pyright: ignore[reportUnusedFunction]
+    names: TelemetryNames,
+    factory: Callable[[TelemetryNames], TelemetryContext] | None = None,
+) -> TelemetryContext:
+    """Validate the host factory result without exposing its exception or accepting drift."""
+    try:
+        context = factory(names) if factory is not None else TelemetryContext(names)
+    except Exception:
+        raise ValueError("telemetry factory refused") from None
+    if not _is_context(context) or context.names != names:
+        raise ValueError("telemetry factory returned incompatible context")
+    return context
+
+
+class _RoutedLogger:
+    """Small context-aware facade; it does not install handlers or mutate logger state."""
+
+    def __init__(self, canonical_name: str) -> None:
+        self._canonical_name = canonical_name
+
+    def _logger(self) -> logging.Logger:
+        context = _active.get()
+        if context is None:
+            name = self._canonical_name
+        elif self._canonical_name == "arras.telemetry":
+            name = f"{context.names.log_prefix}.telemetry"
+        else:
+            name = context.names.log_prefix + self._canonical_name[len("arras") :]
+        return logging.getLogger(name)
+
+    def __getattr__(self, name: str) -> Any:
+        method = getattr(self._logger(), name)
+        if name not in {"debug", "info", "warning", "error", "exception", "critical", "log"}:
+            return method
+
+        def safely_log(*args: Any, **kwargs: Any) -> Any:
+            try:
+                return method(*args, **kwargs)
+            except Exception:
+                _count_dropped()
+                return None
+
+        return safely_log
+
+
+def _logger(name: str) -> _RoutedLogger:  # pyright: ignore[reportUnusedFunction]
+    return _RoutedLogger(name)
+
+
+def _is_names(value: object) -> bool:
+    return isinstance(value, TelemetryNames)
+
+
+def _is_context(value: object) -> bool:
+    return isinstance(value, TelemetryContext)
 
 
 def clean(attrs: Mapping[str, object]) -> dict[str, bool | int | str]:
@@ -108,8 +233,16 @@ def clean(attrs: Mapping[str, object]) -> dict[str, bool | int | str]:
     return out
 
 
-def _exported(name: str) -> str:
-    return name if name == "error.type" else f"arras.{name}"
+def _exported(name: str, context: TelemetryContext | None) -> str:
+    if name == "error.type":
+        return name
+    namespace = context.names.attribute_namespace if context is not None else "arras"
+    return f"{namespace}.{name}"
+
+
+def _event_name(event: str, context: TelemetryContext | None) -> str:
+    prefix = context.names.event_prefix if context is not None else "arras"
+    return f"{prefix}.{event[len('arras.') :]}" if event.startswith("arras.") else event
 
 
 class Operation:
@@ -140,12 +273,22 @@ def _level(error: BaseException | None) -> int:
     return logging.ERROR
 
 
-def _record(event: str, attrs: Mapping[str, object], level: int) -> None:
-    if not log.isEnabledFor(level):
+def _record(
+    event: str,
+    attrs: Mapping[str, object],
+    level: int,
+    context: TelemetryContext | None = None,
+) -> None:
+    logger_name = (
+        f"{context.names.log_prefix}.telemetry" if context is not None else "arras.telemetry"
+    )
+    target = logging.getLogger(logger_name)
+    if not target.isEnabledFor(level):
         return
     safe = clean(attrs)
     fields = " ".join(f"{k}={safe[k]}" for k in sorted(safe))
-    log.log(level, "%s %s", event, fields, extra={"arras_event": event, "arras_attrs": safe})
+    projected = _event_name(event, context)
+    target.log(level, "%s %s", projected, fields, extra={"arras_event": event, "arras_attrs": safe})
 
 
 def emit(event: str, **attrs: object) -> None:
@@ -155,7 +298,9 @@ def emit(event: str, **attrs: object) -> None:
         if event not in EVENTS:
             raise ValueError(event)
         available = attrs.get("available")
-        _record(event, attrs, logging.WARNING if available is False else logging.INFO)
+        _record(
+            event, attrs, logging.WARNING if available is False else logging.INFO, _active.get()
+        )
     except Exception:
         _count_dropped()
 
@@ -174,16 +319,26 @@ def operation(event: str, **attrs: object) -> Generator[Operation]:
     """Observe one operation: a span (when OpenTelemetry is installed) and one log record at its
     end, with its outcome and duration. An error passes through untouched."""
     op = Operation(event, attrs)
+    selected = _active.get()
     started = time.perf_counter()
     failure: BaseException | None = None
     span: Any = None
     stack = ExitStack()
     try:
         trace = _otel("opentelemetry.trace")
-        if trace is not None and event in EVENTS:
+        provider = getattr(selected, "_tracer_provider", None) if selected is not None else None
+        if provider is not None:
+            tracer = provider.get_tracer("arras")
+            if tracer is None:
+                _count_dropped()
+        else:
+            tracer = trace.get_tracer("arras") if trace is not None else None
+        if tracer is not None and event in EVENTS:
             span = stack.enter_context(
-                trace.get_tracer("arras").start_as_current_span(
-                    event, record_exception=False, set_status_on_exception=False
+                tracer.start_as_current_span(
+                    _event_name(event, selected),
+                    record_exception=False,
+                    set_status_on_exception=False,
                 )
             )
     except Exception:
@@ -197,7 +352,7 @@ def operation(event: str, **attrs: object) -> Generator[Operation]:
     finally:
         _current.reset(token)
         try:
-            _finish(op, span, failure, time.perf_counter() - started)
+            _finish(op, span, failure, time.perf_counter() - started, selected)
         finally:  # the span ends and the context detaches even if finishing is interrupted
             try:
                 stack.close()
@@ -211,7 +366,13 @@ def _count_dropped() -> None:
         _dropped += 1
 
 
-def _finish(op: Operation, span: Any, failure: BaseException | None, seconds: float) -> None:
+def _finish(
+    op: Operation,
+    span: Any,
+    failure: BaseException | None,
+    seconds: float,
+    context: TelemetryContext | None,
+) -> None:
     try:
         if op.event not in EVENTS:
             raise ValueError(op.event)
@@ -229,13 +390,18 @@ def _finish(op: Operation, span: Any, failure: BaseException | None, seconds: fl
         safe = clean(attrs)
         if span is not None:
             for name, value in safe.items():
-                span.set_attribute(_exported(name), value)
+                span.set_attribute(_exported(name, context), value)
             unexpected = isinstance(failure, Exception) and not isinstance(failure, ArrasError)
             if unexpected or isinstance(failure, Unavailable):
                 status = _otel("opentelemetry.trace")
                 if status is not None:
                     span.set_status(status.Status(status.StatusCode.ERROR))  # no description
-        _record(op.event, {**safe, "duration_ms": round(seconds * 1000)}, _level(failure))
+        _record(
+            op.event,
+            {**safe, "duration_ms": round(seconds * 1000)},
+            _level(failure),
+            context,
+        )
     except Exception:
         _count_dropped()
 

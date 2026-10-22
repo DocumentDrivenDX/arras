@@ -189,6 +189,10 @@ def openapi_document(title: str = "Arras") -> dict[str, Any]:
                                 "reason": {"type": "string"},
                                 "backend": {"type": "string"},
                                 "operation": {"type": "string"},
+                                "policy_code": {
+                                    "type": "string",
+                                    "pattern": "^[a-z][a-z0-9_]{0,63}$",
+                                },
                                 "token": {"type": "string"},
                                 "construct": {"type": "string"},
                                 "supported": {"type": "array", "items": {"type": "string"}},

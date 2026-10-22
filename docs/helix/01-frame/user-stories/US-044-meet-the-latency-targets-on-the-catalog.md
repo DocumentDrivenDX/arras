@@ -31,7 +31,7 @@ ddx:
 
 ## Context
 
-The targets are proposed, each as a 95th percentile (p95): singleton read at most 20 ms, action at most 100 ms, enumeration at most 20 ms, and the list of 30 records at most 1 s. The host is praxis, the Databricks app that embeds Arras. The benchmark runs against a Lakebase branch (a copy of the Databricks managed Postgres database that backs the Truss adapter).
+The targets are proposed, each as a 95th percentile (p95): singleton read at most 20 ms, action at most 100 ms, enumeration at most 20 ms, and the list of 30 records at most 1 s. The host is the application that embeds Arras. The benchmark runs against a Lakebase branch (a copy of the Databricks managed Postgres database that backs the Truss adapter).
 
 ## Walkthrough
 
@@ -66,7 +66,7 @@ The targets are proposed, each as a 95th percentile (p95): singleton read at mos
 - **Feature Spec**: FEAT-008
 - **Feature Requirements**: CLI-04
 - **PRD Requirements**: FR-41
-- **External**: Benchmark harness at the host (`tests/bench_latency.py` runs it at the host layer on a local PostgreSQL; the run through praxis on a Lakebase branch is owed).
+- **External**: Benchmark harness at the host (`tests/bench_latency.py` runs it at the host layer on a local PostgreSQL; the run through the embedding host on a Lakebase branch is owed).
 
 ## Out of Scope
 

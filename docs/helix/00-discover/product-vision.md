@@ -23,7 +23,7 @@ ddx:
 
 ## Mission Statement
 
-Arras gives an organization's applications one interface to its ontology. Types are defined once in UMF (the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions), reads say how current they are, and named actions are the only way to change anything. A module such as the use-case catalog, or an application such as praxis (a Databricks app that hosts Arras), then never depends on where the data is kept.
+Arras gives an organization's applications one interface to its ontology. Types are defined once in UMF (the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions), reads say how current they are, and named actions are the only way to change anything. A module such as the use-case catalog, or an embedding application, then never depends on where the data is kept.
 
 ## Positioning
 
@@ -42,17 +42,17 @@ Each module that holds knowledge about its domain defines its types in a UMF doc
 
 ## User Experience
 
-A host developer adds Arras to the host app (praxis, for example) as a library, gives it connections for each store, and declares the catalog module's types and actions in a UMF document. Loading the demonstration records is an idempotent import that keeps each record's original author apart from the load that brought it in.
+A host developer adds Arras to the host application as a library, gives it connections for each store, and declares the catalog module's types and actions in a UMF document. Loading the demonstration records is an idempotent import that keeps each record's original author apart from the load that brought it in.
 
 An end user corrects a Solution's coverage level through the catalog screen. The catalog calls the `CorrectSolution` action with the user's name. Arras validates the call against the declared preconditions, applies it atomically on the record store, and returns a receipt. The next read, passing the receipt, shows the correction.
 
-A use case inventory screen reads counts by area from the warehouse and shows how current they are. Praxis reads a playbook on behalf of the signed-in user on every call and records an evaluation finding through an action.
+A use case inventory screen reads counts by area from the warehouse and shows how current they are. The workflow host reads a playbook on behalf of the signed-in user on every call and records an evaluation finding through an action.
 
 ## Target Market
 
 | Attribute | Description |
 |-----------|-------------|
-| Who | Host-app developers and module builders: the catalog first, then the use case inventory and praxis itself |
+| Who | Host-app developers and module builders: the catalog first, then the use case inventory and a workflow client |
 | Pain | Each client would otherwise decide where its data lives, how fresh a read is, and how a change is validated, attributed and audited. Without an interface, a module's knowledge lives in seed data that no application can edit |
 | Current Solution | Seed files; a per-module database; direct warehouse reads |
 | Why They Switch | The catalog needs an editable store now, and two more clients need the same ontology without each learning two stores |
@@ -72,7 +72,7 @@ A use case inventory screen reads counts by area from the warehouse and shows ho
 
 | Metric | Target |
 |--------|--------|
-| Clients using the interface | 1 (the catalog, running inside a host within the latency targets below); 3 (adding the inventory and praxis) *(proposed)* |
+| Clients using the interface | 1 (the catalog, running inside a host within the latency targets below); 3 (adding the inventory and a workflow client) *(proposed)* |
 | Singleton read p95 (95th-percentile latency) | ≤ 20 ms at the host, measured by the benchmark harness *(proposed)* |
 | Action p95, including its change record | ≤ 100 ms at the host *(proposed)* |
 | Use case list, 30 records | p95 ≤ 1 s *(proposed)* |

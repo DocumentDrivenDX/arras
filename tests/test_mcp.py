@@ -9,7 +9,7 @@ import sys
 import time
 from datetime import datetime
 from decimal import Decimal
-from typing import Any
+from typing import Any, cast
 
 import pytest
 
@@ -872,3 +872,178 @@ def test_list_changed_on_status_change_once_and_not_before_a_relist(r: Rig) -> N
     assert r.server.drain() == []
     r.rpc("ping")  # within the interval: no check at all
     assert r.server.drain() == []
+
+
+def test_distribution_prefixes_tools_but_keeps_action_identity_canonical() -> None:
+    from arras.distribution import DistributionConfig
+
+    box = Sandbox().seed()
+    config = DistributionConfig(mcp_server_name="Acme", mcp_tool_prefix="acme")
+    server = McpServer(box.arras, lambda: box.principal("alice"), distribution=config)
+    initialized = server.handle({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
+    assert initialized["result"]["serverInfo"]["name"] == "Acme"
+    tools = {
+        t["name"]: t
+        for t in server.handle({"jsonrpc": "2.0", "id": 2, "method": "tools/list"})["result"][
+            "tools"
+        ]
+    }
+    assert "acme_describe" in tools and "acme_catalog_add_use_case" in tools
+    assert "describe" not in tools and "catalog_add_use_case" not in tools
+    described = server.handle(
+        {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "method": "tools/call",
+            "params": {"name": "acme_describe", "arguments": {}},
+        }
+    )["result"]["structuredContent"]
+    action = next(
+        a for m in described["modules"] for a in m["actions"] if a["name"] == "catalog.AddUseCase"
+    )
+    assert action["tool"] == "acme_catalog_add_use_case"
+    bare = server.handle(
+        {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "method": "tools/call",
+            "params": {"name": "describe", "arguments": {}},
+        }
+    )
+    assert bare["error"]["code"] == -32602
+
+
+def test_distribution_name_validation_and_tool_prefix_bounds() -> None:
+    from arras.distribution import DistributionConfig
+
+    for kw in (
+        {"mcp_server_name": " padded "},
+        {"mcp_server_name": "x\n"},
+        {"mcp_tool_prefix": "Acme"},
+        {"mcp_tool_prefix": "a" * 17},
+        {"mcp_tool_prefix": None},
+        {"mcp_tool_prefix": 0},
+        {"env_prefix": "bad"},
+        {"env_prefix": "A" * 33},
+    ):
+        with pytest.raises(ValueError):
+            DistributionConfig(**cast(Any, kw))
+
+
+def test_initial_inventory_rejects_prefixed_collisions_before_initialize(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from dataclasses import replace
+
+    import arras.mcp.server as server_module
+    from arras.distribution import DistributionConfig
+
+    box = Sandbox().seed()
+    original = server_module.action_tools
+    monkeypatch.setattr(
+        server_module,
+        "action_tools",
+        lambda mods: [replace(original(mods)[0], tool="describe")],
+    )
+    server = McpServer(
+        box.arras,
+        lambda: box.principal("alice"),
+        distribution=DistributionConfig(mcp_tool_prefix="tenant"),
+    )
+    response = server.handle({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
+    assert response["error"]["code"] == -32603
+
+
+def test_initial_inventory_rejects_prefixed_overlong_action_before_initialize(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from dataclasses import replace
+
+    import arras.mcp.server as server_module
+    from arras.distribution import DistributionConfig
+
+    box = Sandbox().seed()
+    original = server_module.action_tools
+    monkeypatch.setattr(
+        server_module,
+        "action_tools",
+        lambda mods: [replace(original(mods)[0], tool="x" * 128)],
+    )
+    server = McpServer(
+        box.arras,
+        lambda: box.principal("alice"),
+        distribution=DistributionConfig(mcp_tool_prefix="tenant"),
+    )
+    response = server.handle({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
+    assert response["error"]["code"] == -32603
+
+
+def test_ping_detected_registry_change_requires_explicit_relist_for_cached_alias(r: Rig) -> None:
+    from arras.sandbox import catalog_document
+
+    r.rpc("tools/list")
+    doc = json.loads(catalog_document())
+    doc["modules"][0]["actions"].append(
+        {
+            "id": "Ping",
+            "description": "p",
+            "inputs": [],
+            "effects": [
+                {
+                    "op": "create",
+                    "type": "UseCase",
+                    "key": {"generate": "uuid"},
+                    "properties": {"name": {"literal": "p"}},
+                }
+            ],
+        }
+    )
+    r.box.arras.session(r.box.people["root"]).registry().register(json.dumps(doc))
+    r.advance(10)
+    r.rpc("ping")
+    r.server.drain()
+    for _ in range(2):
+        result = r.call("catalog_ping", inputs={})
+        assert result["error"]["code"] == -32602
+    described = r.body("describe")
+    ping = next(
+        a
+        for module in described["modules"]
+        for a in module["actions"]
+        if a["name"] == "catalog.Ping"
+    )
+    assert ping["tool"] == "catalog_ping"
+    assert "catalog_ping" in [t["name"] for t in r.rpc("tools/list")["result"]["tools"]]
+
+
+def test_retargeted_collision_alias_stays_refused_until_explicit_relist(r: Rig) -> None:
+    from copy import deepcopy
+
+    from arras.sandbox import catalog_document
+
+    r.rpc("tools/list")
+    doc = json.loads(catalog_document())
+    original = next(
+        action for action in doc["modules"][0]["actions"] if action["id"] == "AddUseCase"
+    )
+    alias = deepcopy(original)
+    alias["id"] = "add_use_case"
+    doc["modules"][0]["actions"].insert(0, alias)
+    r.box.arras.session(r.box.people["root"]).registry().register(json.dumps(doc))
+    for code in ("collision-1", "collision-2"):
+        result = r.call("catalog_add_use_case", inputs={"code": code, "name": code})
+        assert result["error"]["code"] == -32602
+    before_relist = {
+        action["name"]: action["tool"]
+        for module in r.body("describe")["modules"]
+        for action in module["actions"]
+    }
+    assert before_relist["catalog.AddUseCase"] == "catalog_add_use_case_2"
+    tools = {tool["name"] for tool in r.rpc("tools/list")["result"]["tools"]}
+    assert "catalog_add_use_case" in tools and "catalog_add_use_case_2" in tools
+    mapping = {
+        action["name"]: action["tool"]
+        for module in r.body("describe")["modules"]
+        for action in module["actions"]
+    }
+    assert mapping["catalog.AddUseCase"] == "catalog_add_use_case_2"

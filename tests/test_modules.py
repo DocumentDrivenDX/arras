@@ -128,8 +128,61 @@ def test_a_relative_import_is_an_edge() -> None:
     }
     assert violations(mods) == [
         "arras.core:1: core must not import arras.console (console)",
+        "arras.mcp.config:1: config_validation must not import arras.mcp.identity (mcp)",
         "arras.mcp.identity:1: mcp must not import arras.console (console)",
     ]
+
+
+def test_validators_and_doctor_cannot_reach_bindings_or_core() -> None:
+    cases = (
+        ("arras.mcp.config", "config_validation", "arras.mcp.server", "mcp"),
+        ("arras.ui.assets", "asset_validation", "arras.ui", "ui"),
+        ("arras.doctor", "doctor", "arras.core", "core"),
+        ("arras.doctor", "doctor", "arras.adapters.truss", "adapters"),
+        ("arras.doctor", "doctor", "arras.mcp.process", "mcp"),
+    )
+    for importer, group, target, target_group in cases:
+        mods = {importer: f"from {target} import value\n", target: ""}
+        assert violations(mods) == [
+            f"{importer}:1: {group} must not import {target} ({target_group})"
+        ]
+
+
+def test_doubles_and_adapter_helpers_keep_their_narrow_boundary() -> None:
+    for importer, group in (("arras.conformance", "doubles"), ("arras.testing", "doubles")):
+        mods = {
+            importer: "from arras.adapters.truss import LocalTruss\n",
+            "arras.adapters.truss": "",
+        }
+        assert violations(mods) == [
+            f"{importer}:1: {group} must not import arras.adapters.truss (adapters)"
+        ]
+    mods = {
+        "arras.adapters.truss._conformance": "from arras.conformance import run_corpus\n",
+        "arras.conformance": "",
+    }
+    assert violations(mods) == [
+        "arras.adapters.truss._conformance:1: adapters must not import arras.conformance (doubles)"
+    ]
+    mods = {
+        "arras.boundary": "from arras.adapters.truss import TrussBackend\n",
+        "arras.adapters.truss": "",
+    }
+    assert violations(mods) == [
+        "arras.boundary:1: tooling must not import arras.adapters.truss (adapters)"
+    ]
+
+
+def test_conformance_cli_uses_only_its_declared_harness_groups() -> None:
+    mods = {
+        "arras.conformance.__main__": (
+            "from arras.conformance import run_corpus\n"
+            "from arras.conformance.truss import TrussHarness\n"
+        ),
+        "arras.conformance": "",
+        "arras.conformance.truss": "",
+    }
+    assert violations(mods) == []
 
 
 def test_only_telemetry_loads_opentelemetry() -> None:

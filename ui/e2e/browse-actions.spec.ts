@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, type Request, test } from "@playwright/test";
+import { ORIGIN } from "./acceptance";
 import { ensureHub } from "./gb-fixtures";
 
 // Entity actions on an entity page (FR-70) through the whole stack: the built UI on the dev host as
@@ -13,7 +14,7 @@ const AXE_CASE = "uc-kit-axe";
 const RUN_CASE = `uc-kit-${stamp}`;
 
 test.beforeAll(async ({ playwright }) => {
-  const request = await playwright.request.newContext({ baseURL: "http://127.0.0.1:8123" });
+  const request = await playwright.request.newContext({ baseURL: ORIGIN });
   await ensureHub(request, AXE_CASE, 1, "Kit axe");
   await ensureHub(request, RUN_CASE, 1, "Kit run");
   await request.dispose();

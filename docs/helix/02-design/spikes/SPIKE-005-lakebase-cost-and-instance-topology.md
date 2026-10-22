@@ -15,7 +15,7 @@ ddx:
       kind: informs
 ---
 
-# Technical Spike: What Lakebase costs, and whether the Truss backend needs to share an instance with praxis
+# Technical Spike: What Lakebase costs, and whether the Truss backend needs to share an instance with the embedding host
 
 **Spike ID**: SPIKE-005 | **Lead**: Erik LaBianca | **Time Budget**: one research session | **Status**: Completed
 
@@ -24,16 +24,18 @@ Terms used in this spike:
 - Arras is the interface to an ontology: UMF-defined types and actions, reads that state their freshness, and a backend contract with two adapters.
 - Truss (DocumentDrivenDX) is the UMF-driven property-graph engine that Arras runs as its hot, authoritative, mutable store. The Truss backend is that store and its database.
 - Lakebase is Databricks' managed Postgres. A Lakebase project holds branches, and each branch holds databases and one primary read-write compute.
-- praxis is a Databricks app that embeds Arras as a library.
+- the host is the application that embeds Arras as a library.
 - ADR is an architecture decision record. ADR-012 decides that Truss has its own Postgres database, on Lakebase when deployed and embedded Postgres locally.
 - CU (capacity unit) is Lakebase's compute size, billed per hour. DBU is the Databricks billing unit for compute. DSU is the billing unit for storage.
 - `pgserver` and `pgembed` are Python packages that run an embedded Postgres for local development.
 
 ## Objective
 
-**Technical Question**: What does a Lakebase Postgres project cost at the sizes Arras runs, and is there a cost reason for the Truss backend to share a database instance with praxis instead of living in its own database?
+**Historical scope.** Deployment topology, costs and local engines below describe the dated reference configuration and measurements. They do not impose a service identity on every host or qualify the current installed server cohort.
 
-**Why now**: The Truss backend holds the catalog's mutable data. It runs on Lakebase when deployed on Databricks and on an embedded Postgres locally. The default is a separate database from praxis, even inside one Databricks app, unless cost argues otherwise.
+**Technical Question**: What does a Lakebase Postgres project cost at the sizes Arras runs, and is there a cost reason for the Truss backend to share a database instance with the embedding host instead of living in its own database?
+
+**Why now**: The Truss backend holds the catalog's mutable data. It runs on Lakebase when deployed on Databricks and on an embedded Postgres locally. The default is a separate database from the embedding host, even inside one Databricks app, unless cost argues otherwise.
 
 **Goals**:
 - [x] Estimate the monthly cost of the configurations in use.
@@ -49,7 +51,7 @@ Terms used in this spike:
 
 **Primary**: A second Lakebase project adds little cost at the sizes in use, because compute scales to zero when idle and storage is small.
 
-**Assumptions**: A separate database inside praxis's project saves one compute endpoint at most, which is too little to justify losing the failure and permission separation.
+**Assumptions**: A separate database inside the host's project saves one compute endpoint at most, which is too little to justify losing the failure and permission separation.
 
 ## Approach
 
@@ -87,12 +89,12 @@ Terms used in this spike:
 - **Evidence**: "a database exists within a branch of a project, with a limit of 500 databases per branch" (manage-databases). Each branch has one primary read-write compute (search result summarizing manage-projects). Limits: 500 branches per project, 500 roles per branch, 20 concurrently active computes, 1,000 projects per workspace. The documents read do not say how databases share compute or storage cost, nor how roles and grants work across databases (absent from the page).
 - **Implications**: Sharing a branch would save one endpoint. Cross-database grant behavior is undetermined.
 
-**FINDING 6**: A Lakebase project of Arras's own, separate from praxis's, needs no new mechanism.
+**FINDING 6**: A Lakebase project of Arras's own, separate from the host's, needs no new mechanism.
 - **Evidence**: A workspace holds up to 1,000 projects (Finding 5), and a project is declared with an identifier, a display name and a Postgres version (here `arras`, "Arras", 18). Roles, databases and dev branches belong to the application's own bundle.
 - **Implications**: A separate project is one more declaration.
 
 **FINDING 7**: Of the two embedded Postgres packages, only `pgserver` runs on the Python 3.11 that the library requires.
-- **Evidence**: Tested 4 Oct 2026. `pgserver` 0.1.4 on Python 3.11.17 starts PostgreSQL 16.2. `pgembed` 0.2.0 starts PostgreSQL 17.9 on Python 3.12, but has wheels only for CPython 3.12, 3.13 and 3.14, so installing it under 3.11 fails. Both accepted a role grant with `INHERIT FALSE, SET TRUE` (the form CONTRACT-004 requires). Neither provides `uuidv7`. Praxis already uses `pgserver` as a dev-only dependency (ADR-028 in the praxis repository).
+- **Evidence**: Tested 4 Oct 2026. `pgserver` 0.1.4 on Python 3.11.17 starts PostgreSQL 16.2. `pgembed` 0.2.0 starts PostgreSQL 17.9 on Python 3.12, but has wheels only for CPython 3.12, 3.13 and 3.14, so installing it under 3.11 fails. Both accepted a role grant with `INHERIT FALSE, SET TRUE` (the form CONTRACT-004 requires). Neither provides `uuidv7`. The original reference host also used a local PostgreSQL development dependency. This dated observation does not qualify the current Truss engine cohort.
 - **Implications**: Local development uses `pgserver`.
 
 ### Measurements
@@ -115,9 +117,9 @@ Storage at $0.390 per GB-month: a 6.51 GB database costs about $2.54 per month. 
 **Hypothesis**: CONFIRMED
 **Rationale**: A second endpoint adds at most about $40 per month at the 0.5 CU floor and nothing when idle (Findings 3 and 4, Measurements). The saving is small next to the loss of separation. This confirms the cost claim only; the resume-latency risk is not confirmed or ruled out, because resume time was not measured.
 
-Cost of sharing. Putting the Truss backend in praxis's project would save one endpoint. At the configured 0.5 CU floor that is at most about $40 per month if the second endpoint never suspended, about $10 per month on business hours, and $0 when idle. If the reported rate is the promotional half, double each.
+Cost of sharing. Putting the Truss backend in the host's project would save one endpoint. At the configured 0.5 CU floor that is at most about $40 per month if the second endpoint never suspended, about $10 per month on business hours, and $0 when idle. If the reported rate is the promotional half, double each.
 
-Isolation. Praxis's project is set up so the app's service principal is the only reader and writer by design. A second database in that branch would share one compute (one performance and failure domain, and one suspend and resume cycle) and the same project-level permission model. Cross-database grant behavior is not documented on the pages read.
+Isolation. The host's project is set up so the app's service principal is the only reader and writer by design. A second database in that branch would share one compute (one performance and failure domain, and one suspend and resume cycle) and the same project-level permission model. Cross-database grant behavior is not documented on the pages read.
 
 Cold start. With a 300-second suspend, the first request after idle pays a resume delay. The documents read give no resume time. The singleton read target in the PRD (p95 of 20 ms) assumes a warm connection, so the first request after suspension needs its own measurement (US-044 covers the latency targets on the catalog).
 
@@ -135,11 +137,11 @@ Version gap. Lakebase here runs Postgres 18 and the local `pgserver` runs 16.2. 
 
 ## Conclusions
 
-**Primary Conclusion**: No cost reason exists to share praxis's database instance with the Truss backend. The most a second endpoint can add at the sizes in use is about $40 per month, and it adds nothing when idle.
+**Primary Conclusion**: No cost reason exists to share the host's database instance with the Truss backend. The most a second endpoint can add at the sizes in use is about $40 per month, and it adds nothing when idle.
 
-- The Truss backend should have its own database, and its own instance (project), separate from praxis's.
-- The Lakebase project `arras` is separate from praxis's and sized small. It is the home for the Truss backend's database.
-- Locally, `pgserver` is the embedded Postgres: it runs on Python 3.11 and is the praxis convention.
+- The Truss backend should have its own database, and its own instance (project), separate from the host's.
+- The Lakebase project `arras` is separate from the host's and sized small. It is the home for the Truss backend's database.
+- Locally, `pgserver` is the embedded Postgres: it runs on Python 3.11 and is the original host convention.
 
 **Confidence**: Medium. The rates are unverified and cold-start latency is unmeasured.
 
@@ -147,12 +149,12 @@ Version gap. Lakebase here runs Postgres 18 and the local `pgserver` runs 16.2. 
 
 ## Recommendations
 
-**RECOMMENDATION**: Use a Lakebase project of its own, `arras`, for the Truss backend, never praxis's, sized at 0.5 to 2 CU with a 300-second suspend until measurement says otherwise. Run locally on `pgserver`, as a dev-only dependency.
+**RECOMMENDATION**: Use a Lakebase project of its own, `arras`, for the Truss backend, never the host's, sized at 0.5 to 2 CU with a 300-second suspend until measurement says otherwise. Run locally on `pgserver`, as a dev-only dependency.
 - **Rationale**: Findings 3, 4 and 6 and the Measurements show the cost of a separate project is small, and the isolation argument favors separation.
 - **Next Steps**:
   1. Have the application bundle create the Truss backend's database and roles in the `arras` project (ADR-012).
   2. Verify the Azure CU-hour and storage rates, and the standard rate after 31 Jan 2027, from the price table or `system.billing.list_prices`.
-  3. Measure resume time and first-request latency on the chosen project, and confirm the app can attach it beside praxis's.
+  3. Measure resume time and first-request latency on the chosen project, and confirm the app can attach it beside the host's.
   4. Keep the SQL portable across Postgres 16 and 18, with CI (continuous integration) on both.
 - **Concern Impact**: Consistent with ADR-012 and the `lakebase-postgres` concern's project-local setting, pending the resume-time measurement. No change.
 

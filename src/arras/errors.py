@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 
@@ -35,6 +36,18 @@ class Refused(ArrasError):
         self.operation = operation
         self.reason = reason  # `token_expired`: sign in again; `no_access`: request the grant
         super().__init__(f"{backend} refused {operation}")
+
+
+class PolicyRefused(Refused):
+    """Typed host-policy denial with a safe, non-wire-authoritative identifier."""
+
+    _CODE = re.compile(r"[a-z][a-z0-9_]{0,63}\Z")
+
+    def __init__(self, backend: str, operation: str, policy_code: str) -> None:
+        if type(policy_code) is not str or self._CODE.fullmatch(policy_code) is None:
+            raise ValueError("policy_code must be a stable identifier")
+        self.policy_code = policy_code
+        super().__init__(backend, operation, "no_access")
 
 
 # The reasons a backend may be unavailable for (CONTRACT-005). Anything else is reported as `other`.

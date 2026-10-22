@@ -1,24 +1,24 @@
 # Truss 0.0.45 and Weft 0.4.49: query refusals, nameless documents and condition precedence
 
-Measured with `truss-toolkit` 0.0.45 (the corpus cases) and 0.0.41 (the timings below, not repeated) and `weft-sql` 0.4.49 on PostgreSQL 18.6 (a throwaway `pgserver` for the corpus runs and a persistent Homebrew PostgreSQL 18 for the dev host). The captures in sections 1 and 2 are the calls the host's adapter made; the host's corpus cases that pin them (`read.relationship-columns-follow-ends`, `read.relationship-columns-are-capped`, `action.applies-atomically-and-reads-back`, `action.conflict-rolls-back-the-unit`) end at the same step with the same refusal on 0.0.41, and a document with every `name` removed registers on 0.0.41 (a pizza document, measured). Where something was not run it is marked unverified.
+Measured with `truss-toolkit` 0.0.45 (the corpus cases) and 0.0.41 (the timings below, not repeated) and `weft-sql` 0.4.49 on PostgreSQL 18.6 (a throwaway `pgserver` for the corpus runs and a persistent Homebrew PostgreSQL 18 for the dev host). The observations in sections 1 and 2 retain the measured statement shapes and results; downstream document identity is redacted from the representative calls. The original source identity remains in source history. The host's adapter made these calls; the host's corpus cases that pin them (`read.relationship-columns-follow-ends`, `read.relationship-columns-are-capped`, `action.applies-atomically-and-reads-back`, `action.conflict-rolls-back-the-unit`) end at the same step with the same refusal on 0.0.41, and a document with every `name` removed registers on 0.0.41 (a pizza document, measured). Where something was not run it is marked unverified.
 
 ## 1. Query refusals
 
 ### 1.1 `WFT-OUTPUT-NAME` on a whole-entity read with an explicit relationship alias
 
-Call (as made, `QueryRows` options shown):
+Representative call (`QueryRows` options shown; original downstream document identity replaced by the neutral `catalog-observation` label):
 
 ```
 query_in_transaction(
   tx,
   sql='SELECT x.*, RELATED_KEYS(x."addressedBy", 100) AS "addressedBy", RELATED_KEYS(x."coveredBy", 100) AS "coveredBy", RELATED_KEYS(x."evidence", 100) AS "evidence", RELATED_KEYS(x."adjacentEvidence", 100) AS "adjacentEvidence" FROM "catalog"."UseCase" x ORDER BY x."code" LIMIT 51',
-  document_ids=('praxis-catalog',),
+  document_ids=('catalog-observation',),
   parameters=None,
   maximum_rows=10000,
   read_profile='complete-entity')
 ```
 
-Module `catalog`, type `UseCase` (document id `praxis-catalog`; four relationships: `addressedBy`, `coveredBy`, `evidence`, `adjacentEvidence`). No bind parameters.
+Module `catalog`, type `UseCase` (document id `catalog-observation`; four relationships: `addressedBy`, `coveredBy`, `evidence`, `adjacentEvidence`). No bind parameters.
 
 Result, in full:
 
@@ -52,7 +52,7 @@ query_in_transaction(tx, sql='SELECT x.* FROM "pizza"."Pizza" x ORDER BY x."code
      outcome='refused')
 ```
 
-The same two statements on `praxis-catalog` (elements with `name`) return `QueryRows`. Every statement over the nameless module failed the same way, including `SELECT x.name` and `SELECT x.price`.
+The same two statements on `catalog-observation` (elements with `name`) return `QueryRows`. Every statement over the nameless module failed the same way, including `SELECT x.name` and `SELECT x.price`.
 
 ## 2. A first write refused as input on the same nameless module
 

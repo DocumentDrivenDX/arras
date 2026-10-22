@@ -14,7 +14,7 @@ from arras.operate import create_app, openapi_document
 from arras.sandbox import Sandbox
 
 PUBLIC = "https://ops.example"
-OTHER = "https://praxis.example"
+OTHER = "https://example.invalid"
 ADD = {"code": "uc-x", "name": "X", "workArea": "finance"}
 
 
@@ -1008,11 +1008,11 @@ def test_the_base_path_is_a_whole_segment_and_a_mounts_root_path_is_removed() ->
     assert c.post("/api/operatefoo/actions/catalog/AddUseCase/validate", {"inputs": ADD})[0] == 404
     assert c.call("GET", "/version")[0] == 404
     assert c.post("/api/operate/actions/catalog/AddUseCase/validate", {"inputs": ADD})[0] == 200
-    mounted = {"root_path": "/praxis"}
-    assert c.call("GET", "/praxis/api/operate/version", scope=mounted)[0] == 200
-    assert c.call("GET", "/praxis/api/operatex/version", scope=mounted)[0] == 404
+    mounted = {"root_path": "/embedded"}
+    assert c.call("GET", "/embedded/api/operate/version", scope=mounted)[0] == 200
+    assert c.call("GET", "/embedded/api/operatex/version", scope=mounted)[0] == 404
     bare = Client()
-    assert bare.call("GET", "/praxis/version", scope=mounted)[0] == 200
+    assert bare.call("GET", "/embedded/version", scope=mounted)[0] == 200
 
 
 def test_a_body_is_read_whole_in_chunks_and_a_disconnect_or_bad_bytes_are_400(c: Client) -> None:

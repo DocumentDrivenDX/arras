@@ -14,7 +14,12 @@ const external = [
   /^react-dom($|\/)/,
   /^@tanstack\/react-query($|\/)/,
   /^@documentdrivendx\/umf-schema-browser($|\/)/,
-  /^@databricks\/appkit-ui($|\/)/,
+  "node:fs",
+  "node:module",
+  "node:os",
+  "node:crypto",
+  "node:path",
+  "node:url",
 ];
 
 export default defineConfig({
@@ -29,6 +34,8 @@ export default defineConfig({
         index: resolve(import.meta.dirname, "src/index.ts"),
         browser: resolve(import.meta.dirname, "src/browser/index.ts"),
         shell: resolve(import.meta.dirname, "src/shell/index.ts"),
+        testkit: resolve(import.meta.dirname, "src/testkit/index.ts"),
+        "testkit/host": resolve(import.meta.dirname, "src/testkit/host.tsx"),
         styles: resolve(import.meta.dirname, "src/styles-entry.ts"),
       },
       formats: ["es"],

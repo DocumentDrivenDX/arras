@@ -15,7 +15,7 @@ ddx:
       kind: informed_by
 ---
 
-# US-042: Read context for the signed-in user in praxis
+# US-042: Read context for the signed-in user in the embedding host
 
 **Feature**: FEAT-008 — Reference Clients
 **Feature Requirements**: CLI-03
@@ -27,23 +27,23 @@ ddx:
 
 **As a** Client developer
 **I want** to read a playbook on behalf of the signed-in user on every call without caching it
-**So that** praxis never holds a second copy of context
+**So that** the embedding host never holds a second copy of context
 
 ## Context
 
-This is interaction 9 of the [client interactions draft](../client-interactions-draft.md). Praxis is the Databricks app that embeds Arras. It passes the user's own token on every call, and Unity Catalog (Databricks' governance and access layer) applies the user's policy on a replica (in production Ashlar).
+This is interaction 9 of the [client interactions draft](../client-interactions-draft.md). The embedding host owns its deployment and session identity. It passes the user's own token on every call, and Unity Catalog (Databricks' governance and access layer) applies the user's policy on a replica (in production Ashlar).
 
 ## Walkthrough
 
-1. Praxis starts a workflow that needs the playbook `pb-example-review`.
-2. Praxis reads the playbook as the user, with the user's own token.
+1. The embedding host starts a workflow that needs the playbook `pb-example-review`.
+2. The workflow host reads the playbook as the user, with the user's own token.
 3. The system returns the playbook with its age.
 4. A second session reads the playbook again.
 5. The system sends the second read to the backend.
 
 ## Acceptance Criteria
 
-- [ ] **US-042-AC1** — Given the signed-in user, when praxis reads a playbook, then the read runs with that user's own token and states its age.
+- [ ] **US-042-AC1** — Given the signed-in user, when the workflow host reads a playbook, then the read runs with that user's own token and states its age.
 - [ ] **US-042-AC2** — Given two reads, when both are made, then each reaches the backend.
 - [ ] **US-042-AC3** — Given a user who is not permitted, when the playbook is read, then the result is `Refused`.
 - [ ] **US-042-AC4** — Given a playbook older than the caller allows, when it is read, then the answer says so and the caller decides.
@@ -52,7 +52,7 @@ This is interaction 9 of the [client interactions draft](../client-interactions-
 ## Edge Cases
 
 - **An entitlement read**: fails closed (US-028) and depends on the preconditions in ADR-005 (durable knowledge state).
-- **No token from praxis**: Arras refuses the call.
+- **No token from the embedding host**: Arras refuses the call.
 
 ## Test Scenarios
 
@@ -70,7 +70,7 @@ This is interaction 9 of the [client interactions draft](../client-interactions-
 - **Feature Spec**: FEAT-008
 - **Feature Requirements**: CLI-03
 - **PRD Requirements**: FR-40
-- **External**: [CONTRACT-001](../../02-design/contracts/CONTRACT-001-ontology-interface.md); praxis PRD.
+- **External**: [CONTRACT-001](../../02-design/contracts/CONTRACT-001-ontology-interface.md); the downstream host's own product requirements.
 
 ## Out of Scope
 

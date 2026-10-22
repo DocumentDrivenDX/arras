@@ -1,0 +1,526 @@
+{
+  "date": "2026-10-22",
+  "decisions": [
+    "Host identity becomes the actual embedding/workflow role; no mandatory customer-specific host or frontend stack.",
+    "Requirement/decision IDs, dates, measured values and relative trace links are preserved.",
+    "Borrowed downstream decisions remain downstream-owned instead of becoming fabricated generic upstream ADR authority.",
+    "Historical query examples explicitly redact the downstream document identity; measured statement shapes/results are retained.",
+    "This dated snapshot is provenance/review evidence, not an automatic name classifier or perpetual current-content checksum gate."
+  ],
+  "entries": [
+    {
+      "artifact_id": "product-vision",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/00-discover/product-vision.md",
+      "sha256_before": "5f19baeb9612827fd8ecc8a2a685b272fcf5191910182934bca49085543e5b59",
+      "snapshot_sha256_after": "816128bc790bda2d1f5b89374e6ac6e4d94c5409b15307395827892b36a14430",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "client-interactions-draft",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/client-interactions-draft.md",
+      "sha256_before": "2dd2deb59f37ad074d31faf4379ce33981aeb60e039ea72bc9b69f33e35e6320",
+      "snapshot_sha256_after": "69e23f7ecdebbeb0d9dc7a949ae1f09553c5fd160efe394fb8a84bb62d4bb0db",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "concerns",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/concerns.md",
+      "sha256_before": "fa58f890ffc41c93b89474ceae78cf5b5c04c722654fc5cc40ed4089448e8389",
+      "snapshot_sha256_after": "2889d8780617406418b879e2593c6fc770b37074cf4f705fdcb612a946535cba",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "feature-registry",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/feature-registry.md",
+      "sha256_before": "5be11d7fe8b9c42da69c0e5628ba00c467f54057c792fe94fdb77e51f2f04a7e",
+      "snapshot_sha256_after": "cde1be8d1f2c57ef577055cbf5d9066f94f601300ca2fd2678a9fba10eba6147",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "FEAT-005",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/features/FEAT-005-access.md",
+      "sha256_before": "f97f34230cf550a4bfdc8c14cb0c47dc27a18578d9fd614e716b56d9a7581031",
+      "snapshot_sha256_after": "9b9854a885d7252bac54fe0fc5e5f5c30da04a3533d3520f3ca3573dc9a817ef",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "FEAT-006",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/features/FEAT-006-embedding-and-lifecycle.md",
+      "sha256_before": "9e35e4d8206dd78f125f94694019beac3b553bc6402c8ac4b20e835221ea905c",
+      "snapshot_sha256_after": "72a14b1a03f49a4737a97befcc828bfc8578bbf34ccf5488e71e3ca9f688e71c",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "FEAT-008",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/features/FEAT-008-reference-clients.md",
+      "sha256_before": "5984813b5b1939097c16718e83bed1d2237331bcf420a2ba8a77bdb52b087ac3",
+      "snapshot_sha256_after": "c8b7e6facce81539055bcd6744770945b52046076ca677fab7a5acc439b581cd",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "FEAT-009",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/features/FEAT-009-mcp-binding.md",
+      "sha256_before": "1cbb9d3aad5ad06f9d8b1808281785310b5b3cf0406a87c3d1e8c8fc6c9da078",
+      "snapshot_sha256_after": "fee5fb9482a9466baef675114cd71c74684340341938ab1f3b4ab8adc5a0a439",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "FEAT-010",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/features/FEAT-010-operator-console.md",
+      "sha256_before": "9015b3e9f0c05f2177636bebcda3c7c96c7a29df66e78b9cc9c9fa83c6706100",
+      "snapshot_sha256_after": "b0aeec7508982be866ed8ccc266b60256596f38df441b55e7abedab3e55ae8bf",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "FEAT-011",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/features/FEAT-011-graph-browser.md",
+      "sha256_before": "ff061027e6fa09ae5fcab1122ebd22ef4b321364457220aa2590956190af50b3",
+      "snapshot_sha256_after": "a0cba974221d007fe8ae1575e102ffa6183d6a0cf507f4fb45f99e8c9a88120e",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "prd",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/prd.md",
+      "sha256_before": "74b97e06c38e2c569d7ddd2228c62fe0cb14fb89708b7967ecf1e7f6537a998a",
+      "snapshot_sha256_after": "70fc0c410c695e38e42f2e9843aca3540005f4e85290d3ef6f20e5f2833894b0",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "principles",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/principles.md",
+      "sha256_before": "0bf9222a5eff0b300758d6b54fcc7208451017911ffde79a183ac81feae8a682",
+      "snapshot_sha256_after": "5381ed38ec6d18baf69cc28df8f2b8e296b3c09c536f0e77672ca6396936734e",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "stakeholder-map",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/stakeholder-map.md",
+      "sha256_before": "4a2fa96668086c0d43c07e15fa804803bc986771b5f33132f781a1da568b4267",
+      "snapshot_sha256_after": "8806f39cddd3014a48af015b011e94dbef1297e6e5a46dd049e19cb899184985",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-002",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/user-stories/US-002-list-a-types-entities.md",
+      "sha256_before": "9a7a7acf21379837dea052bbcf2c389946b2b34c260e0c28b3388ad87ca3eb9c",
+      "snapshot_sha256_after": "a809215fc197ac31fd5aae49655e5f5480e273eb92d2182c6bf0b848f52d21ae",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-007",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/user-stories/US-007-see-references-to-other-stores-as-keys.md",
+      "sha256_before": "36727b9a89feef228a5fad42a53156e2764062ff611e1f4930aec6aacbcd6f28",
+      "snapshot_sha256_after": "298329f41b6e371ec23aabf89600ec15341223b949f7be491b64ece6a7e9439e",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-017",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/user-stories/US-017-attribute-every-change-to-a-person.md",
+      "sha256_before": "2fff1723b498bf36501ad54c06f11b0ad625dea03fb0ac2a498f500e21dab590",
+      "snapshot_sha256_after": "b6968e007bde243774a7d89c1ad498950dff00a981eddb3d628e3646520aa423",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-027",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/user-stories/US-027-reach-every-backend-as-the-caller.md",
+      "sha256_before": "6aa40014041b37e5bcf67d38cbac6deb21d5d2994972bd073f508d5fd0d30d58",
+      "snapshot_sha256_after": "258d67af4d349041da95fee034d8c613bde2bba4db12ab94c2277aef6920631d",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-028",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/user-stories/US-028-tell-empty-refused-and-unavailable-apart.md",
+      "sha256_before": "6f360897312a3b751426d27b0792814f19913db81a961a3910e3b6c5a97ef813",
+      "snapshot_sha256_after": "88dfa85ceb4ee9f698d47aec58c48baf92c08dc1c72e23583f44445548e0cc3d",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-029",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/user-stories/US-029-keep-no-cache-of-data-or-decisions.md",
+      "sha256_before": "487f829b1f138c97ca2e8bcb3b78ccc05d31f4935e639c04c3c010c48d33f1e3",
+      "snapshot_sha256_after": "98575dace1c47f8d301fcb779bf372a394a897b7000e08ab768574accef5129b",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-030",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/user-stories/US-030-embed-arras-with-host-settings.md",
+      "sha256_before": "15fc4ab53978a572bc75b6505a957e9ffb53118485d57fdfb1ba60802a1a688e",
+      "snapshot_sha256_after": "86553ab0dcd7814a6bf4f9ee94c2745ece4ca227314b35d85055b4df9ab734d7",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-032",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/user-stories/US-032-keep-the-host-starting-when-a-backend-is-unusable.md",
+      "sha256_before": "2a0f02ecf961a33afc8db16a67552e98937328afed5c19c51e76059985f42de5",
+      "snapshot_sha256_after": "79c92052947c6cf31ccbfc6b459e003fd7fd3d587f82adda9315763cc2dec3a6",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-033",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/user-stories/US-033-fail-the-build-on-a-boundary-violation.md",
+      "sha256_before": "20bf46ef838ce4b39fd155d9a37cdac5b9ddf83e8242c01c264d8bd4b0a72b18",
+      "snapshot_sha256_after": "2a89025a21363874dff5a585dc82156f3bb899e4c0566166708568b34f99dedc",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-037",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/user-stories/US-037-keep-the-console-read-only-and-principal-scoped.md",
+      "sha256_before": "148155bf7b1ab0aaeb36a33fe606c6ab080bcbc2b21ec5b884b5a9f4bbc92351",
+      "snapshot_sha256_after": "f35306498765218ed6556ef4c06a9d9b1e97b1ca40dcf3854e9e149295370af3",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-038",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/user-stories/US-038-browse-the-product-catalog.md",
+      "sha256_before": "c6b69669a4f8243b68bdeb27b7eea8308b4fea391a4f8eca0870498574cb575c",
+      "snapshot_sha256_after": "ec8fcaef352f0be92bf46935378230f1c266adb97f85398a86cb5edaf551eeae",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-039",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/user-stories/US-039-correct-and-author-in-the-catalog.md",
+      "sha256_before": "c381a85a1c8e848aa2a481c87c9e1df443936769141962a208a9eb5dfd3edbab",
+      "snapshot_sha256_after": "7ea44f610fdbd06f4e1950a46597b51418138b3a301981e921229df18f7ce1b4",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-040",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/user-stories/US-040-seed-the-catalog-from-demonstration-records.md",
+      "sha256_before": "ecec888e8ec9b17fddc03325db3ea0724c6e98751ea34f4d49b271efc50633e0",
+      "snapshot_sha256_after": "b026ff0d700b2d1ef5b7e89cd86d4b320ca47d80700305a5060f6843f27bad7a",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-042",
+      "kind": "active-governed-prose",
+      "neutral_path_migration_preserves_artifact_id": true,
+      "path": "docs/helix/01-frame/user-stories/US-042-read-context-for-the-signed-in-user.md",
+      "sha256_before": "8000827aa5fd4500b80c88283e69d163dd8dc0281415219cb1e6e003e406c428",
+      "snapshot_sha256_after": "7750e7c2ad1e1ce803fb1781bcc92bb254954ab86dc5ece8bce9565aaab3234f",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-043",
+      "kind": "active-governed-prose",
+      "neutral_path_migration_preserves_artifact_id": true,
+      "path": "docs/helix/01-frame/user-stories/US-043-record-an-evaluation-finding-from-a-workflow.md",
+      "sha256_before": "21158b985aad939195c3c9e13d9c32f5dbc9f26593b3d99052dc1bbaa3a2a6db",
+      "snapshot_sha256_after": "0e2cb96d0ace7b5897585b0a98f5a8b26d494ddf49cd7a83ac9e8eef885dc64a",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-044",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/user-stories/US-044-meet-the-latency-targets-on-the-catalog.md",
+      "sha256_before": "6ddaea254bb57e4370f25e7f6e65af4ba367ab0d9ec6bff82dcfffe17b8cfb79",
+      "snapshot_sha256_after": "18f450e76528606168d9a7a2544761392086e9eba72ba297988d8e5d4e22db35",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-050",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/user-stories/US-050-expose-describe-query-and-one-tool-per-action.md",
+      "sha256_before": "e09ce1e808f51afb9cd51f4aefee96c208515f6bd1eba029bf308f1f06c77487",
+      "snapshot_sha256_after": "dc25a7799a9640783e76408189eaf990a0cdb6fdbececc6adb784496df5f02ac",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-051",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/user-stories/US-051-serve-one-person-with-a-refreshable-token.md",
+      "sha256_before": "a209e4fc7a62434efb4ed77a9b8981bd35aec940a6965743458871593a81562f",
+      "snapshot_sha256_after": "e2d80e364e92a24e29b503aae7903113322f01b0f1ab6b3a5b1aaaa61dbfdae8",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "US-055",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/01-frame/user-stories/US-055-see-who-changed-an-entity-and-when.md",
+      "sha256_before": "f29b7b598a7b39155e21df2f0b259d665afddafb7b93a2eeed5fad568cbc244f",
+      "snapshot_sha256_after": "757c0f4d78179e9cfdf05ac82c0b23643ec97fcd51ed964eaa8af78b057d8a72",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "ADR-006",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/adr/ADR-006-embedded-library-on-psycopg-and-the-truss-toolkit.md",
+      "sha256_before": "dc460ac711449c4c7d10880fbaceff2830cbf6905501b0bf8577a4e51f898b36",
+      "snapshot_sha256_after": "0debcbd7ea0a68f2502dbb3522c4896e343ff89f9cda7152e00d68ea0fa240de",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "ADR-009",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/adr/ADR-009-arras-as-the-product-name.md",
+      "sha256_before": "528b8fae44e03e71548d13ce3bae704d986cdbe0d28b6ecfb28b34c9307a5e0b",
+      "snapshot_sha256_after": "d383c0a5fc8d57549798a0d6883b5fb16b6a02ab5855c56663f737bca6af7709",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "ADR-010",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/adr/ADR-010-python-and-uv-as-the-arras-toolchain.md",
+      "sha256_before": "7576bc145162b4a8b4ed8653dc15ec3edba93a7edbc35a6d2f0c5fefe2459cf5",
+      "snapshot_sha256_after": "28f28045a50a14e73687bb78c2946ba30724a8e870d008bbb9b476aac2b642df",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "ADR-011",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/adr/ADR-011-read-only-graphql-generated-from-the-type-registry.md",
+      "sha256_before": "477682ba275afa48868b6373b87589cfb4e5b6e874f17848fd8a80659544c9e4",
+      "snapshot_sha256_after": "79f292a51df27ca1664b55c800fe3c35c00c2e3e52cf04ad29f1a96faf7d3bc4",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "ADR-012",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/adr/ADR-012-own-postgres-database-lakebase-deployed-embedded-locally.md",
+      "sha256_before": "4eceaabb2cc64f9969046967f70e241905914ac132759234d24a2dbb2b3f9e8b",
+      "snapshot_sha256_after": "283003461f5cc5b9760362c14a728988fd7f953895b834ed719c512831ad7596",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "ADR-013",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/adr/ADR-013-arras-is-an-ontology-interface-over-named-backends.md",
+      "sha256_before": "3bf9d7c3a3301b7fdc1144d8c74676e5740fc4f720e21e559aba57dd3ea7c588",
+      "snapshot_sha256_after": "c4f78d2671ab6ac20190d3c5c710cfef0176ce86488cd9596e8809809bad95e1",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "ADR-014",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/adr/ADR-014-reads-state-their-consistency-and-freshness.md",
+      "sha256_before": "c507c94229d9efda48be4d9f33cfc5f3343298f77a7c1c784434b632a77edd0e",
+      "snapshot_sha256_after": "9fa710e1b7b96db44f62f087cf811845d9738fcc8730b773438b372ec5c079e4",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "ADR-015",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/adr/ADR-015-writes-are-umf-actions-applied-by-providers.md",
+      "sha256_before": "6fd9b3f0fd774b69af277236ee8fa292b4c15843044e6fe7ae0187f4dc88ac1e",
+      "snapshot_sha256_after": "3aca74d114509d7fc2f42f48c458ad5dd6d36d2d72dd7b039bec158cd64cf0bf",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "ADR-016",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/adr/ADR-016-mcp-stdio-binding-over-the-library.md",
+      "sha256_before": "d2a86980010d47a1298f3da14234f0daf5cb02963f6171817e9b42ae29cb3562",
+      "snapshot_sha256_after": "c505d13488ecea0f7d3dc6f62ce6b968f95a1a3ca2cee852c5abbdf70d3ebf7f",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "ADR-017",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/adr/ADR-017-backends-are-reached-with-the-users-own-token.md",
+      "sha256_before": "c241b62262e059798f60dee46602a2248b19be75d5bf15bcf2491cfc05df6e32",
+      "snapshot_sha256_after": "a630b28487fb28a55fd5c248825c4f61c7a3907cb95b446784169c6fe1ede95f",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "ADR-018",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/adr/ADR-018-observability-is-caller-owned-opentelemetry.md",
+      "sha256_before": "a9c043d506f9c9f53bbaac5da7e8d1067cf8d69b20613586fd3176e32c1d490e",
+      "snapshot_sha256_after": "fe15542521151c72e741c4f1bbe768807083b629dc49430f3c7e74b08ad0fb1c",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "ADR-021",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/adr/ADR-021-operator-console-as-a-react-package-in-the-arras-repository.md",
+      "sha256_before": "b536a1795a0e5f8fdbb93a7b2cbd319fc979327bf53458391638d564f63a3c5d",
+      "snapshot_sha256_after": "d432bdfea3d9a0d92e5d9af9fa77d20105ee0c0eebb7b37675b0b378d3dfe7a6",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "ADR-024",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/adr/ADR-024-a-node-pages-location-lives-in-the-url-fragment.md",
+      "sha256_before": "f34e932826e8eed132476f2add1f07b5179b6600f7416672ffa241a3d0a34602",
+      "snapshot_sha256_after": "f6c91477b603f783a103b2baf41f81b6c4bd56f60dbf5b862ded79b630e6a677",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "ADR-025",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/adr/ADR-025-one-shell-two-modes-and-operate-is-offered-by-the-host.md",
+      "sha256_before": "f90a62c3b9a6ba9b02b9a09980822bff9ad0ba32655e88dd48dde4d0b60b86d6",
+      "snapshot_sha256_after": "4e69adc9e88d240eeb17692fd73e5f7a387e7db9535aed7df6f9e1d45f72effd",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "architecture",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/architecture.md",
+      "sha256_before": "79f331799bf66d942c5b2c0cc719ef5d7097ebfe947e59d9cc1e113b156405ff",
+      "snapshot_sha256_after": "d85355ea6c4b211198354127179e1c2c2da4142e342cd64479ef0ec298f30df4",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "CONTRACT-001",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/contracts/CONTRACT-001-ontology-interface.md",
+      "sha256_before": "0ed64db20ce2a65609d7d532ca75c636e45cb43bf5268dfea82cd9892e80648f",
+      "snapshot_sha256_after": "b9b0e8e90976a043dd8af69cfb5569ace9f8c33b2afae89157be7f7493cb18b2",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "CONTRACT-009",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/contracts/CONTRACT-009-operator-action-and-audit-surface.md",
+      "sha256_before": "2a8e159b54cc76b0aaee9204106a6ee023e28cb0b70b383f7d96c6a706c3455b",
+      "snapshot_sha256_after": "c70a1b9c3d542f32e2463e48723e7d1b5ff1806fa2425e1ef0e7da9b3a68d796",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "CONTRACT-010",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/contracts/CONTRACT-010-graph-browser-view-and-search.md",
+      "sha256_before": "125b5af35687852e2a699db0bbbf5f651f206e51d0533c68fab24a0a0c2d06f8",
+      "snapshot_sha256_after": "e2bd7925853410579d3972ea7fc03909942d0a2e935af47be93ec4a42f741e89",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "DESIGN-GB",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/graph-browser-visual-design.md",
+      "sha256_before": "b35cb815030f3864b12d78ff739fe703dabef5cf9be2cce7f1b7e5e1d0634e30",
+      "snapshot_sha256_after": "660c02f51d94e22bcf22d70d7ba9eb1ef64cfec6285353432c9fcf73eb78c120",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "proposed-external-interface",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/proposed-external-interface.md",
+      "sha256_before": "28fdb8f610a80dd093e6cd10f62719a0b51fcfa3296362ad1c7fa4ce9fa11b90",
+      "snapshot_sha256_after": "abc7d92be71dfdbe5c459fa936550cc0ba5875b1520fd6657430bc459a2777da",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "SD-013",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/02-design/solution-designs/SD-013-instance-work-in-explore-and-the-shared-action-kit.md",
+      "sha256_before": "09331a5ccb0504f0292129d511b62bc6ccd5fd2ff9437e13e8e1f23173c063d1",
+      "snapshot_sha256_after": "d50ce8fe44126903ae21069543f4deb30edf0f4c38b6211a9d421ae4d59d476a",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "SPIKE-002",
+      "kind": "dated-evidence",
+      "path": "docs/helix/02-design/spikes/SPIKE-002-how-the-field-exposes-an-ontology.md",
+      "sha256_before": "39e17011b997b3fc4e2e71691a0b2389a1b1084ffc4f59bae472f482b77a918b",
+      "snapshot_sha256_after": "bc73c8c68b07333eecf7634f86d5fe23a67394e3f6e0bc850ae0fdefe4313a86",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "SPIKE-005",
+      "kind": "dated-evidence",
+      "path": "docs/helix/02-design/spikes/SPIKE-005-lakebase-cost-and-instance-topology.md",
+      "sha256_before": "113590c40689eecff5ff398529b72a950da4634fd2f43afac67a06cc12809728",
+      "snapshot_sha256_after": "c4b3fe9ea626724a25ceedaf5356ad5353286353b46a2b70b8041cf29e5955a5",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": null,
+      "kind": "dated-evidence",
+      "path": "docs/helix/02-design/truss-query-and-conditions-findings.md",
+      "sha256_before": "d31e36a1fdfa47fb35a0999f22317b410ad22455fb343d80f3362aad3228e777",
+      "snapshot_sha256_after": "89310bd000d5211c162395d18316112da79f1d0f0066e9bfe5dbfedb40e8b0c9",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "TP-001",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/03-test/test-plan.md",
+      "sha256_before": "c2d4714a631c48d6accd9b40bfcac913a52bccff199261a5f0d816c1700d47f5",
+      "snapshot_sha256_after": "bf054a7c08312476d37fe830e1d6e523bf0b6192c3efb331715f65d5ec31ee6f",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "TM-001",
+      "kind": "active-governed-prose",
+      "path": "docs/helix/03-test/traceability.md",
+      "sha256_before": "d3c636c2eefd04b9560bd5044ee868710edf09e42aa5f46b020e3659dd4c6b9d",
+      "snapshot_sha256_after": "3b4e57d2e76f52ac1312d036b240b61489c962174c08d5bafcef59d2e48592d8",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "implementation-plan-truss-adapter",
+      "kind": "dated-evidence",
+      "path": "docs/helix/04-build/implementation-plan-truss-adapter.md",
+      "sha256_before": "94a13c279ecc693873382ecbdac9fe0c782c0b4c36b18b84a40a3b355cb7fad4",
+      "snapshot_sha256_after": "9148b21366a2d3d3c9319b5d32ae153a202c9f7274c2a324f021d4ae5c67c685",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": "implementation-plan",
+      "kind": "dated-evidence",
+      "path": "docs/helix/04-build/implementation-plan.md",
+      "sha256_before": "e3def8f066377e82c6b1c71eb08203e2f3ee47b86e466a78f8311d8139033b12",
+      "snapshot_sha256_after": "713b3fefc779d7f68e1e53b34f0ce98867b70284f3d5702408f067a8f4a5a862",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "artifact_id": null,
+      "kind": "active-governed-prose",
+      "path": "docs/helix/glossary.md",
+      "sha256_before": "0c022d0aaec610f13ce714f5bedb376c62f4ef73a07914a2cbee77259c56bc2a",
+      "snapshot_sha256_after": "47f0fe51cc3d9319da82a7732e5defa4e1c835948f6e35196bb48536c9b88dfc",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "kind": "active-guidance",
+      "path": "README.md",
+      "sha256_before": "8b931cac11431eb130468ccf02943dc3b6b402b2d6d941a116da89d33d279c07",
+      "snapshot_sha256_after": "cdeeed8e6b794d328e47df23b2c290ed85a925b5ec1182be55bf894a4f048e9d",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "kind": "active-guidance",
+      "path": "CLAUDE.md",
+      "sha256_before": "2f91dacddbdb9d1537e1e1739fd968e312460f389dc3620e715f1f03dd50c0eb",
+      "snapshot_sha256_after": "7a505279be8aa65608fec7df7b7e8ab519af5d54d7dc1ecdf5bbacb57c72c60f",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    },
+    {
+      "kind": "active-guidance",
+      "path": "ui/README.md",
+      "sha256_before": "dfa6db420d79b91b685c93d0181b2d8c0434ab3400806b8ef072a13052a3ffae",
+      "snapshot_sha256_after": "1c07b0efda029389ee8fdcf7549caa0543362a2769a40ee5331ee93b61bc02f6",
+      "source_identity": "prior repository artifact; original bytes identified by sha256_before and source history"
+    }
+  ],
+  "review": "Sol semantic documentation generalization",
+  "schema_version": 1,
+  "scope": "acknowledged active prose and dated evidence; reserved source and external snapshots not edited"
+}

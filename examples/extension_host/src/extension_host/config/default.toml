@@ -1,0 +1,14 @@
+# Inert, non-secret defaults for the installed extension-host example.
+
+[distribution]
+mcp_server_name = "Extension Host Example MCP"
+mcp_tool_prefix = "ext_host"
+
+[distribution.brand]
+name = "Extension Host Example"
+logo = "theme"
+
+[distribution.telemetry]
+attribute_namespace = "extension_host"
+log_prefix = "extension_host"
+event_prefix = "extension_host"

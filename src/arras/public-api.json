@@ -1,0 +1,1748 @@
+{
+  "schema_version": 1,
+  "distribution": {
+    "name": "arras",
+    "version": "0.5.0",
+    "version_source": "pyproject.toml",
+    "python_requires": ">=3.11",
+    "declared_python": [
+      "3.11",
+      "3.12",
+      "3.13"
+    ],
+    "npm": {
+      "name": "@documentdrivendx/arras-ui",
+      "version": "0.5.0",
+      "version_source": "pyproject.toml",
+      "exports": {
+        ".": {
+          "runtime": "dist/index.js",
+          "types": "dist/types/index.d.ts"
+        },
+        "./browser": {
+          "runtime": "dist/browser.js",
+          "types": "dist/types/browser/index.d.ts"
+        },
+        "./shell": {
+          "runtime": "dist/shell.js",
+          "types": "dist/types/shell/index.d.ts"
+        },
+        "./testkit": {
+          "runtime": "dist/testkit.js",
+          "types": "dist/types/testkit/index.d.ts"
+        },
+        "./testkit/host": {
+          "runtime": "dist/testkit/host.js",
+          "types": "dist/types/testkit/host.d.ts"
+        },
+        "./styles.css": {
+          "style": "dist/styles.css"
+        },
+        "./package.json": {
+          "metadata": "package.json"
+        }
+      },
+      "peer_dependencies": {
+        "react": {
+          "version": "^19.3.0",
+          "optional": false
+        },
+        "react-dom": {
+          "version": "^19.3.0",
+          "optional": false
+        },
+        "@axe-core/playwright": {
+          "version": "4.13.0",
+          "optional": true
+        },
+        "@playwright/test": {
+          "version": "1.63.0",
+          "optional": true
+        }
+      }
+    }
+  },
+  "contracts": {
+    "CONTRACT-001": {
+      "name": "interface",
+      "runtime_key": "interface",
+      "version": 2
+    },
+    "CONTRACT-002": {
+      "name": "type registry and placement",
+      "runtime_key": null,
+      "version": 1
+    },
+    "CONTRACT-003": {
+      "name": "actions",
+      "runtime_key": "actions",
+      "version": 1
+    },
+    "CONTRACT-004": {
+      "name": "backend contract",
+      "runtime_key": "backend",
+      "version": 5
+    },
+    "CONTRACT-005": {
+      "name": "embedding and lifecycle",
+      "runtime_key": "lifecycle",
+      "version": 2
+    },
+    "CONTRACT-006": {
+      "name": "console GraphQL surface",
+      "runtime_key": "console",
+      "version": 2
+    },
+    "CONTRACT-007": {
+      "name": "MCP binding",
+      "runtime_key": "mcp",
+      "version": 2
+    },
+    "CONTRACT-008": {
+      "name": "telemetry",
+      "runtime_key": null,
+      "version": 1
+    },
+    "CONTRACT-009": {
+      "name": "operator action and audit surface",
+      "runtime_key": "operate",
+      "version": 2
+    },
+    "CONTRACT-010": {
+      "name": "graph browser view and search",
+      "runtime_key": "browser",
+      "version": 1,
+      "vocabulary": {
+        "name": "arras.view",
+        "version": "0.1.0"
+      }
+    },
+    "CONTRACT-011": {
+      "name": "schema administration surface",
+      "runtime_key": "schema",
+      "version": 1
+    }
+  },
+  "python": {
+    "root_all": [
+      "CONTRACT_VERSIONS",
+      "ActionInfo",
+      "Arras",
+      "ArrasError",
+      "BackendStatus",
+      "BatchReceipt",
+      "Capabilities",
+      "Change",
+      "ChangesPage",
+      "Column",
+      "Conflict",
+      "Consistency",
+      "Context",
+      "EntityTypeInfo",
+      "Failure",
+      "Freshness",
+      "ImportResult",
+      "Invalid",
+      "ItemResult",
+      "Load",
+      "LoadsPage",
+      "MigrationResult",
+      "ModuleInfo",
+      "NotYetCurrent",
+      "Ontology",
+      "Placement",
+      "Position",
+      "PreconditionFailed",
+      "Principal",
+      "PropertyInfo",
+      "Receipt",
+      "RecordsPage",
+      "Refused",
+      "RegisteredDocument",
+      "RegistrationCheck",
+      "Registry",
+      "RegistryResult",
+      "Rejection",
+      "RelationshipInfo",
+      "Revision",
+      "Rows",
+      "Schema",
+      "SchemaChange",
+      "SchemaPlan",
+      "Statement",
+      "Status",
+      "Unavailable",
+      "Unsupported",
+      "Validation",
+      "Violation",
+      "WeftSupport"
+    ],
+    "modules": {
+      "arras": {
+        "kind": "package",
+        "names": "root_all"
+      },
+      "arras.adapters": {
+        "kind": "package",
+        "names": []
+      },
+      "arras.adapters.truss": {
+        "kind": "module",
+        "names": [
+          "create_backend",
+          "ModuleAccess",
+          "TrussBackend",
+          "InstallingSource",
+          "ConnectionSource"
+        ]
+      },
+      "arras.console": {
+        "kind": "package",
+        "names": [
+          "create_app",
+          "Request"
+        ]
+      },
+      "arras.operate": {
+        "kind": "package",
+        "names": [
+          "create_app",
+          "create_schema_app",
+          "Request",
+          "operators_in_groups"
+        ]
+      },
+      "arras.testing": {
+        "kind": "package",
+        "names": [
+          "InMemory",
+          "example_module"
+        ]
+      },
+      "arras.ui": {
+        "kind": "package",
+        "names": [
+          "Brand",
+          "create_app",
+          "npm_package"
+        ]
+      },
+      "arras.telemetry": {
+        "kind": "module",
+        "names": [
+          "TelemetryContext",
+          "dropped"
+        ]
+      },
+      "arras.conformance": {
+        "kind": "package",
+        "names": [
+          "Harness",
+          "Limit",
+          "Result",
+          "Report",
+          "run_corpus"
+        ]
+      },
+      "arras.branding": {
+        "kind": "module",
+        "names": [
+          "Brand",
+          "BRAND_CAPS"
+        ]
+      },
+      "arras.distribution": {
+        "kind": "module",
+        "names": [
+          "DistributionConfig",
+          "TelemetryNames"
+        ]
+      },
+      "arras.policy": {
+        "kind": "module",
+        "names": [
+          "PolicyBackend",
+          "PolicyRequest",
+          "PolicyDecision",
+          "PolicyOperation",
+          "WritePolicy",
+          "PolicyAnnotationCapabilities",
+          "PolicyAnnotationProvider",
+          "PolicyRefused"
+        ]
+      },
+      "arras.doctor": {
+        "kind": "module",
+        "names": [
+          "DoctorRequest",
+          "Diagnostic",
+          "DoctorReport",
+          "check"
+        ]
+      },
+      "arras.mcp": {
+        "kind": "package",
+        "names": [
+          "McpServer",
+          "TokenSource",
+          "principal_from_token",
+          "serve",
+          "launch"
+        ]
+      },
+      "arras.devhost": {
+        "kind": "module",
+        "names": [
+          "DevHost",
+          "main"
+        ]
+      },
+      "arras.conformance.truss": {
+        "kind": "module",
+        "names": [
+          "TrussHarness"
+        ]
+      },
+      "arras.ui.assets": {
+        "kind": "module",
+        "names": [
+          "load_manifest",
+          "AssetManifest"
+        ]
+      }
+    },
+    "callables": {
+      "arras.Arras.migrate": {
+        "parameters": [
+          {
+            "name": "self",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "timeout",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
+      },
+      "arras.Arras.session": {
+        "parameters": [
+          {
+            "name": "self",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "principal",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          }
+        ]
+      },
+      "arras.Arras.start": {
+        "parameters": [
+          {
+            "name": "backends",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "wait_bound",
+            "kind": "KEYWORD_ONLY",
+            "default": "configured wait bound"
+          },
+          {
+            "name": "sleep",
+            "kind": "KEYWORD_ONLY",
+            "default": "default sleeper"
+          },
+          {
+            "name": "clock",
+            "kind": "KEYWORD_ONLY",
+            "default": "monotonic clock"
+          },
+          {
+            "name": "expected",
+            "kind": "KEYWORD_ONLY",
+            "default": "empty tuple"
+          },
+          {
+            "name": "admin",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "placement",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "default_placement",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
+      },
+      "arras.Ontology.changes": {
+        "parameters": [
+          {
+            "name": "self",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "module",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": null
+          },
+          {
+            "name": "type",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "key",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "by",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "action",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "group",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "since",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "until",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "limit",
+            "kind": "KEYWORD_ONLY",
+            "default": 50
+          },
+          {
+            "name": "after",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "provider",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
+      },
+      "arras.Ontology.describe": {
+        "parameters": [
+          {
+            "name": "self",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "module",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": null
+          }
+        ]
+      },
+      "arras.Ontology.document": {
+        "parameters": [
+          {
+            "name": "self",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "module",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          }
+        ]
+      },
+      "arras.Ontology.import_records": {
+        "parameters": [
+          {
+            "name": "self",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "module",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "records",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "load_id",
+            "kind": "KEYWORD_ONLY"
+          }
+        ]
+      },
+      "arras.Ontology.invoke": {
+        "parameters": [
+          {
+            "name": "self",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "action",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "inputs",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "idempotency_key",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "expected_revision",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
+      },
+      "arras.Ontology.invoke_batch": {
+        "parameters": [
+          {
+            "name": "self",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "action",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "items",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "atomic",
+            "kind": "KEYWORD_ONLY",
+            "default": false
+          },
+          {
+            "name": "stop_on_error",
+            "kind": "KEYWORD_ONLY",
+            "default": false
+          },
+          {
+            "name": "idempotency_key",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "expected_revision",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
+      },
+      "arras.Ontology.loads": {
+        "parameters": [
+          {
+            "name": "self",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "module",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "limit",
+            "kind": "KEYWORD_ONLY",
+            "default": 50
+          },
+          {
+            "name": "after",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "provider",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
+      },
+      "arras.Ontology.query": {
+        "parameters": [
+          {
+            "name": "self",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "module",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "sql",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "params",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": null
+          },
+          {
+            "name": "limit",
+            "kind": "KEYWORD_ONLY",
+            "default": 50
+          },
+          {
+            "name": "consistency",
+            "kind": "KEYWORD_ONLY",
+            "default": "latest"
+          },
+          {
+            "name": "at_least",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "text",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
+      },
+      "arras.Ontology.search": {
+        "parameters": [
+          {
+            "name": "self",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "module",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "text",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "types",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": null
+          },
+          {
+            "name": "limit",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": 20
+          },
+          {
+            "name": "consistency",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": "latest"
+          },
+          {
+            "name": "at_least",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": null
+          },
+          {
+            "name": "budget",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "revision",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
+      },
+      "arras.Ontology.validate": {
+        "parameters": [
+          {
+            "name": "self",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "action",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "inputs",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "idempotency_key",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "expected_revision",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
+      },
+      "arras.console.create_app": {
+        "parameters": [
+          {
+            "name": "arras",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "principal_for_request",
+            "kind": "KEYWORD_ONLY"
+          },
+          {
+            "name": "base_path",
+            "kind": "KEYWORD_ONLY",
+            "default": ""
+          },
+          {
+            "name": "asset_base",
+            "kind": "KEYWORD_ONLY",
+            "default": "https://unpkg.com"
+          },
+          {
+            "name": "integrity",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "public_origin",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "allowed_origins",
+            "kind": "KEYWORD_ONLY",
+            "default": "empty tuple"
+          },
+          {
+            "name": "title",
+            "kind": "KEYWORD_ONLY",
+            "default": "Arras"
+          }
+        ]
+      },
+      "arras.devhost.main": {
+        "parameters": [
+          {
+            "name": "argv",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": null
+          },
+          {
+            "name": "distribution",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "telemetry_factory",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
+      },
+      "arras.distribution.DistributionConfig": {
+        "parameters": [
+          {
+            "name": "brand",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": "default Brand"
+          },
+          {
+            "name": "mcp_server_name",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": "arras"
+          },
+          {
+            "name": "mcp_tool_prefix",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": ""
+          },
+          {
+            "name": "env_prefix",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": "ARRAS"
+          },
+          {
+            "name": "telemetry",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": "TelemetryNames()"
+          }
+        ]
+      },
+      "arras.mcp.launch": {
+        "parameters": [
+          {
+            "name": "argv",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": null
+          },
+          {
+            "name": "distribution",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "telemetry_factory",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
+      },
+      "arras.operate.create_app": {
+        "parameters": [
+          {
+            "name": "arras",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "principal_for_request",
+            "kind": "KEYWORD_ONLY"
+          },
+          {
+            "name": "authorize_action",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "public_origin",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "allowed_origins",
+            "kind": "KEYWORD_ONLY",
+            "default": "empty tuple"
+          },
+          {
+            "name": "base_path",
+            "kind": "KEYWORD_ONLY",
+            "default": ""
+          },
+          {
+            "name": "authorize_operator",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "title",
+            "kind": "KEYWORD_ONLY",
+            "default": "Arras"
+          }
+        ]
+      },
+      "arras.operate.create_schema_app": {
+        "parameters": [
+          {
+            "name": "arras",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "principal_for_request",
+            "kind": "KEYWORD_ONLY"
+          },
+          {
+            "name": "authorize_schema",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "public_origin",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "allowed_origins",
+            "kind": "KEYWORD_ONLY",
+            "default": "empty tuple"
+          },
+          {
+            "name": "base_path",
+            "kind": "KEYWORD_ONLY",
+            "default": ""
+          },
+          {
+            "name": "authorize_operator",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
+      },
+      "arras.operate.operators_in_groups": {
+        "parameters": [
+          {
+            "name": "groups",
+            "kind": "VAR_POSITIONAL"
+          }
+        ]
+      },
+      "arras.telemetry.dropped": {
+        "parameters": []
+      },
+      "arras.ui.Brand": {
+        "parameters": [
+          {
+            "name": "name",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": "Arras"
+          },
+          {
+            "name": "title",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": null
+          },
+          {
+            "name": "wordmark",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": null
+          },
+          {
+            "name": "tagline",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": null
+          },
+          {
+            "name": "logo",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": null
+          }
+        ]
+      },
+      "arras.ui.create_app": {
+        "parameters": [
+          {
+            "name": "arras",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "principal_for_request",
+            "kind": "KEYWORD_ONLY"
+          },
+          {
+            "name": "authorize_operator",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "authorize_schema",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "authorize_action",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "base_path",
+            "kind": "KEYWORD_ONLY",
+            "default": ""
+          },
+          {
+            "name": "public_origin",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "allowed_origins",
+            "kind": "KEYWORD_ONLY",
+            "default": "empty tuple"
+          },
+          {
+            "name": "static_dir",
+            "kind": "KEYWORD_ONLY",
+            "default": "package static directory"
+          },
+          {
+            "name": "asset_manifest",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "theme_manifest",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "brand",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "distribution",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "telemetry_context",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
+      },
+      "arras.ui.npm_package": {
+        "parameters": []
+      },
+      "arras.conformance.truss.TrussHarness": {
+        "parameters": []
+      },
+      "arras.doctor.check": {
+        "parameters": [
+          {
+            "name": "request",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": null
+          }
+        ]
+      },
+      "arras.policy.PolicyBackend": {
+        "parameters": [
+          {
+            "name": "backend",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "policy",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          }
+        ]
+      },
+      "arras.conformance.run_corpus": {
+        "parameters": [
+          {
+            "name": "make_harness",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "only",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
+      },
+      "arras.ui.assets.load_manifest": {
+        "parameters": [
+          {
+            "name": "path",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "kind",
+            "kind": "KEYWORD_ONLY"
+          }
+        ]
+      },
+      "arras.policy.PolicyRefused": {
+        "parameters": [
+          {
+            "name": "backend",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "operation",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "policy_code",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          }
+        ]
+      },
+      "arras.distribution.TelemetryNames": {
+        "parameters": [
+          {
+            "name": "service_name",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": null
+          },
+          {
+            "name": "attribute_namespace",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": "arras"
+          },
+          {
+            "name": "log_prefix",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": "arras"
+          },
+          {
+            "name": "event_prefix",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": "arras"
+          }
+        ]
+      },
+      "arras.telemetry.TelemetryContext": {
+        "parameters": [
+          {
+            "name": "names",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": "TelemetryNames()"
+          },
+          {
+            "name": "tracer_provider",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
+      },
+      "arras.telemetry.TelemetryContext.activate": {
+        "parameters": [
+          {
+            "name": "self",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          }
+        ]
+      },
+      "arras.telemetry.TelemetryContext.wrap_asgi": {
+        "parameters": [
+          {
+            "name": "self",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "app",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          }
+        ]
+      },
+      "arras.mcp.McpServer": {
+        "parameters": [
+          {
+            "name": "arras",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "principal",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "name",
+            "kind": "KEYWORD_ONLY",
+            "default": "arras"
+          },
+          {
+            "name": "version",
+            "kind": "KEYWORD_ONLY",
+            "default": "0.1.0"
+          },
+          {
+            "name": "clock",
+            "kind": "KEYWORD_ONLY",
+            "default": "monotonic clock"
+          },
+          {
+            "name": "distribution",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "telemetry_context",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
+      },
+      "arras.devhost.DevHost": {
+        "parameters": [
+          {
+            "name": "sandbox",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "port",
+            "kind": "KEYWORD_ONLY"
+          },
+          {
+            "name": "ui_dir",
+            "kind": "KEYWORD_ONLY",
+            "default": "default UI directory"
+          },
+          {
+            "name": "distribution",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "telemetry_context",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
+      }
+    },
+    "contracts_version_source": "contracts",
+    "development_modules": [
+      "arras.devhost",
+      "arras.devtruss",
+      "arras.devcredentials"
+    ],
+    "host_modules": [
+      "arras",
+      "arras.adapters",
+      "arras.adapters.truss",
+      "arras.branding",
+      "arras.conformance",
+      "arras.conformance.truss",
+      "arras.console",
+      "arras.devhost",
+      "arras.distribution",
+      "arras.doctor",
+      "arras.operate",
+      "arras.policy",
+      "arras.telemetry",
+      "arras.testing",
+      "arras.ui",
+      "arras.ui.assets"
+    ],
+    "mcp_modules": [
+      "arras.mcp"
+    ],
+    "private_modules": [
+      "arras._doctor_types",
+      "arras.adapters.truss._conformance",
+      "arras.conformance.__main__",
+      "arras.conformance._checks"
+    ],
+    "launcher_modules": {
+      "arras.mcp": [
+        "launch"
+      ]
+    }
+  },
+  "host_configuration": {
+    "environment": {
+      "keys": [
+        "ARRAS_ENV",
+        "ARRAS_CONFIG_DIR",
+        "ARRAS_OPS_FILE",
+        "ARRAS_TOKEN_FILE",
+        "ARRAS_TOKEN",
+        "ARRAS_USER_CLAIM",
+        "ARRAS_LOG_LEVEL",
+        "ARRAS_DEV_SANDBOX",
+        "ARRAS_DEV_USER"
+      ],
+      "pattern_keys": [
+        "ARRAS_BACKEND_<NAME>_ENDPOINT"
+      ],
+      "ignored_prefixes": [
+        "ARRAS_ADMIN_",
+        "ARRAS_REQUIRE_WEFT"
+      ],
+      "token_exclusion": "ARRAS_TOKEN and ARRAS_TOKEN_FILE cannot both be supplied",
+      "pattern": {
+        "key": "ARRAS_BACKEND_<NAME>_ENDPOINT",
+        "regex": "ARRAS_BACKEND_([A-Z][A-Z0-9_]{0,40})_ENDPOINT",
+        "owner": "ops"
+      },
+      "selected_prefix": "ARRAS by default; caller-selected DistributionConfig.env_prefix otherwise",
+      "alias_rule": "For each recognized ARRAS suffix, the selected prefix alias wins per key; credential aliases are checked before precedence",
+      "prefix_pattern": "[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*, at most 32 ASCII characters",
+      "credential_alias_rule": "Any token with any token-file alias is refused; differing nonblank aliases of the same credential kind are refused"
+    },
+    "files": {
+      "environment_file": "<config_dir>/<env>.toml",
+      "default_file": "config/default.toml",
+      "keys": [
+        "dev_sandbox",
+        "dev_user",
+        "distribution",
+        "log_level",
+        "modules",
+        "placement",
+        "user_claims"
+      ],
+      "placement_keys": [
+        "record",
+        "replicas",
+        "providers"
+      ],
+      "ops_file_sections": [
+        "backends.<name>.endpoint"
+      ],
+      "ops_keys": [
+        "backends",
+        "config_dir",
+        "endpoint",
+        "endpoints",
+        "env",
+        "ops_file",
+        "token",
+        "token_file"
+      ],
+      "ownership": {
+        "ops": [
+          "backends.<name>.endpoint"
+        ],
+        "dev": [
+          "dev_sandbox",
+          "dev_user",
+          "distribution",
+          "log_level",
+          "modules",
+          "placement",
+          "user_claims"
+        ]
+      },
+      "distribution_keys": [
+        "mcp_server_name",
+        "mcp_tool_prefix",
+        "brand.name",
+        "brand.title",
+        "brand.wordmark",
+        "brand.tagline",
+        "brand.logo",
+        "telemetry.service_name",
+        "telemetry.attribute_namespace",
+        "telemetry.log_prefix",
+        "telemetry.event_prefix"
+      ],
+      "launcher_only_keys": [
+        "distribution.env_prefix"
+      ]
+    },
+    "precedence": [
+      "ARRAS_BACKEND_<NAME>_ENDPOINT over ops file endpoint",
+      "ops-injected endpoints and user token",
+      "environment-specific TOML over default TOML key by key; tables merge"
+    ],
+    "ownership": {
+      "ops": [
+        "ARRAS_ENV",
+        "ARRAS_CONFIG_DIR",
+        "ARRAS_OPS_FILE",
+        "ARRAS_TOKEN_FILE",
+        "ARRAS_TOKEN",
+        "ARRAS_BACKEND_<NAME>_ENDPOINT"
+      ],
+      "dev": [
+        "ARRAS_USER_CLAIM",
+        "ARRAS_LOG_LEVEL",
+        "ARRAS_DEV_SANDBOX",
+        "ARRAS_DEV_USER"
+      ]
+    },
+    "development_environment": {
+      "keys": [
+        "ARRAS_TRUSS_DEV_URL",
+        "ARRAS_TRUSS_DEV_CREDENTIALS"
+      ],
+      "owner": "development host only",
+      "precedence": [
+        "explicit CLI argument",
+        "environment variable",
+        "scoped credentials file"
+      ]
+    }
+  },
+  "commands": {
+    "python -m arras.devhost": [
+      "--port",
+      "--ui",
+      "--demo",
+      "--no-demo",
+      "--module",
+      "--seed",
+      "--truss",
+      "--truss-url",
+      "--truss-reset",
+      "--truss-credentials",
+      "--records",
+      "--also"
+    ],
+    "python -m arras.ui": [
+      "npm-package",
+      "--copy"
+    ],
+    "python -m arras.mcp": [
+      "-h",
+      "--help"
+    ],
+    "python -m arras.boundary": [
+      "--host",
+      "--library",
+      "--host-package"
+    ],
+    "python -m arras.doctor": [
+      "--request"
+    ],
+    "python -m arras.conformance": [
+      "--backend"
+    ]
+  },
+  "ui": {
+    "npm_runtime_exports": {
+      ".": [
+        "ActionForm",
+        "ApiError",
+        "ArrasConsole",
+        "ArrasProvider",
+        "AuditView",
+        "DEFAULT_BRAND",
+        "DEFAULT_EXPLORER_BASE",
+        "DEFAULT_SCHEMA_BASE",
+        "DesignSystemProvider",
+        "EntityTable",
+        "QUERY_MAX_CHARS",
+        "QUERY_MAX_LIMIT",
+        "QueryArea",
+        "ROLE_TOKENS",
+        "SCHEMA_CHANGE_ELEMENTS",
+        "SCHEMA_CHANGE_KINDS",
+        "SUPPORTED_OPERATE_VERSION",
+        "SUPPORTED_SCHEMA_VERSION",
+        "SchemaBrowser",
+        "SchemaExport",
+        "SchemaImport",
+        "UmfSource",
+        "annotationsFor",
+        "createClient",
+        "createSchemaApi",
+        "defaultDesignSystem",
+        "entryId",
+        "formatHash",
+        "parseHash",
+        "readBrandMeta",
+        "toEntries",
+        "typeForSelection",
+        "useDesignSystem"
+      ],
+      "./browser": [
+        "GraphBrowser",
+        "formatExplore",
+        "parseExplore"
+      ],
+      "./shell": [
+        "ArrasApp",
+        "effectiveMode",
+        "hashKind",
+        "operateFor"
+      ],
+      "./testkit": [
+        "createAcceptanceConfig"
+      ],
+      "./testkit/host": [
+        "AcceptanceHost"
+      ]
+    },
+    "npm_type_exports": {
+      ".": [
+        "ActionFormProps",
+        "ActionInfo",
+        "ActionRequest",
+        "ApiError",
+        "Area",
+        "ArrasClient",
+        "ArrasConsoleProps",
+        "AuditViewProps",
+        "BackendCapabilities",
+        "BackendStatus",
+        "BatchItem",
+        "BatchReceipt",
+        "BatchRequest",
+        "Brand",
+        "ButtonProps",
+        "ButtonVariant",
+        "Change",
+        "ChangeOp",
+        "ChangesQuery",
+        "ClientConfig",
+        "Consistency",
+        "DesignSystem",
+        "Effect",
+        "EffectDecl",
+        "EntityRef",
+        "EntityTableProps",
+        "EntityTypeInfo",
+        "ErrorBody",
+        "ExportPage",
+        "Failure",
+        "FieldChrome",
+        "FieldView",
+        "Freshness",
+        "InputSpec",
+        "Load",
+        "MarkProps",
+        "MetaData",
+        "ModuleInfo",
+        "ModuleView",
+        "NotSearched",
+        "NoticeProps",
+        "NoticeTone",
+        "Page",
+        "PreconditionDecl",
+        "PropertyInfo",
+        "ProviderProps",
+        "QueryAreaProps",
+        "QueryColumn",
+        "QueryConsistency",
+        "QueryRequest",
+        "QueryResult",
+        "Receipt",
+        "Ref",
+        "RegistryResult",
+        "RelationshipInfo",
+        "RelationshipView",
+        "Revision",
+        "RoleToken",
+        "Route",
+        "SchemaApi",
+        "SchemaCatalog",
+        "SchemaCatalogEntry",
+        "SchemaChange",
+        "SchemaChangeElement",
+        "SchemaChangeKind",
+        "SchemaPlan",
+        "SchemaRequest",
+        "SchemaVersions",
+        "SearchCount",
+        "SearchHit",
+        "SearchPage",
+        "SearchSegment",
+        "SelectOption",
+        "SelectProps",
+        "TextAreaProps",
+        "TextFieldProps",
+        "TypeView",
+        "UmfSourceProps",
+        "Validation",
+        "Versions",
+        "ViewSection",
+        "Viewer",
+        "Violation"
+      ],
+      "./browser": [
+        "ExploreLocation",
+        "GraphBrowserProps",
+        "LocationProps"
+      ],
+      "./shell": [
+        "ArrasAppProps",
+        "CrossLink",
+        "LinkArea",
+        "LinkTarget",
+        "LinkTo",
+        "Mode"
+      ],
+      "./testkit": [
+        "AcceptanceConfigOptions"
+      ],
+      "./testkit/host": []
+    },
+    "npm_style_exports": [
+      "./styles.css"
+    ],
+    "role_tokens": [
+      "--arras-color-text",
+      "--arras-color-text-muted",
+      "--arras-color-surface",
+      "--arras-color-surface-sunken",
+      "--arras-color-ground",
+      "--arras-color-border",
+      "--arras-color-accent",
+      "--arras-color-on-accent",
+      "--arras-radius-control",
+      "--arras-radius-card",
+      "--arras-font-body",
+      "--arras-font-mono",
+      "--arras-font-size-small",
+      "--arras-font-size-heading",
+      "--arras-state-live",
+      "--arras-state-limited",
+      "--arras-state-closed",
+      "--arras-state-purchasing"
+    ],
+    "root_class": ".arras-root"
+  },
+  "telemetry": {
+    "events": [
+      "arras.query",
+      "arras.validate",
+      "arras.invoke",
+      "arras.invoke_batch",
+      "arras.import_records",
+      "arras.export_records",
+      "arras.migrate",
+      "arras.changes",
+      "arras.loads",
+      "arras.search",
+      "arras.document",
+      "arras.register",
+      "arras.attach",
+      "arras.schema_validate",
+      "arras.schema_register",
+      "arras.backend.status",
+      "arras.backend.migrate",
+      "arras.backend.configure_access"
+    ],
+    "attributes": [
+      "module",
+      "action",
+      "backend",
+      "consistency",
+      "outcome",
+      "reason",
+      "replayed",
+      "recovered",
+      "committed",
+      "atomic",
+      "valid",
+      "available",
+      "items",
+      "succeeded",
+      "failed",
+      "rows",
+      "truncated",
+      "duration_ms",
+      "error.type"
+    ],
+    "public_callable": "arras.telemetry.dropped",
+    "private": [
+      "emission",
+      "span",
+      "exporter",
+      "sink"
+    ],
+    "attribute_export_names": [
+      "arras.module",
+      "arras.action",
+      "arras.backend",
+      "arras.consistency",
+      "arras.outcome",
+      "arras.reason",
+      "arras.replayed",
+      "arras.recovered",
+      "arras.committed",
+      "arras.atomic",
+      "arras.valid",
+      "arras.available",
+      "arras.items",
+      "arras.succeeded",
+      "arras.failed",
+      "arras.rows",
+      "arras.truncated",
+      "arras.duration_ms",
+      "error.type"
+    ],
+    "identities": {
+      "logger": "arras.telemetry",
+      "tracer": "arras"
+    },
+    "privacy": {
+      "default": "allowlist only",
+      "value_limit_characters": 64,
+      "excluded": [
+        "request inputs",
+        "entity keys",
+        "query text",
+        "tokens",
+        "user names",
+        "request IDs",
+        "idempotency keys",
+        "roles"
+      ]
+    }
+  },
+  "resources": {
+    "conformance_corpus_version": 13,
+    "vocabularies": [
+      {
+        "name": "arras.view",
+        "version": "0.1.0"
+      }
+    ],
+    "ui_acceptance": {
+      "manifest_path": "support/acceptance/resources.json",
+      "manifest_sha256": "f74814ba062e6008c40b201faca02132dcba951874ee242565dba3a4f8161dc9",
+      "version": 1,
+      "specs": [
+        "a11y.spec.ts",
+        "brand.spec.ts",
+        "browse-actions.spec.ts",
+        "browse-history.spec.ts",
+        "browse-new.spec.ts",
+        "browse-retire.spec.ts",
+        "browser.spec.ts",
+        "cross-links.spec.ts",
+        "flows.spec.ts",
+        "host-isolation.spec.ts",
+        "operator.spec.ts",
+        "query.spec.ts",
+        "routes.spec.ts",
+        "schema-admin.spec.ts",
+        "shortcuts.spec.ts",
+        "umf-explorer.spec.ts",
+        "visual.spec.ts"
+      ],
+      "expected_counts": {
+        "chromium": 132,
+        "schema-admin": 3,
+        "browser": 70,
+        "visual": 67
+      },
+      "file_count": 83
+    }
+  },
+  "qualification": {
+    "categories": [
+      "declared",
+      "source-tested",
+      "artifact-inspected",
+      "installed-consumer-tested"
+    ],
+    "not_qualified_without_observation": [
+      "Linux",
+      "Python 3.12",
+      "Python 3.13",
+      "registry installation",
+      "managed Arras host",
+      "official UMF runtime"
+    ]
+  },
+  "launch": {
+    "python -m arras.mcp": {
+      "class": "runtime process",
+      "stdout": "protocol frames",
+      "stderr": "diagnostics"
+    },
+    "python -m arras.devhost": {
+      "class": "development host"
+    },
+    "python -m arras.boundary": {
+      "class": "tooling check"
+    }
+  },
+  "compatibility": {
+    "package_semver": {
+      "0.x": "breaking change increments minor; patch preserves public API",
+      "1.x_and_later": "breaking change increments major"
+    },
+    "python_deprecation": "one minor release grace (CONTRACT-001)",
+    "http_deprecation": "Deprecation and Sunset headers for one minor release (CONTRACT-009, CONTRACT-011)",
+    "vocabulary_deprecation": "one vocabulary major version before term removal (CONTRACT-010)",
+    "version_domains": [
+      "Python distribution version",
+      "npm package version",
+      "manifest schema_version",
+      "contract versions",
+      "vocabulary versions"
+    ],
+    "sources": [
+      "docs/helix/02-design/contracts/CONTRACT-001-ontology-interface.md",
+      "docs/helix/02-design/contracts/CONTRACT-009-operator-action-and-audit-surface.md",
+      "docs/helix/02-design/contracts/CONTRACT-010-graph-browser-view-and-search.md",
+      "docs/helix/02-design/contracts/CONTRACT-011-schema-administration-surface.md"
+    ]
+  }
+}

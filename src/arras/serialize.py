@@ -10,7 +10,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
-from arras.errors import ArrasError
+from arras.errors import ArrasError, PolicyRefused
 from arras.types import Revision
 
 
@@ -37,7 +37,8 @@ def jsonable(v: Any, *, tag: bool = True) -> Any:
 
 
 def error_body(e: ArrasError) -> dict[str, Any]:
-    body: dict[str, Any] = {"type": type(e).__name__, "message": str(e)}
+    error_type = "Refused" if isinstance(e, PolicyRefused) else type(e).__name__
+    body: dict[str, Any] = {"type": error_type, "message": str(e)}
     for name in (
         "violations",
         "failures",
@@ -51,6 +52,8 @@ def error_body(e: ArrasError) -> dict[str, Any]:
     ):
         if hasattr(e, name):
             body[name] = jsonable(getattr(e, name))
+    if isinstance(e, PolicyRefused):
+        body["policy_code"] = e.policy_code
     notes = getattr(e, "__notes__", None)
     if notes:
         body["notes"] = list(notes)

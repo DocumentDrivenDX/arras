@@ -156,7 +156,7 @@ def test_a_missing_extra_leaves_the_handle_unbuilt_and_says_which_extra(
     import arras.adapters.truss as truss_adapter
 
     def absent() -> str:
-        raise ImportError("truss-toolkit 0.0.45 is not installed")
+        raise ImportError("truss-toolkit 0.0.48 is not installed")
 
     monkeypatch.setattr(truss_adapter, "require_toolkit", absent)
     config = Config.from_env({"ARRAS_BACKEND_PRIMARY_ENDPOINT": "postgresql://db.example/h"})
@@ -434,3 +434,163 @@ def test_a_handle_with_no_adapter_starts_the_process_degraded_and_says_so_on_std
     )
     assert done.returncode == 0 and done.stdout == ""
     assert "backend primary has an endpoint" in done.stderr and "primary.example" not in done.stderr
+
+
+def test_custom_prefix_aliases_normalize_once_and_custom_values_win(tmp_path: Path) -> None:
+    env = files(tmp_path, default='dev_user = "file-user"\n')
+    env.update(
+        {
+            "TENANT_ENV": "",
+            "TENANT_DEV_USER": "custom-user",
+            "ARRAS_DEV_USER": "canonical-user",
+            "TENANT_TOKEN": "secret",
+        }
+    )
+    selected = __import__("arras.distribution", fromlist=["DistributionConfig"]).DistributionConfig(
+        env_prefix="TENANT"
+    )
+    c = Config.from_env(env, distribution=selected)
+    assert c.dev_user == "custom-user" and c.token == "secret"
+    assert c.distribution.env_prefix == "TENANT"
+
+
+def test_alias_credentials_conflict_even_when_custom_value_would_win() -> None:
+    from arras.distribution import DistributionConfig
+
+    selected = DistributionConfig(env_prefix="TENANT")
+    with pytest.raises(ConfigError) as e:
+        Config.from_env({"TENANT_TOKEN": "one", "ARRAS_TOKEN": "two"}, distribution=selected)
+    assert "TENANT_TOKEN" in str(e.value) and "ARRAS_TOKEN" in str(e.value)
+    assert "one" not in str(e.value) and "two" not in str(e.value)
+
+
+def test_any_token_and_token_file_alias_pair_is_refused() -> None:
+    from arras.distribution import DistributionConfig
+
+    with pytest.raises(ConfigError):
+        Config.from_env(
+            {"ARRAS_TOKEN": "secret", "TENANT_TOKEN_FILE": "/run/secret"},
+            distribution=DistributionConfig(env_prefix="TENANT"),
+        )
+
+
+def test_unknown_keys_in_custom_namespace_fail_but_other_namespaces_are_untouched() -> None:
+    from arras.distribution import DistributionConfig
+
+    selected = DistributionConfig(env_prefix="TENANT")
+    with pytest.raises(ConfigError, match="TENANT_MISSPELLED"):
+        Config.from_env({"TENANT_MISSPELLED": "hidden"}, distribution=selected)
+    assert Config.from_env({"OTHER_MISSPELLED": "ignored"}, distribution=selected) == Config(
+        distribution=selected
+    )
+
+
+def test_committed_distribution_can_set_brand_but_not_bootstrap_prefix(tmp_path: Path) -> None:
+    from arras.distribution import DistributionConfig
+
+    env = files(
+        tmp_path,
+        default='[distribution]\nmcp_server_name = "Acme"\nmcp_tool_prefix = "acme"\n[distribution.brand]\nname = "Acme"\n',
+    )
+    selected = DistributionConfig(env_prefix="TENANT")
+    c = Config.from_env(env, distribution=selected)
+    assert c.distribution.mcp_server_name == "Acme"
+    assert c.distribution.brand.name == "Acme"
+    assert c.distribution.env_prefix == "TENANT"
+    env = files(tmp_path, default='[distribution]\nenv_prefix = "BAD"\n')
+    with pytest.raises(ConfigError, match="env_prefix"):
+        Config.from_env(env, distribution=selected)
+
+
+def test_arras_prefixed_custom_environment_names_are_not_mistaken_for_canonical() -> None:
+    from arras.distribution import DistributionConfig
+
+    selected = DistributionConfig(env_prefix="ARRAS_CUSTOM")
+    c = Config.from_env({"ARRAS_CUSTOM_TOKEN": "secret"}, distribution=selected)
+    assert c.token == "secret"
+
+
+def test_blank_custom_alias_falls_back_to_canonical_value() -> None:
+    from arras.distribution import DistributionConfig
+
+    selected = DistributionConfig(env_prefix="TENANT")
+    c = Config.from_env(
+        {"TENANT_DEV_USER": "  ", "ARRAS_DEV_USER": "canonical"}, distribution=selected
+    )
+    assert c.dev_user == "canonical"
+
+
+def test_blank_credential_alias_does_not_hide_nonblank_credential() -> None:
+    from arras.distribution import DistributionConfig
+
+    selected = DistributionConfig(env_prefix="TENANT")
+    c = Config.from_env({"TENANT_TOKEN": " ", "ARRAS_TOKEN": "secret"}, distribution=selected)
+    assert c.token == "secret"
+
+
+def test_custom_blank_fallback_is_independent_of_environment_mapping_order() -> None:
+    from arras.distribution import DistributionConfig
+
+    selected = DistributionConfig(env_prefix="TENANT")
+    for env in (
+        {"TENANT_TOKEN": " ", "ARRAS_TOKEN": "usable"},
+        {"ARRAS_TOKEN": "usable", "TENANT_TOKEN": " "},
+    ):
+        assert Config.from_env(env, distribution=selected).token == "usable"
+
+
+def test_distribution_tables_merge_brand_fields_across_environment_layers(tmp_path: Path) -> None:
+    env = files(
+        tmp_path,
+        default='[distribution]\nmcp_server_name = "Default"\n[distribution.brand]\nname = "Default Brand"\ntagline = "base"\n',
+        prod='[distribution.brand]\ntitle = "Production"\n',
+    )
+    env["ARRAS_ENV"] = "prod"
+    config = Config.from_env(env)
+    assert config.distribution.mcp_server_name == "Default"
+    assert config.distribution.brand.name == "Default Brand"
+    assert config.distribution.brand.tagline == "base"
+    assert config.distribution.brand.title == "Production"
+
+
+def test_invalid_distribution_file_values_name_the_field_without_echoing_value(
+    tmp_path: Path,
+) -> None:
+    secret = "bad-secret-prefix"
+    env = files(tmp_path, default=f'[distribution]\nmcp_tool_prefix = "{secret}"\n')
+    with pytest.raises(ConfigError) as e:
+        Config.from_env(env)
+    assert "distribution.mcp_tool_prefix" in str(e.value)
+    assert secret not in str(e.value)
+
+
+def test_distribution_telemetry_names_merge_by_field_and_reject_invalid_values(
+    tmp_path: Path,
+) -> None:
+    env = files(
+        tmp_path,
+        default="""[distribution.telemetry]
+attribute_namespace = "example.attrs"
+log_prefix = "example.logs"
+""",
+        local="""[distribution.telemetry]
+event_prefix = "example.events"
+""",
+    )
+    config = Config.from_env({**env, "ARRAS_ENV": "local"})
+    assert config.distribution.telemetry.service_name is None
+    assert config.distribution.telemetry.attribute_namespace == "example.attrs"
+    assert config.distribution.telemetry.log_prefix == "example.logs"
+    assert config.distribution.telemetry.event_prefix == "example.events"
+
+    bad_root = tmp_path / "bad"
+    bad_root.mkdir()
+    invalid = files(
+        bad_root,
+        default="""[distribution.telemetry]
+attribute_namespace = "Example.attrs"
+""",
+    )
+    with pytest.raises(ConfigError) as error:
+        Config.from_env(invalid)
+    assert error.value.problems == ["distribution.telemetry.attribute_namespace: invalid value"]

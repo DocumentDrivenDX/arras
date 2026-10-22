@@ -31,11 +31,11 @@ ddx:
 
 ## Context
 
-A catalog finding points at a praxis workflow id that the ontology does not own, and a Solution may point at an entity that the replica holds. Praxis is a Databricks app that embeds Arras. Arras returns such a reference as its key, with the key's type available from `describe`, and never fetches it implicitly.
+A catalog finding points at a the embedding host workflow id that the ontology does not own, and a Solution may point at an entity that the replica holds. The embedding host owns application/session behavior. Arras returns such a reference as its key, with the key's type available from `describe`, and never fetches it implicitly.
 
 ## Walkthrough
 
-1. Developer opens a use case that references praxis workflows, projecting the relationship with `RELATED_KEYS(u.relationship, 100)`.
+1. Developer opens a use case that references the embedding host workflows, projecting the relationship with `RELATED_KEYS(u.relationship, 100)`.
 2. The `RELATED_KEYS` column carries the references as keys.
 3. Arras reads no other backend to fill them.
 4. Developer queries one referenced key in the module that holds it, naming that module.
@@ -44,7 +44,7 @@ A catalog finding points at a praxis workflow id that the ontology does not own,
 ## Acceptance Criteria
 
 - [ ] **US-007-AC1** — Given a relationship to an entity the serving backend does not hold, when the relationship is read with `RELATED_KEYS`, then its key appears in that column, its type is available from `describe`, and nothing else is fetched.
-- [ ] **US-007-AC2** — Given a reference outside the ontology, such as a praxis workflow id, when it is returned, then it is returned as its key and Arras does not interpret its meaning.
+- [ ] **US-007-AC2** — Given a reference outside the ontology, such as a the embedding host workflow id, when it is returned, then it is returned as its key and Arras does not interpret its meaning.
 - [ ] **US-007-AC3** — Given a referenced entity that no longer exists, when its key is queried, then no rows return and the reference in the earlier answer is unchanged.
 - [ ] **US-007-AC4** — Given a reference to an entity the serving backend does hold, when the entity is read, then the key is returned in the same form.
 
@@ -58,7 +58,7 @@ A catalog finding points at a praxis workflow id that the ontology does not own,
 | Scenario | AC ID | Input / State | Action | Expected Result |
 |----------|-------|---------------|--------|-----------------|
 | Reference | US-007-AC1 | Solution linked to an entity only another backend holds | `RELATED_KEYS` on the Solution | Key in the column; no other backend called |
-| External | US-007-AC2 | Use case referencing praxis workflow id `wf-1042` | `RELATED_KEYS` | `wf-1042` returned as a key |
+| External | US-007-AC2 | Use case referencing the embedding host workflow id `wf-1042` | `RELATED_KEYS` | `wf-1042` returned as a key |
 | Dangling | US-007-AC3 | Referenced entity deleted | Query its key | No rows; the earlier answer's reference is unchanged |
 | Local | US-007-AC4 | Referenced entity held by the serving backend | `RELATED_KEYS` | Key returned in the same form |
 

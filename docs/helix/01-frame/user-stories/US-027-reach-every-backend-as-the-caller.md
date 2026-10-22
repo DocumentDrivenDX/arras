@@ -31,7 +31,7 @@ ddx:
 
 ## Context
 
-Truss is the hot, mutable store on Lakebase (Databricks managed Postgres); Ashlar is the replica store on Unity Catalog (Databricks' catalog and access-control layer). The platform owner grants module reader and writer roles to people. In production the Truss adapter's store decides by the connecting role's membership, and the Ashlar adapter's store (Unity Catalog) applies the user's own policy. The origin actor is the person recorded as the author of a change, and the journal is the provider's record of changes. Arras keeps no mapping from people to roles and no access rule of its own (ADR-017, the architecture decision record that backends are reached with the user's own token). The host (the application that embeds Arras, first praxis) supplies the connection through `ConnectionSource` (CONTRACT-005).
+Truss is the hot, mutable store on Lakebase (Databricks managed Postgres); Ashlar is the replica store on Unity Catalog (Databricks' catalog and access-control layer). The platform owner grants module reader and writer roles to people. In production the Truss adapter's store decides by the connecting role's membership, and the Ashlar adapter's store (Unity Catalog) applies the user's own policy. The origin actor is the person recorded as the author of a change, and the journal is the provider's record of changes. Arras keeps no mapping from people to roles and no access rule of its own (ADR-017, the architecture decision record that backends are reached with the user's own token). The host (the application that embeds Arras) supplies the connection through `ConnectionSource` (CONTRACT-005).
 
 ## Walkthrough
 

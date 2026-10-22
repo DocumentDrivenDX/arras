@@ -670,8 +670,8 @@ def test_a_mount_that_keeps_the_prefix_in_the_path_and_the_redirect_keeps_the_qu
     scope = {
         "type": "http",
         "method": "GET",
-        "path": "/praxis/console/",
-        "root_path": "/praxis/console",
+        "path": "/embedded/console/",
+        "root_path": "/embedded/console",
         "query_string": b"",
         "headers": [],
     }

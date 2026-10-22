@@ -15,7 +15,7 @@ ddx:
       kind: informed_by
 ---
 
-# US-043: Record an evaluation finding from praxis
+# US-043: Record an evaluation finding from the embedding host
 
 **Feature**: FEAT-008 — Reference Clients
 **Feature Requirements**: CLI-03
@@ -26,24 +26,24 @@ ddx:
 ## Story
 
 **As a** Catalog editor (through a client)
-**I want** praxis to record my evaluation finding about a product and version after a session, attributed to me
+**I want** the embedding host to record my evaluation finding about a product and version after a session, attributed to me
 **So that** evidence accumulates against the right product and version
 
 ## Context
 
-This is interaction 11 of the [client interactions draft](../client-interactions-draft.md). Praxis is the Databricks app that embeds Arras. The finding is recorded by a UMF action (UMF is the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions) invoked with the reviewer's own token.
+This is interaction 11 of the [client interactions draft](../client-interactions-draft.md). The embedding host owns its deployment and session identity. The finding is recorded by a UMF action (UMF is the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions) invoked with the reviewer's own token.
 
 ## Walkthrough
 
 1. The reviewer finishes a session and records a finding.
-2. Praxis invokes `RecordFinding` with the product, version, use case, applicability and the session as evidence.
+2. The workflow host invokes `RecordFinding` with the product, version, use case, applicability and the session as evidence.
 3. The system applies the action and returns a receipt.
 
 ## Acceptance Criteria
 
 - [ ] **US-043-AC1** — Given the inputs, when `RecordFinding` is invoked, then one finding about the actual product and version is created and joined to the use case with its applicability.
 - [ ] **US-043-AC2** — Given the same session's idempotency key, when the action is invoked twice, then one finding results.
-- [ ] **US-043-AC3** — Given praxis invokes the action with the reviewer's own token, when it commits, then the change names the reviewer and no service identity.
+- [ ] **US-043-AC3** — Given the embedding host invokes the action with the reviewer's own token, when it commits, then the change names the reviewer and no service identity.
 - [ ] **US-043-AC4** — Given a finding that names a different product than its evidence, when the action is invoked, then a precondition refuses it.
 
 ## Edge Cases
@@ -66,7 +66,7 @@ This is interaction 11 of the [client interactions draft](../client-interactions
 - **Feature Spec**: FEAT-008
 - **Feature Requirements**: CLI-03
 - **PRD Requirements**: FR-40
-- **External**: [CONTRACT-003](../../02-design/contracts/CONTRACT-003-actions.md); praxis.
+- **External**: [CONTRACT-003](../../02-design/contracts/CONTRACT-003-actions.md); the embedding host.
 
 ## Out of Scope
 

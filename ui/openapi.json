@@ -1170,6 +1170,10 @@
               "operation": {
                 "type": "string"
               },
+              "policy_code": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]{0,63}$"
+              },
               "token": {
                 "type": "string"
               },

@@ -45,6 +45,7 @@ from arras.fakes_export import ExportRecords
 from arras.fakes_import import ImportRecords
 from arras.fakes_journal import JournalReads, record_change
 from arras.fakes_plan import Plan as ReadPlan
+from arras.fakes_profile import require_supported_write_profile
 from arras.fakes_registry import RegisterModules
 from arras.fakes_search import searchable_properties, text_matches, with_search
 from arras.fakes_state import Counts as _Counts
@@ -382,6 +383,7 @@ class MemoryStore(_Store, JournalReads, ImportRecords, ExportRecords, RegisterMo
         module = plan.action.split(".", 1)[0]
         self.gate(principal, module, "write", "apply")
         mod = self.module(module)
+        require_supported_write_profile(self.documents.get(module), module)
         if dry_run:
             return self._validate(principal, plan, mod, idempotency_key)
         journal_action = scope or plan.action
@@ -672,6 +674,7 @@ class MemoryStore(_Store, JournalReads, ImportRecords, ExportRecords, RegisterMo
         module = action.split(".", 1)[0]
         self.gate(principal, module, "write", "apply_batch")
         mod = self.module(module)
+        require_supported_write_profile(self.documents.get(module), module)
         if atomic:
             digest = self._digest(plans)
             held = self._held(f"{action}#atomic", idempotency_key, digest)
@@ -725,6 +728,7 @@ class MemoryStore(_Store, JournalReads, ImportRecords, ExportRecords, RegisterMo
         if initiated_by != principal.user:
             raise Invalid([Violation("initiated_by", "attribution", "a load is the caller's own")])
         mod = self.module(module)
+        require_supported_write_profile(self.documents.get(module), module)
         work = copy.deepcopy(self.state)
         now = self.clock()
         created = skipped = 0

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, type Request, test } from "@playwright/test";
+import { ORIGIN } from "./acceptance";
 import { ensureHub } from "./gb-fixtures";
 
 // Retire on an entity page (FR-68) through the whole stack: the built UI on the dev host as alice.
@@ -12,7 +13,7 @@ const stamp = Date.now().toString(36);
 const RETIRE_CASE = `uc-retire-${stamp}`;
 
 test.beforeAll(async ({ playwright }) => {
-  const request = await playwright.request.newContext({ baseURL: "http://127.0.0.1:8123" });
+  const request = await playwright.request.newContext({ baseURL: ORIGIN });
   await ensureHub(request, AXE_CASE, 1, "Retire axe");
   await ensureHub(request, RETIRE_CASE, 2, "Retire me");
   await request.dispose();

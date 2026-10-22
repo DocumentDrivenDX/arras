@@ -31,7 +31,7 @@ ddx:
 
 ## Context
 
-MCP (Model Context Protocol) is Anthropic's open protocol for agent tools, and stdio is its standard-input-and-output transport. `python -m arras.mcp` is a binding of the library: it adds no operation and no access decision. `describe` returns the registry, the tool-name mapping and each backend's status. Praxis (the Databricks app that embeds Arras) consumes MCP through a local stdio adapter and takes a tool's class and reversibility from its operator catalog by name (praxis ADR-024, an architecture decision record in the praxis-harness repository), so no generic invoke tool exists.
+MCP (Model Context Protocol) is Anthropic's open protocol for agent tools, and stdio is its standard-input-and-output transport. `python -m arras.mcp` is a binding of the library: it adds no operation and no access decision. `describe` returns the registry, the tool-name mapping and each backend's status. An embedding host may consume MCP through a local stdio adapter and classify each tool's behavior and reversibility in its own policy catalog by the stable tool name. CONTRACT-007 owns Arras's per-action tool boundary; the host's approval policy remains downstream-owned.
 
 ## Walkthrough
 

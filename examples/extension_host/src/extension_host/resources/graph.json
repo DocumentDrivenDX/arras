@@ -1,0 +1,8 @@
+{
+  "format": "extension-host.graph",
+  "module": "notes",
+  "records": [
+    {"type": "Entry", "key": "graph-one", "properties": {"title": "Loaded from the selected graph"}},
+    {"type": "Entry", "key": "graph-two", "properties": {"title": "A second graph entry"}}
+  ]
+}

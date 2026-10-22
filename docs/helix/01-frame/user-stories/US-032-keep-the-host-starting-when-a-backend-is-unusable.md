@@ -31,7 +31,7 @@ ddx:
 
 ## Context
 
-Praxis (the Databricks app that embeds Arras) must serve its other functions regardless of an Arras backend fault. Every failure case is tested before any host-startup change merges.
+The embedding host must serve its other functions regardless of an Arras backend fault. Every failure case is tested before any host-startup change merges.
 
 ## Walkthrough
 

@@ -17,7 +17,7 @@ ddx:
 
 # Requirements on Truss from a Python host
 
-Written to be handed to the Truss project as-is. It states generic requirements of an embedded Python host that uses Truss as its authoritative mutable store. The host's deployment target is Lakebase (Databricks managed Postgres), which it takes to be PostgreSQL 18.6; it names no host-specific concept, and Truss's docs need not either. Source: Truss's public repository and its released `truss-toolkit==0.0.45` (native id `0.72-candidate`, manifest SHA-256 `71c4c3d4c05a2229c4cdec1643cabe0da7055965f0b0d23195e83ad780042a2e`) (ADR-001 to ADR-007, CONTRACT-001 to CONTRACT-012, `packages/python` including `truss.execution`, `truss.groups`, `truss.imports` and `truss.contracts`), run on PostgreSQL 18.6. The host has built its adapter on 0.0.45 and runs it against its own corpus; R16 to R22 are what that found, and each says what 0.0.45 meets and what remains open.
+Written to be handed to the Truss project as-is. It states generic requirements of an embedded Python host that uses Truss as its authoritative mutable store. The host's deployment target is Lakebase (Databricks managed Postgres), which it takes to be PostgreSQL 18.6; it names no host-specific concept, and Truss's docs need not either. Historical source for the R1–R22 observations below: Truss's public repository and its released `truss-toolkit==0.0.45` (native id `0.72-candidate`, manifest SHA-256 `71c4c3d4c05a2229c4cdec1643cabe0da7055965f0b0d23195e83ad780042a2e`) (ADR-001 to ADR-007, CONTRACT-001 to CONTRACT-012, `packages/python` including `truss.execution`, `truss.groups`, `truss.imports` and `truss.contracts`), run on PostgreSQL 18.6. The host has built its adapter on 0.0.45 and runs it against its own corpus; R16 to R22 are what that found, and each says what 0.0.45 meets and what remains open.
 
 ## What the host needs from Truss
 
@@ -31,7 +31,34 @@ A Python 3.11 process that, for each person using it, over a connection authenti
 
 The host holds no table of its own, no role map and no access decision: Truss and the database decide.
 
-## Current state
+## Selected public cohort — 2026-10-22
+
+The selected latest-only public dependency is `truss-toolkit==0.0.48` with
+`weft-sql==0.4.51`, runtime `truss-catalog-runtime/0.74-candidate`, runtime manifest
+SHA-256 `c4339ac7f09ab5a004c272ab00962107a970938004c1765ec4163e4d5ca9b6f0`
+and layout `1.0`. The Weft compiler source is
+`557153731e9f5d0583193a1189a07c6ed485d3d3`; the Truss release source is
+`8e89a068bcb68f1e631388ddc59bc97da748563d`. Driver/server selection remains
+psycopg/psycopg-binary 3.3.6 with libpq/PostgreSQL 18.6 and embedded V8
+`mini-racer==0.14.1`; no external JavaScript runtime is required.
+
+The public releases and exact assets are recorded by the owning qualification
+lanes. Truss's public native platform declaration is Linux x86_64; public Weft
+wheel availability on macOS arm64 or Linux aarch64 does not itself qualify Truss
+or an embedding host on those platforms. Upstream native qualification is not a
+host-adapter corpus result. Host qualification on this exact pair remains pending
+until its own recorded run completes; no pass count or old corpus limit is
+transferred from the historical tables below.
+
+Truss 0.0.48 declares `truss-runtime-migration/0.1`, limited to
+`offline-administrative-unprotected-umf010` from its three named prior runtime
+manifests to the selected target. Pre-0.10 migration is unsupported. This upstream
+migration interface does not establish an embedding adapter's explicit upgrade
+behavior, automatic startup migration, managed-database migration or rollback.
+Those interfaces require separate host qualification. Historical statements that
+Truss refuses every upgrade describe the older release, not this selected one.
+
+## Historical state — release v0.0.45
 
 | State observed (2026-10-21, release v0.0.45: `truss-toolkit==0.0.45`, native runtime `0.72-candidate`, layout `1.0`, `weft-sql` 0.4.49, UMF core 0.10.0 source only; from its release notes and by running it) | Consequence |
 |---|---|
@@ -59,7 +86,7 @@ Feed, `reached` and publication are qualified separately after that. The require
 
 **Driver.** Settled: Truss's host adoption is `adopt_psycopg_host` over stock psycopg 3.3.6 (binary, libpq 18.6) on PostgreSQL 18.6, selected exactly, with no version fallback. That is the host's psycopg 3 (ADR-006). The host will pin the same tuple. (Truss had earlier pinned pg8000, and the host had been told psycopg2; neither is the current adoption.)
 
-## Status of each requirement, 2026-10-21
+## Historical requirement status — release v0.0.45, 2026-10-21
 
 Closure is on Truss's local tuple (PostgreSQL 18.6 via pgserver), by its README and by the host's own runs of 0.0.45.
 

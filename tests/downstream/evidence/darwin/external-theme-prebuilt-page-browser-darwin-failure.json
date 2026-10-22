@@ -1,0 +1,11 @@
+{
+  "schema": "arras.ui.qualification-receipt.v1",
+  "status": "failed",
+  "target": "http://127.0.0.1:8765/",
+  "route": "prebuilt-page",
+  "surface": "browser",
+  "platform": "darwin",
+  "visual": "comparison-failed-or-incomplete",
+  "phase": "running accessibility checks in light mode",
+  "error": "qualification did not pass; see the runner output for the failing gate"
+}

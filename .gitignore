@@ -13,6 +13,7 @@ __pycache__/
 
 # Build output
 dist/
+/artifacts/
 .hypothesis/
 
 # The UI as built for the wheel (ui/scripts, `npm run build:wheel`)

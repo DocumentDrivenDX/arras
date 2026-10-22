@@ -1,0 +1,31 @@
+{
+  "url": "https://github.com/DocumentDrivenDX/umf/releases/tag/umf-v0.5.4",
+  "tag": "umf-v0.5.4",
+  "id": 420151342,
+  "published_at": "2026-10-21T23:25:48Z",
+  "draft": false,
+  "prerelease": false,
+  "assets": [
+    {
+      "id": 664083410,
+      "name": "SHA256SUMS",
+      "size": 1082,
+      "digest": "sha256:ebd8b92e18b769e530ea7107922ad69b3831a2f5f46071d9d66d858f3cf89bb0",
+      "url": "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/SHA256SUMS"
+    },
+    {
+      "id": 664083471,
+      "name": "umf_core-0.10.0-py3-none-any.whl",
+      "size": 71258,
+      "digest": "sha256:49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9",
+      "url": "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/umf_core-0.10.0-py3-none-any.whl"
+    },
+    {
+      "id": 664083479,
+      "name": "umf_core-0.10.0.tar.gz",
+      "size": 481894,
+      "digest": "sha256:6b3ad653f95ed5321d5cec69fcaa08037ce1546386b76cbc4e52d1abf19cb19d",
+      "url": "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/umf_core-0.10.0.tar.gz"
+    }
+  ]
+}

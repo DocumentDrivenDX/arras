@@ -177,6 +177,7 @@ export interface ErrorBody {
   reason?: string;
   backend?: string;
   operation?: string;
+  policy_code?: string;
   violations?: Violation[];
   failures?: Failure[];
   [k: string]: unknown;

@@ -8,7 +8,7 @@ Terms that Arras artifacts use. Each artifact still defines a term on first use;
 | --- | --- | --- |
 | ASGI | Asynchronous Server Gateway Interface, the Python standard for asynchronous web applications. | Python community |
 | Ashlar | Toolkit for property-graph ontologies on a warehouse. In Arras its adapter is a reader (used as a replica): it holds the full ontology on Unity Catalog and is fed from the providers' stores. | DocumentDrivenDX |
-| Databricks | The data platform that hosts the praxis app, Lakebase and Unity Catalog. | Databricks |
+| Databricks | The platform providing Lakebase, Unity Catalog and optional Apps hosting for an embedding application. | Databricks |
 | Delta Lake | Table format on which Ashlar publishes its gold tables. A gold table is a curated table. | Open source |
 | GraphQL, GraphiQL | GraphQL is an API query language. GraphiQL is the in-browser explorer that the admin console serves. | GraphQL Foundation |
 | Lakebase | Databricks' managed Postgres. Arras's required deployment target for Truss, PostgreSQL 18.6. | Databricks |
@@ -24,7 +24,6 @@ Terms that Arras artifacts use. Each artifact still defines a term on first use;
 
 | Term | Meaning |
 | --- | --- |
-| praxis | The Databricks app that embeds Arras and is its first host. Its own repository is praxis-harness; decision records such as `praxis ADR-028` live there, not in this repository. |
 
 ## Arras terms
 

@@ -41,13 +41,13 @@ ddx:
 
 Defines the operations a client uses to read the ontology, and what every answer states about itself. It is the Python library interface that other Python code uses directly and that the MCP binding (CONTRACT-007) is built on. It names no store. Writes are CONTRACT-003; the types a client sees are CONTRACT-002; the backends that answer are CONTRACT-004.
 
-Terms. An ADR is an architecture decision record. UMF is the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions. MCP (Model Context Protocol) is Anthropic's open protocol for agent tools. Weft is the SQL project (DocumentDrivenDX/weft) that owns the language `query` takes. P0 is the Must Have priority of the product requirements document (`docs/helix/01-frame/prd.md`). A backend is a named store the host configures (CONTRACT-004); a backend has the role `reader` (serves reads) or `provider` (applies actions) or both; a module's record store is the reader that is the system of record for its graph, and a replica is another reader that serves `bulk` and may lag. The host's placement names them for each module (CONTRACT-002). praxis is the Databricks app that embeds Arras. GraphQL is the API query language that CONTRACT-006 binds.
+Terms. An ADR is an architecture decision record. UMF is the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions. MCP (Model Context Protocol) is Anthropic's open protocol for agent tools. Weft is the SQL project (DocumentDrivenDX/weft) that owns the language `query` takes. P0 is the Must Have priority of the product requirements document (`docs/helix/01-frame/prd.md`). A backend is a named store the host configures (CONTRACT-004); a backend has the role `reader` (serves reads) or `provider` (applies actions) or both; a module's record store is the reader that is the system of record for its graph, and a replica is another reader that serves `bulk` and may lag. The host's placement names them for each module (CONTRACT-002). The embedding host owns deployment and session identity. GraphQL is the API query language that CONTRACT-006 binds.
 
 ## Scope and Boundaries
 
 - In scope: `describe`, `query`, the value types, consistency levels, freshness, the query language boundary, the principal, and the errors.
 - Out of scope: actions and import (CONTRACT-003), type declaration and placement (CONTRACT-002), the backend contract (CONTRACT-004), startup and migration (CONTRACT-005), the console's GraphQL surface (CONTRACT-006), the MCP tools (CONTRACT-007).
-- Owning system or team: Arras (Erik LaBianca). Consumers: the praxis catalog module, plug-ins that use Arras from Python, and the MCP binding.
+- Owning system or team: Arras (Erik LaBianca). Consumers: the embedding host catalog module, plug-ins that use Arras from Python, and the MCP binding.
 - Interface style: synchronous Python on the `arras` package. The operations and their semantics are language-neutral.
 
 ## Normative Surface
@@ -139,7 +139,7 @@ A query for a key that does not exist is not an error: it returns no rows.
 
 - Versioning: v2, the operations and shapes this contract states. The contract version is `arras.CONTRACT_VERSIONS["interface"]`, an integer.
 - Ordering or precedence: access is decided by the backends' own controls, and takes precedence over everything; a refused read returns nothing. The consistency level is honored or the call fails.
-- Backward compatibility: adding an optional keyword parameter, an error subclass of an existing error, a value-type field, or a Weft construct a backend newly serves is compatible. Removing or renaming a name, changing a parameter's meaning, or tightening a bound is breaking and requires v2.
+- Backward compatibility: adding an optional keyword parameter, an error subclass of an existing error, a value-type field, or a Weft construct a backend newly serves is compatible. Removing or renaming a name, changing a parameter's meaning, or tightening a bound is breaking and increments this contract version from its current value. Package versioning is a separate decision: Arras is 0.x, so a package-breaking change increments its minor version; a patch preserves the public API.
 - Deprecation: a deprecated name keeps working for one minor release and raises `DeprecationWarning`.
 
 ## Error Semantics

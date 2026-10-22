@@ -13,9 +13,10 @@ has no meaning for (a replica's `feed`, a declared `search`, the `migration_fail
 400. The sandbox itself stays on the memory adapter; this is a development aid, never a deployed
 app. With no server to attach to the database is a throwaway, removed at exit. With one
 (`url`, a PostgreSQL server that is already running: `arras.adapters.truss.local`) the state is
-kept: starting again verifies the installation, registers the modules again (an unchanged document
-is unchanged), makes the people's roles when they are absent and gives their tokens new passwords,
-re-gives the grants, and seeds only when no module holds an entity yet (`holds_objects`);
+kept: starting again verifies the installation, registers modules, reuses host-owned person
+credentials and leaves existing memberships and expiry alone. New people and new module roles get
+the sandbox defaults; selecting a made-up person's role reconciles only the generated module and
+registrar memberships. Seeding runs only when no module holds an entity yet (`holds_objects`);
 `close` drops nothing and stops nothing, and `reset` starts clean. The people are the roles
 `arrasdev_root`, `arrasdev_alice` and so on there: role names are cluster-wide.
 """
@@ -30,7 +31,7 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
-from arras.adapters.truss.local import LocalTruss
+from arras.adapters.truss.local import CredentialSource, LocalTruss
 from arras.core import Arras
 from arras.errors import ArrasError
 from arras.graphfile import GraphFile
@@ -62,9 +63,16 @@ class TrussBox:
         *,
         directory: Path | None = None,
         url: str | None = None,
+        credential_source: CredentialSource | None = None,
         reset: bool = False,
     ) -> None:
-        self.truss = LocalTruss(name, directory=directory, url=url, reset=reset).open()
+        self.truss = LocalTruss(
+            name,
+            directory=directory,
+            url=url,
+            credential_source=credential_source,
+            reset=reset,
+        ).open()
         self.persistent = url is not None
         self.name = name
         self.lock = threading.RLock()
@@ -81,13 +89,14 @@ class TrussBox:
             for user, (groups, modes) in PEOPLE.items():
                 who = self.truss.person(user)
                 self.people[user] = replace(who, groups=groups, admin=user == "root")
-                if "schema" in modes:  # the registrar role, installation-wide (D3)
+                if user in self.truss.created_people and "schema" in modes:
                     self.truss.membership(user, self.truss.registrar_role, grant=True)
             if self.persistent:  # the modules of an earlier run keep their people
                 for module in self.truss.known_modules():
                     self.modules[module] = ""
                     for user, (_, modes) in PEOPLE.items():
-                        self._hold(user, module, modes, grant=True)
+                        if user in self.truss.created_people:
+                            self._hold(user, module, modes, grant=True)
             backend = self.truss.backend
             assert backend is not None
             self.arras = Arras.start(
@@ -108,6 +117,8 @@ class TrussBox:
 
     def use_token(self, user: str, token: str) -> None:
         """Give a sandbox person a token of the shape a client sends (the database password too)."""
+        if self.persistent:
+            raise ValueError("persistent person credentials require coordinated rotation")
         self.truss.set_password(user, token)
         self.people[user] = replace(self.people[user], token=token)
 
@@ -121,19 +132,42 @@ class TrussBox:
         module = parse_module(document).name
         self.arras.session(self.people["root"]).registry().register(document)
         document_id = json.loads(document)["id"]
-        self.truss.configure_module(module, document_id)
+        new_module = module not in self.modules
+        created_roles: frozenset[str] = frozenset()
+        if new_module:
+            roles_before = self.truss.created_roles
+            self.truss.configure_module(module, document_id)
+            created_roles = self.truss.created_roles - roles_before
         with self.lock:
             self.modules[module] = document_id
             for user, (_, modes) in PEOPLE.items():
-                self._hold(user, module, modes, grant=True)
+                self._hold_new_roles(user, module, modes, created_roles)
             for user, (role, _) in self.minted.items():
-                self._hold(user, module, ROLES[role], grant=True)
+                self._hold_new_roles(user, module, ROLES[role], created_roles)
         if self.persistent:
             self._pending.append((module, list(steps), records))
         else:
             self._run(steps)
             self._import(records)
         return self
+
+    def _hold_new_roles(
+        self, user: str, module: str, modes: Iterable[str], created_roles: frozenset[str]
+    ) -> None:
+        """Grant defaults only for the module roles this configure call actually created."""
+        selected = {
+            mode
+            for mode in modes
+            if (
+                mode == "read"
+                and self.truss.reader_role(module) in created_roles
+                or mode == "write"
+                and self.truss.writer_role(module) in created_roles
+                or mode == "journal"
+                and self.truss.auditor_role(module) in created_roles
+            )
+        }
+        self._hold(user, module, selected, grant=True)
 
     def _run(self, steps: Iterable[Step]) -> None:
         """Run `steps` as alice. Consecutive steps of one action go as atomic batches (one Truss group
@@ -245,15 +279,12 @@ class TrussBox:
         if not NAME.fullmatch(name) or name in self.people:
             raise ValueError("a name is 1 to 32 lower-case letters, digits, - or _, and not taken")
         with self.lock:
-            held = self.minted.get(name)
-            if held is not None and held[0] == role:
-                return held[1]
             who = self.truss.person(name)
-            if held is not None:
-                for module in self.modules:
-                    self._hold(name, module, ROLES[held[0]], grant=False)
-                if "schema" in ROLES[held[0]]:
-                    self.truss.membership(name, self.truss.registrar_role, grant=False)
+            all_modes = {mode for modes in ROLES.values() for mode in modes}
+            for module in self.modules:
+                self._hold(name, module, all_modes, grant=False)
+            if "schema" in all_modes:
+                self.truss.membership(name, self.truss.registrar_role, grant=False)
             for module in self.modules:
                 self._hold(name, module, ROLES[role], grant=True)
             if "schema" in ROLES[role]:

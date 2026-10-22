@@ -2,13 +2,14 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, type Page, test } from "@playwright/test";
+import { EXPECTED_SURFACE } from "./acceptance";
 
 // The library's styles must not reach a host page, and a host's must not break the library (ADR-027).
 // The built page stands in for a host: markup and rules a host might have are planted around the root.
 // A host's own `:root` tokens use the same names as ours (`--accent`, `--bg`), and its element rules are
 // the kind a design system writes.
 
-const TOKENS = { lightBg: "rgb(246, 247, 249)", darkBg: "rgb(15, 19, 26)" };
+const TOKENS = { lightBg: EXPECTED_SURFACE.light, darkBg: EXPECTED_SURFACE.dark };
 // The page the dev host serves loads no theme (ADR-029), so the library's own tokens are what most specs
 // measure; THEME is what a host's role tokens set in the two specs that plant them.
 const THEME = { lightBg: "rgb(240, 238, 230)", darkBg: "rgb(27, 26, 25)" };

@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, type Request, test } from "@playwright/test";
+import { ORIGIN } from "./acceptance";
 import { ensureUseCase } from "./gb-fixtures";
 
 // An entity's History panel in the Graph Browser (FR-69), whole stack: the built UI served by the
 // dev host, read as the sandbox's people. alice is an operator (edit offer, journal grant); carol is not.
 
-const ORIGIN = "http://127.0.0.1:8123";
 const CODE = "uc-history-e2e";
 const ENTITY = `#/explore/catalog/UseCase/${CODE}`;
 const HISTORY = `${ENTITY}/history`;

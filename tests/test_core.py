@@ -21,6 +21,18 @@ from arras.fakes import FakeAccess, MemoryReplica, MemoryStore
 from arras.model import Placement
 
 EXAMPLE = Path(__file__).parents[1] / "docs/helix/02-design/contracts/examples/catalog.umf.json"
+CONSTRAINED_TEXT = EXAMPLE.read_text()
+
+
+def plain_test_document() -> dict[str, Any]:
+    """Use a named, unconstrained derivative for generic CRUD tests; never rewrite source bytes."""
+    d = json.loads(CONSTRAINED_TEXT)
+    for element in d["modules"][0]["elements"]:
+        facets = element.get("facets")
+        if isinstance(facets, dict) and set(facets) == {"length"}:
+            element.pop("facets")
+    return d
+
 
 ADD_UC = {
     "id": "AddUseCase",
@@ -53,7 +65,7 @@ HANDLED = {
 
 
 def doc(**mod: Any) -> str:
-    d = json.loads(EXAMPLE.read_text())
+    d = plain_test_document()
     d["modules"][0]["actions"] = [ADD_UC, HANDLED]
     d["modules"][0].update(mod)
     return json.dumps(d)

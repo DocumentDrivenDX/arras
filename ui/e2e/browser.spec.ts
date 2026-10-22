@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, type Request, test } from "@playwright/test";
+import { ORIGIN } from "./acceptance";
 import { control, ensureHub } from "./gb-fixtures";
 
 // The Graph Browser whole stack (FEAT-011): the built UI served by the dev host, read as the
@@ -9,7 +10,6 @@ import { control, ensureHub } from "./gb-fixtures";
 
 const HUB_25 = "uc-hub-25";
 const HUB_120 = "uc-hub-120";
-const ORIGIN = "http://127.0.0.1:8123";
 
 test.beforeAll(async ({ playwright }) => {
   const request = await playwright.request.newContext({ baseURL: ORIGIN });

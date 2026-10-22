@@ -247,7 +247,7 @@ Focus order is the reading order: the top bar, the chips, the notices, the hits;
 
 ## Tokens
 
-Concrete values; the neutrals, accent and semantic colours are the Operator Console's (`ui/src/styles.css`, WCAG 2.1 AA pairs), reused so the two interfaces sit together in praxis. The browser adds the eight tones and the reading scale.
+Concrete values; the neutrals, accent and semantic colours are the Operator Console's (`ui/src/styles.css`, WCAG 2.1 AA pairs), reused so the two interfaces sit together in the embedding host. The browser adds the eight tones and the reading scale.
 
 ### Color
 

@@ -1,0 +1,249 @@
+{
+  "schema": "arras.ui.downstream-qualification.v1",
+  "cohort": {
+    "wheel": {
+      "file": "arras-0.5.0-py3-none-any.whl",
+      "sha256": "87955c4020102535b52eb6e46815e7f3a41a69240084478d20d3d4a14351c4d2",
+      "version": "0.5.0"
+    },
+    "npm": {
+      "file": "documentdrivendx-arras-ui-0.5.0.tgz",
+      "sha256": "43c6df8067ff849d870979a22d4517e15d43d59ab06ae964c1c2ee8d97836aea",
+      "version": "0.5.0"
+    },
+    "theme": {
+      "name": "@arras-fixtures/neutral-theme",
+      "version": "1.0.0",
+      "sha256": "5e6de93da709c27242eb70a7800cb10a12e4df29e3c07c5e3cad74e294b6240b"
+    },
+    "runner": {
+      "sha256": "bf5a0590e51a91465e7ea42c87b01fedc4ed3d86f091a82b08174f3d2de72073"
+    }
+  },
+  "runtime": {
+    "python": "Python 3.13.16",
+    "node": "v26.12.1",
+    "npm": "11.20.0",
+    "browser": "Chromium 153.0.8010.12",
+    "packages": {
+      "react": "19.3.0",
+      "reactDom": "19.3.0",
+      "typescript": "6.0.3",
+      "vite": "8.3.2",
+      "playwright": "1.63.0",
+      "axePlaywright": "4.13.0"
+    },
+    "platform": "darwin",
+    "javascriptDependencies": "npm-installed from the public registry into a temporary consumer; Arras and theme installed from exact cohort tarballs"
+  },
+  "routes": [
+    {
+      "schema": "arras.ui.qualification-receipt.v1",
+      "target": "http://127.0.0.1:8765/",
+      "route": "prebuilt-page",
+      "surface": "browser",
+      "platform": "darwin",
+      "browser": "Chromium 153.0.8010.12",
+      "visual": "compared",
+      "screenshots": [
+        "external-theme-prebuilt-page-browser-light-darwin.png",
+        "external-theme-prebuilt-page-browser-dark-darwin.png"
+      ],
+      "checks": [
+        "axe-wcag21aa",
+        "theme-tokens",
+        "contrast",
+        "keyboard-focus"
+      ],
+      "focusMeasurements": [
+        {
+          "description": "light: host focus",
+          "indicator": "rgb(7, 89, 133)",
+          "background": "rgb(255, 255, 255)",
+          "contrast": 7.56
+        },
+        {
+          "description": "dark: host focus",
+          "indicator": "rgb(125, 211, 252)",
+          "background": "rgb(23, 32, 51)",
+          "contrast": 9.76
+        }
+      ]
+    },
+    {
+      "schema": "arras.ui.qualification-receipt.v1",
+      "target": "http://127.0.0.1:8765/",
+      "route": "prebuilt-page",
+      "surface": "console",
+      "platform": "darwin",
+      "browser": "Chromium 153.0.8010.12",
+      "visual": "compared",
+      "screenshots": [
+        "external-theme-prebuilt-page-console-light-darwin.png",
+        "external-theme-prebuilt-page-console-dark-darwin.png"
+      ],
+      "checks": [
+        "axe-wcag21aa",
+        "theme-tokens",
+        "contrast",
+        "keyboard-focus"
+      ],
+      "focusMeasurements": [
+        {
+          "description": "light: host focus",
+          "indicator": "rgb(7, 89, 133)",
+          "background": "rgb(255, 255, 255)",
+          "contrast": 7.56
+        },
+        {
+          "description": "dark: host focus",
+          "indicator": "rgb(125, 211, 252)",
+          "background": "rgb(23, 32, 51)",
+          "contrast": 9.76
+        }
+      ]
+    },
+    {
+      "schema": "arras.ui.qualification-receipt.v1",
+      "target": "http://127.0.0.1:8766/",
+      "route": "compiled-host",
+      "surface": "browser",
+      "platform": "darwin",
+      "browser": "Chromium 153.0.8010.12",
+      "visual": "compared",
+      "screenshots": [
+        "external-theme-compiled-host-browser-light-darwin.png",
+        "external-theme-compiled-host-browser-dark-darwin.png"
+      ],
+      "checks": [
+        "axe-wcag21aa",
+        "theme-tokens",
+        "contrast",
+        "keyboard-focus",
+        "arras-app-theme-provider",
+        "command-palette-keyboard"
+      ],
+      "focusMeasurements": [
+        {
+          "description": "light: host Button focus",
+          "indicator": "rgb(7, 89, 133)",
+          "background": "rgb(248, 250, 252)",
+          "contrast": 7.23
+        },
+        {
+          "description": "light: [data-theme-text-field] focus",
+          "indicator": "rgb(7, 89, 133)",
+          "background": "rgb(248, 250, 252)",
+          "contrast": 7.23
+        },
+        {
+          "description": "light: [data-theme-text-area] focus",
+          "indicator": "rgb(7, 89, 133)",
+          "background": "rgb(248, 250, 252)",
+          "contrast": 7.23
+        },
+        {
+          "description": "light: [data-theme-select] focus",
+          "indicator": "rgb(7, 89, 133)",
+          "background": "rgb(248, 250, 252)",
+          "contrast": 7.23
+        },
+        {
+          "description": "dark: host Button focus",
+          "indicator": "rgb(125, 211, 252)",
+          "background": "rgb(2, 6, 23)",
+          "contrast": 12.1
+        },
+        {
+          "description": "dark: [data-theme-text-field] focus",
+          "indicator": "rgb(125, 211, 252)",
+          "background": "rgb(2, 6, 23)",
+          "contrast": 12.1
+        },
+        {
+          "description": "dark: [data-theme-text-area] focus",
+          "indicator": "rgb(125, 211, 252)",
+          "background": "rgb(2, 6, 23)",
+          "contrast": 12.1
+        },
+        {
+          "description": "dark: [data-theme-select] focus",
+          "indicator": "rgb(125, 211, 252)",
+          "background": "rgb(2, 6, 23)",
+          "contrast": 12.1
+        }
+      ]
+    },
+    {
+      "schema": "arras.ui.qualification-receipt.v1",
+      "target": "http://127.0.0.1:8766/",
+      "route": "compiled-host",
+      "surface": "console",
+      "platform": "darwin",
+      "browser": "Chromium 153.0.8010.12",
+      "visual": "compared",
+      "screenshots": [
+        "external-theme-compiled-host-console-light-darwin.png",
+        "external-theme-compiled-host-console-dark-darwin.png"
+      ],
+      "checks": [
+        "axe-wcag21aa",
+        "theme-tokens",
+        "contrast",
+        "keyboard-focus",
+        "arras-app-theme-provider",
+        "command-palette-keyboard"
+      ],
+      "focusMeasurements": [
+        {
+          "description": "light: host Button focus",
+          "indicator": "rgb(7, 89, 133)",
+          "background": "rgb(248, 250, 252)",
+          "contrast": 7.23
+        },
+        {
+          "description": "light: [data-theme-text-field] focus",
+          "indicator": "rgb(7, 89, 133)",
+          "background": "rgb(248, 250, 252)",
+          "contrast": 7.23
+        },
+        {
+          "description": "light: [data-theme-text-area] focus",
+          "indicator": "rgb(7, 89, 133)",
+          "background": "rgb(248, 250, 252)",
+          "contrast": 7.23
+        },
+        {
+          "description": "light: [data-theme-select] focus",
+          "indicator": "rgb(7, 89, 133)",
+          "background": "rgb(248, 250, 252)",
+          "contrast": 7.23
+        },
+        {
+          "description": "dark: host Button focus",
+          "indicator": "rgb(125, 211, 252)",
+          "background": "rgb(2, 6, 23)",
+          "contrast": 12.1
+        },
+        {
+          "description": "dark: [data-theme-text-field] focus",
+          "indicator": "rgb(125, 211, 252)",
+          "background": "rgb(2, 6, 23)",
+          "contrast": 12.1
+        },
+        {
+          "description": "dark: [data-theme-text-area] focus",
+          "indicator": "rgb(125, 211, 252)",
+          "background": "rgb(2, 6, 23)",
+          "contrast": 12.1
+        },
+        {
+          "description": "dark: [data-theme-select] focus",
+          "indicator": "rgb(125, 211, 252)",
+          "background": "rgb(2, 6, 23)",
+          "contrast": 12.1
+        }
+      ]
+    }
+  ]
+}

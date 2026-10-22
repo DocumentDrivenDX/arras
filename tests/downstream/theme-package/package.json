@@ -1,0 +1,21 @@
+{
+  "name": "@arras-fixtures/neutral-theme",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist", "src/theme.css", "src/favicon.svg"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./theme.css": "./src/theme.css",
+    "./favicon.svg": "./src/favicon.svg"
+  },
+  "peerDependencies": {
+    "@documentdrivendx/arras-ui": "0.5.0",
+    "react": "^19.3.0"
+  }
+}

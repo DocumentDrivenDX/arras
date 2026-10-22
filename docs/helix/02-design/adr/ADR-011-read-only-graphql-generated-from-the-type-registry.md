@@ -31,9 +31,9 @@ ddx:
 
 | Aspect | Description |
 |--------|-------------|
-| Problem | The admin console (FEAT-007) needs a data surface that lets an administrator browse modules, their declared types and the entries of each type, in the style of GraphiQL (a browser-based GraphQL schema browser and query editor), and it must perform no write (FR-37 in the PRD). Arras is the interface to an ontology, a Python library embedded in the praxis Databricks app (praxis is an agent-harness app). Its types are declared at runtime in UMF (the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions) documents, one per module, so the surface must follow the registry without code changes. GraphQL is a query language for APIs; graphql-core is the reference Python implementation. |
+| Problem | The admin console (FEAT-007) needs a data surface that lets an administrator browse modules, their declared types and the entries of each type, in the style of GraphiQL (a browser-based GraphQL schema browser and query editor), and it must perform no write (FR-37 in the PRD). Arras is the interface to an ontology, a Python library embedded by a Python host application. Its types are declared at runtime in UMF (the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions) documents, one per module, so the surface must follow the registry without code changes. GraphQL is a query language for APIs; graphql-core is the reference Python implementation. |
 | Current State | SPIKE-002 (Finding 5) records REST with OpenAPI (a machine-readable REST API description) as the default for applications and GraphQL as suited to a complex internal data graph; Hasura and OntoBricks are the prior art for GraphQL over Postgres. ADR-006 makes Arras a library on psycopg 3 (the PostgreSQL driver for Python) and leaves the console's data surface to this decision. |
-| Requirements | Browse by type; read-only by construction; follow runtime type declarations; run inside a host Python app (praxis, Python 3.11, FastAPI/Starlette) and standalone; enforce the viewer's own access (FR-28); bound every list (CONTRACT-006). |
+| Requirements | Browse by type; read-only by construction; follow runtime type declarations; run inside a host Python app (for example Python 3.11 with FastAPI/Starlette) and standalone; enforce the viewer's own access (FR-28); bound every list (CONTRACT-006). |
 | Decision Drivers | The registry already declares entity types, relationships, properties, actions and placement, which is the information a GraphQL schema needs. GraphiQL gives a schema browser and query editor with no UI of our own. A library cannot own a separate service. |
 
 ## Decision
@@ -69,7 +69,7 @@ We will expose a **read-only GraphQL surface** generated at runtime from each mo
 | The GraphiQL page loads its assets from a public CDN (the common default, and what Ariadne's page does with esm.sh), and the Databricks Apps network or content policy blocks it | M | M | Pin asset versions; support a host-served asset base; verify on a deployed app before relying on it |
 | Deep or wide queries load the database | M | M | Maximum page size 100, depth cap 6, no unbounded lists; reject over-limit queries with a stated code |
 | graphql-core's 3.3 line changes API before a stable pin | L | M | Pin a compatible range; contract tests run the generated schema in CI |
-| Mounting the console in praxis crosses its ports-and-adapters rule that the HTTP adapter does not call a driven adapter directly (praxis ADR-004), and `principal_for_request` hands the viewer's own token to the library, which is an identity decision in that adapter | H | M | Record the exception in a praxis ADR before mounting; keep the mapping in one reviewed function |
+| Mounting the console may cross the embedding host's own HTTP/adapter boundary; mapping a request to `principal_for_request` is an identity decision in that host | H | M | Record and review the mapping in the host's own decision process; keep it in one reviewed function |
 | Generated names collide or are invalid | M | L | Declaration-time validation refuses invalid or colliding names (CONTRACT-002) |
 | Introspection exposes type names to a viewer | L | L | Viewers already hold read access to that module; unreadable modules are absent |
 
@@ -77,7 +77,7 @@ We will expose a **read-only GraphQL surface** generated at runtime from each mo
 
 | Success Metric | Review Trigger |
 |----------------|----------------|
-| The console opens in GraphiQL on the praxis app and standalone, lists readable modules, and browses the catalog by type | The page fails to load its assets on Databricks Apps |
+| The console opens in GraphiQL on the embedding application and standalone, lists readable modules, and browses the catalog by type | The page fails to load its assets on Databricks Apps |
 | A schema-introspection test finds no Mutation or Subscription type for any module | One appears |
 | Over-limit queries are refused and the database sees only bounded reads | A query returns an unbounded list |
 | Schema generation from the catalog's six types completes and answers a page and an entry detail within 1 second at p95 | The generated schema misses the console's latency target |
