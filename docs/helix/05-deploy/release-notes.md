@@ -15,11 +15,11 @@ ddx:
       kind: informed_by
 ---
 
-# Arras 0.5.0 release notes
+# Arras 0.5.1 release notes
 
 ## Release scope and audience
 
-Arras 0.5.0 supplies generic Python/UI interfaces for hosts that wrap or embed
+Arras 0.5.1 supplies generic Python/UI interfaces for hosts that wrap or embed
 Arras. Host developers consume the wheel, source archive and exact scoped npm
 tarball through GitHub Release assets, with checksums and qualification receipts.
 Operators use these notes for credential and configuration changes. This artifact
@@ -29,6 +29,16 @@ Registry access has not been established. PyPI/npm uploads are deferred under
 the release instruction. GitHub assets are the supported
 delivery route. The [release checklist](deployment-checklist.md) requires exact-tag
 checks before publication and fresh public-download qualification afterward.
+
+## Qualification state
+
+Version 0.5.1 is undergoing qualification. The immutable `v0.5.0` tag's
+[workflow](https://github.com/DocumentDrivenDX/arras/actions/runs/39869369841)
+failed before artifact creation or publication: its fuller dependency environment
+exposed a stale CLI-refusal assertion. The patch corrects the assertion and aligns
+regular Python CI with that environment. The production refusal remains intact.
+The component results below describe the historical 0.5.0 candidate until fresh
+0.5.1 receipts and exact-tag/public-download results supersede them.
 
 ## Highlights
 

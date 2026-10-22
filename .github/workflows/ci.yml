@@ -185,7 +185,7 @@ jobs:
         with:
           enable-cache: true
           python-version: ${{ matrix.python }}
-      - run: uv sync --locked
+      - run: uv sync --locked --extra truss
       # Weft's own parser, for the checks that hold Arras's statements and the memory adapter to it
       # (tests/test_weft_parser.py, test_weft_relational.py, test_reserved_names.py). It is a test tool,
       # never a dependency of the package: installed after the locked sync, which would remove it, from

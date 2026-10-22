@@ -211,13 +211,35 @@ def test_the_truss_flags_need_truss(fake_uvicorn, monkeypatch, nowhere, flags) -
     assert e.value.code == 2 and built == []
 
 
+@pytest.mark.parametrize(
+    "url",
+    [
+        "postgresql://arras_installer@localhost/db",
+        f"postgresql://arras_installer:{PASSWORD}@localhost/db?passfile=/invalid",
+    ],
+)
 def test_a_refused_url_stops_before_anything_starts(
-    fake_uvicorn, monkeypatch, nowhere, capsys
+    url, fake_uvicorn, monkeypatch, nowhere, capsys
 ) -> None:
     built = _stand_in(monkeypatch)
+    telemetry_calls: list[bool] = []
+
+    def telemetry_factory(*_args):
+        telemetry_calls.append(True)
+        raise AssertionError("refused URL must stop before telemetry is initialized")
+
     with pytest.raises(SystemExit) as e:
-        main(["--truss", "--truss-url", "postgresql://arras_installer@localhost/db"])
-    assert "connection URL is refused" in str(e.value) and built == [] and fake_uvicorn == []
+        main(
+            ["--truss", "--truss-url", url],
+            telemetry_factory=telemetry_factory,
+        )
+    captured = capsys.readouterr()
+    assert e.value.code == 2
+    assert "--truss-url is refused" in captured.err
+    assert url not in captured.out + captured.err
+    assert "arras_installer" not in captured.out + captured.err
+    assert PASSWORD not in captured.out + captured.err
+    assert built == [] and fake_uvicorn == [] and telemetry_calls == []
 
 
 def test_a_persistent_truss_needs_no_local_postgresql(monkeypatch) -> None:

@@ -31,7 +31,7 @@ After building Arras, verify the installed consumer and fixed memory corpus with
 the repository's artifact probe:
 
 ```sh
-python tools/verify_extension_host.py --wheel /path/to/arras-0.5.0-py3-none-any.whl \
+python tools/verify_extension_host.py --wheel /path/to/arras-0.5.1-py3-none-any.whl \
     --output-json /tmp/extension-host-receipt.json --fresh-dependencies
 ```
 

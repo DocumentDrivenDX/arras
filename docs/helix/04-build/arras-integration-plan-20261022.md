@@ -1176,6 +1176,43 @@ immutably. Final coherent source archive, actual corrected assembly/public-check
 execution, full hosted CI and tag/public-download gates remain required. No
 runtime library, wheel/npm payload, SDK, UI or native proof changed in this repair.
 
+### Immutable first tag failure and 0.5.1 fix forward
+
+The reviewed source head `5269986f35834229daffe7a07f97b6c17c98d52c` passed
+[all four source CI jobs](https://github.com/DocumentDrivenDX/arras/actions/runs/39867960866).
+PR #1 merged at `33aa9973e1daeb0ac15c31dbcbcb5010c0120aed` with the same tree.
+The immutable `v0.5.0` tag then started
+[release run 39869369841](https://github.com/DocumentDrivenDX/arras/actions/runs/39869369841).
+Its Linux native job passed all 199 tests, but the build stopped before artifact
+creation: the Truss-extra environment activated a stale CLI-refusal assertion.
+The parser correctly exited 2 with `--truss-url is refused`; no backend or server
+started. The tag produced no release assets and is not a delivered release.
+
+The coordinated patch changes only that assertion and regular Python CI's extra
+selection before a 0.5.1 version bump. The assertion checks the bounded diagnostic,
+exit status, credential non-disclosure and zero startup effects. Source native
+behavior and the selected Truss 0.0.48/Weft 0.4.51 cohort remain unchanged.
+The other session's Sol approved the repair. Its focused devhost pair passes 37
+tests; an interrupted full attempt is supporting evidence, not a full pass. The
+interrupted manifest case separately passes after the run is terminal.
+
+Every exact-artifact gate must rerun on the new wheel: SDK doctor, fresh example,
+installed native corpus, full packed UI ordinary comparison, source/sdist parity
+and final safe assembly. Existing visual approvals carry forward only by unchanged
+baseline image hashes. A machine-checked native-source delta may retain the prior
+Mac 199-test source evidence; new source CI and exact-tag Linux native gates remain
+mandatory. Historical receipts and hashes above stay bound to their old artifacts.
+The version bump exposed current-runtime UI test fixtures that hard-coded 0.5.0:
+a scoped run reported 23 failures and 74 passes, all failures refusing the stale
+fixture manifest before serving a page. Those current-cohort fixtures now derive
+the installed version; deliberate incompatible-cohort controls remain intact.
+The doctor-request fixture provenance digest is refreshed for its new pin.
+The [378-file source-delta attestation](evidence/arras-0.5.1-native-source-delta-20261022.json)
+records unchanged native production/conformance sources and normalized dependency
+identities, with the metadata, test and CI exceptions reviewed by Sol.
+No 0.5.0 tag or artifact bytes are replaced. Real registry publishing remains
+explicitly deferred; GitHub delivery and fresh anonymous download checks are required.
+
 ## Validation Plan
 
 - A0: focused `tests/test_umf.py` and `tests/test_core.py`; existing module/host

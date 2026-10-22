@@ -292,7 +292,7 @@ def _write_synthetic_theme(tmp_path: Path) -> Path:
                         "mime": "text/css",
                     }
                 },
-                "ui_versions": ["0.5.0"],
+                "ui_versions": [catalog()["distribution"]["npm"]["version"]],
             }
         ),
         encoding="utf-8",

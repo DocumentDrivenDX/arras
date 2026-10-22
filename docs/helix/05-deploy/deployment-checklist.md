@@ -20,7 +20,7 @@ ddx:
 ## Release
 
 First public Arras Python/UI artifact release from the reviewed integration
-cohort. The working package version is `0.5.0`; version selection is not a tag or
+cohort. The working package version is `0.5.1`; version selection is not a tag or
 publication claim. A 2026-10-22 GitHub preflight found no existing Arras tags or
 releases. The [integration plan](../04-build/arras-integration-plan-20261022.md)
 tracks all eight required seams and named implementation/review owners.
