@@ -66,6 +66,19 @@ its administrative/attribution checks. Refusal creates no receipt, journal or
 load entry and leaves graph state, versions, position and idempotency unchanged.
 Registration/read access is not itself refused by this write safeguard.
 
+**Core metadata profile.** `umf-core-metadata/1` (CONTRACT-002) declares no
+actions and permits metadata registration/readback and authorized empty-graph
+reads only. Direct memory `apply`, including dry run, both atomic and independent
+`apply_batch`, and `import_records` MUST raise `Unsupported` after their existing
+authentication, shape, administrative and attribution checks, but before clock,
+replay, record iteration or effects. No receipt, validation success or load result
+is returned; source, revision, graph, object versions, journal, loads, position
+and replay state stay unchanged. A forged direct plan cannot bypass this guard.
+High-level unknown-action resolution keeps its existing precedence. Official
+validity/completeness enables no execution: the legacy parser and unchanged
+canonical `umf.actions` probe remain outside this metadata profile. The existing
+legacy numeric and unsupported-profile safeguards remain independently in force.
+
 **Legacy declaration.** An action is defined in its module document (CONTRACT-002). Its elements:
 
 | Element | Rules | Notes |

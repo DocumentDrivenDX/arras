@@ -177,7 +177,7 @@ A2–A7 and P1/P2 contracts, native capabilities and deployments stay open below
 
 | After the scoped release | Owner/dependency | Bounded next acceptance |
 | --- | --- | --- |
-| P1 — remaining A2 official admission/projection | Arras semantic lane + official UMF owner; exact A1 API/vector evidence | Agree the admission result, trusted extension registrations and core-to-Arras projection against public core models. Implement one core-only keyed-record fixture without mandatory DDD; retain exact source/unknown content and separate validity/completeness from executable capability. A2's memory safeguard closes silent unsupported-write safety, not constraint enforcement. Keep unsupported profiles refused. |
+| P1 — remaining A2 official admission/projection | Arras semantic lane; exact A1 released API/vector evidence and CONTRACT-002/003/004 | Govern the immutable admission result, fresh empty official Registry and explicit memory-only core metadata projection below. Implement one STRING-keyed core record without mandatory DDD; retain exact source/unknown content and separate validity/completeness, projection, provider qualification and execution. The completed memory safeguard is safety, not constraint enforcement; trusted extension registration and broader runtime semantics remain later work. |
 | P1 next — registration and one generated action/constraint slice | Arras + UMF + Truss; agreed A2 mapping and authoritative value/action boundary | Define owner/module/version/digest and upgrade/retirement/dependency authority. Run one unchanged generated action through canonical transport with actual constraints, current person authority, dry-run/violation zero effects, atomic rollback and receipt/retry/unknown-settlement behavior. Later generated reads/link keys, optional values and cross-module execution remain A5/A6. |
 | P2 design now; bounded reader after shared projection/runtime agreement | Arras + Ashlar owner `01a15c6c-3938-71e2-8a35-bdb7ed8d9867` | Start with the receipt/progress contract, then one authorized publication-pinned lookup/page and zero-wait receipt-inclusion check. Settle complete transactions/no-op progress, epochs and person-scoped disclosure. Implement this reader in parallel with the action lane where dependencies permit; do not wait for every action/cross-module feature. Prove real convergence and false versus unknown freshness. Full managed/production/scale qualification remains separate. |
 
@@ -292,6 +292,52 @@ an archived-source scratch copy. It does not qualify the other native cases,
 current Arras source, Linux, managed deployment or public release. Public
 publication/Arras adoption remain with the owning release and exact-cohort gate;
 Arras's dependency pins are unchanged.
+
+### Remaining A2 — governing adoption and ordered implementation
+
+P0 publication and supplemental public verification are closed; this is separate
+P1 work. A2-0 adopts the bounded API/default/order/subset in CONTRACT-002/003/004,
+the programmatic keyword in CONTRACT-005, architecture and TP-001. This records
+implementation requirements, not passing code or installed-feature evidence.
+
+Use only released pure `umf-core` 0.10.0 from `umf-v0.5.4`, exact wheel SHA-256
+`49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9`.
+No Rust/codegen candidate, permissive DDD/view registry or second evaluator is
+part of this cut. `admit_document` preserves source and official ordered results;
+not-run/null status is distinct from completed official invalidity. Projection
+uses source afresh, exposes no mutable official authority and explicitly refuses
+unserved meaning. `umf-core-metadata/1` is programmatic opt-in, default legacy,
+and requires every placed store/replica's exact tuple qualification before
+acceptance/CAS. Only qualified memory advertises it; all writes remain refused.
+The source-taking Arras routes rederive the admitted projection. Direct provider
+registration retains the existing trusted host-supplied source/ModuleInfo boundary
+and does not independently attest official validity; no memory-to-admission edge
+is added.
+
+| Order / owner | Exact bounded source scope for Luna | Gate before dependent work |
+|---|---|---|
+| A2-1 / semantic Luna; dependency/content owners | New `umf_admission.py`, `_umf_engine.py`, admission tests; exact optional `umf` extra/lock; official fixture/provenance/notices | Fresh EMPTY production Registry; immutable source/status/ordered diagnostics; exact 139 reference vectors with TEST-ONLY callbacks, separate production expectations |
+| A2-2 / semantic Luna | `_umf_projection.py`, core projection tests and neutral originals/STRING-key derivative fixtures | Identity/all-members/nullability/key subset, valid-but-unsupported controls, no loss or mutable authority |
+| A2-PRE / semantic Luna with module-map owner | New `_catalogs.py`, delegated catalog portion of `core.py`, catalog tests and exact edge/negative controls | Preserve token/failure/order/placement behavior and public identities; keep unchanged 926-line ceiling before constructor wiring |
+| A2-3 / semantic Luna | `model.py`, `results.py` (BackendInfo), `core.py`, `registration.py`, `schema_admin.py`, registration tests; defensive Truss registry guard/scripted tests only | Legacy default/order unchanged; profile dispatch in `registration.placed`, not legacy `umf.py`; provider-not-called and profile-transition negatives |
+| A2-4 / semantic Luna | Memory registry/profile/capability integration and policy descriptor tests | Metadata-only readback; mutable=false; direct/dry-run/both batches/import Unsupported before iteration/replay/effects and complete zero-state-change proof |
+| A2-5 / coordinated catalog, boundary, CI and distribution owners | Public module catalog, module maps/provenance, required extra-enabled static/semantic CI and fresh installed probes | Whole strict quality/boundaries, exact 139-ID/no-skip gate, base-without-engine plus extra-enabled fresh wheel proofs outside checkout |
+
+The public module is `arras.umf_admission`, without automatic root re-exports.
+The optional-engine bridge alone imports official UMF. Base imports remain usable
+without it; explicit new routes refuse missing support rather than falling back.
+CI quality/semantic environments must include `--extra truss --extra umf` and a
+required `ARRAS_REQUIRE_UMF=1` gate. A1's reused-environment probe does not satisfy
+the two fresh installed environments. Vendoring the independently verified public
+139-case fixture requires its exact tag/blob/digest, derived/correction metadata
+and license/notices, not a new owner approval gate. TP-001 records these controls.
+
+Sol freezes/reviews governing decisions before Luna implements each bounded
+slice. Contract revision/catalog changes and downstream file ownership are
+coordinated when implemented. No version, tag, released receipt, Truss49 adoption,
+native/UI campaign or new registry publication follows from A2-0. Canonical
+actions/transport, official value enforcement and broader registration ownership
+remain A3–A7; Ashlar's authorized publication/progress seam remains separate.
 
 ## Extensibility Queue
 
@@ -1474,8 +1520,11 @@ gates above are reviewable. It does not establish integration completion.
   with missing semantic/runtime boundaries recorded separately.
 - [x] The selected A2 memory capability-refusal safeguard passes focused zero-effect
   and source-fidelity checks; it does not establish constraint enforcement.
-- [ ] Remaining A2 official admission/projection and trusted extension contracts
-  are settled before their dependent implementation.
+- [x] The bounded A2 official admission/core metadata API, provider qualification,
+  ordering, module boundaries and required test gates are governed before code.
+- [ ] Bounded A2 admission/projection, memory metadata integration and both fresh
+  installed proofs pass. Trusted extension registration and broader semantics
+  remain outside this first profile.
 - [ ] A3–A7 prove current-source registration, declared execution, ownership,
   generated reads, selected optional/cross-module behavior and installed public-host
   conformance on their named native cohort. Unsupported cases remain explicit.

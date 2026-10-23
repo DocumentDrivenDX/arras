@@ -80,6 +80,38 @@ Terms. Truss is the hot mutable store, deployed on Lakebase (Databricks managed 
 
 **Outcomes.** An adapter distinguishes three: an empty answer, `Refused` (the backend's own controls deny the principal) and `Unavailable` (unreachable or failing). It MUST NOT turn an outage into an empty answer or a refusal.
 
+### Metadata profile qualification
+
+`BackendInfo` gains a final defaulted field
+`metadata_profiles: tuple[str, ...] = ("legacy-arras/1",)`. It declares acceptance
+or attachment, source preservation, enumeration and document/metadata readback;
+it does not declare data mutability or value/action enforcement. A descriptor
+without the field is legacy-only. Only the qualified memory store and replica
+advertise `("legacy-arras/1", "umf-core-metadata/1")`; unchanged Truss and custom
+providers remain legacy-only. `PolicyBackend` preserves the delegated descriptor.
+
+For the new profile only, preflight MUST require an exact tuple whose entries
+are exact strings and compare the requested profile by equality. A string,
+substring, list, mapping or arbitrary truthy/mutable carrier never qualifies.
+Do not normalize malformed data into support or add a general plugin validator.
+CONTRACT-002 fixes authorization and placement precedence: unqualified placed
+stores or replicas are refused before acceptance, dry-run, attachment,
+preparation or CAS. Existing catalog/describe reads may occur. Direct provider
+registration retains schema authorization first, then refuses unsupported
+metadata before preparation or acceptance. A defensive Truss profile guard does
+not change its accepted-document parser or qualify native core metadata support.
+
+The official-admission guarantee belongs to Arras's source-taking Registry/Schema
+routes. Direct provider registration continues to trust its host-supplied
+ModuleInfo/source pairing after authorization; it does not certify official
+validity or independently re-admit bytes. The new descriptor is not an admission
+ticket. No memory-to-admission dependency is introduced by this profile.
+
+Every accepted `umf-core-metadata/1` type reports `mutable=false`. This profile
+has no implicit seed or write executor; direct writes are refused under
+CONTRACT-003. The legacy memory numeric profile remains a separate capability.
+No new Truss pin, native method, Ashlar adapter or feed behavior follows.
+
 ## Reference adapters
 
 The core contract above names no store. The three adapters below map it onto one. A backend's name is the host's choice (`[a-z][a-z0-9_]{0,40}`); Arras defines none.

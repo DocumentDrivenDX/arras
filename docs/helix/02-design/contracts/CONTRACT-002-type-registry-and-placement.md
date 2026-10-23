@@ -74,6 +74,116 @@ selection. The bounded memory mutation profile in CONTRACT-004 may refuse writes
 while registration and authorized metadata/graph reads remain available. This
 interim safeguard does not replace official admission or add a constraint evaluator.
 
+### Official source admission and core metadata profile
+
+The additive programmatic surface is `arras.umf_admission`; it does not replace
+the default legacy reader. `admit_document(document: bytes | str)` returns an
+immutable `AdmissionReport`. `project_document(document: bytes | str)` admits
+SOURCE afresh and returns a `ProjectionReport`, never accepting a report as an
+authority ticket. Other input types raise `TypeError`; text that cannot encode
+as strict UTF-8 raises `ValueError` before a report exists.
+
+| Public value | Fields and invariants |
+| --- | --- |
+| `UmfDiagnostic` | `authority` (`umf` or `arras-source`), `code`, `path`, `message`, `severity`; copied in official order without semantic reinterpretation |
+| `AdmissionReport` | Exact immutable `source: bytes` with `field(repr=False)`, `source_sha256`, `engine_distribution`, `engine_version`, `validation_profile`, `validation_status`, `valid`, `complete`, immutable `diagnostics` tuple |
+| `ProjectionIssue` | `path`, `code`, safe `message`; consumer projection issues, not official validity diagnostics |
+| `ProjectionReport` | `admission`, `profile`, `supported`, immutable `issues` tuple, fresh unplaced `module: ModuleInfo | None` |
+
+The selected authority is the released pure `umf-core` 0.10.0 wheel from public
+tag `umf-v0.5.4`, SHA-256
+`49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9`.
+Every production admission creates a fresh internally owned EMPTY official
+`Registry`, profile `umf-core-empty-registry/1`. No host registry, schema-only
+DDD/view registration, document-driven callback, codegen or semantic fallback is
+accepted. Engine identity names the selected distribution/version; an expected
+digest compiled into Arras is not observed installed-artifact evidence.
+
+Official JSON reading precedes `validate_document(raw, registry)`. Only its
+returned Validation establishes `validation_status="completed"`: `valid` and
+`complete` are the exact official booleans and diagnostics remain ordered.
+Lexically valid structural negatives therefore retain official diagnostics,
+instead of being replaced by a typed-reader exception. `read_document` or
+`checked_copy()` MUST NOT substitute for semantic validation.
+
+An Arras source bound of 16 MiB, strict UTF-8 decoding refusal or official JSON
+reader refusal yields `validation_status="not_run"`, `valid=None`, `complete=None`
+and a safe `arras-source` diagnostic (`source_limit` or `source_profile`, path
+`document`). This means official `validate_document` did not run, not that UMF
+found the document invalid. Constructors reject inconsistent combinations.
+Unexpected engine exceptions remain failures, not fabricated invalid reports.
+Missing optional engine support raises `Unsupported` naming the extra/profile.
+No replacement decoding, exception-prose parsing or second validator is added.
+
+The public values expose no mutable official Document, Registry or shared raw
+mapping. Mutating a returned metadata summary cannot alter later admission or
+registration. Source-only repr redaction does not make official diagnostic text
+safe: it remains untrusted source-derived content, not automatically emitted to
+logs, telemetry or transport errors.
+
+Projection `umf-core-metadata/1` requires completed admission with `valid is True`
+and `complete is True`, then these separately checked consumer limits:
+
+- Exactly one module, one core record, all its explicit direct-field members and
+  exactly one explicit primary key referencing one required STRING field of
+  cardinality one. No alternate/composite key or unprojected element.
+- Other fields use only the existing string/integer/decimal/boolean/binary/
+  timestamp families, explicit cardinality one and required or absent-allowed
+  nullability. Missing/unspecified requiredness, containers, references, value
+  records and relationships are outside this profile.
+- No actions, nonempty facets or nonempty semantic types are projected. The
+  presence of a default, allowed-values or rules declaration is unsupported,
+  including an empty/null declaration where official admission permits it.
+  Other empty slots are accepted only where official admission accepts them.
+  No constraint or action evaluator is introduced.
+- Actual module/record/field IDs determine identity and still satisfy Arras and
+  GraphQL name rules. Namespace/title/display name never renames an opaque ID.
+  Descriptions, aliases, examples and unknown content remain in original source;
+  ModuleInfo is an explicitly reduced summary.
+
+Issues use `invalid_name`, `missing_key`, `incomplete_interpretation` and
+`unsupported_projection` with source pointers. A valid but unprojectable
+document remains officially valid. Unknown meaning can be valid/incomplete and
+is refused by projection. The existing STRING key VALUE carrier remains
+`[A-Za-z0-9._:-]{1,128}`; metadata admission executes no keys and promises no
+broader UMF key carrier.
+
+Hosts explicitly select `metadata_profile="legacy-arras/1"` (default) or
+`"umf-core-metadata/1"` on the Arras constructor/start. The model's
+`MetadataProfile` literal names those choices; unknown choices raise constructor
+`ValueError` without engine import or I/O. No TOML/environment/CLI selection,
+mixed-dialect auto-detection or change to legacy `parse_module` is added.
+
+ModuleInfo gains final defaulted `metadata_profile="legacy-arras/1"`. Changing
+an existing module's profile is `incompatible_change`, never a silent
+interpretation switch. New-profile placement requires explicit CONTRACT-004
+qualification by its record store and every replica before acceptance, dry-run,
+attach, preparation or CAS; otherwise `Invalid(invalid_placement)` at `placement`.
+This is the no-applicable-store placement exception, not an official invalidity
+or a claim that schema authorization ran on a provider deliberately not called.
+
+Existing authority/order remains: admin Registry checks admin/token/current
+catalogs before parsing and placement. Person Schema checks require-user, parses,
+resolves record placement and provider role, then checks profile qualification
+before backend `validate_register`. Once qualified, current schema authorization,
+host/GraphQL checks, revision handling and acceptance/CAS keep their order.
+Catalog/descriptor reads remain permitted; legacy precedence is unchanged.
+
+The first qualified integration is metadata-only memory registration/dry-run,
+description, document readback and authorized empty-graph reads. No implicit seed
+or data mutation is enabled. RegisteredDocument exposes lossless UTF-8 text:
+`registered.text.encode("utf-8") == admission.source`. Rewritten-equal documents
+retain the held revision/source; meaning changes follow existing revision rules.
+
+Official admission/projection is guaranteed by the source-taking Arras Registry
+and Schema routes, which rederive metadata from source. Direct provider
+`register(document, ModuleInfo)` / `validate_register` remain trusted host-metadata
+operations: their caller supplies the source-to-summary correspondence. They do
+not independently attest official validity, and a hand-built ModuleInfo or report
+is not such an attestation. The memory backend does not gain an admission import
+or reinterpret the source. Its descriptor promises preservation/readback of
+host-derived metadata, not another validation boundary.
+
 | Element | Rules | Notes |
 |---------|-------|-------|
 | Module | The document MUST define exactly one module and its `id` is the module name, matching `[a-z][a-z0-9_]{0,40}`. A document may reference other modules' types but MUST NOT define them. | The module is the unit of ownership, access and placement. |
@@ -84,7 +194,7 @@ interim safeguard does not replace official admission or add a constraint evalua
 | Cross-module endpoints | A relationship may name a type in another module. | The registering principal MUST be able to read that module (`unreadable_module` otherwise). A relationship whose endpoint is held by another record store is a reference (CONTRACT-001). |
 | Actions | UMF actions defined in the module (CONTRACT-003). | |
 | Placement | None. The document carries no placement; where a module lives is host configuration (Placement, below). | A module is defined by its UMF document alone. |
-| Unsupported UMF | A construct Arras or the provider does not support is refused as `invalid_document`, naming the construct. | Agreement with the reference validator is tested by the corpus's `umf` cases. |
+| Unsupported UMF at registration | The selected reader/profile refuses unsupported constructs with their named source paths; legacy registration retains `invalid_document`. | Independent official admission validity/completeness remains distinct from projection or provider capability. |
 | Presentation vocabulary | A document may declare the vocabulary `arras.view` 0.1.0 (CONTRACT-010). Its terms are checked at registration with their own codes (`view_*`) and paths, and the registry is unchanged on any fault; they change no type, relationship or action, so a document registers to the same registry with and without them. | The `arras.view` cases (`arras.conformance.views`). |
 
 **Placement.** The host passes `placement={"<module>": Placement(record, replicas=(), providers={})}` and optionally `default_placement=Placement(...)` to `Arras.start` (CONTRACT-005). The MCP process builds the same placements from the committed configuration files (`[placement]` and `[modules.<module>]`, CONTRACT-007), never from environment variables.
@@ -111,7 +221,7 @@ interim safeguard does not replace official admission or add a constraint evalua
 | `session.schema().register(document, *, unknown_endpoint="reject", expected_revision=None)` | `-> RegistryResult` | As `registry().register`, run as the person under the `schema` grant. `expected_revision` is the revision a plan answered with; it is passed to the record store, which checks it in the same serialized step as the acceptance, so a record store at another revision is `Conflict` (`revision`) and applies nothing. | The surface that binds `validate` and `register` over HTTP is CONTRACT-011. |
 | `attach(document)` | `-> RegistryResult` | For a module whose record store is not a provider. Records the module's types and placement so clients can discover and read them, without changing the record store. | The document is the record store's own export. |
 
-`ModuleInfo` has `name`, `placement`, `revision`, `entity_types`, `relationships`, `actions`, `value_types` (the structured values) and `status`.
+`ModuleInfo` has `name`, `placement`, `revision`, `entity_types`, `relationships`, `actions`, `value_types` (the structured values), `status` and final defaulted `metadata_profile`.
 
 In v1 a relationship has one type at each end, because the console and the MCP binding name the type on the other end of a key; a document with several is refused as `invalid_name` at `register`.
 
@@ -175,6 +285,9 @@ ontology.describe("catalog")[0].entity_types[0].capabilities["memory"].columns  
 
 The name rules exist so every declared type can become a GraphQL type without renaming (ADR-011). The record store owns UMF's meaning, document ordering and the derivation of catalog rows; Arras does not restate them. A document another tool produced as UMF is registered as it is, provided it meets the constraints; unknown endpoints are the case `provisional` exists for. A helper that builds a UMF document from Python objects can exist outside this contract and `arras.__all__`.
 
-Arras has no `default` for a property, no per-type switch for accepting undeclared properties, and no float or arbitrary-JSON type, because UMF core as the backends use it has no construct for them that Arras can rely on; a module that needs one models it in UMF.
+Arras's current executable profiles do not supply field defaults, a per-type
+switch accepting undeclared properties, or float/arbitrary-JSON values. Official
+admission may preserve a default or other meaning that the selected metadata or
+execution profile refuses; preservation is not execution support.
 
 Open points: a primary key declared in UMF as several fields is refused in v1; whether a retired name may be redeclared once the backend defines it; and who supplies the Python UMF reader (a port of UMF's validator, or an adapter), which must pass the corpus's `umf` cases before Arras can claim conformance.

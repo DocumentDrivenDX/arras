@@ -35,11 +35,17 @@ receipts remain bound to their original artifacts; the explicit source-delta
 attestation qualifies retention of the Mac source-native evidence. Final source
 archive parity and independent component reviews pass. The immutable 0.5.0 tag
 failed before artifact publication on a stale refusal assertion; 0.5.1 fixes
-that assertion and CI dependency parity. Exact-tag GitHub assets and fresh public
-download gates remain open in the
-[release checklist](05-deploy/deployment-checklist.md). Real registry uploads may
-be explicitly deferred; no downstream migration or general official-UMF execution
-is implied by this release work.
+that assertion and CI dependency parity. P0 is closed: immutable GitHub v0.5.1
+publication `39879533273` and supplemental fresh public verification `39883764998`
+pass the [release checklist](05-deploy/deployment-checklist.md). The publication's
+post-download failure remains historical; the separate verification run supplies
+the passing current receipts. Linux qualifies 205 nonvisual UI cases; its visual
+stage is explicitly not run. The Mac comparison and payload bridge retain their
+separate artifact scope. PyPI/npm uploads remain explicitly deferred. No downstream
+migration or general official-UMF execution is implied. The next bounded A2
+admission/metadata profile is governed by CONTRACT-002/003/004, the architecture,
+test plan and integration plan; implementation and its fresh installed proof
+remain open.
 
 Raw incoming material goes in `docs/intake/`, outside HELIX. Author artifacts
 through the HELIX skill (`/helix`).
