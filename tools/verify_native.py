@@ -56,6 +56,13 @@ def _sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def _receipt_default(value: object) -> str:
+    """Retain validated filesystem observations on the failure path, too."""
+    if isinstance(value, Path):
+        return str(value)
+    raise TypeError(f"unsupported receipt value: {type(value).__name__}")
+
+
 def _canonical_name(name: str) -> str:
     return re.sub(r"[-_.]+", "-", name).lower()
 
@@ -909,8 +916,10 @@ def main(argv: list[str] | None = None) -> int:
         if isinstance(exc, VerificationError) and exc.details:
             receipt.update(exc.details)
         args.output_json.parent.mkdir(parents=True, exist_ok=True)
-        args.output_json.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
-        print(json.dumps(receipt, sort_keys=True), file=sys.stderr)
+        args.output_json.write_text(
+            json.dumps(receipt, indent=2, sort_keys=True, default=_receipt_default) + "\n"
+        )
+        print(json.dumps(receipt, sort_keys=True, default=_receipt_default), file=sys.stderr)
         return 1
     print(
         json.dumps({"status": receipt["status"], "receipt": str(args.output_json)}, sort_keys=True)

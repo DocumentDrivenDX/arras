@@ -483,7 +483,10 @@ def test_failed_receipt_keeps_input_hashes_and_cli_evidence(
         "wheel_paths": {},
         "install_inventory": [{"distribution": "truss-toolkit", "version": "1.0"}],
         "probe": {"corpus_version": 4, "roles": ["reader", "provider"]},
-        "parity": {"payloads": {"arras": {"a.py": "b"}}},
+        "parity": {
+            "payloads": {"arras": {"a.py": "b"}},
+            "roots": {"purelib": tmp_path / "venv" / "site-packages"},
+        },
     }
     monkeypatch.setattr(verify_native, "_provision_and_probe", lambda *_args: installed_context)
     monkeypatch.setattr(
@@ -517,7 +520,10 @@ def test_failed_receipt_keeps_input_hashes_and_cli_evidence(
     assert saved["native_wheels"] == installed_context["downloaded"]
     assert saved["pip_artifacts"] == installed_context["install_inventory"]
     assert saved["installed_probe"] == installed_context["probe"]
-    assert saved["installed_checks"] == installed_context["parity"]
+    assert saved["installed_checks"] == {
+        **installed_context["parity"],
+        "roots": {"purelib": str(tmp_path / "venv" / "site-packages")},
+    }
     assert saved["status"] == "failed"
 
 
