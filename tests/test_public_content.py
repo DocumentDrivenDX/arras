@@ -266,9 +266,35 @@ def test_workflow_python_blocks_compile_and_run_without_upstream_tools(
     tmp_path: Path,
 ) -> None:
     blocks = _embedded_workflow_python()
-    assert len(blocks) == 10
+    assert len(blocks) == 11
     for block in blocks:
         compile(block, "downstream workflow embedded Python", "exec")
+
+    source_guard = next(
+        block for block in blocks if "source_sha must be a full 40-hex commit" in block
+    )
+    valid_source = subprocess.run(
+        [sys.executable, "-"],
+        input=source_guard,
+        text=True,
+        env={**os.environ, "ARRAS_SOURCE_SHA": "a" * 40},
+        capture_output=True,
+    )
+    assert valid_source.returncode == 0, valid_source.stderr
+    for malformed_sha in ("a" * 39, "a" * 40 + "\nGITHUB_ENV=/tmp/injected"):
+        rejected_source = subprocess.run(
+            [sys.executable, "-"],
+            input=source_guard,
+            text=True,
+            env={**os.environ, "ARRAS_SOURCE_SHA": malformed_sha},
+            capture_output=True,
+        )
+        assert rejected_source.returncode != 0
+        assert "full 40-hex commit" in rejected_source.stderr
+
+    path_validation = next(
+        block for block in blocks if "CONSUMER_PROJECT_PATH" in block and "checked_path" in block
+    )
 
     workspace = tmp_path / "consumer-checkout"
     (workspace / "project").mkdir(parents=True)
@@ -295,7 +321,7 @@ def test_workflow_python_blocks_compile_and_run_without_upstream_tools(
         "THEME_SETUP_PATH": "tests/theme_setup.py",
     }
     result = subprocess.run(
-        [sys.executable, "-"], input=blocks[0], text=True, env=env, capture_output=True
+        [sys.executable, "-"], input=path_validation, text=True, env=env, capture_output=True
     )
     assert result.returncode == 0, result.stderr
     saved_env = env_file.read_text(encoding="utf-8")
@@ -305,7 +331,11 @@ def test_workflow_python_blocks_compile_and_run_without_upstream_tools(
 
     escaped_env = {**env, "CONSUMER_TEST_PATH": "../outside.py"}
     result = subprocess.run(
-        [sys.executable, "-"], input=blocks[0], text=True, env=escaped_env, capture_output=True
+        [sys.executable, "-"],
+        input=path_validation,
+        text=True,
+        env=escaped_env,
+        capture_output=True,
     )
     assert result.returncode != 0
     assert "workspace" in result.stderr
@@ -313,7 +343,7 @@ def test_workflow_python_blocks_compile_and_run_without_upstream_tools(
     missing_theme_env = {**env, "THEME_TEST_PATH": ""}
     result = subprocess.run(
         [sys.executable, "-"],
-        input=blocks[0],
+        input=path_validation,
         text=True,
         env=missing_theme_env,
         capture_output=True,
