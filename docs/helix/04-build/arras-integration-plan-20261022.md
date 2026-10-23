@@ -1304,6 +1304,61 @@ These are local prepublication checks; no anonymous download is claimed. Final
 safe-bundle Sol review, final source CI, tag and actual public-download gates
 remain required before the P0 release closes.
 
+### Tag 0.5.1 driver-order failure and immutable-source recovery
+
+PR #2 merged at `8b786bb7629a6425e5a2b3b528378f0d92f0b847`, with a tree
+identical to qualified head `9993364967983889a96463a848254f0e06ce2637`.
+[Tag run 39874964466](https://github.com/DocumentDrivenDX/arras/actions/runs/39874964466)
+passed source native (199), full Python (2,907), artifact/source parity, installed
+SDK doctor (20) and installed Linux native qualification. Its UI job stopped before
+publication: `npm run test:integration` preceded `npm run build`, so the two
+branding integration assertions could not find `ui/dist/index.html` or served
+brand metadata. Regular source CI builds before integration and passes. No
+GitHub Release assets or public-download qualification were produced.
+
+The Linux tag build produced wheel
+`17d50dedeaf9d4f7d27e0eb30cb16539bfa75de3a138dc9351284c2e2f390d4b`,
+npm `76fc29a5a24747ef26d0e04263f1f8924034244b1169a41fb865e02274485e1f`
+and sdist `541aa91ae970ac16644679614d74b858f1a46e303b6429e0c10804c24bc0dd45`.
+Its archive hashes differ from local Mac component artifacts solely because npm's
+compressed DEFLATE bytes differ. All 321 npm files, the complete decompressed
+20,401,664-byte TAR stream and every TAR header are identical; both wheel RECORDs
+validate. The only other wheel/sdist differences are the embedded archive and
+regenerated RECORD binding. Python, API, runtime assets, testkit, declarations,
+dependencies and file modes are unchanged. [Sol accepted this bounded equivalence](evidence/arras-0.5.1-tag-payload-equivalence-review-20261023.json);
+original Mac 598/460 receipts retain their exact identities and are never
+relabelled as direct Mac execution of the Linux 17d/76fc archives.
+
+The orchestration-only recovery is bound in CONTRACT-005: a reviewed default-branch
+driver accepts the existing immutable tag plus expected source commit, validates
+both and pins every payload/downstream checkout to that commit. It records driver
+and source identities separately and rechecks the remote tag before publication.
+Every mandatory gate runs freshly in one new current run; failed-run receipts are
+not joined or relabelled. The driver builds the UI before integration. No runtime,
+package/API version or tag changes are needed. Driver implementation, focused
+selector/order/identity tests, Sol review and new driver CI are required before
+manual dispatch. No release or anonymous-download result is inferred yet.
+
+The local corrective-order regression runs `npm run build` before the unchanged
+integration suite and passes all 205 tests in 23 files, including both built-page
+branding assertions. Build log SHA-256 is
+`9405c85546f370ab080817ddc250045868fc8302be6a7576d0c9557c6bed6570`;
+integration log SHA-256 is
+`6b1668754fa9da8489ed4aed018e41badb7e67a734900cf19d007c3c9341602d`.
+Both commands exit 0; spawned hosts are confirmed stopped. No UI/Python source,
+package artifact, dependency environment or baseline changes were made.
+
+The recovery driver is frozen after Luna’s current-byte verification: 77 focused
+release tests pass, Ruff and formatting pass, the selector has zero Pyright
+errors, both workflow YAML files parse, and the diff has no whitespace errors.
+Root Sol approves the full implementation; the coordinating session’s Sol
+independently approves source identity, CONTRACT-005, current-run evidence,
+reusable-workflow binding and publication permissions. Reviewed SHA-256 values:
+release workflow `a8048b50dd8ce8c7eab728d254ab06d68b612e26a7648c86464da75bc67df4e2`,
+downstream workflow `f0f997fd7f93ea3ea08b001505dd246ea016520c6921e0f2b5ce42ad0e274e5d`,
+and selector `c34faf412d684ec01f292f5a786aac0e01818013bde4213e3013f8d3f4ff3cab`.
+These are driver checks; fresh remote qualification and publication remain pending.
+
 ## Validation Plan
 
 - A0: focused `tests/test_umf.py` and `tests/test_core.py`; existing module/host

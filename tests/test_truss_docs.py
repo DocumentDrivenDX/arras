@@ -171,14 +171,19 @@ def test_release_assets_are_gated_and_registry_publishing_is_opt_in() -> None:
     assert "setup-bun" not in release
 
 
-def test_github_release_uses_tag_checkout_and_tracked_notes() -> None:
+def test_github_release_rechecks_the_tag_and_uses_tagged_notes() -> None:
     release = (ROOT / ".github/workflows/release.yml").read_text()
     github = release_job(release, "github-release")
     notes = " ".join((ROOT / "docs/helix/05-deploy/release-notes.md").read_text().lower().split())
-    assert "ref: ${{ needs.check.outputs.tag }}" in github
-    assert "--notes-file docs/helix/05-deploy/release-notes.md" in github
+    assert "ref: ${{ needs.check.outputs.driver_sha }}" in github
+    assert "ref: ${{ needs.check.outputs.source_sha }}" in github
+    assert "--notes-file release-notes.md" in github
+    assert "source/docs/helix/05-deploy/release-notes.md" in github
+    assert "release_target.py recheck" in github
     assert "--generate-notes" in github and "--verify-tag" in github
-    assert github.index("ref: ${{ needs.check.outputs.tag }}") < github.index("gh release create")
+    assert github.index("release_target.py recheck") < github.index("gh release create")
+    assert "Build provenance" in github
+    assert "ARRAS_DRIVER_SHA" in github and "ARRAS_TARGET_SOURCE_SHA" in github
     assert "registry access has not been established" in notes
     assert "pip install arras" not in github.lower()
 
@@ -196,7 +201,7 @@ def test_release_requires_ui_and_public_downstream_qualification() -> None:
     for required in (
         "npm audit --audit-level=high --omit=dev",
         "npm run check:umf -- --download",
-        "npm run check && npm run typecheck && npm test && npm run test:integration && npm run build",
+        "npm run check && npm run typecheck && npm test && npm run build && npm run test:integration",
         "npm run check:umf -- --dist dist",
         "npm run build:lib",
         "npm run check:externals",

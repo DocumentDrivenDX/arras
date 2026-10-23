@@ -139,6 +139,23 @@ always-run evidence upload. String matching alone does not qualify the binder.
 
 ### Exact release evidence assembly and public download qualification
 
+A reviewed release driver on the repository's default branch may recover an
+unpublished, immutable existing tag after an orchestration-only failure. A manual
+request supplies the exact `vX.Y.Z` tag and expected 40-hex source commit. Validate
+the event, default-branch driver, remote tag resolution, expected commit and tagged
+project version before running payload code. Record driver commit/workflow/run
+identity separately from target tag/commit identity. Every payload checkout,
+including a called downstream workflow, MUST use the validated target commit and
+verify HEAD; a dispatch ref or driver SHA is never a payload-source substitute.
+Recheck that the remote tag still resolves to the same identity before publication.
+This recovery changes neither tag nor package/API versions. It runs every mandatory
+source/build/SDK/native/UI/consumer/assembly/public-download gate freshly in one
+current run; no failed-run receipts are relabelled or joined across runs. All
+publication and registry ordering/permission restrictions below remain unchanged.
+Record operational provenance as CI evidence, not an extra public release asset.
+A changed runtime payload still requires its own affected qualification; a workflow
+repair is not authority to replace any published artifact bytes.
+
 Release wiring preserves the existing source, native and UI gates. `build`
 transports its verified wheel/sdist/npm and distribution/doctor receipts as
 `release-build-inputs`; that early transport is not the final public bundle.

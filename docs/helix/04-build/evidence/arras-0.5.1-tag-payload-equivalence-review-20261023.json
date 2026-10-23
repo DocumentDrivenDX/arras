@@ -1,0 +1,32 @@
+{
+  "schema": "arras.artifact-payload-equivalence.independent-review.v1",
+  "status": "approved-container-only-qualified-reuse",
+  "tag_artifacts": {
+    "npm": "76fc29a5a24747ef26d0e04263f1f8924034244b1169a41fb865e02274485e1f",
+    "sdist": "541aa91ae970ac16644679614d74b858f1a46e303b6429e0c10804c24bc0dd45",
+    "wheel": "17d50dedeaf9d4f7d27e0eb30cb16539bfa75de3a138dc9351284c2e2f390d4b"
+  },
+  "local_artifacts": {
+    "npm": "460e1b1037d4965d17af8b3e689c364c22b51a09cc9d3d64c8ddf0296e34c943",
+    "sdist": "e8c8636d43a1392fa5f30c2b1adf86cff9e1c0e999be88008a8aa1f13994864d",
+    "wheel": "59827644e2e423980afed1047f75c7130dc5d8c542778df4b62a9e2244cdc24c"
+  },
+  "payload_report_sha256": "dcf945a9ee4c14ff1b649bff60685bf8d716b8976500c18cb0b72be716f36c7c",
+  "metadata_report_sha256": "2273a9d640a22ff501449a029ff6fc6014e2450fc927b2b1a59f5633e57d3e4f",
+  "independent_checks": {
+    "npm_gzip_decompressed_tar_streams_byte_identical": true,
+    "npm_tar_stream_sha256": "585209dbc4f777b582ecbaf86030bdbc889d2edd4282b7e2fd8c9983ff1a9e5d",
+    "npm_files": 321,
+    "both_wheel_RECORD_all169_entries_correct": true,
+    "wheel_permission_type_flags_equal": true,
+    "sdist_type_mode_owner_link_pax_equal": true,
+    "reviewed_comparison_script": true
+  },
+  "decision": "No fresh Mac runtime campaign required: tag/local installed Python and extracted npm JS/CSS/page/testkit/schema/assets/dependencies are unchanged. Mac proof remains exact local598/460 evidence with this separate payload-equivalence bridge; direct tagLinux proofs and anonymous-publicdownload checks remain mandatory.",
+  "limits": [
+    "Different archive SHA identities remain explicit; do not alter or relabel original Mac SDK/UI/native receipts.",
+    "No new Mac exact17d/76fc runtime execution claimed.",
+    "No Linux result or publicdownload assumed; their actual workflow outcomes require separate review.",
+    "This concerns observedpayload semantics, not every archivecontainer byte or arbitrary platform compatibility."
+  ]
+}

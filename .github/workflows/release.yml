@@ -10,6 +10,16 @@ name: Release
 on:
   push:
     tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing, unpublished vX.Y.Z tag to qualify from scratch.
+        required: true
+        type: string
+      expected_source_sha:
+        description: Exact 40-hex commit currently named by that immutable tag.
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -19,23 +29,52 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # The tag names the version in pyproject.toml.
+  # Resolve the payload identity from a separately recorded workflow driver before payload jobs run.
   check:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
       tag: ${{ steps.version.outputs.tag }}
+      source_sha: ${{ steps.version.outputs.source_sha }}
+      tag_object_sha: ${{ steps.version.outputs.tag_object_sha }}
+      driver_sha: ${{ steps.version.outputs.driver_sha }}
+      workflow_ref: ${{ steps.version.outputs.workflow_ref }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 0
       - id: version
+        name: Validate event, immutable tag, expected source, and tagged version
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_WORKFLOW_SHA: ${{ github.workflow_sha }}
+          GITHUB_WORKFLOW_REF: ${{ github.workflow_ref }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+          PROVENANCE_DIR: artifacts
         run: |
-          version=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
-          if [ "${GITHUB_REF_NAME}" != "v${version}" ]; then
-            echo "tag ${GITHUB_REF_NAME} does not match pyproject version ${version}" >&2
-            exit 1
-          fi
-          echo "version=${version}" >> "$GITHUB_OUTPUT"
-          echo "tag=v${version}" >> "$GITHUB_OUTPUT"
+          python3 .github/scripts/release_target.py validate
+      - name: Checkout the exact validated payload source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.version.outputs.source_sha }}
+          path: payload
+      - name: Assert validated payload HEAD before use
+        env:
+          ARRAS_SOURCE_SHA: ${{ steps.version.outputs.source_sha }}
+        run: test "$(git -C payload rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-driver-provenance
+          path: artifacts/release-driver-provenance.json
+          if-no-files-found: error
 
   # The Truss adapter on the pinned release and PostgreSQL 18.6, as ci.yml runs it: a release is held
   # to the same evidence as a change.
@@ -46,6 +85,12 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.check.outputs.source_sha }}
+      - name: Assert validated payload HEAD before use
+        env:
+          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
+        run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
@@ -62,6 +107,12 @@ jobs:
       wheel_sha256: ${{ steps.release-bundle.outputs.wheel_sha256 }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.check.outputs.source_sha }}
+      - name: Assert validated payload HEAD before use
+        env:
+          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
+        run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
@@ -148,6 +199,12 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.check.outputs.source_sha }}
+      - name: Assert validated payload HEAD before use
+        env:
+          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
+        run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -215,6 +272,12 @@ jobs:
       sums_sha256: ${{ steps.sums.outputs.sha256 }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.check.outputs.source_sha }}
+      - name: Assert validated payload HEAD before use
+        env:
+          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
+        run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
       - uses: actions/download-artifact@v4
         with:
           name: release-build-inputs
@@ -262,7 +325,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ needs.check.outputs.tag }}
+          ref: ${{ needs.check.outputs.driver_sha }}
+          path: driver
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.check.outputs.source_sha }}
+          path: source
+      - name: Assert driver and payload identities, then recheck immutable tag
+        env:
+          TARGET_TAG: ${{ needs.check.outputs.tag }}
+          TARGET_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
+          TARGET_TAG_OBJECT_SHA: ${{ needs.check.outputs.tag_object_sha }}
+          EXPECTED_DRIVER_SHA: ${{ needs.check.outputs.driver_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git -C driver rev-parse HEAD)" = "$EXPECTED_DRIVER_SHA"
+          test "$(git -C source rev-parse HEAD)" = "$TARGET_SOURCE_SHA"
+          cd driver
+          python3 .github/scripts/release_target.py recheck
       - uses: actions/download-artifact@v4
         with:
           name: release-assets
@@ -273,11 +354,31 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
+          ARRAS_TAG: ${{ needs.check.outputs.tag }}
+          ARRAS_TARGET_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
+          ARRAS_DRIVER_SHA: ${{ needs.check.outputs.driver_sha }}
+          ARRAS_WORKFLOW_REF: ${{ needs.check.outputs.workflow_ref }}
+          ARRAS_RUN_ID: ${{ github.run_id }}
+          ARRAS_RUN_ATTEMPT: ${{ github.run_attempt }}
         run: |
-          tag="${{ needs.check.outputs.tag }}"
-          gh release create "${tag}" release-assets/* \
-            --title "${tag}" --generate-notes --verify-tag \
-            --notes-file docs/helix/05-deploy/release-notes.md
+          set -euo pipefail
+          cp source/docs/helix/05-deploy/release-notes.md release-notes.md
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          with Path("release-notes.md").open("a", encoding="utf-8") as notes:
+              notes.write(
+                  "\n## Build provenance\n\n"
+                  f"- Driver commit: `{os.environ['ARRAS_DRIVER_SHA']}`\n"
+                  f"- Driver workflow: `{os.environ['ARRAS_WORKFLOW_REF']}`\n"
+                  f"- Target tag: `{os.environ['ARRAS_TAG']}`\n"
+                  f"- Target source commit: `{os.environ['ARRAS_TARGET_SOURCE_SHA']}`\n"
+                  f"- Workflow run: `{os.environ['ARRAS_RUN_ID']}` attempt `{os.environ['ARRAS_RUN_ATTEMPT']}`\n"
+              )
+          PY
+          gh release create "$ARRAS_TAG" release-assets/* \
+            --title "$ARRAS_TAG" --generate-notes --verify-tag \
+            --notes-file release-notes.md
 
   # Exact-tag UI and packed-theme qualification, using the same verified wheel that is released.
   ui-qualification:
@@ -287,6 +388,12 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.check.outputs.source_sha }}
+      - name: Assert validated payload HEAD before use
+        env:
+          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
+        run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -305,7 +412,7 @@ jobs:
         working-directory: ui
       - run: npm run check:umf -- --download
         working-directory: ui
-      - run: npm run check && npm run typecheck && npm test && npm run test:integration && npm run build
+      - run: npm run check && npm run typecheck && npm test && npm run build && npm run test:integration
         working-directory: ui
       - run: npm run check:umf -- --dist dist
         working-directory: ui
@@ -409,6 +516,7 @@ jobs:
     with:
       wheel_url: https://github.com/${{ github.repository }}/releases/download/${{ needs.check.outputs.tag }}/${{ needs.build.outputs.wheel_name }}
       wheel_sha256: ${{ needs.build.outputs.wheel_sha256 }}
+      source_sha: ${{ needs.check.outputs.source_sha }}
       consumer_project_path: examples/extension_host
       consumer_test_path: examples/extension_host/tests/test_installed.py
 
@@ -423,6 +531,12 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.check.outputs.source_sha }}
+      - name: Assert validated payload HEAD before use
+        env:
+          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
+        run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
       - uses: actions/setup-node@v4
         with:
           node-version: 24

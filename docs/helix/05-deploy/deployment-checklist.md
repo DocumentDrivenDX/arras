@@ -88,3 +88,12 @@ bypass or installed-consumer failure blocks publication. Registry access failure
 alone may be deferred under the human's instruction, with no claim of registry
 delivery. Final support limits and per-seam changes belong in release notes only
 after the actual cohort is known.
+
+## Recovering an unpublished tag
+
+An orchestration-only failure may use the reviewed default-branch release driver
+with an explicit immutable target tag and expected source commit. Verify driver
+CI/review and target identity, then run every mandatory gate freshly in the new
+current run. All payload and downstream checkouts use the validated source commit;
+record the separate driver identity. Recheck the remote tag before publication.
+Never move the tag, reuse failed-run receipts or overwrite published bytes.
