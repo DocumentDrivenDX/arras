@@ -104,10 +104,14 @@ def _verify_wheel_record(members: dict[str, bytes]) -> dict[str, str]:
 
 
 def _wheel_payload(path: Path, name: str) -> tuple[dict[str, bytes], dict[str, str]]:
+    package_prefixes = {"arras": "arras/", "umf-core": "umf/"}
+    package_prefix = package_prefixes.get(name)
+    if package_prefix is None:
+        raise ProbeError("payload", "distribution-unsupported")
     members = _read_wheel_members(path)
     record = _verify_wheel_record(members)
     payload = {key: value for key, value in members.items() if ".dist-info/" not in key}
-    if not payload or not any(key.startswith(f"{name}/") for key in payload):
+    if not payload or not any(key.startswith(package_prefix) for key in payload):
         raise ProbeError("payload", "package-payload-empty")
     return payload, record
 

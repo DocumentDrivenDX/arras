@@ -46,7 +46,14 @@ class _SDKCohort(Protocol):
     sha256: str
 
 
-def _wheel(path: Path, name: str, version: str, filename: str) -> Path:
+def _wheel(
+    path: Path,
+    name: str,
+    version: str,
+    filename: str,
+    *,
+    package_prefix: str | None = None,
+) -> Path:
     dist = filename.removesuffix(".whl").replace("-", "_", 1) + ".dist-info"
     metadata = f"Metadata-Version: 2.3\nName: {name}\nVersion: {version}\n"
     if name == "arras":
@@ -58,7 +65,7 @@ def _wheel(path: Path, name: str, version: str, filename: str) -> Path:
         )
     payload = {
         f"{dist}/METADATA": metadata.encode(),
-        f"{name.replace('-', '_')}/__init__.py": b"# installed\n",
+        f"{(package_prefix or name.replace('-', '_'))}/__init__.py": b"# installed\n",
     }
     record_rows: list[list[str]] = []
     for member, data in payload.items():
@@ -154,6 +161,42 @@ def test_wheel_metadata_checks_both_distribution_identities(tmp_path: Path) -> N
     assert _MODULE._metadata(sdk, "umf-core")[0]["Name"] == "umf-core"
     with pytest.raises(_MODULE.VerificationError, match="unexpected-distribution"):
         _MODULE._metadata(sdk, "arras")
+
+
+def test_sdk_distribution_uses_official_umf_import_package_prefix(tmp_path: Path) -> None:
+    sdk = _wheel(
+        tmp_path / "umf_core-0.10.1-cp311-abi3-macosx_11_0_arm64.whl",
+        "umf-core",
+        "0.10.1",
+        "umf_core-0.10.1-cp311-abi3-macosx_11_0_arm64.whl",
+        package_prefix="umf",
+    )
+
+    payload, _record = _PROBE._wheel_payload(sdk, "umf-core")
+
+    assert "umf/__init__.py" in payload
+
+
+def test_wheel_payload_rejects_wrong_or_unknown_distribution_namespace(
+    tmp_path: Path,
+) -> None:
+    wrong = _wheel(
+        tmp_path / "wrong-namespace.whl",
+        "umf-core",
+        "0.10.1",
+        "umf_core-0.10.1-cp311-abi3-macosx_11_0_arm64.whl",
+    )
+    with pytest.raises(_PROBE.ProbeError, match="package-payload-empty"):
+        _PROBE._wheel_payload(wrong, "umf-core")
+
+    known = _wheel(
+        tmp_path / "known-namespace.whl",
+        "arras",
+        "0.6.0",
+        "arras-0.6.0-py3-none-any.whl",
+    )
+    with pytest.raises(_PROBE.ProbeError, match="distribution-unsupported"):
+        _PROBE._wheel_payload(known, "other-distribution")
 
 
 def test_public_extra_pin_rejects_malformed_shadow_dependency() -> None:
