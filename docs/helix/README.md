@@ -41,17 +41,20 @@ pass the [release checklist](05-deploy/deployment-checklist.md). The publication
 post-download failure remains historical; the separate verification run supplies
 the passing current receipts. Linux qualifies 205 nonvisual UI cases; its visual
 stage is explicitly not run. The Mac comparison and payload bridge retain their
-separate artifact scope. PyPI/npm uploads remain explicitly deferred. No downstream
-migration or general official-UMF execution is implied. The bounded A2
-admission/metadata profile passed source and fresh installed-wheel checks on an
-unreleased 0.5.1 candidate; the [execution checkpoint](04-build/arras-integration-plan-20261022.md#bounded-a2-execution-checkpoint)
-preserves that exact receipt and distinguishes it from immutable public 0.5.1
-assets. The current 0.6.0 candidate adds bounded official-UMF admission and
-read-only memory metadata projection. Its final wheel and public-download UMF
-gates remain pending. The profile uses
-the released official core with fresh empty registries and memory-only metadata
-readback. It does not qualify official value/constraint execution, canonical
-actions, broader ownership/registration, native metadata, UI or Ashlar support.
+separate artifact scope. PyPI/npm uploads remain explicitly deferred. No downstream migration or general official-UMF execution is implied. Arras 0.6.0
+adds bounded official-UMF admission and opt-in read-only memory metadata projection.
+The immutable [GitHub release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.0)
+was published from source `8f8097ab0bebb3f8eda6d76568c62ee5e84d33ef`; release run
+[`39963352238`](https://github.com/DocumentDrivenDX/arras/actions/runs/39963352238)
+passed all required jobs. Its 17-asset schema-v2 bundle includes the safe UMF
+receipt. The public Linux UMF repeat matched 139 reference and 139 fresh-empty
+Registry cases with zero skips; doctor, extension example, 205 nonvisual UI
+checks and native adapter qualification passed on their named Linux environment.
+The in-memory profile remains bounded to the released official core, fresh empty
+registries and memory-only metadata readback. This does not qualify official
+value/constraint execution, canonical actions, broader ownership/registration,
+general native metadata, or Ashlar support. The final independent public review is
+complete and linked in the [release notes](05-deploy/release-notes.md).
 
 Raw incoming material goes in `docs/intake/`, outside HELIX. Author artifacts
 through the HELIX skill (`/helix`).

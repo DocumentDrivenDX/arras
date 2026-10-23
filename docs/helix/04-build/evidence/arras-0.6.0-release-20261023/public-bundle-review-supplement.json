@@ -1,0 +1,16 @@
+{
+  "checks": [
+    "Previously unavailable raw pre-publication UI and consumer receipts now inspected; both exact hashes match aggregate source evidence.",
+    "Pre-publication fresh consumer binds new release wheel, four installed tests and memory72 passed.",
+    "Pre-publication UI and final linked UI raw receipts are byte-identical; payload qualification preserved without claiming separately executed UI campaign."
+  ],
+  "findings": [],
+  "prior_bundle_review_sha256": "9b4a5cf9221c42d0b5c1cfd1255d45f233e35312cb28d5461d42927a3180c5b7",
+  "public_repeat_review_sha256": "1d38a416e3b161c2d769ca749267c57b56614f9d97a0cba28ff5a5e8ffef814d",
+  "publication_run_id": "39963352238",
+  "raw_prepublication_consumer_sha256": "374eb5bf6d5dc20caf5364ab19b1e0155c147294719043cdeaa2a8d337d1dc9a",
+  "raw_prepublication_ui_sha256": "357969723b2fd133fa9e3bb585377389e38ff6af5095e871522c977e4914c191",
+  "schema": "arras.independent-public-bundle-review-supplement.v1",
+  "status": "approved",
+  "version": "0.6.0"
+}

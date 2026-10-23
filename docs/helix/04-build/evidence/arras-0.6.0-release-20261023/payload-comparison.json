@@ -1,0 +1,66 @@
+{
+  "schema": "arras.a2.tag-local-payload-comparison.v1",
+  "local": {
+    "wheel": "03959567e77a547ed94014f55bd312630a276827753aafbb5615da0b216366ec",
+    "npm": "cfdd2da7a13f088df2146322e14eba202e78b8def3afc86690e550a44d845749",
+    "sdist": "82bf0d73dc980f2b5b3f7fe78cb00e00ea82ff07915003b3faf91cb734f53ce8"
+  },
+  "tag": {
+    "wheel": "c3ace4273f483fbf41af3f70a71a65a6d0f9c963c5b1c71eb79c5bf1bd299a3d",
+    "npm": "73819275d2b784295e471c8b81fe251acb127b274cc9567946cdce9824ef9a71",
+    "sdist": "1e533d666b664cc99b1d3b8dedc8120e825988e7d997d69189a3507bc9e53ce2"
+  },
+  "wheel": {
+    "files": 173,
+    "tag_files": 173,
+    "both_RECORD_valid": true,
+    "differences": [
+      {
+        "path": "arras-0.6.0.dist-info/RECORD",
+        "local_sha256": "7e7f37954a358a916763ac15450fafdb3447cfef6a929ce56dd9a42ebbababfb",
+        "tag_sha256": "cc18d1c2cdfc83d46e3c8011508de304f53b17a8c3a904d321f50db6a7589916"
+      },
+      {
+        "path": "arras/ui/npm/documentdrivendx-arras-ui-0.6.0.tgz",
+        "local_sha256": "cfdd2da7a13f088df2146322e14eba202e78b8def3afc86690e550a44d845749",
+        "tag_sha256": "73819275d2b784295e471c8b81fe251acb127b274cc9567946cdce9824ef9a71"
+      }
+    ],
+    "metadata_differences": []
+  },
+  "sdist": {
+    "files": 480,
+    "tag_files": 480,
+    "differences": [
+      {
+        "path": "arras-0.6.0/src/arras/ui/npm/documentdrivendx-arras-ui-0.6.0.tgz",
+        "local_sha256": "cfdd2da7a13f088df2146322e14eba202e78b8def3afc86690e550a44d845749",
+        "tag_sha256": "73819275d2b784295e471c8b81fe251acb127b274cc9567946cdce9824ef9a71"
+      }
+    ],
+    "metadata_differences": [
+      {
+        "path": "arras-0.6.0/src/arras/ui/npm/documentdrivendx-arras-ui-0.6.0.tgz",
+        "fields": {
+          "size": {
+            "local": 2406591,
+            "tag": 2412649
+          }
+        }
+      }
+    ]
+  },
+  "npm": {
+    "files": 321,
+    "tag_files": 321,
+    "differences": [],
+    "metadata_differences": [],
+    "decompressed_tar_bytes_equal": true,
+    "local_tar_sha256": "9b5c078d5cab2f03d294c306b41f3ade63e56431e45e94772078ff38554aae5a",
+    "tag_tar_sha256": "9b5c078d5cab2f03d294c306b41f3ade63e56431e45e94772078ff38554aae5a",
+    "local_gzip_header_hex": "1f8b08000000000002ff",
+    "tag_gzip_header_hex": "1f8b08000000000002ff",
+    "local_trailer_hex": "d83129f9004e3701",
+    "tag_trailer_hex": "d83129f9004e3701"
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "schema": "arras.a2.release-boundary-independent-review.v1",
+  "status": "approved-static-boundary-at-exact-commit",
+  "commit": "163754553d1fdd6582cbea66b255af4e0352d986",
+  "base_commit": "df923164840cb225a278d760ba911c106fa3c080",
+  "review_scope": [
+    "ExactrawUMFreceipt/checkedproducerprobe/fixture/Arras/officialSDK bindings",
+    "TypedallowlistedUMFpublicprojection plusraw/emittedaggregatehashes",
+    "Historical0.5.xschema1/16assets vs0.6+schema2/17assets threshold; omit/downgrade/wrongphase refusal",
+    "CurrentrunprepublicationUMFjob+assembly/publishdependency andanonymouspublicrepeat",
+    "Postpublicationread-onlyrecovery mandatoryoriginalUMFjob/trusted17inventory/publicrepeat",
+    "Privacyandadmission/metadata-onlysupportclaimbounds; basewithoutUMF vsfreshoptionalextra",
+    "Ownerstaticcounterexampletests inspected; no runtime/tampertest execution byindependentreviewer"
+  ],
+  "findings": [],
+  "static_adversarial_checks": [
+    "Missing/foreignArraswheel,wrongSDK/tool/probe/corpus/metadatahashes refuse",
+    "139orderedIDs/integertypedcounts/no-skips/extracorpuscontradiction andstrictTruecontrol inventories checked",
+    "Missingbase/extra/payload/importinventory andsourcealias/PTHreuse refuse;publicoutputdropsrawsource/diagnostics/absoluteorigins/distributionarbitraryvalues",
+    "StrictduplicateJSON/nonfinite refusals;schema1downgradeof0.6 fails,legacyUMFassetinjection rejected",
+    "Publishedcomponents andaggregateUMFfilename/digest/phase bindexactasset;privateoriginalreceipt digest retained separately",
+    "PublicdownloadUMFproof runs withpublic-download phase, whilepublishedcomponent isrelease-build;newreceiptlinkedfinalresult",
+    "Newgateisnotoptionalfor0.6+;current-runassemblyneedsUMFsuccessandpublicationneedsassembly"
+  ],
+  "evidence_limits": [
+    "Static source review, not newartifact/runtime/native/UI/publication qualification.",
+    "Before-reviewworktreeclean; afterreviewownerchangedonlytests/test_truss_docs.py forannouncedstaledependencyassertions. Reviewed14filesbyteequalexactcommit; subsequentamendment needs delta review.",
+    "Prior0.5.1receipts/tag/assets unchanged; historicalschema1supportedwithoutretroactiveUMFclaims.",
+    "139reference+139EMPTYregistrycomparisons arenotaction/nativeconstraint/executionproof.",
+    "Freshactualnewwheel/SDK/baseextra/public17asset/privacy/provenance gates remain required."
+  ],
+  "reviewed_files": [
+    {
+      "path": "tools/verify_umf_admission.py",
+      "sha256": "a97a2bb1970a32012cb733ed98ebb96369df9bfac475e2851144e77feaced4d2"
+    },
+    {
+      "path": "tools/_umf_admission_probe.py",
+      "sha256": "3185ee3a4a52f991ab7da87e5c252c4ebcd9f8a48900a994eddc8966abcae4be"
+    },
+    {
+      "path": ".github/scripts/_umf_admission_receipt.py",
+      "sha256": "4a3a950a6a9af3b5241940404fa0facfa87f7d0e6e27fcd09c2ae3ab34be301a"
+    },
+    {
+      "path": ".github/scripts/_release_evidence_inputs.py",
+      "sha256": "cac3a36f21c6a680abb27e7884b2945dde97beeb132dd68881aa1dd8fed08283"
+    },
+    {
+      "path": ".github/scripts/_release_evidence_public.py",
+      "sha256": "2c60c48496c7c68069cc762cdb2d7a1afe028afa417ce6652b516d008ba2286c"
+    },
+    {
+      "path": ".github/scripts/assemble_release_evidence.py",
+      "sha256": "62af42528a705e4fa848271c436fdfaa2a21b1b73b1d5b830c69393f31aa1a03"
+    },
+    {
+      "path": ".github/scripts/verify_public_release_assets.py",
+      "sha256": "0aa9a192846bfad70b3b7af1ca281f4e1792f079ace527969b3f356fc26dc995"
+    },
+    {
+      "path": ".github/scripts/verify_publication_provenance.py",
+      "sha256": "5bcf3ba3106fc671f66f12c232a75c156e7836b96012843053cadb298513401a"
+    },
+    {
+      "path": ".github/scripts/release_target.py",
+      "sha256": "4e570a703fa63db85fe939d7fe14d00f2d9d412bd1ae60e05a332b5d70057afe"
+    },
+    {
+      "path": ".github/workflows/release.yml",
+      "sha256": "71ac311f0e3347f2272362d1eb4915da1a352d084725cbbf5f1e0cad307246e5"
+    },
+    {
+      "path": ".github/workflows/verify-published-release.yml",
+      "sha256": "30bf34fd30c0dc928971db9a4554e201c7837a71211cf89a2b965e270f301801"
+    },
+    {
+      "path": "tests/test_umf_admission_release_receipt.py",
+      "sha256": "bd3af118d1355df813c4259eec4ad3b699d3d5c64089ee87db25b7d649e36578"
+    },
+    {
+      "path": "tests/test_release_workflow_binding.py",
+      "sha256": "40d68eab91ca1715216a30ba6a7ecd125c5c0c5e73dbbdb41202283b2a7f6056"
+    },
+    {
+      "path": "tests/test_published_release_verification.py",
+      "sha256": "8907dd4bd063b3d5c56f7e57f07c4157ac5ef9625260301fc133e504503beed7"
+    }
+  ]
+}

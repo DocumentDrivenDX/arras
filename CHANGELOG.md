@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.6.0 candidate — 2026-10-23 (not yet released)
+## 0.6.0 — 2026-10-23
 
 Adds optional official UMF source admission through `arras.umf_admission` and an
 opt-in `umf-core-metadata/1` profile for bounded memory-backend metadata
@@ -10,13 +10,19 @@ This does not add value/constraint execution, canonical actions, native metadata
 or Ashlar support. The official UMF core 0.10.0, Truss 0.0.48 and Weft 0.4.51
 pins remain unchanged.
 
-Release qualification is pending: the exact final wheel must pass fresh base and
-UMF-extra environments with all 139 reference and 139 fresh-empty production
-Registry comparisons plus six base and ten extra-enabled controls, with no skips;
-the same gate must pass again against the exact public-download wheel. Release
-evidence schema v2 adds the mandatory UMF receipt to the 17-asset bundle. No
-publication is claimed. See the [release notes](docs/helix/05-deploy/release-notes.md)
-and [deployment checklist](docs/helix/05-deploy/deployment-checklist.md).
+Source commit `8f8097ab0bebb3f8eda6d76568c62ee5e84d33ef` carries the same A2 scope
+as merged source `df923164`; PR 7 main CI run `39960762557` passed all four checks.
+Immutable tag object `686886c7ed2425e4e9e496b70fcc39272b8a52d9` was published as
+[v0.6.0](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.0) on
+2026-10-23. Release run
+[`39963352238`](https://github.com/DocumentDrivenDX/arras/actions/runs/39963352238)
+completed successfully, including the required Linux jobs, exact-wheel UMF proof,
+installed consumer and anonymous public-download verification. The public bundle
+contains 17 assets: 16 checksum-listed payloads plus `SHA256SUMS`, with the
+schema-v2 safe UMF receipt as asset 17. Public asset identities and Linux results
+are recorded in the release notes and deployment checklist. The final independent
+public review is complete and linked from the release notes.
+PyPI/npm registry publication remains deferred.
 
 ## 0.5.1 — 2026-10-22
 
