@@ -1290,8 +1290,16 @@ def test_feed_destination_persists_semantic_page_facts_entities_and_receipt(
         "record_version": 1,
         "catalog_revision": 1,
         "properties": [
-            {"propertyId": "1", "definitionPin": "e" * 64, "value": "alpha"},
-            {"propertyId": "2", "definitionPin": "f" * 64, "value": "beta"},
+            {
+                "propertyId": "1",
+                "definitionPin": "e" * 64,
+                "value": {"kind": "string", "text": "alpha"},
+            },
+            {
+                "propertyId": "2",
+                "definitionPin": "f" * 64,
+                "value": {"kind": "string", "text": "beta"},
+            },
         ],
         "retained": [],
         "event_sha256": "c" * 64,
@@ -1367,14 +1375,30 @@ def test_feed_replica_query_requires_complete_duplicate_sensitive_parity(
     entities = [
         {
             "properties": [
-                {"propertyId": "2", "definitionPin": "b" * 64, "value": "first"},
-                {"propertyId": "9", "definitionPin": "a" * 64, "value": "alpha"},
+                {
+                    "propertyId": "2",
+                    "definitionPin": "b" * 64,
+                    "value": {"kind": "string", "text": "first"},
+                },
+                {
+                    "propertyId": "9",
+                    "definitionPin": "a" * 64,
+                    "value": {"kind": "string", "text": "alpha"},
+                },
             ]
         },
         {
             "properties": [
-                {"propertyId": "2", "definitionPin": "b" * 64, "value": "second"},
-                {"propertyId": "9", "definitionPin": "a" * 64, "value": "beta"},
+                {
+                    "propertyId": "2",
+                    "definitionPin": "b" * 64,
+                    "value": {"kind": "string", "text": "second"},
+                },
+                {
+                    "propertyId": "9",
+                    "definitionPin": "a" * 64,
+                    "value": {"kind": "string", "text": "beta"},
+                },
             ]
         },
     ]
@@ -1431,6 +1455,74 @@ def test_feed_replica_query_requires_complete_duplicate_sensitive_parity(
     wrong_pins = dict(schema_binding, property_pins={"2": "f" * 64, "9": "a" * 64})
     with pytest.raises(feed_module._Blocked, match="feed_probe_schema_binding_unavailable"):
         probe_module._probe_pairs_from_entities(entities, wrong_pins)
+
+    invalid_cells: tuple[Any, ...] = (
+        "alpha",
+        {"kind": "integer", "text": "1"},
+        {"kind": "string"},
+        {"kind": "string", "text": "alpha", "extra": True},
+    )
+    for invalid_cell in invalid_cells:
+        malformed = [
+            {"properties": [dict(prop) for prop in entity["properties"]]} for entity in entities
+        ]
+        malformed[0]["properties"][0]["value"] = invalid_cell
+        with pytest.raises(feed_module._Blocked, match="feed_probe_property_shape_unsupported"):
+            probe_module._probe_pairs_from_entities(malformed, schema_binding)
+
+
+def test_selected_history_carrier_preserves_only_exact_typed_string_cells() -> None:
+    carriers = importlib.import_module("_lakebase_managed_feed_carriers")
+    identity = {
+        "id": "7",
+        "typeId": "9",
+        "definitionPin": "a" * 64,
+        "owner": {"documentId": "qualification", "moduleId": "lakebase_qualification"},
+    }
+    after: dict[str, Any] = {
+        "interfaceVersion": "truss-history-record/0.1.0",
+        "kind": "object",
+        "identity": identity,
+        "recordVersion": "1",
+        "catalogRevision": "1",
+        "createdAt": "2026-10-23T00:00:00Z",
+        "updatedAt": "2026-10-23T00:00:00Z",
+        "properties": [
+            {
+                "propertyId": "1",
+                "definitionPin": "b" * 64,
+                "value": {"kind": "string", "text": "alpha"},
+            },
+            {
+                "propertyId": "2",
+                "definitionPin": "c" * 64,
+                "value": {"kind": "string", "text": "beta"},
+            },
+        ],
+        "retained": [],
+        "ownership": {"state": "rootless"},
+    }
+    event = {"historyProfile": "truss-native-scalar-create/0.2"}
+    schema_binding = {
+        "revision": 1,
+        "property_order": ["1", "2"],
+        "property_pins": {"1": "b" * 64, "2": "c" * 64},
+    }
+    props = carriers._validate_history_image({"rev": 1}, after, identity, event, schema_binding)
+    assert props == after["properties"]
+
+    invalid_cells: tuple[Any, ...] = (
+        "alpha",
+        {"kind": "integer", "text": "1"},
+        {"kind": "string"},
+        {"kind": "string", "text": "alpha", "extra": True},
+    )
+    for invalid_cell in invalid_cells:
+        malformed = dict(after)
+        malformed["properties"] = [dict(prop) for prop in after["properties"]]
+        malformed["properties"][0]["value"] = invalid_cell
+        with pytest.raises(carriers._Blocked, match="feed_history_property_unsupported"):
+            carriers._validate_history_image({"rev": 1}, malformed, identity, event, schema_binding)
 
 
 def test_feed_schema_binding_uses_native_property_ids_and_pins() -> None:
@@ -1588,8 +1680,16 @@ def test_native_history_group_digest_is_rechecked_after_outer_wrapper_rehash() -
             "createdAt": "2026-10-23T00:00:00Z",
             "updatedAt": "2026-10-23T00:00:00Z",
             "properties": [
-                {"propertyId": "1", "definitionPin": "b" * 64, "value": "alpha"},
-                {"propertyId": "2", "definitionPin": "c" * 64, "value": "beta"},
+                {
+                    "propertyId": "1",
+                    "definitionPin": "b" * 64,
+                    "value": {"kind": "string", "text": "alpha"},
+                },
+                {
+                    "propertyId": "2",
+                    "definitionPin": "c" * 64,
+                    "value": {"kind": "string", "text": "beta"},
+                },
             ],
             "retained": [],
             "ownership": {"state": "rootless"},

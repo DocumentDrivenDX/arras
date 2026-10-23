@@ -747,7 +747,13 @@ def test_failed_validation_receipt_keeps_prevalidation_probe(
 def test_owned_process_timeout_interrupts_and_reaps_its_process_group(tmp_path: Path) -> None:
     with pytest.raises(verify_native.ProcessTimeout) as captured:
         verify_native.run_owned(
-            [sys.executable, "-c", "import time; print('started', flush=True); time.sleep(30)"],
+            [
+                sys.executable,
+                "-I",
+                "-S",
+                "-c",
+                "import time; print('started', flush=True); time.sleep(30)",
+            ],
             cwd=tmp_path,
             env=dict(os.environ),
             timeout=0.1,

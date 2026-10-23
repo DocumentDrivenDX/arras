@@ -16,6 +16,7 @@ from _lakebase_managed_feed_codec import (
     _canonical,
     _json_bytes,
     _sha256,
+    _string_cell_text,
 )
 
 _SUPPORTED_HISTORY_PROFILES = {
@@ -273,9 +274,9 @@ def _validate_history_image(
             or not prop["propertyId"].isdigit()
             or type(prop["definitionPin"]) is not str
             or _SHA256.fullmatch(prop["definitionPin"]) is None
-            or type(prop["value"]) is not str
         ):
             raise _Blocked("feed_history_property_unsupported")
+        _string_cell_text(prop["value"], "feed_history_property_unsupported")
         clean_properties.append(prop)
     expected_order = schema_binding.get("property_order")
     expected_pins = schema_binding.get("property_pins")

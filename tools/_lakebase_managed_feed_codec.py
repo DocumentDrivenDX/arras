@@ -85,6 +85,18 @@ def _sha256(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+def _string_cell_text(value: Any, code: str) -> str:
+    """Read the selected runtime's exact typed string cell without normalizing it."""
+    if (
+        type(value) is not dict
+        or set(value) != {"kind", "text"}
+        or value["kind"] != "string"
+        or type(value["text"]) is not str
+    ):
+        raise _Blocked(code)
+    return value["text"]
+
+
 def _checked_cursor(raw: bytes) -> dict[str, Any]:
     cursor = _json_bytes(raw, "feed_cursor_invalid")
     if type(cursor) is not dict or set(cursor) != _CURSOR_FIELDS:

@@ -11,7 +11,7 @@ from typing import Any
 from _lakebase_managed_common import DOCUMENT_ID as _DOCUMENT_ID
 from _lakebase_managed_common import Blocked as _Blocked
 from _lakebase_managed_common import Failed as _Failed
-from _lakebase_managed_feed_codec import _json_bytes
+from _lakebase_managed_feed_codec import _json_bytes, _string_cell_text
 
 
 def _verify_replica_query(
@@ -50,7 +50,13 @@ def _probe_pairs_from_entities(
                 type(prop["definitionPin"]) is not str or len(prop["definitionPin"]) != 64
                 for prop in properties
             )
-            or any(type(prop["value"]) is not str for prop in properties)
+            or any(
+                type(prop["value"]) is not dict
+                or set(prop["value"]) != {"kind", "text"}
+                or prop["value"].get("kind") != "string"
+                or type(prop["value"].get("text")) is not str
+                for prop in properties
+            )
         ):
             raise _Blocked("feed_probe_property_shape_unsupported")
         property_names = schema_binding.get("property_names")
@@ -75,7 +81,7 @@ def _probe_pairs_from_entities(
             name = property_names.get(prop_id)
             if name not in {"code", "value"} or name in values:
                 raise _Blocked("feed_probe_property_mapping_mismatch")
-            values[name] = prop["value"]
+            values[name] = _string_cell_text(prop["value"], "feed_probe_property_shape_unsupported")
         if set(values) != {"code", "value"}:
             raise _Blocked("feed_probe_property_mapping_mismatch")
         pairs[(values["code"], values["value"])] += 1

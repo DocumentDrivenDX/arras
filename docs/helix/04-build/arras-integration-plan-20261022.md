@@ -1749,3 +1749,22 @@ cleanup record are retained. The reviewed optional conformance deadline preserve
 the 2,100-second default, bounds explicit overrides to 1–7,200 seconds, records
 the selected deadline and changes no acceptance assertion or operation timeout.
 The corrected wheel still requires its own installed native proof.
+
+Source checkpoint `9377a902fbc1fd8ab457de0c093329875770fedf` passed Linux
+source/build, default Python and UI CI, while the native job passed 201 cases and
+failed the new managed API case. The selected49 history emitter preserves typed
+UMF string cells; the decoder incorrectly expected bare strings. The reviewed
+correction preserves the exact `{kind: "string", text: ...}` cell and extracts
+text only for the independent Probe comparison, with closed-shape refusal
+controls. The actual local public49 API test then passed in 59.59 seconds,
+retaining three original feed pages privately, and no qualification PostgreSQL
+process remained. The rebound pure runner suite passed 163 cases with the one
+explicit Truss-marked test deselected.
+
+The broad Mac default run recorded 3,209 passes, sandbox-denied loopback server
+cases and a 100 ms interpreter-start timing assertion. All thirteen server tests
+passed in the targeted permitted environment. The reviewed timeout-test fixture
+now uses isolated no-site Python startup while preserving its 100 ms deadline,
+production runner, stdout and process-reaping assertions; the isolated test and
+combined runner suite pass. Original failures remain retained. Final-source CI,
+corrected-wheel native qualification and actual Lakebase remain separate gates.
