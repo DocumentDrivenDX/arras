@@ -207,10 +207,16 @@ def test_unexpected_validator_failure_is_not_fabricated_as_a_report(
 
 def test_official_current_conformance_vectors_and_empty_registry_admission() -> None:
     Diagnostic, Extension, Registry, read_json_value, validate_document = _engine()
+    fixture_bytes = _FIXTURE.read_bytes()
+    assert hashlib.sha256(fixture_bytes).hexdigest() == (
+        "bb008a98b8448050748e65f867e7863475ccad9501a5b9229ae9e6d336691544"
+    )
     corpus = json.loads(_FIXTURE.read_text(encoding="utf-8"))
     assert corpus["profile"] == "umf.current-conformance/1"
     assert corpus["currentVersion"] == "0.10.0"
     assert len(corpus["cases"]) == 139
+    case_ids = [case["id"] for case in corpus["cases"]]
+    assert len(set(case_ids)) == 139
 
     for case in corpus["cases"]:
         registry = Registry()

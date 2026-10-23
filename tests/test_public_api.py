@@ -64,14 +64,18 @@ def test_contract_versions_name_every_contract() -> None:
         "browser",
     }
     assert all(isinstance(v, int) and v >= 1 for v in arras.CONTRACT_VERSIONS.values())
+    assert arras.CONTRACT_VERSIONS["interface"] == 2
+    assert arras.CONTRACT_VERSIONS["actions"] == 2
+    assert arras.CONTRACT_VERSIONS["backend"] == 6
+    assert arras.CONTRACT_VERSIONS["lifecycle"] == 3
 
 
 def test_the_lifecycle_surface_is_migrate_with_a_timeout_and_the_role_names() -> None:
-    """CONTRACT-005 v2: `migrate(*, timeout)` reports the install's owner and registrar roles."""
+    """CONTRACT-005 v3: `migrate(*, timeout)` reports the install's owner and registrar roles."""
     import dataclasses
     import inspect
 
-    assert arras.CONTRACT_VERSIONS["lifecycle"] == 2
+    assert arras.CONTRACT_VERSIONS["lifecycle"] == 3
     timeout = inspect.signature(arras.Arras.migrate).parameters["timeout"]
     assert timeout.kind is inspect.Parameter.KEYWORD_ONLY and timeout.default is None
     assert [f.name for f in dataclasses.fields(arras.MigrationResult)] == [
@@ -84,11 +88,11 @@ def test_the_lifecycle_surface_is_migrate_with_a_timeout_and_the_role_names() ->
 
 
 def test_the_backend_port_carries_a_weft_statement() -> None:
-    """CONTRACT-004 v2: `query` takes the module and a `Statement`, Arras reads neither, and
+    """CONTRACT-004 v6: `query` takes the module and a `Statement`, Arras reads neither, and
     `describe` names the Weft version and profiles a backend hosts."""
     from arras.backend import Backend
 
-    assert arras.CONTRACT_VERSIONS["backend"] == 5  # + BackendInfo.audit
+    assert arras.CONTRACT_VERSIONS["backend"] == 6  # + declared metadata-profile support
     assert arras.CONTRACT_VERSIONS["operate"] == 2  # POST /query names its module, no cursor
     assert arras.CONTRACT_VERSIONS["interface"] == 2  # query names its module, returns no cursor
     assert arras.CONTRACT_VERSIONS["mcp"] == 2  # the query tool requires module, takes no after
@@ -122,6 +126,29 @@ def test_the_backend_port_carries_a_weft_statement() -> None:
 
 def test_the_package_is_typed() -> None:
     assert (Path(arras.__file__).parent / "py.typed").exists()
+
+
+def test_metadata_profiles_are_final_defaulted_host_metadata_fields() -> None:
+    import dataclasses
+    import inspect
+
+    module_fields = dataclasses.fields(arras.ModuleInfo)
+    assert module_fields[-1].name == "metadata_profile"
+    assert module_fields[-1].default == "legacy-arras/1"
+    assert arras.ModuleInfo(
+        "m", arras.Placement("store"), arras.Revision(), ()
+    ).metadata_profile == ("legacy-arras/1")
+
+    from arras.results import BackendInfo
+
+    backend_fields = dataclasses.fields(BackendInfo)
+    assert backend_fields[-1].name == "metadata_profiles"
+    assert backend_fields[-1].default == ("legacy-arras/1",)
+    assert BackendInfo("store", ("reader",)).metadata_profiles == ("legacy-arras/1",)
+    for method in (arras.Arras.__init__, arras.Arras.start):
+        parameter = inspect.signature(method).parameters["metadata_profile"]
+        assert parameter.kind is inspect.Parameter.KEYWORD_ONLY
+        assert parameter.default == "legacy-arras/1"
 
 
 def test_the_bindings_use_only_the_public_surface_for_the_host_facing_types() -> None:

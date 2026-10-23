@@ -5,9 +5,9 @@ from __future__ import annotations
 
 CONTRACT_VERSIONS = {
     "interface": 2,
-    "actions": 1,
-    "backend": 5,
-    "lifecycle": 2,
+    "actions": 2,
+    "backend": 6,
+    "lifecycle": 3,
     "console": 2,
     "operate": 2,
     "schema": 1,

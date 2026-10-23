@@ -117,7 +117,7 @@ jobs:
         with:
           enable-cache: true
           python-version: "3.11"
-      - run: uv sync --locked --extra truss
+      - run: uv sync --locked --extra truss --extra umf
       - name: Install Weft parser (weft-sql 0.4.51)
         env:
           WEFT_VERSION: "0.4.51"
@@ -134,9 +134,14 @@ jobs:
           uv pip install --python "$GITHUB_WORKSPACE/.venv/bin/python" "$wheel"
       - run: uv run --no-sync ruff check . && uv run --no-sync ruff format --check .
       - run: uv run --no-sync pyright
+      - name: Compare every official UMF conformance vector
+        run: uv run --no-sync pytest -q tests/test_umf_admission.py::test_official_current_conformance_vectors_and_empty_registry_admission
+        env:
+          ARRAS_REQUIRE_UMF: "1"
       - run: uv run --no-sync pytest -q
         env:
           ARRAS_REQUIRE_WEFT: "1"
+          ARRAS_REQUIRE_UMF: "1"
       # The wheel carries the UI: the page and the npm tarball built from ui/ (ADR-027).
       - uses: actions/setup-node@v4
         with:

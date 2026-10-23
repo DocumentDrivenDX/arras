@@ -9,7 +9,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from modules_check import cycles, group_of, sources, too_long, violations
+from modules_check import (
+    cycles,
+    group_of,
+    official_umf_import_violations,
+    sources,
+    too_long,
+    violations,
+)
 
 SRC = Path(__file__).resolve().parent.parent / "src"
 
@@ -67,6 +74,49 @@ def test_catalog_collection_stays_private_to_the_core_group() -> None:
         "arras._catalogs": "from arras.core import Arras\n",
     }
     assert any(v.startswith("cycle: ") for v in violations(cyclic))
+
+
+def test_umf_admission_edge_is_limited_to_registration() -> None:
+    assert (
+        violations(
+            {
+                "arras.registration": "from arras.umf_admission import project_document\n",
+                "arras.umf_admission": "",
+            }
+        )
+        == []
+    )
+    assert violations(
+        {
+            "arras.core": "from arras.umf_admission import project_document\n",
+            "arras.umf_admission": "",
+        }
+    ) == ["arras.core:1: core must not import arras.umf_admission (umf_admission)"]
+
+
+def test_only_private_engine_bridge_imports_the_official_umf_sdk() -> None:
+    assert (
+        official_umf_import_violations(
+            {
+                "arras._umf_engine": "from importlib import import_module\nsdk = import_module('umf')\n"
+            }
+        )
+        == []
+    )
+    for source in (
+        "import umf\n",
+        "from umf import Registry\n",
+        "def f():\n    import umf\n",
+        "from typing import TYPE_CHECKING\nif TYPE_CHECKING:\n    import umf\n",
+        "import importlib\nimportlib.import_module('umf')\n",
+        "import importlib as loader\nloader.import_module('umf')\n",
+        "from importlib import import_module\nimport_module('umf')\n",
+        "from importlib import import_module as load\nload('umf')\n",
+        "__import__('umf')\n",
+    ):
+        assert official_umf_import_violations({"arras.other": source})
+    for blocked in ("umf_codegen", "umf_access"):
+        assert official_umf_import_violations({"arras._umf_engine": f"import {blocked}\n"})
 
 
 def test_a_module_in_no_group_is_reported() -> None:

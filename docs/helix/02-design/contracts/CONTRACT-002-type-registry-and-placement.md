@@ -29,7 +29,7 @@ ddx:
 
 **Contract ID**: CONTRACT-002
 **Type**: library
-**Version**: v1
+**Version**: v2
 **Status**: draft
 **Related**: FEAT-002, ADR-011, ADR-013, CONTRACT-001, CONTRACT-003, CONTRACT-004, CONTRACT-006
 
@@ -240,7 +240,7 @@ In v1 a relationship has one type at each end, because the console and the MCP b
 
 ## Precedence and Compatibility
 
-- Versioning: ontology revisions are the backends' own (CONTRACT-004). A record states the revision under which it was last written.
+- Versioning: this contract is v2 in the public API catalog; it has no separate runtime contract key. Ontology revisions are the backends' own (CONTRACT-004). A record states the revision under which it was last written.
 - Ordering or precedence: a registration is atomic on the record store and serialized with every other registration there; a replica learns of it through the feed. The previous revision stays in force if a registration fails.
 - Compatibility rules, applied at registration. They are stricter than a backend's, so no accepted change rewrites records:
   - Adding an entity type, a relationship, an action or an optional property MUST be accepted.

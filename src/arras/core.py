@@ -120,7 +120,7 @@ class Arras:
         self.backends = dict(backends)
         self.metadata_profile = metadata_profile
         self.placements = dict(placement or {})  # the host's, by module name (CONTRACT-002)
-        self.default_placement = default_placement
+        self.default_placement: Placement | None = default_placement
         self.admin = admin  # the host's administrative principal, when it names one
         self.expected: tuple[str, ...] = tuple(expected)
         self.wait_bound = wait_bound

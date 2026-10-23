@@ -44,6 +44,9 @@ GROUPS: dict[str, str] = {
     "arras.gqlschema": "schema",
     "arras.core": "core",
     "arras._catalogs": "core",
+    "arras._umf_engine": "umf_engine",
+    "arras._umf_projection": "umf_admission",
+    "arras.umf_admission": "umf_admission",
     "arras.routing": "core",
     "arras.registration": "core",
     "arras.policy": "core",
@@ -90,6 +93,8 @@ ALLOWED: dict[str, frozenset[str]] = {
     "adapters": frozenset({"foundation", "domain", "contract", "adapters"}),
     "schema": frozenset({"foundation", "domain", "schema"}),
     "core": frozenset({"foundation", "domain", "contract", "schema", "core"}),
+    "umf_admission": frozenset({"foundation", "domain", "umf_admission", "umf_engine"}),
+    "umf_engine": frozenset(),
     "doubles": frozenset({"foundation", "domain", "contract", "core", "doubles"}),
     "console": frozenset({"foundation", "domain", "schema", "core", "console"}),
     "mcp": frozenset(
@@ -225,11 +230,84 @@ def violations(mods: Mapping[str, str]) -> list[str]:
             theirs = group_of(target)
             if theirs is None:
                 out.append(f"{name}:{line}: imports {target}, which belongs to no group")
-            elif theirs not in ALLOWED[mine]:
+            elif not _allowed_edge(name, mine, target, theirs):
                 out.append(f"{name}:{line}: {mine} must not import {target} ({theirs})")
     out += [
         f"cycle: {' -> '.join(c)}" for c in cycles({n: {t for t, _ in e} for n, e in graph.items()})
     ]
+    out.extend(official_umf_import_violations(mods))
+    return out
+
+
+def _allowed_edge(importer: str, mine: str, target: str, theirs: str) -> bool:
+    """Narrow A2 source edge from registration into official-profile admission."""
+    if target == "arras.umf_admission":
+        return importer == "arras.registration" and mine == "core"
+    return theirs in ALLOWED[mine]
+
+
+_UMF_ROOTS = {"umf", "umf_codegen", "umf_access"}
+
+
+def _dynamic_import_names(tree: ast.AST) -> tuple[set[str], set[str], set[str]]:
+    imported_modules = {"importlib"}
+    imported_loaders = {"import_module"}
+    imported_builtins = {"__import__"}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                if alias.name == "importlib":
+                    imported_modules.add(alias.asname or "importlib")
+        elif isinstance(node, ast.ImportFrom) and node.module in ("importlib", "builtins"):
+            for alias in node.names:
+                if node.module == "importlib" and alias.name == "import_module":
+                    imported_loaders.add(alias.asname or alias.name)
+                elif node.module == "builtins" and alias.name == "__import__":
+                    imported_builtins.add(alias.asname or alias.name)
+    return imported_modules, imported_loaders, imported_builtins
+
+
+def official_umf_import_violations(mods: Mapping[str, str]) -> list[str]:
+    """Enforce the selected SDK source boundary for direct and literal dynamic imports.
+
+    This is a source-level AST rule for literal import targets, not a sandbox for computed names.
+    The official SDK root is loaded only by the private engine bridge.
+    """
+    out: list[str] = []
+    for importer, source in sorted(mods.items()):
+        tree = ast.parse(source)
+        imported_module_names, imported_loader_names, imported_builtin_names = (
+            _dynamic_import_names(tree)
+        )
+        for node in ast.walk(tree):
+            line_number = int(getattr(node, "lineno", 0))
+            roots: set[str] = set()
+            if isinstance(node, ast.Import):
+                roots.update(alias.name.partition(".")[0] for alias in node.names)
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                roots.add(node.module.partition(".")[0])
+            elif isinstance(node, ast.Call):
+                function = node.func
+                literal_import = isinstance(function, ast.Name) and function.id in (
+                    imported_builtin_names | imported_loader_names
+                )
+                literal_import |= (
+                    isinstance(function, ast.Attribute)
+                    and function.attr in ("import_module", "__import__")
+                    and isinstance(function.value, ast.Name)
+                    and function.value.id in imported_module_names
+                )
+                if (
+                    literal_import
+                    and node.args
+                    and isinstance(node.args[0], ast.Constant)
+                    and type(node.args[0].value) is str
+                ):
+                    roots.add(node.args[0].value.partition(".")[0])
+            for root in sorted(roots & _UMF_ROOTS):
+                if root == "umf" and importer == "arras._umf_engine":
+                    continue
+                out.append(f"{importer}:{line_number}: unauthorized official UMF import {root}")
     return out
 
 

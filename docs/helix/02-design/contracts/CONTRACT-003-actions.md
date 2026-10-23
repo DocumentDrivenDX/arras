@@ -29,7 +29,7 @@ ddx:
 
 **Contract ID**: CONTRACT-003
 **Type**: library
-**Version**: v1
+**Version**: v2
 **Status**: draft
 **Related**: FEAT-003, ADR-013, ADR-014, ADR-015, CONTRACT-001, CONTRACT-002, CONTRACT-004; UMF CONTRACT-900 (declarations), CONTRACT-079 (generated transport)
 
@@ -180,7 +180,7 @@ validation, idempotency or authorization checks.
 
 ## Precedence and Compatibility
 
-- Versioning: v1. The contract version is `arras.CONTRACT_VERSIONS["actions"]`.
+- Versioning: v2. The contract version is `arras.CONTRACT_VERSIONS["actions"]`.
 - Ordering or precedence: access is the provider's own; preconditions precede effects; effects apply in order within one unit.
 - Backward compatibility: adding an optional element to the declaration, a predicate form, an effect form or a receipt field is compatible. Removing or renaming one, or changing a meaning, is breaking.
 - Deprecation: as CONTRACT-001.

@@ -31,7 +31,7 @@ ddx:
 
 **Contract ID**: CONTRACT-005
 **Type**: library
-**Version**: v2
+**Version**: v3
 **Status**: draft
 **Related**: FEAT-006, ADR-006, ADR-010, ADR-012, CONTRACT-001, CONTRACT-004, CONTRACT-006
 
@@ -1289,7 +1289,7 @@ rules. A database reset does not implicitly reset the shared credential file.
 
 ## Precedence and Compatibility
 
-- Versioning: v2. Version in `arras.CONTRACT_VERSIONS["lifecycle"]`.
+- Versioning: v3. Version in `arras.CONTRACT_VERSIONS["lifecycle"]`.
 - Telemetry: the library emits events and spans to the host's logger and tracer provider and owns no sink (CONTRACT-008).
 - Ordering or precedence: `start` connects each backend and reports status; `migrate()` is the host's call. Host-supplied values win; the library has no environment fallbacks (only the MCP binding reads configuration).
 - Backward-compatibility rules: adding an optional parameter or a new `reason` value is compatible for callers that handle unknown reasons as unavailable. Removing or renaming a name is breaking.

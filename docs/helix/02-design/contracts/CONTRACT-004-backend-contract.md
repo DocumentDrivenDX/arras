@@ -29,7 +29,7 @@ ddx:
 
 **Contract ID**: CONTRACT-004
 **Type**: library
-**Version**: v5
+**Version**: v6
 **Status**: draft
 **Related**: FEAT-004, FEAT-005, ADR-013, ADR-014, CONTRACT-001 to CONTRACT-003; Truss CONTRACT-001 to CONTRACT-006; Ashlar PRD
 
@@ -363,7 +363,7 @@ semantic profile follows from it.
 
 ## Precedence and Compatibility
 
-- Versioning: v5, the operations and shapes this contract states; `arras.CONTRACT_VERSIONS["backend"]`. The conformance corpus is version 13.
+- Versioning: v6, the operations and shapes this contract states; `arras.CONTRACT_VERSIONS["backend"]`. The conformance corpus is version 13.
 - Ordering or precedence: the backend's own access controls decide access and win over everything; the capability descriptor decides what Arras offers.
 - Backward compatibility: adding an optional operation or capability is compatible; removing or changing one is breaking.
 - Deprecation: as CONTRACT-001.
