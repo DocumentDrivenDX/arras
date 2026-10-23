@@ -1768,3 +1768,21 @@ now uses isolated no-site Python startup while preserving its 100 ms deadline,
 production runner, stdout and process-reaping assertions; the isolated test and
 combined runner suite pass. Original failures remain retained. Final-source CI,
 corrected-wheel native qualification and actual Lakebase remain separate gates.
+
+
+Source `8e807dbfee8bd5d06877a723ea827ab46186a2e2` passed all four CI jobs
+in run `39992131372`. The actual Lakebase execution then stopped twice before
+SQL admission: the first attempt encountered an expired human CLI refresh token;
+ordinary same-profile SSO repaired that credential without renewed admin setup.
+The second attempt exposed a verifier defect that indexed the global `mixed`
+authentication profile instead of the actor-specific profile. All twelve cases
+remained `not_run`, cleanup was `not_attempted`, and the original failed receipt
+and equal before/after installed-artifact binding remain retained privately.
+
+The reviewed correction resolves credential provenance against each authorized
+actor label. Pure controls cover the actual human-writer/three-service-principal
+arrangement, the allowed native-reader variant, profile/subject/provider mismatch
+refusals before connection acquisition, and homogeneous schema1 behavior. The
+credential-source repair and verifier correction do not qualify managed cases.
+A new source/harness/entry freeze and independently rebound private fixture are
+required before a fresh actual campaign. Existing failed attempts stay intact.

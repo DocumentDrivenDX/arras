@@ -183,6 +183,148 @@ def test_schema2_mixed_auth_binds_human_writer_and_explicit_other_actor_profiles
     assert inputs.target["human_actor"] == "writer"
 
 
+@pytest.mark.parametrize("reader_profile", ["native-password", "nonhuman-oauth"])
+def test_fixture_credential_callbacks_are_checked_against_each_mixed_actor_profile(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, reader_profile: str
+) -> None:
+    target, auth, fixture_path, output, digest = _mixed_auth_files(tmp_path)
+    target_value = json.loads(target.read_text())
+    target_value["actor_auth_profiles"]["reader"] = reader_profile
+    target_raw = (json.dumps(target_value, sort_keys=True) + "\n").encode()
+    target.write_bytes(target_raw)
+    auth_value = json.loads(auth.read_text())
+    auth_value["actor_auth_profiles"] = target_value["actor_auth_profiles"]
+    auth_value["target_sha256"] = hashlib.sha256(target_raw).hexdigest()
+    auth.write_text(json.dumps(auth_value))
+    inputs = gate.validate_inputs(target, auth, fixture_path, digest, output, scope="full-managed")
+    profiles = gate.actor_auth_profiles(inputs.target)
+    subject_kinds = {
+        "native-password": "native-role",
+        "human-oauth": "human",
+        "nonhuman-oauth": "nonhuman",
+    }
+    provider = {
+        "provider": "lakebase",
+        "resource_id": inputs.target["provider_resource_id"],
+        "endpoint_sha256": cli._endpoint_sha256(inputs.target["endpoint"]),
+        "observation_source": "databricks-cli",
+        "observation_sha256": "a" * 64,
+    }
+
+    def fake_fixture(
+        *, mutation: tuple[str, str, str] | None = None, wrong_provider: bool = False
+    ) -> Any:
+        class Fixture:
+            def __init__(self) -> None:
+                self.calls: list[str] = []
+                self.opens = 0
+
+            def reject_open(self, *_args: object) -> Any:
+                self.opens += 1
+                raise AssertionError("database source must not open")
+
+            def build_sources(self, _target: object) -> dict[str, Any]:
+                return {
+                    name: self.reject_open
+                    for name in (
+                        "installer_connection_source",
+                        "person_connection_source",
+                        "principal_for",
+                        "refresh_principal",
+                    )
+                }
+
+            def observe_provider(self) -> dict[str, Any]:
+                return dict(provider)
+
+            def credential_provenance(self, label: str) -> dict[str, Any]:
+                self.calls.append(label)
+                profile = profiles[label]
+                subject_kind = subject_kinds[profile]
+                if mutation is not None and mutation[0] == label:
+                    if mutation[1] == "auth_profile":
+                        profile = mutation[2]
+                    elif mutation[1] == "subject_kind":
+                        subject_kind = mutation[2]
+                return {
+                    "auth_profile": profile,
+                    "subject_kind": subject_kind,
+                    "subject_reference_sha256": hashlib.sha256(label.encode()).hexdigest(),
+                    "credential_source_sha256": hashlib.sha256(
+                        ("source:" + label).encode()
+                    ).hexdigest(),
+                    "provider_observation_sha256": ("b" if wrong_provider else "a") * 64,
+                }
+
+        return Fixture()
+
+    def use_fixture(module: Any) -> None:
+        def load(*_args: object) -> Any:
+            return module
+
+        monkeypatch.setattr(cli, "load_trusted_fixture", load)
+
+    admitted = fake_fixture()
+    use_fixture(admitted)
+    _module, sources, _provider, provenance = cli._admit_fixture_sources(inputs, fixture_path)
+    assert set(provenance) == set(gate.PERSON_LABELS)
+    assert set(admitted.calls) == set(gate.PERSON_LABELS)
+    assert admitted.opens == 0
+    assert provenance["writer"]["auth_profile"] == "human-oauth"
+    assert provenance["reader"]["subject_kind"] == subject_kinds[reader_profile]
+    assert set(sources) == {
+        "installer_connection_source",
+        "person_connection_source",
+        "principal_for",
+        "refresh_principal",
+    }
+
+    for label, field, wrong_value in (
+        ("writer", "subject_kind", "nonhuman"),
+        ("registrar", "auth_profile", "human-oauth"),
+        ("writer", "auth_profile", "mixed"),
+    ):
+        mutated = fake_fixture(mutation=(label, field, wrong_value))
+        use_fixture(mutated)
+        with pytest.raises(cli.AdmissionError, match="credential provenance differs"):
+            cli._admit_fixture_sources(inputs, fixture_path)
+        assert mutated.opens == 0
+
+    wrong_provider = fake_fixture(wrong_provider=True)
+    use_fixture(wrong_provider)
+    with pytest.raises(cli.AdmissionError, match="not bound to the provider observation"):
+        cli._admit_fixture_sources(inputs, fixture_path)
+    assert wrong_provider.opens == 0
+
+    with pytest.raises(cli.AdmissionError, match="actor label is unknown"):
+        cli._credential_fact({}, inputs, provider, label="unknown")
+
+
+@pytest.mark.parametrize(
+    "profile,subject",
+    [
+        ("native-password", "native-role"),
+        ("human-oauth", "human"),
+        ("nonhuman-oauth", "nonhuman"),
+    ],
+)
+def test_legacy_credential_provenance_uses_uniform_profile(
+    tmp_path: Path, profile: str, subject: str
+) -> None:
+    inputs = _validate(tmp_path)
+    inputs.target["auth_profile"] = profile
+    provider = {"observation_sha256": "a" * 64}
+    value = {
+        "auth_profile": profile,
+        "subject_kind": subject,
+        "subject_reference_sha256": "b" * 64,
+        "credential_source_sha256": "c" * 64,
+        "provider_observation_sha256": "a" * 64,
+    }
+    for label in gate.PERSON_LABELS:
+        assert cli._credential_fact(value, inputs, provider, label=label) == value
+
+
 _SCHEMA2_PROFILE_MUTATIONS: tuple[Callable[[dict[str, Any]], object], ...] = (
     lambda target: target["actor_auth_profiles"].update(writer="native-password"),
     lambda target: target["actor_auth_profiles"].pop("denied"),

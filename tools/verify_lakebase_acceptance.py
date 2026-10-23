@@ -24,6 +24,7 @@ from _lakebase_acceptance import (
     PERSON_LABELS,
     AdmissionError,
     Inputs,
+    actor_auth_profiles,
     load_trusted_fixture,
     safe_case,
     validate_inputs,
@@ -520,7 +521,12 @@ def _admit_fixture_sources(
     if not callable(getattr(module, "credential_provenance", None)):
         raise AdmissionError("trusted fixture lacks credential-source provenance")
     provenance = {
-        label: _credential_fact(module.credential_provenance(label), inputs, provider)
+        label: _credential_fact(
+            module.credential_provenance(label),
+            inputs,
+            provider,
+            label=label,
+        )
         for label in PERSON_LABELS
     }
 
@@ -668,12 +674,23 @@ def _tls_token(value: object, label: str, pattern: str, maximum: int) -> str:
     return value
 
 
-def _credential_fact(value: object, inputs: Inputs, provider: dict[str, Any]) -> dict[str, Any]:
+def _credential_fact(
+    value: object,
+    inputs: Inputs,
+    provider: dict[str, Any],
+    *,
+    label: str,
+) -> dict[str, Any]:
+    if label not in PERSON_LABELS:
+        raise AdmissionError("credential provenance actor label is unknown")
+    auth_profile = actor_auth_profiles(inputs.target)[label]
     expected_subject = {
         "native-password": "native-role",
         "human-oauth": "human",
         "nonhuman-oauth": "nonhuman",
-    }[inputs.target["auth_profile"]]
+    }.get(auth_profile)
+    if expected_subject is None:
+        raise AdmissionError("credential provenance actor profile is unknown")
     keys = {
         "auth_profile",
         "subject_kind",
@@ -683,10 +700,7 @@ def _credential_fact(value: object, inputs: Inputs, provider: dict[str, Any]) ->
     }
     if type(value) is not dict or set(value) != keys:
         raise AdmissionError("credential provenance has an unexpected fact shape")
-    if (
-        value["auth_profile"] != inputs.target["auth_profile"]
-        or value["subject_kind"] != expected_subject
-    ):
+    if value["auth_profile"] != auth_profile or value["subject_kind"] != expected_subject:
         raise AdmissionError(
             "credential provenance differs from the authorized authentication profile"
         )
