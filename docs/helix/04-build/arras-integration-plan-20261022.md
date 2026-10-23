@@ -1363,6 +1363,12 @@ replaced that import with the existing explicit importlib test pattern. Full
 repository Pyright now passes with zero errors, the 77 focused checks pass again,
 and Sol approves the unchanged test behavior. Workflow and selector digests above
 remain unchanged; the corrected commit requires a fresh green CI run.
+The broad Python job also found its embedded-workflow fixture still expected
+ten Python blocks. Its reviewed correction accounts for eleven, exercises the
+new source-SHA guard with valid and malformed inputs, and retains all existing
+consumer-path controls. All 89 public-content/release checks and full repository
+Pyright/Ruff/format/YAML checks pass. This test-only follow-up changes no payload
+or workflow bytes.
 
 ## Validation Plan
 
