@@ -259,19 +259,19 @@ jobs:
             "$RUNNER_TEMP/arras-downstream/venv/bin/python" -m pip list --format=json \
               > "$RUNNER_TEMP/arras-downstream/consumer-packages.json"
             python - "$RUNNER_TEMP/arras-downstream/consumer-packages.json" <<'PY'
-            import json
-            import os
-            import sys
-            from pathlib import Path
+          import json
+          import os
+          import sys
+          from pathlib import Path
 
-            packages = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-            with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as output:
-                output.write(f"Consumer setup script: {os.environ['CONSUMER_SETUP_PATH']}\n")
-                output.write(f"Consumer setup SHA-256: {os.environ['ARRAS_CONSUMER_SETUP_SHA256']}\n")
-                output.write("Installed distributions after consumer setup:\n")
-                for package in sorted(packages, key=lambda item: item["name"].lower()):
-                    output.write(f"- {package['name']}=={package['version']}\n")
-            PY
+          packages = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as output:
+              output.write(f"Consumer setup script: {os.environ['CONSUMER_SETUP_PATH']}\n")
+              output.write(f"Consumer setup SHA-256: {os.environ['ARRAS_CONSUMER_SETUP_SHA256']}\n")
+              output.write("Installed distributions after consumer setup:\n")
+              for package in sorted(packages, key=lambda item: item["name"].lower()):
+                  output.write(f"- {package['name']}=={package['version']}\n")
+          PY
           else
             echo "Consumer dependency setup script: not supplied."
           fi
@@ -424,19 +424,19 @@ jobs:
             "$RUNNER_TEMP/arras-downstream/venv/bin/python" -m pip list --format=json \
               > "$RUNNER_TEMP/arras-downstream/theme-packages.json"
             python - "$RUNNER_TEMP/arras-downstream/theme-packages.json" <<'PY'
-            import json
-            import os
-            import sys
-            from pathlib import Path
+          import json
+          import os
+          import sys
+          from pathlib import Path
 
-            packages = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-            with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as output:
-                output.write(f"Theme setup script: {os.environ['THEME_SETUP_PATH']}\n")
-                output.write(f"Theme setup SHA-256: {os.environ['ARRAS_THEME_SETUP_SHA256']}\n")
-                output.write("Installed distributions after theme setup:\n")
-                for package in sorted(packages, key=lambda item: item["name"].lower()):
-                    output.write(f"- {package['name']}=={package['version']}\n")
-            PY
+          packages = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as output:
+              output.write(f"Theme setup script: {os.environ['THEME_SETUP_PATH']}\n")
+              output.write(f"Theme setup SHA-256: {os.environ['ARRAS_THEME_SETUP_SHA256']}\n")
+              output.write("Installed distributions after theme setup:\n")
+              for package in sorted(packages, key=lambda item: item["name"].lower()):
+                  output.write(f"- {package['name']}=={package['version']}\n")
+          PY
           fi
           if [ -n "$THEME_SETUP_PATH" ]; then
             "$RUNNER_TEMP/arras-downstream/venv/bin/python" -I \

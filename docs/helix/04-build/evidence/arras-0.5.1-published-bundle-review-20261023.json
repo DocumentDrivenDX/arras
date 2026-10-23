@@ -1,0 +1,131 @@
+{
+  "aggregate_sha256": "a84811a71b0180de8e3f2c225732c9c47410476d0389c229ef92090bf6314d7c",
+  "asset_sha256": {
+    "acceptance-inventory-neutral-theme.json": "925019da1651937a72a20b91a7a032f1101c2af024ae96c51ef423aa67bbe14c",
+    "acceptance-resources-neutral-theme.json": "bfb6ed43ff0accdb170b60cc7095365f2a7cc287a66b7dfcab31918106042f78",
+    "arras-0.5.1-py3-none-any.whl": "17d50dedeaf9d4f7d27e0eb30cb16539bfa75de3a138dc9351284c2e2f390d4b",
+    "arras-0.5.1.tar.gz": "541aa91ae970ac16644679614d74b858f1a46e303b6429e0c10804c24bc0dd45",
+    "consumer-qualification.json": "6e8ffcde4d3a0d7a8ee59b12452a97542556fbfb37501391ac8653d83b01a9e1",
+    "distribution-verification.json": "a1f58db196d3d6af8622e3da3c9bae78ba5058c049755c7c3e3ff7e3366d4fac",
+    "doctor-installed.json": "8cf81c507981df05f415a38fd52a935a27e5d6f3323fbcb0b3f082aa5641fa73",
+    "documentdrivendx-arras-ui-0.5.1.tgz": "76fc29a5a24747ef26d0e04263f1f8924034244b1169a41fb865e02274485e1f",
+    "native-cohort-binding.json": "4803459cfceb995d4939860da38edf18ad195a505f368c29084761f92c1a57c2",
+    "native-cohort.json": "68a858d6bd4d63f8a346bece353472f7f4441664d1ae625b7f60b152a87937d6",
+    "native-find-links.html": "197d63b9a651530b43457b768533165d0cc522ad5d872db063a8279a14ebbcd5",
+    "native-qualification.json": "d5931b8eaf9ed395d3ba7d9529bb3a9b4b2d82022d12fe031e33701e133ec9b7",
+    "playwright-summary-neutral-theme.json": "6d84aa2dba1b5f45b3bcaa5577c05b2d85d135da4915d90f2237faa8e6384713",
+    "release-evidence.json": "a84811a71b0180de8e3f2c225732c9c47410476d0389c229ef92090bf6314d7c",
+    "ui-qualification.json": "9cdd509a35ab9e7f240f9d3c227268c300d6e1265540d915435f919622e3ac22"
+  },
+  "cached_github_release_metadata": {
+    "anonymous_asset_download_proved": false,
+    "draft": false,
+    "exact_asset_names_digests_sizes_and_download_urls_match_trusted_stage": true,
+    "prerelease": false,
+    "published_at": "2026-10-23T01:02:46Z",
+    "retrieval_basis": "Root authenticated GitHub metadata read; independently inspected cached JSON without network retrieval.",
+    "sha256": "093a64f3e16bfc5a7a7c693786c3d4c3f4d1fda162c7825fa08c0e49b0b8ed8b",
+    "tag": "v0.5.1",
+    "uploaded_assets": 16,
+    "url": "https://github.com/DocumentDrivenDX/arras/releases/tag/v0.5.1"
+  },
+  "checks": {
+    "canonical_specs_declared": 17,
+    "checksummed_assets": 15,
+    "consumer_installed_tests": 4,
+    "darwin_visual_declarations": 67,
+    "doctor_cases": 20,
+    "doctor_false_pass_controls": 3,
+    "doctor_five_versions_and_extension_wheel_retained": true,
+    "doctor_phases": 8,
+    "exact_regular_files": 16,
+    "linux_cohort_and_index_match_tracked_template": true,
+    "linux_ui_nonvisual_passed": 205,
+    "linux_visual_status": "skipped-non-Darwin",
+    "memory_corpus_counts": {
+      "failed": 0,
+      "harness_error": 0,
+      "host_specific": 0,
+      "limit": 0,
+      "passed": 72
+    },
+    "native_corpus_counts": {
+      "failed": 0,
+      "harness_error": 0,
+      "host_specific": 0,
+      "limit": 8,
+      "passed": 64
+    },
+    "native_wheel_pins": 7,
+    "ordered_applicable_cases": 72,
+    "ordered_inapplicable_cases": 7,
+    "published_components": 11,
+    "raw_doctor_distribution_hashes_and_safe_projection_observations_match": true,
+    "safe_json_html_privacy_scan_clear": true,
+    "three_build_binary_originals_byteidentical": true,
+    "whole_wheel_carried_npm_bytes_match": true
+  },
+  "publication_provenance": {
+    "driver": {
+      "ref": "refs/heads/main",
+      "run_attempt": "1",
+      "run_id": "39879533273",
+      "sha": "c02bca2b5417227f8f28d72171be0f7378c9b0bf",
+      "workflow_ref": "DocumentDrivenDX/arras/.github/workflows/release.yml@refs/heads/main",
+      "workflow_sha": "c02bca2b5417227f8f28d72171be0f7378c9b0bf"
+    },
+    "event": "workflow_dispatch",
+    "schema": "arras.release-driver-provenance.v1",
+    "target": {
+      "source_sha": "8b786bb7629a6425e5a2b3b528378f0d92f0b847",
+      "tag": "v0.5.1",
+      "tag_object_sha": "11b690b3795518315fa643379acf0f94383f135e",
+      "version": "0.5.1"
+    }
+  },
+  "publication_run_postpublication_status": {
+    "aggregate_public_download": "not_run_at_assembly",
+    "anonymous_bundle_qualification": "not_run",
+    "installed_downstream": "failed_orchestration_after_verified_install_root_reported"
+  },
+  "qualification_limits": [
+    "This review covers cached original publication-stage assets plus root-authenticated GitHub metadata whose exact16 names/digests/sizes match; it is not anonymous network download qualification.",
+    "Raw doctor and distribution receipts were available and rehashed; raw native, consumer and UI receipts are digest links in the public aggregate and were not separately fetched for this review.",
+    "Native projection is actual publication-run Linux x86_64 evidence, not Mac execution evidence;64pass+8reviewedlimits remain distinct outcomes.",
+    "Linux UI205nonvisual passes do not claim Darwin67visual execution; Mac artifact bridge remains separate and qualified.",
+    "Original publication-run downstream failure and anonymous-not-run are preserved; a new read-only verification run is pending.",
+    "No downloads, artifact code imports, runtime campaigns, source edits, or Git mutations were performed."
+  ],
+  "raw_source_digest_links": {
+    "acceptance-inventory-neutral-theme.json.sha256": "925019da1651937a72a20b91a7a032f1101c2af024ae96c51ef423aa67bbe14c",
+    "acceptance-resources-neutral-theme.json.sha256": "bfb6ed43ff0accdb170b60cc7095365f2a7cc287a66b7dfcab31918106042f78",
+    "arras-0.5.1-py3-none-any.whl": "17d50dedeaf9d4f7d27e0eb30cb16539bfa75de3a138dc9351284c2e2f390d4b",
+    "arras-0.5.1.tar.gz": "541aa91ae970ac16644679614d74b858f1a46e303b6429e0c10804c24bc0dd45",
+    "consumer_receipt.json": "2fd25216929d14290c93beab704a9adb2cded8dfaa8dd96704da22c41b7cfe2d",
+    "distribution-verification.json": "be28c245dd1139c85bd276c7af4321a47e470cac508298144e055ad4477d49d9",
+    "doctor-installed.json": "36622c12fd28da18aaf7257c27ebe9d064277f3ba6d37a83d2a87be00d762991",
+    "documentdrivendx-arras-ui-0.5.1.tgz": "76fc29a5a24747ef26d0e04263f1f8924034244b1169a41fb865e02274485e1f",
+    "native_binding.json": "e1ef12ecc5a06e5ea65f2c42b398219e36f135beec324831b9dff8bd84efcc82",
+    "native_cohort.json": "68a858d6bd4d63f8a346bece353472f7f4441664d1ae625b7f60b152a87937d6",
+    "native_index.html": "197d63b9a651530b43457b768533165d0cc522ad5d872db063a8279a14ebbcd5",
+    "native_receipt.json": "29263d08912f21157bdf30bd195bd3b56528a47a4cbc9ae3cfdbdc5c87d07e47",
+    "playwright-summary-neutral-theme.json.sha256": "6d84aa2dba1b5f45b3bcaa5577c05b2d85d135da4915d90f2237faa8e6384713",
+    "ui_receipt.json": "8f62d26fcbd15f9f817c339c846a4c68a60234b5cc3f67a1eddded962f832ae7"
+  },
+  "runtime_partitions": {
+    "doctor": {
+      "architecture": "x86_64",
+      "os": "linux",
+      "python": "3.11.17",
+      "release": "6.17.0-1022-azure"
+    },
+    "native": {
+      "machine": "x86_64",
+      "python": "3.11",
+      "sys_platform": "linux"
+    }
+  },
+  "schema": "arras.published-stage-independent-review.v1",
+  "status": "accepted_trusted_comparison_anchor",
+  "sums_sha256": "43c41e44c3634724f0bccd0b92ee882f0771138044b5abbbde097890c839503c"
+}

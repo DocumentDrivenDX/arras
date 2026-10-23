@@ -262,6 +262,85 @@ def _embedded_workflow_python() -> list[str]:
     return [textwrap.dedent(block) for _, block in blocks]
 
 
+def _embedded_workflow_shell() -> list[str]:
+    lines = (ROOT / ".github/workflows/downstream.yml").read_text(encoding="utf-8").splitlines()
+    blocks: list[str] = []
+    index = 0
+    while index < len(lines):
+        match = re.match(r"^(?P<indent> +)run:\s*\|\s*$", lines[index])
+        if match is None:
+            index += 1
+            continue
+
+        base_indent = len(match.group("indent"))
+        index += 1
+        content: list[str] = []
+        while index < len(lines):
+            line = lines[index]
+            if line.strip() and len(line) - len(line.lstrip(" ")) <= base_indent:
+                break
+            content.append(line)
+            index += 1
+        blocks.append(textwrap.dedent("\n".join(content)) + "\n")
+    return blocks
+
+
+def test_workflow_shell_blocks_parse_and_optional_paths_skip_without_setup(
+    tmp_path: Path,
+) -> None:
+    blocks = _embedded_workflow_shell()
+    assert len(blocks) == 14
+    for index, block in enumerate(blocks):
+        parsed = subprocess.run(["bash", "-n"], input=block, text=True, capture_output=True)
+        assert parsed.returncode == 0, f"workflow shell block {index}: {parsed.stderr}"
+
+    consumer_setup = next(
+        block for block in blocks if "Consumer dependency setup script: not supplied." in block
+    )
+    skipped_consumer = subprocess.run(
+        ["bash", "-euo", "pipefail", "-c", consumer_setup],
+        text=True,
+        env={**os.environ, "CONSUMER_SETUP_PATH": "", "RUNNER_TEMP": str(tmp_path)},
+        capture_output=True,
+    )
+    assert skipped_consumer.returncode == 0, skipped_consumer.stderr
+    assert "Consumer dependency setup script: not supplied." in skipped_consumer.stdout
+
+    native_target = next(
+        block for block in blocks if "No native consumer target was requested." in block
+    )
+    native_output = tmp_path / "native-output"
+    skipped_native = subprocess.run(
+        ["bash", "-euo", "pipefail", "-c", native_target],
+        text=True,
+        env={
+            **os.environ,
+            "NATIVE_TEST_PATH": "",
+            "GITHUB_OUTPUT": str(native_output),
+        },
+        capture_output=True,
+    )
+    assert skipped_native.returncode == 0, skipped_native.stderr
+    assert native_output.read_text(encoding="utf-8").strip() == "status=not_run"
+
+    theme_target = next(
+        block for block in blocks if "No theme consumer target was requested." in block
+    )
+    theme_output = tmp_path / "theme-output"
+    skipped_theme = subprocess.run(
+        ["bash", "-euo", "pipefail", "-c", theme_target],
+        text=True,
+        env={
+            **os.environ,
+            "THEME_TEST_PATH": "",
+            "GITHUB_OUTPUT": str(theme_output),
+        },
+        capture_output=True,
+    )
+    assert skipped_theme.returncode == 0, skipped_theme.stderr
+    assert theme_output.read_text(encoding="utf-8").strip() == "status=not_run"
+
+
 def test_workflow_python_blocks_compile_and_run_without_upstream_tools(
     tmp_path: Path,
 ) -> None:

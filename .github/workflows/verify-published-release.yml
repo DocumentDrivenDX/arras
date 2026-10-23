@@ -1,0 +1,404 @@
+name: Verify published release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing immutable release tag, such as v0.5.1.
+        required: true
+        type: string
+      expected_source_sha:
+        description: Exact source commit bound to the release tag.
+        required: true
+        type: string
+      publication_run_id:
+        description: GitHub Actions run id that published this release.
+        required: true
+        type: string
+      expected_publication_driver_sha:
+        description: Release workflow driver commit from the original publication run.
+        required: true
+        type: string
+      expected_sums_sha256:
+        description: SHA-256 of the original release-assets SHA256SUMS.
+        required: true
+        type: string
+      expected_evidence_sha256:
+        description: SHA-256 of the original release-evidence.json.
+        required: true
+        type: string
+      expected_wheel_sha256:
+        description: SHA-256 of the exact published Python wheel.
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: verify-published-release-${{ inputs.release_tag }}
+  cancel-in-progress: false
+
+jobs:
+  trusted-publication:
+    name: Verify the original publication provenance
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      source_sha: ${{ steps.verify.outputs.source_sha }}
+      release_tag: ${{ steps.verify.outputs.release_tag }}
+      version: ${{ steps.verify.outputs.version }}
+      wheel_name: ${{ steps.verify.outputs.wheel_name }}
+      wheel_sha256: ${{ steps.verify.outputs.wheel_sha256 }}
+      publication_run_id: ${{ steps.verify.outputs.publication_run_id }}
+      publication_driver_sha: ${{ steps.verify.outputs.publication_driver_sha }}
+      publication_workflow_ref: ${{ steps.verify.outputs.publication_workflow_ref }}
+      publication_run_attempt: ${{ steps.verify.outputs.publication_run_attempt }}
+      tag_object_sha: ${{ steps.verify.outputs.tag_object_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 0
+      - id: target
+        name: Validate this verification driver and immutable release target
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_WORKFLOW_SHA: ${{ github.workflow_sha }}
+          GITHUB_WORKFLOW_REF: ${{ github.workflow_ref }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+        run: python3 .github/scripts/release_target.py validate
+      - name: Validate all dispatch pins before remote metadata or artifact lookup
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+          PUBLICATION_RUN_ID: ${{ inputs.publication_run_id }}
+          EXPECTED_PUBLICATION_DRIVER_SHA: ${{ inputs.expected_publication_driver_sha }}
+          EXPECTED_SUMS_SHA256: ${{ inputs.expected_sums_sha256 }}
+          EXPECTED_EVIDENCE_SHA256: ${{ inputs.expected_evidence_sha256 }}
+          EXPECTED_WHEEL_SHA256: ${{ inputs.expected_wheel_sha256 }}
+          EXPECTED_TAG_OBJECT_SHA: ${{ steps.target.outputs.tag_object_sha }}
+          GH_REPOSITORY: ${{ github.repository }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          python3 .github/scripts/verify_publication_provenance.py \
+            --release-tag "$RELEASE_TAG" \
+            --expected-source-sha "$EXPECTED_SOURCE_SHA" \
+            --publication-run-id "$PUBLICATION_RUN_ID" \
+            --expected-publication-driver-sha "$EXPECTED_PUBLICATION_DRIVER_SHA" \
+            --expected-sums-sha256 "$EXPECTED_SUMS_SHA256" \
+            --expected-evidence-sha256 "$EXPECTED_EVIDENCE_SHA256" \
+            --expected-wheel-sha256 "$EXPECTED_WHEEL_SHA256" \
+            --expected-tag-object-sha "$EXPECTED_TAG_OBJECT_SHA" \
+            --repository "$GH_REPOSITORY" \
+            --default-branch "$DEFAULT_BRANCH" \
+            --validate-inputs-only
+      - name: Fetch original publication run and workflow metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPOSITORY: ${{ github.repository }}
+          PUBLICATION_RUN_ID: ${{ inputs.publication_run_id }}
+        run: |
+          set -euo pipefail
+          mkdir -p publication-metadata trusted-release-assets
+          gh api "repos/$GH_REPOSITORY/actions/runs/$PUBLICATION_RUN_ID" > publication-metadata/run.json
+          gh api "repos/$GH_REPOSITORY/actions/runs/$PUBLICATION_RUN_ID/jobs?per_page=100" > publication-metadata/jobs.json
+          gh api "repos/$GH_REPOSITORY/actions/workflows/release.yml" > publication-metadata/workflow.json
+      - name: Download the original publication receipts and release assets
+        uses: actions/download-artifact@v4
+        with:
+          name: release-driver-provenance
+          path: publication-metadata/driver
+          run-id: ${{ inputs.publication_run_id }}
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+      - name: Download the original immutable release-assets artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-assets
+          path: trusted-release-assets
+          run-id: ${{ inputs.publication_run_id }}
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+      - id: verify
+        name: Verify original run, source/tag binding, and exact trusted bundle
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+          PUBLICATION_RUN_ID: ${{ inputs.publication_run_id }}
+          EXPECTED_PUBLICATION_DRIVER_SHA: ${{ inputs.expected_publication_driver_sha }}
+          EXPECTED_SUMS_SHA256: ${{ inputs.expected_sums_sha256 }}
+          EXPECTED_EVIDENCE_SHA256: ${{ inputs.expected_evidence_sha256 }}
+          EXPECTED_WHEEL_SHA256: ${{ inputs.expected_wheel_sha256 }}
+          EXPECTED_TAG_OBJECT_SHA: ${{ steps.target.outputs.tag_object_sha }}
+          GH_REPOSITORY: ${{ github.repository }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts anchor
+          python3 .github/scripts/verify_publication_provenance.py \
+            --release-tag "$RELEASE_TAG" \
+            --expected-source-sha "$EXPECTED_SOURCE_SHA" \
+            --publication-run-id "$PUBLICATION_RUN_ID" \
+            --expected-publication-driver-sha "$EXPECTED_PUBLICATION_DRIVER_SHA" \
+            --expected-sums-sha256 "$EXPECTED_SUMS_SHA256" \
+            --expected-evidence-sha256 "$EXPECTED_EVIDENCE_SHA256" \
+            --expected-wheel-sha256 "$EXPECTED_WHEEL_SHA256" \
+            --expected-tag-object-sha "$EXPECTED_TAG_OBJECT_SHA" \
+            --repository "$GH_REPOSITORY" \
+            --default-branch "$DEFAULT_BRANCH" \
+            --run-json publication-metadata/run.json \
+            --jobs-json publication-metadata/jobs.json \
+            --workflow-json publication-metadata/workflow.json \
+            --publication-provenance-json publication-metadata/driver/release-driver-provenance.json \
+            --trusted-dir trusted-release-assets \
+            --output-json artifacts/original-publication-verification.json
+          cp publication-metadata/driver/release-driver-provenance.json anchor/
+          cp artifacts/original-publication-verification.json anchor/
+          mkdir -p trusted-sums-only
+          cp trusted-release-assets/SHA256SUMS trusted-sums-only/SHA256SUMS
+          python3 .github/scripts/verify_public_release_assets.py plan \
+            --trusted-dir trusted-release-assets \
+            --public-dir trusted-sums-only \
+            --expected-version "${RELEASE_TAG#v}" \
+            --expected-wheel "arras-${RELEASE_TAG#v}-py3-none-any.whl" \
+            --expected-wheel-sha256 "$EXPECTED_WHEEL_SHA256" \
+            --expected-sums-sha256 "$EXPECTED_SUMS_SHA256" \
+            --output "$RUNNER_TEMP/public-release-plan.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verified-original-release-assets
+          path: trusted-release-assets
+          if-no-files-found: error
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: original-publication-anchor-verification
+          path: anchor
+          if-no-files-found: error
+          retention-days: 7
+
+  installed-consumer:
+    name: Re-test the published wheel in a fresh consumer
+    needs: trusted-publication
+    uses: ./.github/workflows/downstream.yml
+    with:
+      wheel_url: https://github.com/${{ github.repository }}/releases/download/${{ needs.trusted-publication.outputs.release_tag }}/${{ needs.trusted-publication.outputs.wheel_name }}
+      wheel_sha256: ${{ needs.trusted-publication.outputs.wheel_sha256 }}
+      source_sha: ${{ needs.trusted-publication.outputs.source_sha }}
+      consumer_project_path: examples/extension_host
+      consumer_test_path: examples/extension_host/tests/test_installed.py
+
+  anonymous-public-consumer:
+    name: Re-verify anonymous public assets and consumers
+    needs: [trusted-publication, installed-consumer]
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.trusted-publication.outputs.source_sha }}
+      - name: Assert payload checkout identity
+        env:
+          ARRAS_SOURCE_SHA: ${{ needs.trusted-publication.outputs.source_sha }}
+        run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: verification-driver
+      - name: Assert verification driver identity
+        env:
+          ARRAS_DRIVER_SHA: ${{ github.workflow_sha }}
+        run: test "$(git -C verification-driver rev-parse HEAD)" = "$ARRAS_DRIVER_SHA"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          python-version: "3.11"
+      - run: uv sync --locked --extra devhost
+      - run: npm ci
+        working-directory: ui
+      - uses: actions/download-artifact@v4
+        with:
+          name: verified-original-release-assets
+          path: trusted-release-assets
+      - name: Download every release asset without credentials
+        env:
+          RELEASE_URL: https://github.com/${{ github.repository }}/releases/download/${{ needs.trusted-publication.outputs.release_tag }}
+          EXPECTED_VERSION: ${{ needs.trusted-publication.outputs.version }}
+          EXPECTED_WHEEL: ${{ needs.trusted-publication.outputs.wheel_name }}
+          EXPECTED_WHEEL_SHA256: ${{ needs.trusted-publication.outputs.wheel_sha256 }}
+          EXPECTED_SUMS_SHA256: ${{ inputs.expected_sums_sha256 }}
+        run: |
+          set -euo pipefail
+          mkdir -p public-release-assets artifacts
+          curl --disable --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --retry 2 --max-time 60 \
+            --output public-release-assets/SHA256SUMS "$RELEASE_URL/SHA256SUMS"
+          python .github/scripts/verify_public_release_assets.py plan \
+            --trusted-dir trusted-release-assets \
+            --public-dir public-release-assets \
+            --expected-version "$EXPECTED_VERSION" \
+            --expected-wheel "$EXPECTED_WHEEL" \
+            --expected-wheel-sha256 "$EXPECTED_WHEEL_SHA256" \
+            --expected-sums-sha256 "$EXPECTED_SUMS_SHA256" \
+            --output "$RUNNER_TEMP/public-release-plan.txt"
+          while IFS= read -r asset; do
+            test -n "$asset"
+            curl --disable --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --retry 2 --max-time 60 \
+              --output "public-release-assets/$asset" "$RELEASE_URL/$asset"
+          done < "$RUNNER_TEMP/public-release-plan.txt"
+          python .github/scripts/verify_public_release_assets.py verify \
+            --trusted-dir trusted-release-assets \
+            --public-dir public-release-assets \
+            --expected-version "$EXPECTED_VERSION" \
+            --expected-wheel "$EXPECTED_WHEEL" \
+            --expected-wheel-sha256 "$EXPECTED_WHEEL_SHA256" \
+            --expected-sums-sha256 "$EXPECTED_SUMS_SHA256" \
+            --output artifacts/public-input-verification.json
+      - name: Verify distribution parity from public bytes
+        run: |
+          python tools/verify_distribution.py \
+            --output artifacts/public-distribution-verification.json \
+            "public-release-assets/${{ needs.trusted-publication.outputs.wheel_name }}" \
+            "public-release-assets/arras-${{ needs.trusted-publication.outputs.version }}.tar.gz"
+      - name: Run the installed doctor from the published wheel
+        run: uv run --no-sync python tools/verify_doctor.py --wheel "public-release-assets/${{ needs.trusted-publication.outputs.wheel_name }}" --output-json artifacts/public-doctor-installed.json
+      - name: Verify the fresh installed extension host
+        run: uv run --no-sync python tools/verify_extension_host.py --wheel "public-release-assets/${{ needs.trusted-publication.outputs.wheel_name }}" --output-json artifacts/public-extension-host-fresh-dependencies.json --fresh-dependencies
+      - name: Configure bounded browser dependencies
+        working-directory: ui
+        run: |
+          set -euo pipefail
+          python ../.github/scripts/configure_ubuntu_apt_sources.py --self-test
+          sudo python ../.github/scripts/configure_ubuntu_apt_sources.py --apply
+          if ! apt_main_config="$(sudo apt-config shell ARRAS_MAIN Dir::Etc::main/f 2>/dev/null)"; then
+            printf '%s\n' "$apt_main_config" >&2
+            exit 1
+          fi
+          test "$apt_main_config" = "ARRAS_MAIN='/etc/apt/apt.conf'"
+          apt_main_path=/etc/apt/apt.conf
+          if sudo test -e "$apt_main_path" || sudo test -L "$apt_main_path"; then
+            if ! sudo test -f "$apt_main_path" || sudo test -L "$apt_main_path"; then
+              exit 1
+            fi
+          fi
+          sudo tee -a "$apt_main_path" >/dev/null <<'EOF'
+
+          Acquire {
+            Retries "2";
+            http::Timeout "20";
+            https::Timeout "20";
+          };
+          Binary::apt-get::Acquire {
+            Retries "2";
+            http::Timeout "20";
+            https::Timeout "20";
+          };
+          EOF
+          apt_config="$(sudo apt-config shell ARRAS_RETRIES Acquire::Retries ARRAS_HTTP_TIMEOUT Acquire::http::Timeout ARRAS_HTTPS_TIMEOUT Acquire::https::Timeout ARRAS_APTGET_RETRIES Binary::apt-get::Acquire::Retries ARRAS_APTGET_HTTP_TIMEOUT Binary::apt-get::Acquire::http::Timeout ARRAS_APTGET_HTTPS_TIMEOUT Binary::apt-get::Acquire::https::Timeout 2>/dev/null)"
+          expected_apt_config="$(printf "ARRAS_RETRIES='2'\nARRAS_HTTP_TIMEOUT='20'\nARRAS_HTTPS_TIMEOUT='20'\nARRAS_APTGET_RETRIES='2'\nARRAS_APTGET_HTTP_TIMEOUT='20'\nARRAS_APTGET_HTTPS_TIMEOUT='20'")"
+          test "$apt_config" = "$expected_apt_config"
+          timeout --signal=TERM --kill-after=30s 5m sudo apt-get update
+          timeout --signal=TERM --kill-after=30s 15m npx --no-install playwright install-deps chromium
+          timeout --signal=TERM --kill-after=30s 15m npx --no-install playwright install chromium
+          timeout --signal=TERM --kill-after=10s 60s node --input-type=module <<'JS'
+          import { chromium } from "@playwright/test";
+          const browser = await chromium.launch({ headless: true });
+          await browser.close();
+          JS
+      - name: Qualify all packed UI acceptance projects and controls
+        working-directory: ui
+        run: npm run qualify:downstream -- ../public-release-assets/${{ needs.trusted-publication.outputs.wheel_name }}
+      - name: Write verification-only result and provenance
+        env:
+          RELEASE_TAG: ${{ needs.trusted-publication.outputs.release_tag }}
+          SOURCE_SHA: ${{ needs.trusted-publication.outputs.source_sha }}
+          WHEEL_NAME: ${{ needs.trusted-publication.outputs.wheel_name }}
+          WHEEL_SHA256: ${{ needs.trusted-publication.outputs.wheel_sha256 }}
+          PUBLICATION_RUN_ID: ${{ needs.trusted-publication.outputs.publication_run_id }}
+          PUBLICATION_DRIVER_SHA: ${{ needs.trusted-publication.outputs.publication_driver_sha }}
+          PUBLICATION_WORKFLOW_REF: ${{ needs.trusted-publication.outputs.publication_workflow_ref }}
+          PUBLICATION_RUN_ATTEMPT: ${{ needs.trusted-publication.outputs.publication_run_attempt }}
+          PUBLICATION_TAG_OBJECT_SHA: ${{ needs.trusted-publication.outputs.tag_object_sha }}
+          PUBLICATION_SUMS_SHA256: ${{ inputs.expected_sums_sha256 }}
+          PUBLICATION_EVIDENCE_SHA256: ${{ inputs.expected_evidence_sha256 }}
+          VERIFICATION_RUN_ID: ${{ github.run_id }}
+          VERIFICATION_DRIVER_SHA: ${{ github.workflow_sha }}
+          VERIFICATION_WORKFLOW_REF: ${{ github.workflow_ref }}
+          VERIFICATION_RUN_ATTEMPT: ${{ github.run_attempt }}
+          TARGET_TAG: ${{ needs.trusted-publication.outputs.release_tag }}
+          TARGET_SOURCE_SHA: ${{ needs.trusted-publication.outputs.source_sha }}
+          TARGET_TAG_OBJECT_SHA: ${{ needs.trusted-publication.outputs.tag_object_sha }}
+        run: |
+          set -euo pipefail
+          cd verification-driver
+          python3 .github/scripts/release_target.py recheck
+          cd ..
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          receipts = [
+              "public-input-verification.json",
+              "public-distribution-verification.json",
+              "public-doctor-installed.json",
+              "public-extension-host-fresh-dependencies.json",
+              "tests/downstream/evidence/linux/qualification-linux.json",
+          ]
+          records = []
+          for name in receipts:
+              path = Path(name) if name.startswith("tests/") else Path("artifacts") / name
+              if not path.is_file() or path.stat().st_size == 0:
+                  raise SystemExit(f"required verification receipt missing: {name}")
+              records.append({"filename": name, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
+          receipt = {
+              "schema_version": 1,
+              "status": "passed",
+              "purpose": "verification-only; no release assets were created or changed",
+              "release": {"tag": os.environ["RELEASE_TAG"], "source_sha": os.environ["SOURCE_SHA"]},
+              "published_wheel": {"filename": os.environ["WHEEL_NAME"], "sha256": os.environ["WHEEL_SHA256"]},
+              "original_publication": {
+                  "run_id": os.environ["PUBLICATION_RUN_ID"],
+                  "run_attempt": os.environ["PUBLICATION_RUN_ATTEMPT"],
+                  "driver_sha": os.environ["PUBLICATION_DRIVER_SHA"],
+                  "workflow_ref": os.environ["PUBLICATION_WORKFLOW_REF"],
+                  "tag_object_sha": os.environ["PUBLICATION_TAG_OBJECT_SHA"],
+                  "sums_sha256": os.environ["PUBLICATION_SUMS_SHA256"],
+                  "evidence_sha256": os.environ["PUBLICATION_EVIDENCE_SHA256"],
+              },
+              "verification": {
+                  "run_id": os.environ["VERIFICATION_RUN_ID"],
+                  "run_attempt": os.environ["VERIFICATION_RUN_ATTEMPT"],
+                  "driver_sha": os.environ["VERIFICATION_DRIVER_SHA"],
+                  "workflow_ref": os.environ["VERIFICATION_WORKFLOW_REF"],
+              },
+              "receipts": records,
+          }
+          Path("artifacts/public-verification-only.json").write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: published-release-verification-only
+          path: |
+            artifacts/public-*.json
+            tests/downstream/evidence/linux
+            ui/test-results
+            ui/playwright-report
+          if-no-files-found: ignore
