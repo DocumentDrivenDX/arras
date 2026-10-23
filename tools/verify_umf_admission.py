@@ -14,8 +14,10 @@ import base64
 import csv
 import email.parser
 import hashlib
+import importlib.util
 import json
 import os
+import platform as host_platform
 import re
 import shutil
 import subprocess
@@ -26,13 +28,46 @@ import zipfile
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
-UMF_URL = (
-    "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/"
-    "umf_core-0.10.0-py3-none-any.whl"
-)
-UMF_SHA256 = "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9"
-UMF_FILENAME = "umf_core-0.10.0-py3-none-any.whl"
-UMF_REQUIREMENT = f"umf-core @ {UMF_URL}#sha256={UMF_SHA256}"
+_PROCESS_HELPER_SHA256 = "07aba19a8d454dd4be6d5fc701340a33daec6dee35812aadad3939352708dd86"
+
+
+def _load_cohort_selector() -> Any:
+    name = "arras_umf_admission_cohorts"
+    existing = sys.modules.get(name)
+    if existing is not None:
+        return existing
+    path = Path(__file__).resolve().with_name("_umf_sdk_cohorts.py")
+    spec = importlib.util.spec_from_file_location(name, path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("UMF cohort selector is unavailable")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def _load_process_helpers() -> Any:
+    name = "arras_umf_admission_process"
+    path = Path(__file__).resolve().with_name("_umf_admission_process.py")
+    if hashlib.sha256(path.read_bytes()).hexdigest() != _PROCESS_HELPER_SHA256:
+        raise RuntimeError("UMF verifier process helper failed its source pin")
+    existing = sys.modules.get(name)
+    if existing is not None:
+        return existing
+    spec = importlib.util.spec_from_file_location(name, path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("UMF verifier process helpers are unavailable")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+_COHORTS = _load_cohort_selector()
+_PROCESS = _load_process_helpers()
+KNOWN_COHORTS = _COHORTS.KNOWN_COHORTS
+SDKCohort = _COHORTS.SDKCohort
+select_sdk_cohort = _COHORTS.select_sdk_cohort
 CORPUS_SHA256 = "bb008a98b8448050748e65f867e7863475ccad9501a5b9229ae9e6d336691544"
 METADATA_SHA256 = "da883657baefe7b7a4ab8654f78e7d84ef1e281eea7bc7cee48f8662007cd687"
 SCHEMA = "arras.umf-admission-installed/1"
@@ -147,12 +182,18 @@ def _verify_record(members: dict[str, bytes], record: bytes) -> int:
     return len(seen)
 
 
-def _wheel_details(path: Path, *, expected: str) -> dict[str, Any]:
-    if path.stat().st_size > MAX_WHEEL_BYTES:
-        raise VerificationError("wheel", "wheel-over-limit")
-    digest = _sha256_file(path)
-    if expected == "umf" and (path.name != UMF_FILENAME or digest != UMF_SHA256):
-        raise VerificationError("umf-wheel", "unexpected-official-artifact")
+def _host_cohort(metadata: Any) -> SDKCohort:
+    machine = host_platform.machine().lower()
+    machine = {"amd64": "x86_64", "aarch64": "arm64"}.get(machine, machine)
+    try:
+        return select_sdk_cohort(
+            metadata, platform=sys.platform, machine=machine, registry=KNOWN_COHORTS
+        )
+    except ValueError as error:
+        raise VerificationError("arras-wheel", "optional-extra-not-pinned") from error
+
+
+def _wheel_members(path: Path) -> tuple[dict[str, bytes], Any, Any, bytes]:
     try:
         with zipfile.ZipFile(path) as archive:
             infos = archive.infolist()
@@ -173,24 +214,69 @@ def _wheel_details(path: Path, *, expected: str) -> dict[str, Any]:
     if len(metadata_paths) != 1 or len(wheel_paths) != 1 or len(record_paths) != 1:
         raise VerificationError("wheel", "wheel-metadata-inventory-invalid")
     metadata = email.parser.Parser().parsestr(members[metadata_paths[0]].decode("utf-8"))
+    wheel_metadata = email.parser.Parser().parsestr(members[wheel_paths[0]].decode("utf-8"))
+    return members, metadata, wheel_metadata, members[record_paths[0]]
+
+
+def _wheel_cohort(
+    path: Path,
+    *,
+    expected: str,
+    normalized: str,
+    version: str,
+    digest: str,
+    metadata: Any,
+    cohort: SDKCohort | None,
+) -> SDKCohort | None:
+    if expected == "arras":
+        if normalized != "arras" or path.name != f"arras-{version}-py3-none-any.whl":
+            raise VerificationError("arras-wheel", "unexpected-distribution-identity")
+        return _host_cohort(metadata)
+    if normalized != "umf-core":
+        raise VerificationError("umf-wheel", "unexpected-distribution-identity")
+    if cohort is None:
+        matches = [row for row in KNOWN_COHORTS if row.filename == path.name]
+        cohort = matches[0] if len(matches) == 1 else None
+    if (
+        cohort is None
+        or path.name != cohort.filename
+        or version != cohort.distribution_version
+        or digest != cohort.sha256
+    ):
+        raise VerificationError("umf-wheel", "unexpected-official-artifact")
+    return cohort
+
+
+def _wheel_details(path: Path, *, expected: str, cohort: SDKCohort | None = None) -> dict[str, Any]:
+    if path.stat().st_size > MAX_WHEEL_BYTES:
+        raise VerificationError("wheel", "wheel-over-limit")
+    digest = _sha256_file(path)
+    if expected == "umf" and cohort is None:
+        named = [row for row in KNOWN_COHORTS if row.filename == path.name]
+        if len(named) == 1 and digest != named[0].sha256:
+            raise VerificationError("umf-wheel", "unexpected-official-artifact")
+    members, metadata, wheel_metadata, record = _wheel_members(path)
     name = metadata.get("Name", "")
     version = metadata.get("Version", "")
     normalized = re.sub(r"[-_.]+", "-", name).lower()
     if not _NAME_VERSION.fullmatch(version):
         raise VerificationError("wheel", "invalid-version-metadata")
-    if expected == "arras":
-        if normalized != "arras" or path.name != f"arras-{version}-py3-none-any.whl":
-            raise VerificationError("arras-wheel", "unexpected-distribution-identity")
-        requirements = metadata.get_all("Requires-Dist", [])
-        found = [line for line in requirements if line.lower().startswith("umf-core @")]
-        if len(found) != 1 or not _requirement_matches(found[0]):
-            raise VerificationError("arras-wheel", "optional-extra-not-pinned")
-    elif normalized != "umf-core" or version != "0.10.0":
-        raise VerificationError("umf-wheel", "unexpected-distribution-identity")
-    wheel_meta = email.parser.Parser().parsestr(members[wheel_paths[0]].decode("utf-8"))
-    if wheel_meta.get("Root-Is-Purelib", "").lower() != "true":
+    cohort = _wheel_cohort(
+        path,
+        expected=expected,
+        normalized=normalized,
+        version=version,
+        digest=digest,
+        metadata=metadata,
+        cohort=cohort,
+    )
+    is_pure = wheel_metadata.get("Root-Is-Purelib", "").lower() == "true"
+    if expected == "umf" and cohort is not None:
+        if is_pure != (cohort.platform == "any"):
+            raise VerificationError("wheel", "wheel-purity-differs-from-cohort")
+    elif not is_pure:
         raise VerificationError("wheel", "non-pure-wheel")
-    records = _verify_record(members, members[record_paths[0]])
+    records = _verify_record(members, record)
     return {
         "filename": path.name,
         "name": normalized,
@@ -200,18 +286,8 @@ def _wheel_details(path: Path, *, expected: str) -> dict[str, Any]:
         "metadata": metadata,
         "member_names": tuple(members),
         "members": members,
+        "sdk_cohort": cohort,
     }
-
-
-def _requirement_matches(line: str) -> bool:
-    requirement = line.strip()
-    if ";" not in requirement:
-        return False
-    reference, marker = requirement.split(";", 1)
-    return reference.strip() == UMF_REQUIREMENT and marker.strip().lower() in (
-        'extra == "umf"',
-        "extra == 'umf'",
-    )
 
 
 def _validate_corpus(raw: bytes) -> tuple[dict[str, Any], tuple[str, ...]]:
@@ -245,26 +321,6 @@ def _validate_corpus(raw: bytes) -> tuple[dict[str, Any], tuple[str, ...]]:
     return cast(dict[str, Any], corpus), tuple(ids)
 
 
-def _environment(base: dict[str, str], temp: Path) -> dict[str, str]:
-    clean = {
-        key: value
-        for key, value in base.items()
-        if not key.startswith(("PIP_", "UV_", "PYTHON", "LD_", "DYLD_"))
-        and key not in ("VIRTUAL_ENV", "CONDA_PREFIX", "CONDA_DEFAULT_ENV")
-    }
-    clean.update(
-        {
-            "PIP_CONFIG_FILE": os.devnull,
-            "PIP_INDEX_URL": PUBLIC_INDEX,
-            "PIP_DISABLE_PIP_VERSION_CHECK": "1",
-            "PIP_CACHE_DIR": str(temp / "pip-cache"),
-            "PYTHONPATH": "",
-            "PYTHONNOUSERSITE": "1",
-        }
-    )
-    return clean
-
-
 def _run(
     command: list[str],
     *,
@@ -273,95 +329,18 @@ def _run(
     stage: str,
     timeout: int = MAX_RUN_SECONDS,
 ) -> subprocess.CompletedProcess[str]:
-    try:
-        result = subprocess.run(
-            command,
-            cwd=cwd,
-            env=env,
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-            check=False,
-        )
-    except (OSError, subprocess.TimeoutExpired) as error:
-        _write_private_failure(
-            env,
-            stage,
-            command,
-            returncode=None,
-            timed_out=isinstance(error, subprocess.TimeoutExpired),
-            stdout=getattr(error, "stdout", None),
-            stderr=getattr(error, "stderr", None),
-            error_type=type(error).__name__,
-        )
-        raise VerificationError(stage, "command-unavailable-or-timeout") from error
-    if result.returncode:
-        _write_private_failure(
-            env,
-            stage,
-            command,
-            returncode=result.returncode,
-            timed_out=False,
-            stdout=result.stdout,
-            stderr=result.stderr,
-            error_type=None,
-        )
-        raise VerificationError(stage, f"command-exit-{result.returncode}")
-    return result
-
-
-def _write_private_failure(
-    env: dict[str, str],
-    stage: str,
-    command: list[str],
-    *,
-    returncode: int | None,
-    timed_out: bool,
-    stdout: object,
-    stderr: object,
-    error_type: str | None,
-) -> None:
-    location = env.get("ARRAS_PRIVATE_DIAGNOSTICS")
-    if not location:
-        return
-    try:
-        directory = Path(location)
-        directory.mkdir(mode=0o700, parents=True, exist_ok=True)
-
-        def bounded(value: object) -> str | None:
-            if value is None:
-                return None
-            if isinstance(value, bytes):
-                text = value.decode("utf-8", errors="replace")
-            else:
-                text = str(value)
-            return text[:1_000_000]
-
-        record = {
-            "stage": stage,
-            "command": command,
-            "returncode": returncode,
-            "timed_out": timed_out,
-            "error_type": error_type,
-            "stdout": bounded(stdout),
-            "stderr": bounded(stderr),
-        }
-        (directory / f"{stage}.json").write_text(
-            json.dumps(record, indent=2) + "\n", encoding="utf-8"
-        )
-    except OSError:
-        # Keep the installation failure primary when a secondary private log cannot be written.
-        return
+    return _PROCESS.run(
+        command,
+        cwd=cwd,
+        env=env,
+        stage=stage,
+        timeout=timeout,
+        error_type=VerificationError,
+    )
 
 
 def _json_from(result: subprocess.CompletedProcess[str], stage: str) -> dict[str, Any]:
-    try:
-        value = json.loads(result.stdout)
-    except json.JSONDecodeError as error:
-        raise VerificationError(stage, "probe-did-not-return-json") from error
-    if not isinstance(value, dict):
-        raise VerificationError(stage, "probe-result-not-object")
-    return cast(dict[str, Any], value)
+    return _PROCESS.json_from(result, stage, error_type=VerificationError)
 
 
 def _install_requirement(
@@ -396,7 +375,7 @@ def _install_requirement(
     )
 
 
-def _check_install_report(path: Path) -> None:
+def _check_install_report(path: Path, cohort: SDKCohort) -> None:
     try:
         report = json.loads(path.read_text(encoding="utf-8"))
         installed = report["install"]
@@ -415,8 +394,8 @@ def _check_install_report(path: Path) -> None:
     hashes = info.get("archive_info", {}).get("hashes", {}) if isinstance(info, dict) else {}
     if (
         not isinstance(info, dict)
-        or info.get("url") != UMF_URL
-        or hashes.get("sha256") != UMF_SHA256
+        or info.get("url") != cohort.url
+        or hashes.get("sha256") != cohort.sha256
     ):
         raise VerificationError("install-report", "optional-engine-source-mismatch")
 
@@ -512,25 +491,20 @@ def _validate_probe(
         raise VerificationError(f"{mode}-probe", "payload-parity-incomplete")
 
 
-def _tool_sha256() -> str:
-    return _sha256_file(Path(__file__).resolve())
-
-
-def _probe_sha256() -> str:
-    return _sha256_file(Path(__file__).resolve().with_name("_umf_admission_probe.py"))
+def _source_sha256s() -> tuple[str, str, str]:
+    helper_path = Path(__file__).resolve().with_name("_umf_admission_process.py")
+    if _sha256_file(helper_path) != _PROCESS_HELPER_SHA256:
+        raise VerificationError("tool", "process-helper-source-changed")
+    here = Path(__file__).resolve().parent
+    return _PROCESS.source_hashes(
+        here / "verify_umf_admission.py",
+        here / "_umf_admission_probe.py",
+        here / "_umf_sdk_cohorts.py",
+    )
 
 
 def _remove_owned_temp(path: Path) -> None:
-    try:
-        shutil.rmtree(path)
-    except OSError as error:
-        failure = VerificationError("cleanup", "owned-temp-cleanup-failed")
-        failure.details["private_workspace"] = str(path)
-        raise failure from error
-    if path.exists():
-        failure = VerificationError("cleanup", "owned-temp-cleanup-failed")
-        failure.details["private_workspace"] = str(path)
-        raise failure
+    _PROCESS.remove_owned_temp(path, error_type=VerificationError)
 
 
 def _create_venv(python: Path, destination: Path, temp: Path, env: dict[str, str]) -> Path:
@@ -547,17 +521,22 @@ def _create_venv(python: Path, destination: Path, temp: Path, env: dict[str, str
     return executable
 
 
-def _python_identity(python: Path, cwd: Path, env: dict[str, str]) -> dict[str, str]:
-    script = "import json,platform,sys; print(json.dumps({'version':sys.version.split()[0],'implementation':platform.python_implementation(),'platform':sys.platform,'machine':platform.machine()}))"
-    return _json_from(
-        _run([str(python), "-I", "-c", script], cwd=cwd, env=env, stage="python-version"),
-        "python-version",
+def _python_identity(python: Path, cwd: Path, env: dict[str, str]) -> dict[str, Any]:
+    return _PROCESS.python_identity(
+        python,
+        cwd,
+        env,
+        error_type=VerificationError,
+        run_timeout=MAX_RUN_SECONDS,
     )
 
 
-def _download_umf(destination: Path) -> Path:
+def _download_umf(destination: Path, cohort: SDKCohort) -> Path:
     try:
-        with urllib.request.urlopen(UMF_URL, timeout=60) as response, destination.open("wb") as out:
+        with (
+            urllib.request.urlopen(cohort.url, timeout=60) as response,
+            destination.open("wb") as out,
+        ):
             total = 0
             while block := response.read(1024 * 1024):
                 total += len(block)
@@ -571,14 +550,6 @@ def _download_umf(destination: Path) -> Path:
     return destination
 
 
-def _inside(path: Path, parent: Path) -> bool:
-    try:
-        path.resolve().relative_to(parent.resolve())
-    except ValueError:
-        return False
-    return True
-
-
 def _make_receipt(
     arras: dict[str, Any],
     umf: dict[str, Any],
@@ -589,8 +560,10 @@ def _make_receipt(
     runtime: dict[str, str],
     cleanup: dict[str, Any],
     qualification_phase: str,
+    source_sha256s: tuple[str, str, str],
 ) -> dict[str, Any]:
-    return {
+    tool_sha, probe_sha, selector_sha = source_sha256s
+    receipt = {
         "schema": SCHEMA,
         "status": "passed",
         "qualification_scope": "installed-wheel-umf-admission/1",
@@ -605,12 +578,12 @@ def _make_receipt(
             "filename": umf["filename"],
             "version": umf["version"],
             "sha256": umf["sha256"],
-            "url": UMF_URL,
+            "url": umf["sdk_cohort"].url,
             "source_mode": umf["source_mode"],
             "record_entries": umf["record_entries"],
         },
-        "tool_sha256": _tool_sha256(),
-        "fixed_probe_sha256": _probe_sha256(),
+        "tool_sha256": tool_sha,
+        "fixed_probe_sha256": probe_sha,
         "fixtures": {
             "official_corpus_sha256": CORPUS_SHA256,
             "official_corpus_case_count": 139,
@@ -639,6 +612,8 @@ def _make_receipt(
             "This does not qualify native Truss, browser, UI, or production behavior.",
         ],
     }
+    receipt["selector_sha256"] = selector_sha
+    return receipt
 
 
 def _atomic_json(path: Path, value: dict[str, Any]) -> None:
@@ -670,13 +645,6 @@ def _failed_receipt(stage: str, code: str, *, wheel: dict[str, Any] | None) -> d
     }
 
 
-def _fixture_paths(repository: Path) -> tuple[Path, Path]:
-    return (
-        repository / "tests/fixtures/umf-core-reference/current-conformance.json",
-        repository / "tests/fixtures/umf-core-metadata/primary-string-record.json",
-    )
-
-
 def _probe_installed_mode(
     mode: str,
     *,
@@ -690,6 +658,7 @@ def _probe_installed_mode(
     temp: Path,
     env: dict[str, str],
     arras_version: str,
+    cohort: SDKCohort,
 ) -> dict[str, Any]:
     root = temp / mode
     python = _create_venv(selected_python, root, temp, env)
@@ -703,13 +672,17 @@ def _probe_installed_mode(
         report=report,
     )
     if mode == "extra":
-        _check_install_report(report)
+        _check_install_report(report, cohort)
         arguments = [
             str(repository),
             str(corpus_path),
             str(metadata_path),
             str(staged_arras),
             str(sdk_path),
+            cohort.filename,
+            cohort.distribution_version,
+            cohort.url,
+            cohort.sha256,
         ]
     else:
         arguments = [str(repository), str(metadata_path), str(staged_arras)]
@@ -718,7 +691,8 @@ def _probe_installed_mode(
     if probe.get("arras_version") != arras_version:
         raise VerificationError(f"{mode}-probe", "installed-arras-version-mismatch")
     if mode == "extra" and (
-        probe.get("umf_version") != "0.10.0" or probe.get("umf_sha256") != UMF_SHA256
+        probe.get("umf_version") != cohort.distribution_version
+        or probe.get("umf_sha256") != cohort.sha256
     ):
         raise VerificationError("extra-probe", "installed-wheel-identity-mismatch")
     return probe
@@ -743,6 +717,7 @@ def _run_fresh_proof(
     temp: Path,
     env: dict[str, str],
     qualification_phase: str,
+    source_sha256s: tuple[str, str, str],
 ) -> dict[str, Any]:
     env["ARRAS_PRIVATE_DIAGNOSTICS"] = str(temp / "private-diagnostics")
     runtime = _python_identity(selected_python, temp, env)
@@ -750,14 +725,21 @@ def _run_fresh_proof(
         int(part) for part in runtime["version"].split(".")[:2]
     ) < (3, 11):
         raise VerificationError("python", "requires-cpython-3.11-or-newer")
-    sdk_path = temp / UMF_FILENAME
+    cohort = arras["sdk_cohort"]
+    runtime_machine = runtime["machine"].lower()
+    runtime_machine = {"amd64": "x86_64", "aarch64": "arm64"}.get(runtime_machine, runtime_machine)
+    if cohort.platform != "any" and (
+        runtime["platform"] != cohort.platform or runtime_machine != cohort.machine
+    ):
+        raise VerificationError("python", "runtime-differs-from-selected-sdk-cohort")
+    sdk_path = temp / cohort.filename
     if umf_path is None:
-        _download_umf(sdk_path)
+        _download_umf(sdk_path, cohort)
         source_mode = "pinned-public-url"
     else:
         shutil.copyfile(umf_path, sdk_path)
         source_mode = "provided-local-pinned-artifact"
-    umf = _wheel_details(sdk_path, expected="umf")
+    umf = _wheel_details(sdk_path, expected="umf", cohort=cohort)
     umf["source_mode"] = source_mode
 
     staged_arras = temp / arras_path.name
@@ -782,6 +764,7 @@ def _run_fresh_proof(
         temp=temp,
         env=env,
         arras_version=arras["version"],
+        cohort=cohort,
     )
     extra = _probe_installed_mode(
         "extra",
@@ -795,9 +778,12 @@ def _run_fresh_proof(
         temp=temp,
         env=env,
         arras_version=arras["version"],
+        cohort=cohort,
     )
     _check_staged_identity(staged_arras, arras["sha256"], "arras-wheel")
-    _check_staged_identity(sdk_path, UMF_SHA256, "umf-wheel")
+    _check_staged_identity(sdk_path, cohort.sha256, "umf-wheel")
+    if _source_sha256s() != source_sha256s:
+        raise VerificationError("tool", "source-changed-during-proof")
     return _make_receipt(
         arras,
         umf,
@@ -808,6 +794,7 @@ def _run_fresh_proof(
         runtime,
         {"completed": True, "fresh_environments": 2, "shared_site_packages": False},
         qualification_phase,
+        source_sha256s,
     )
 
 
@@ -818,6 +805,7 @@ def verify(
     python_path: Path | None = None,
     qualification_phase: str = "local-installed",
 ) -> dict[str, Any]:
+    source_sha256s = _source_sha256s()
     if qualification_phase not in {"local-installed", "release-build", "public-download"}:
         raise VerificationError("arguments", "unsupported-qualification-phase")
     repository = Path(__file__).resolve().parents[1]
@@ -827,8 +815,10 @@ def verify(
     selected_python = (python_path or Path(sys.executable)).resolve(strict=True)
     if not selected_python.is_file():
         raise VerificationError("python", "selected-interpreter-not-file")
-    corpus_path, metadata_path = _fixture_paths(repository)
+    corpus_path, metadata_path = _PROCESS.fixture_paths(repository)
     arras = _wheel_details(arras_path, expected="arras")
+    if _source_sha256s() != source_sha256s:
+        raise VerificationError("tool", "source-changed-during-selection")
     corpus_raw = _read_fixed_fixture(
         corpus_path,
         limit=MAX_CORPUS_BYTES,
@@ -845,12 +835,12 @@ def verify(
     metadata_digest = _sha256_bytes(metadata_raw)
     temp_parent = Path(tempfile.gettempdir()).resolve()
     temp = Path(tempfile.mkdtemp(prefix="arras-umf-admission-", dir=temp_parent))
-    if _inside(temp, repository):
+    if _PROCESS.inside(temp, repository):
         shutil.rmtree(temp, ignore_errors=True)
         raise VerificationError("workspace", "temporary-environment-inside-checkout")
     preserve_temp = False
     try:
-        env = _environment(dict(os.environ), temp)
+        env = _PROCESS.environment(dict(os.environ), temp, public_index=PUBLIC_INDEX)
         return _run_fresh_proof(
             arras_path=arras_path,
             arras=arras,
@@ -864,6 +854,7 @@ def verify(
             temp=temp,
             env=env,
             qualification_phase=qualification_phase,
+            source_sha256s=source_sha256s,
         )
     except VerificationError as error:
         preserve_temp = True
@@ -901,7 +892,7 @@ def main(argv: list[str] | None = None) -> int:
         input_paths.append(args.umf_wheel)
     input_paths.append(args.python or Path(sys.executable))
     repository = Path(__file__).resolve().parents[1]
-    input_paths.extend(_fixture_paths(repository))
+    input_paths.extend(_PROCESS.fixture_paths(repository))
     try:
         _ensure_output_distinct(args.output_json, tuple(input_paths))
     except VerificationError as error:

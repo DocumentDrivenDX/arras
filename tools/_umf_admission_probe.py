@@ -17,11 +17,6 @@ import zipfile
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
-UMF_URL = (
-    "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/"
-    "umf_core-0.10.0-py3-none-any.whl"
-)
-UMF_SHA256 = "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9"
 CORPUS_SHA256 = "bb008a98b8448050748e65f867e7863475ccad9501a5b9229ae9e6d336691544"
 MAX_CORPUS_BYTES = 16 * 1024 * 1024
 _GENERATED_DIST_INFO = {"INSTALLER", "REQUESTED", "direct_url.json", "RECORD"}
@@ -230,14 +225,20 @@ def _probe_main(argv: list[str]) -> int:
             Path(args.arguments[0]), Path(args.arguments[1]), Path(args.arguments[2])
         )
     else:
-        if len(args.arguments) != 5:
-            parser.error("extra probe requires repository, corpus, metadata, and both wheels")
+        if len(args.arguments) != 9:
+            parser.error(
+                "extra probe requires repository, fixtures, wheels, and selected SDK identity"
+            )
         result = _probe_extra(
             Path(args.arguments[0]),
             Path(args.arguments[1]),
             Path(args.arguments[2]),
             Path(args.arguments[3]),
             Path(args.arguments[4]),
+            args.arguments[5],
+            args.arguments[6],
+            args.arguments[7],
+            args.arguments[8],
         )
     print(json.dumps(result, sort_keys=True))
     return 0
@@ -326,10 +327,16 @@ def _probe_extra(
     metadata_path: Path,
     arras_wheel: Path,
     umf_wheel: Path,
+    umf_filename: str,
+    umf_version: str,
+    umf_url: str,
+    umf_sha256: str,
 ) -> dict[str, Any]:
     import importlib.util
 
     site = Path(sysconfig.get_paths()["purelib"]).resolve()
+    if umf_wheel.name != umf_filename:
+        raise VerificationError("extra", "selected-wheel-filename-mismatch")
     arras_payload = _compare_installed_payload(arras_wheel, "arras")
     umf_payload = _compare_installed_payload(umf_wheel, "umf-core")
     import umf
@@ -338,9 +345,9 @@ def _probe_extra(
 
     origins = _check_import_paths({"arras": arras, "umf": umf}, repository, site)
     sdk_direct_url = _direct_url("umf-core")
-    if sdk_direct_url != {"url": UMF_URL, "sha256": UMF_SHA256}:
+    if sdk_direct_url != {"url": umf_url, "sha256": umf_sha256}:
         raise VerificationError("extra", "installed-sdk-source-mismatch")
-    if importlib.metadata.version("umf-core") != "0.10.0":
+    if importlib.metadata.version("umf-core") != umf_version:
         raise VerificationError("extra", "installed-sdk-version-mismatch")
     corpus_raw = corpus_path.read_bytes()
     corpus, ids = _validate_corpus(corpus_raw)
@@ -353,7 +360,7 @@ def _probe_extra(
         "mode": "extra",
         "arras_version": importlib.metadata.version("arras"),
         "umf_version": importlib.metadata.version("umf-core"),
-        "umf_sha256": UMF_SHA256,
+        "umf_sha256": umf_sha256,
         "controls": controls,
         "corpus": corpus_result,
         "payload": {"arras_exact_files": arras_payload, "umf_exact_files": umf_payload},

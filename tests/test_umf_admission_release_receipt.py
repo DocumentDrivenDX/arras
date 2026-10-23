@@ -166,6 +166,77 @@ def test_release_umf_receipt_projects_only_safe_exact_wheel_proof() -> None:
     assert projected["controls"] == {"base": 6, "extra": 10, "cleanup": 2}
     assert 'ordered_case_ids":' not in json.dumps(projected)
     assert "limitations" not in projected
+    assert "selector_sha256" not in projected
+
+
+def test_new_historical_receipt_selector_binding_is_verified_and_projected() -> None:
+    row = passing_receipt()
+    row["selector_sha256"] = hashlib.sha256(
+        (ROOT / "tools/_umf_sdk_cohorts.py").read_bytes()
+    ).hexdigest()
+    projected = validate(row)
+    assert projected["selector_sha256"] == row["selector_sha256"]
+
+    row["selector_sha256"] = "0" * 64
+    with pytest.raises(receipt_gate.AdmissionReceiptError, match="selector digest"):
+        validate(row)
+
+
+def _native_receipt(monkeypatch: pytest.MonkeyPatch) -> dict[str, Any]:
+    cohorts = receipt_gate._cohort_module()
+    native = cohorts.SDKCohort(
+        "synthetic-umf-core-0.10.1-macos-arm64",
+        "0.10.1",
+        "0.10.0",
+        "darwin",
+        "arm64",
+        "umf_core-0.10.1-cp311-abi3-macosx_11_0_arm64.whl",
+        "https://github.com/example/umf/releases/download/test/umf_core-0.10.1-cp311-abi3-macosx_11_0_arm64.whl",
+        "c" * 64,
+    )
+    monkeypatch.setattr(cohorts, "KNOWN_COHORTS", (*cohorts.KNOWN_COHORTS, native))
+    row = passing_receipt()
+    row["umf_wheel"].update(
+        filename=native.filename,
+        version=native.distribution_version,
+        sha256=native.sha256,
+        url=native.url,
+    )
+    row["selector_sha256"] = hashlib.sha256(
+        (ROOT / "tools/_umf_sdk_cohorts.py").read_bytes()
+    ).hexdigest()
+    row["runtime"].update(platform="darwin", machine="arm64")
+    extra = row["environments"]["extra"]
+    extra["umf_version"] = native.distribution_version
+    extra["umf_sha256"] = native.sha256
+    extra["installed_distributions"]["umf-core"] = native.distribution_version
+    return row
+
+
+def test_native_cohort_receipt_requires_selector_binding_and_observed_runtime(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    row = _native_receipt(monkeypatch)
+    projected = validate(row)
+    assert projected["umf_wheel"]["version"] == "0.10.1"
+    assert projected["selector_sha256"] == row["selector_sha256"]
+    assert "SDK distribution 0.10.1" in projected["qualification_scope"]
+    receipt_gate.validate_public_projection(
+        projected,
+        version="0.6.0",
+        wheel_name="arras-0.6.0-py3-none-any.whl",
+        wheel_sha256="a" * 64,
+    )
+
+    missing = copy.deepcopy(row)
+    missing.pop("selector_sha256")
+    with pytest.raises(receipt_gate.AdmissionReceiptError, match="selector SHA"):
+        validate(missing)
+
+    wrong_runtime = copy.deepcopy(row)
+    wrong_runtime["runtime"].update(platform="linux", machine="x86_64")
+    with pytest.raises(receipt_gate.AdmissionReceiptError, match="runtime"):
+        validate(wrong_runtime)
 
 
 _RECEIPT_MUTATIONS: list[Mutation] = [

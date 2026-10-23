@@ -14,7 +14,7 @@ import types
 import zipfile
 from email.message import Message
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 
 import pytest
 
@@ -33,6 +33,17 @@ assert _PROBE_SPEC is not None and _PROBE_SPEC.loader is not None
 _PROBE = importlib.util.module_from_spec(_PROBE_SPEC)
 sys.modules[_PROBE_SPEC.name] = _PROBE
 _PROBE_SPEC.loader.exec_module(_PROBE)
+
+
+class _SDKCohort(Protocol):
+    cohort_id: str
+    distribution_version: str
+    document_version: str
+    platform: str
+    machine: str
+    filename: str
+    url: str
+    sha256: str
 
 
 def _wheel(path: Path, name: str, version: str, filename: str) -> Path:
@@ -152,7 +163,7 @@ def test_public_extra_pin_rejects_malformed_shadow_dependency() -> None:
         _COHORTS.select_sdk_cohort(metadata, platform="darwin", machine="arm64")
 
 
-def _synthetic_cohorts() -> tuple[_COHORTS.SDKCohort, _COHORTS.SDKCohort]:
+def _synthetic_cohorts() -> tuple[_SDKCohort, _SDKCohort]:
     return (
         _COHORTS.SDKCohort(
             "synthetic-linux",
@@ -179,7 +190,7 @@ def _synthetic_cohorts() -> tuple[_COHORTS.SDKCohort, _COHORTS.SDKCohort]:
     )
 
 
-def _cohort_metadata(*cohorts: _COHORTS.SDKCohort) -> Message:
+def _cohort_metadata(*cohorts: _SDKCohort) -> Message:
     metadata = Message()
     for row in cohorts:
         metadata["Requires-Dist"] = (
@@ -254,11 +265,11 @@ def test_selector_rejects_pep503_normalized_shadow_names(alias: str) -> None:
 
 def test_selector_does_not_casefold_marker_values() -> None:
     metadata = _cohort_metadata(*_synthetic_cohorts())
+    declarations = metadata.get_all("Requires-Dist")
+    assert declarations is not None and declarations
     metadata.replace_header(
         "Requires-Dist",
-        metadata.get_all("Requires-Dist")[0].replace(
-            'sys_platform == "linux"', 'sys_platform == "LINUX"'
-        ),
+        declarations[0].replace('sys_platform == "linux"', 'sys_platform == "LINUX"'),
     )
     with pytest.raises(ValueError, match="marker atom is not supported"):
         _COHORTS.select_sdk_cohort(
@@ -404,7 +415,7 @@ def test_generated_client_digest_binds_file_contents() -> None:
 
 def test_validation_result_requires_explicit_valid_true() -> None:
     runtime = types.ModuleType("actions_binding._runtime")
-    runtime.ValidationResult = type("ValidationResult", (), {"valid": True})
+    runtime.__dict__["ValidationResult"] = type("ValidationResult", (), {"valid": True})
     sys.modules[runtime.__name__] = runtime
     generated = types.ModuleType("actions_binding")
     assert _PROBE._is_valid_validation_result(runtime.ValidationResult(), generated.__name__)
@@ -417,16 +428,13 @@ def test_validation_result_requires_explicit_valid_true() -> None:
 
 
 def test_noop_requires_empty_receipt_counts_and_replay_content() -> None:
-    receipt_type = type(
-        "Receipt",
-        (),
-        {
-            "status": "committed",
-            "created": (),
-            "changed": (),
-            "counts": {"created": 0, "updated": 0, "deleted": 0, "linked": 0, "unlinked": 0},
-        },
-    )
-    assert _PROBE._is_noop_receipt(receipt_type())
-    receipt_type.counts = {"created": 1, "updated": 0, "deleted": 0, "linked": 0, "unlinked": 0}
-    assert not _PROBE._is_noop_receipt(receipt_type())
+    class Receipt:
+        status = "committed"
+        created: tuple[object, ...] = ()
+        changed: tuple[object, ...] = ()
+        counts = {"created": 0, "updated": 0, "deleted": 0, "linked": 0, "unlinked": 0}
+
+    receipt = Receipt()
+    assert _PROBE._is_noop_receipt(receipt)
+    receipt.counts = {"created": 1, "updated": 0, "deleted": 0, "linked": 0, "unlinked": 0}
+    assert not _PROBE._is_noop_receipt(receipt)
