@@ -130,6 +130,80 @@ def test_reader_refusal_is_not_reported_as_official_invalidity(source: bytes, co
     assert "source=" not in repr(report)
 
 
+@pytest.mark.parametrize("version", ["0.10.0", "0.10.1"])
+def test_completed_report_preserves_supported_distribution_version(
+    monkeypatch: pytest.MonkeyPatch, version: str
+) -> None:
+    import arras._umf_engine as engine
+
+    result = engine.EngineResult("umf-core", version, True, True, ())
+
+    def selected_result(_text: str) -> engine.EngineResult:
+        return result
+
+    monkeypatch.setattr(engine, "read_and_validate", selected_result)
+    report = admit_document(b"{}")
+    assert report.validation_status == "completed"
+    assert report.engine_distribution == "umf-core"
+    assert report.engine_version == version
+
+
+@pytest.mark.parametrize(
+    ("distribution", "version"),
+    [("other", "0.10.0"), ("umf-core", "0.10.2"), ("umf-core", "0.11.0")],
+)
+def test_unknown_engine_identity_is_refused(
+    monkeypatch: pytest.MonkeyPatch, distribution: str, version: str
+) -> None:
+    import arras._umf_engine as engine
+
+    result = engine.EngineResult(distribution, version, True, True, ())
+
+    def selected_result(_text: str) -> engine.EngineResult:
+        return result
+
+    monkeypatch.setattr(engine, "read_and_validate", selected_result)
+    with pytest.raises(RuntimeError, match="does not match the selected released profile"):
+        admit_document(b"{}")
+
+
+def test_source_boundary_refusals_do_not_call_engine_and_use_baseline_identity(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import arras._umf_engine as engine
+
+    def forbidden(_text: str) -> Any:
+        raise AssertionError("source refusal must precede engine use")
+
+    monkeypatch.setattr(engine, "read_and_validate", forbidden)
+    for source, code in (
+        (b"\xff", "source_profile"),
+        (b" " * (16 * 1024 * 1024 + 1), "source_limit"),
+    ):
+        report = admit_document(source)
+        assert report.validation_status == "not_run"
+        assert report.engine_version == "0.10.0"
+        assert report.diagnostics[0].code == code
+
+
+def test_reader_refusal_preserves_observed_supported_version(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import arras._umf_engine as engine
+
+    refusal = engine.ReaderRefusal("umf-core", "0.10.1")
+
+    def selected_refusal(_text: str) -> engine.ReaderRefusal:
+        return refusal
+
+    monkeypatch.setattr(engine, "read_and_validate", selected_refusal)
+    report = admit_document(b"{}")
+    assert report.validation_status == "not_run"
+    assert report.engine_version == "0.10.1"
+    assert report.valid is None and report.complete is None
+    assert report.diagnostics[0].authority == "arras-source"
+
+
 def test_input_types_and_unencodable_text_fail_before_a_report() -> None:
     with pytest.raises(TypeError, match="bytes or str"):
         admit_document({"umf": "0.10.0"})  # type: ignore[arg-type]

@@ -1866,3 +1866,72 @@ This qualifies only the named one-module memory SET subset and same-process
 replay/token lifetime. No new SDK dependency pin, publication, generated get/read
 transport, replica, durable restart, Truss/native/managed execution, general
 action/constraint evaluation or Ashlar support is established.
+
+### Public SDK integration and PR 10 merge gates
+
+Head `5e1ff2779186494c2599a5dcd053311cf84c0fd4` passes all jobs in
+[CI run 39992835087](https://github.com/DocumentDrivenDX/arras/actions/runs/39992835087).
+That is the coherent source/legacy gate, not public action-SDK qualification:
+the declared `umf` extra still selects the released pure core wheel, which does
+not provide the action runtime. The independently qualified local SDK candidate
+above does not replace a public artifact handoff. Official public SDK delivery
+is pending with the UMF owner; no release URL, version or checksum is inferred.
+
+The immediate independent implementation is a reusable installed-action gate,
+without changing the existing admission receipt cohort:
+
+| Owner | Files and deliverable | Required boundary |
+| --- | --- | --- |
+| Luna B | `tools/verify_umf_actions.py`, `tools/_umf_actions_probe.py`, `tests/test_verify_umf_actions.py` | Fresh isolated install, actual official generation and public memory path; fixed probe, bounded artifacts, typed safe receipt and meaningful offline refusal controls |
+| Sol | Source/artifact review and this plan | Separate public dependency proof, candidate preparation, structural controls and actual semantic qualification |
+| Root/coordinated pin lane | Declared SDK dependency, lock/integrity selection, CI and later coherent admission migration after owner handoff | Exact public platform/version/source/hash correspondence; preserve prior receipts and unchanged Truss/Weft cohort |
+
+The verifier's default mode installs the supplied exact Arras wheel's declared
+`[umf]` extra with fresh dependencies and verifies the selected SDK's public
+URL/hash provenance. Missing action capability fails the required gate; it
+cannot skip or use a checkout, shared environment or implicit local override.
+An explicit `--umf-wheel` requires `--umf-sha256`, records both the declared
+public pin and supplied artifact identity, and always reports `public_gate:false`.
+That mode is candidate preparation and cannot close the public merge gate.
+
+The fixed probe verifies installed payload/RECORD/origin custody before SDK
+imports, then generates the unchanged client from the bound neutral fixture.
+It exercises public registration, officially admitted seed import, Apply/Validate,
+constraint negatives, no-op/replay/current denial, uncertain post-commit response
+classification and ordinary query read-at-least. It also executes all 139 unique
+reference and 139 fresh-empty Registry comparisons with zero skips. SDK resource,
+native payload, source/vector, probe/tool and exact Arras wheel hashes remain
+explicit. Raw paths/logs/hostnames and private semantic callbacks do not become
+public proof. The 926-line ceiling and existing quality limits remain unchanged.
+
+After the official handoff, dependency adoption must select real published
+wheel/tag/SHA identities for each claimed platform. A native SDK is not a
+`py3-none-any` wheel: allow its qualified tags/native payload only for the SDK,
+while keeping Arras's pure-wheel invariant. SDK distribution version, core
+document version, action/profile versions and opaque source/native revisions
+remain distinct. In particular, a package-version change must not rewrite core
+0.10.0 fixtures or reinterpret their diagnostics. Requalify 139/139 and the bounded
+action profile against the actual selected public artifact and finite budget.
+
+The old admission verifier/probe and release receipt validators hardcode the
+pure 0.10.0 cohort. Preserve them during the independent action-tool slice.
+Any later pin migration must coherently update dependency parsing, platform
+selection, installed admission evidence and its assembler/public-checker/release
+consumers, with explicit historical cohort handling; no broad acceptance of
+arbitrary SDK artifacts or reinterpretation of old v0.6.0 evidence. The browser
+package/schema cohort remains separately pinned and qualified; change it only
+with an actual corresponding handoff and parity evidence.
+
+PR 10 is ready for merge review only after default public-extra installed action
+qualification passes without skips, the selected platform/version and 139/139
+compatibility gates pass, and final-head required CI plus Sol review pass.
+Retain the safe action receipt as an explicit required CI artifact; green CI
+that only exercises the old optional metadata engine does not satisfy this gate.
+No public-readiness claim follows from the current candidate override proof.
+
+PR 9's Truss49/native/Lakebase work remains isolated. Main is still `8542d477`
+with public Arras 0.6.0; PR 9's green CI does not close its separate native/managed
+gates. Do not rebase, merge, adopt its pins, bump a version or publish through
+this action tranche. Root and the release coordinator retain those handoffs.
+Local native/Spark/mutation-copy campaign restrictions remain in force; remote
+PR CI may supply broad source gates without a competing local campaign.
