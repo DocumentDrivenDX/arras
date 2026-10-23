@@ -185,8 +185,11 @@ Official Python core supplies model admission/preservation and explicit registri
 no portable core projection/action-plan API is integrated in Arras. The experimental
 official `umf_access.native_actions` host adapter does contain execution/admission
 machinery; its existence is not portable core API parity or qualified Arras use.
-Select and qualify the authoritative model/API or host-adapter boundary with its
-owner rather than copying an evaluator. Current compiler/browser parity work and
+Before the next execution slice, pin a released authoritative action/value
+extension API and its conformance vectors with the UMF owner. That boundary
+remains unresolved; private constraint/literal kernels are not a substitute.
+Qualify the selected model/API or host-adapter boundary rather than copying an
+evaluator. Current compiler/browser parity work and
 pending installed/sdist qualification do not themselves close Arras adoption.
 
 Ashlar already has scoped publication/query/feed work, including older UMF 0.8/
