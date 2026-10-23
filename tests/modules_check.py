@@ -43,6 +43,7 @@ GROUPS: dict[str, str] = {
     "arras.entityread": "schema",
     "arras.gqlschema": "schema",
     "arras.core": "core",
+    "arras._catalogs": "core",
     "arras.routing": "core",
     "arras.registration": "core",
     "arras.policy": "core",

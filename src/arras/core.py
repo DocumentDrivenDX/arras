@@ -16,6 +16,8 @@ from datetime import datetime
 from typing import Any, cast
 
 from arras import callscope, gqlschema, telemetry
+from arras._catalogs import Catalogs as _Catalogs
+from arras._catalogs import collect_catalogs
 from arras.actions import ActionInfo, Effect, Plan, resolve
 from arras.backend import Backend, Migrates, Provider
 from arras.errors import (
@@ -229,33 +231,6 @@ class Arras:
         self.handlers.clear()
 
 
-@dataclass(frozen=True)
-class _Catalogs:
-    """What each backend said about the modules the principal may read, and who failed."""
-
-    by_backend: dict[str, Mapping[str, ModuleInfo]]
-    failures: dict[str, ArrasError]
-
-    def failure(self) -> ArrasError | None:
-        """The error to report: an expired token is `Refused`, whatever else is down."""
-        refused = [e for e in self.failures.values() if isinstance(e, Refused)]
-        return (refused or list(self.failures.values()) or [None])[0]
-
-    def module(self, name: str) -> ModuleInfo | None:
-        """The record store's copy where it answered, else another backend's."""
-        holders = [(b, c[name]) for b, c in self.by_backend.items() if name in c]
-        for b, m in holders:
-            if m.placement.record == b:
-                return m
-        return holders[0][1] if holders else None
-
-    def of(self, backend: str, name: str) -> ModuleInfo | None:
-        return self.by_backend.get(backend, {}).get(name)
-
-    def names(self) -> list[str]:
-        return sorted({n for c in self.by_backend.values() for n in c})
-
-
 class Ontology:
     """Every operation, for one principal."""
 
@@ -297,21 +272,7 @@ class Ontology:
 
     def _catalogs(self, op: str) -> _Catalogs:
         self.require_token(op)
-        by_backend: dict[str, Mapping[str, ModuleInfo]] = {}
-        failures: dict[str, ArrasError] = {}
-        for n, b in self.h.backends.items():
-            try:
-                held = b.catalog(self.principal)
-            except (Unavailable, Refused) as e:
-                failures[n] = e
-                continue
-            # a module is served as the host placed it, and only from the backends it names
-            by_backend[n] = {
-                m: replace(info, placement=p)
-                for m, info in held.items()
-                if (p := self.h.placement_of(m)) is not None and n in p.readers
-            }
-        return _Catalogs(by_backend, failures)
+        return collect_catalogs(self.h.backends, self.principal, self.h.placement_of)
 
     def _module(self, name: str, op: str) -> tuple[ModuleInfo, _Catalogs]:
         """A module the principal may read; a backend's outage is never reported as absence."""

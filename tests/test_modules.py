@@ -58,6 +58,17 @@ def test_a_cycle_between_modules_is_found() -> None:
     assert cycles({"a": {"b"}, "b": set()}) == []
 
 
+def test_catalog_collection_stays_private_to_the_core_group() -> None:
+    for target, group in (("arras.fakes", "doubles"), ("arras.adapters", "adapters")):
+        mods = {"arras._catalogs": f"from {target} import value\n", target: ""}
+        assert violations(mods) == [f"arras._catalogs:1: core must not import {target} ({group})"]
+    cyclic = {
+        "arras.core": "from arras._catalogs import collect_catalogs\n",
+        "arras._catalogs": "from arras.core import Arras\n",
+    }
+    assert any(v.startswith("cycle: ") for v in violations(cyclic))
+
+
 def test_a_module_in_no_group_is_reported() -> None:
     assert violations({"other.thing": ""}) == ["other.thing: belongs to no group"]
 

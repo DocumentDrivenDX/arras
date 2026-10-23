@@ -39,6 +39,13 @@ def test_a_host_importing_an_internal_module_fails(tmp_path: Path) -> None:
     assert len(msgs) == 3 and all("not a public module" in m for m in msgs)
 
 
+def test_a_host_cannot_import_the_private_catalog_helper(tmp_path: Path) -> None:
+    write(tmp_path, "app.py", "from arras._catalogs import collect_catalogs\n")
+    assert [v.message for v in check_host(tmp_path)] == [
+        "arras._catalogs is not a public module of arras"
+    ]
+
+
 def test_a_star_import_fails_and_other_packages_are_ignored(tmp_path: Path) -> None:
     write(tmp_path, "a.py", "from arras import *\nimport os, json\nfrom sample_host import x\n")
     assert [v.message for v in check_host(tmp_path)] == ["import * from arras hides what is used"]
