@@ -665,7 +665,10 @@ def test_fault_connection_is_bound_to_authorized_tls_actor() -> None:
                 host="db.example.test",
                 port=5432,
                 dbname="arras_test",
-                dsn_parameters={"sslmode": "verify-full", "sslrootcert": "/tmp/root.pem"},
+                get_parameters=lambda: {
+                    "sslmode": "verify-full",
+                    "sslrootcert": "/tmp/root.pem",
+                },
                 transaction_status=0,
             )
             self.pgconn = SimpleNamespace(ssl_in_use=True)
@@ -695,6 +698,11 @@ def test_fault_connection_is_bound_to_authorized_tls_actor() -> None:
     )
     with pytest.raises(managed._Failed, match="identity_or_tls_mismatch"):
         lifecycle._verify_fault_connection(Connection("other_actor"), target, principal)
+
+    wrong_tls = Connection(principal.user)
+    wrong_tls.info.get_parameters = lambda: {"sslmode": "require", "sslrootcert": "/tmp/root.pem"}
+    with pytest.raises(managed._Failed, match="endpoint_or_tls_mismatch"):
+        lifecycle._verify_fault_connection(wrong_tls, target, principal)
 
 
 def test_original_request_receipt_binds_namespace_and_writer_context() -> None:

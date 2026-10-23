@@ -394,7 +394,10 @@ def test_successful_wrong_role_connection_does_not_count_as_credential_refusal()
             host="db.example",
             port=5432,
             dbname="db",
-            dsn_parameters={"sslmode": "verify-full", "sslrootcert": "/root.crt"},
+            get_parameters=lambda: {
+                "sslmode": "verify-full",
+                "sslrootcert": "/root.crt",
+            },
         )
         pgconn = SimpleNamespace(ssl_in_use=True)
 
@@ -423,6 +426,22 @@ def test_successful_wrong_role_connection_does_not_count_as_credential_refusal()
         {"person_connection_source": refused_source},
         Principal("writer-role", "invalid-token"),
         target,
+    )
+
+    wrong_tls = Connection()
+    wrong_tls.info.get_parameters = lambda: {"sslmode": "require", "sslrootcert": "/root.crt"}
+
+    @contextmanager
+    def wrong_tls_source(_principal: Principal) -> Any:
+        yield wrong_tls
+
+    assert (
+        person_tool._connection_identity_refused(
+            {"person_connection_source": wrong_tls_source},
+            Principal("writer-role", "other-person-token"),
+            target,
+        )
+        is False
     )
 
 

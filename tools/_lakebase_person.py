@@ -771,9 +771,10 @@ def _connection_identity_refused(
         with sources["person_connection_source"](principal) as connection:
             endpoint = target["endpoint"]
             info = connection.info
-            parameters = info.dsn_parameters
+            parameters = info.get_parameters()
             if (
-                info.host != endpoint["host"]
+                type(parameters) is not dict
+                or info.host != endpoint["host"]
                 or type(info.port) is not int
                 or info.port != endpoint["port"]
                 or info.dbname != endpoint["database"]
@@ -1204,9 +1205,10 @@ def _observe_person_connection(
 ) -> dict[str, Any]:
     endpoint = target["endpoint"]
     info = connection.info
-    parameters = info.dsn_parameters
+    parameters = info.get_parameters()
     if (
-        info.host != endpoint["host"]
+        type(parameters) is not dict
+        or info.host != endpoint["host"]
         or type(info.port) is not int
         or info.port != endpoint["port"]
         or info.dbname != endpoint["database"]

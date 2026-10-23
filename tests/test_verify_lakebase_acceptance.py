@@ -9,6 +9,7 @@ import os
 import sys
 from collections.abc import Callable
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any, NoReturn
 
 import pytest
@@ -679,14 +680,18 @@ def test_tls_cipher_observation_preserves_safe_driver_value(value: str) -> None:
 
 
 class _ConnectionInfo:
-    host = "lakebase.test.invalid"
-    port = 5432
-    dbname = "arras_lakebase_acceptance"
-    dsn_parameters = {"sslmode": "verify-full", "sslrootcert": "/tmp/root.pem"}
+    def __init__(
+        self,
+        sslmode: str = "verify-full",
+        sslrootcert: str = "/tmp/root.pem",
+    ) -> None:
+        self.host = "lakebase.test.invalid"
+        self.port = 5432
+        self.dbname = "arras_lakebase_acceptance"
+        self._parameters = {"sslmode": sslmode, "sslrootcert": sslrootcert}
 
-
-class _PgConnection:
-    ssl_in_use = True
+    def get_parameters(self) -> dict[str, str]:
+        return dict(self._parameters)
 
 
 class _IdentityResult:
@@ -698,10 +703,17 @@ class _IdentityResult:
 
 
 class _AdmissionConnection:
-    info = _ConnectionInfo()
-    pgconn = _PgConnection()
-
-    def __init__(self, role: str, replication: object) -> None:
+    def __init__(
+        self,
+        role: str,
+        replication: object,
+        *,
+        sslmode: str = "verify-full",
+        sslrootcert: str = "/tmp/root.pem",
+        ssl_in_use: bool = True,
+    ) -> None:
+        self.info = _ConnectionInfo(sslmode, sslrootcert)
+        self.pgconn = SimpleNamespace(ssl_in_use=ssl_in_use)
         self.role = role
         self.replication = replication
         self.query = ""
@@ -763,3 +775,37 @@ def test_admission_rejects_non_boolean_replication_fact() -> None:
     role = target["resources"]["ordinary_role_names"][1]
     with pytest.raises(cli.AdmissionError, match="identity, server version, or TLS"):
         cli._observe_connection(_AdmissionConnection(role, 0), target, expected_role=role)
+
+
+@pytest.mark.parametrize(
+    ("sslmode", "sslrootcert", "ssl_in_use"),
+    [
+        ("require", "/tmp/root.pem", True),
+        ("verify-full", "", True),
+        ("verify-full", "/tmp/root.pem", False),
+    ],
+)
+def test_admission_rejects_missing_verify_full_transport_evidence(
+    sslmode: str, sslrootcert: str, ssl_in_use: bool
+) -> None:
+    target = _target()
+    role = target["resources"]["ordinary_role_names"][1]
+    with pytest.raises(cli.AdmissionError, match="authorized verify-full TLS endpoint"):
+        cli._observe_connection(
+            _AdmissionConnection(
+                role,
+                False,
+                sslmode=sslmode,
+                sslrootcert=sslrootcert,
+                ssl_in_use=ssl_in_use,
+            ),
+            target,
+            expected_role=role,
+        )
+
+
+def test_installed_psycopg_connection_info_uses_get_parameters_api() -> None:
+    psycopg = pytest.importorskip("psycopg")
+    info_type = psycopg.ConnectionInfo
+    assert callable(info_type.get_parameters)
+    assert not hasattr(info_type, "dsn_parameters")

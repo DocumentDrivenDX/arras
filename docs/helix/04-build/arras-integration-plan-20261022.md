@@ -1786,3 +1786,18 @@ refusals before connection acquisition, and homogeneous schema1 behavior. The
 credential-source repair and verifier correction do not qualify managed cases.
 A new source/harness/entry freeze and independently rebound private fixture are
 required before a fresh actual campaign. Existing failed attempts stay intact.
+
+
+The third actual attempt passed credential-source admission, then stopped during
+service admission. The original failed installed-execution binding is retained;
+no installation, module mutation or provider restart occurred. Read-only diagnosis
+confirmed that the fixture and four public harness call sites referenced the
+nonexistent psycopg3 `ConnectionInfo.dsn_parameters` property. The selected driver
+is psycopg 3.3.6 and exposes `get_parameters()` instead. The corrected observers
+retain exact endpoint, verify-full TLS, root-certificate and native role checks;
+updated test doubles use the actual driver surface and transport refusals remain
+explicit. The private fixture has separate review and 48 passing offline controls.
+A subsequent actual read-only smoke observed all five authenticated connections,
+expected native identities and TLS facts, with Truss absent. This is admission
+readiness evidence only; all twelve managed acceptance cases still require a new
+full campaign with refreshed source, fixture and authorization bindings.

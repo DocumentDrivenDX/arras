@@ -583,7 +583,11 @@ def _verify_fault_connection(connection: Any, target: Mapping[str, Any], princip
     if type(endpoint) is not dict:
         raise _Blocked("fault_endpoint_unavailable")
     info = getattr(connection, "info", None)
-    parameters = getattr(info, "dsn_parameters", None)
+    get_parameters = getattr(info, "get_parameters", None)
+    try:
+        parameters = get_parameters() if callable(get_parameters) else None
+    except Exception:
+        parameters = None
     pgconn = getattr(connection, "pgconn", None)
     if (
         info is None
