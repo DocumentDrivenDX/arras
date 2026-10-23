@@ -548,8 +548,8 @@ def test_strict_probe_classifies_actual_public_typed_grant_refusal(
             return truss.Ok(refusal)
 
     def adopt(_connection: Any, *, statement_timeout_ms: int, operation_timeout_ms: int) -> Host:
-        assert statement_timeout_ms == 10_000
-        assert operation_timeout_ms == 30_000
+        assert statement_timeout_ms == 60_000
+        assert operation_timeout_ms == 60_000
         return Host()
 
     def create_assembly(_configuration: Any, _host: Any) -> Any:
@@ -691,8 +691,8 @@ def test_strict_probe_detach_failure_stops_caller_queries_and_marks_state_unknow
             )
 
     def adopt(_connection: Any, *, statement_timeout_ms: int, operation_timeout_ms: int) -> Host:
-        assert statement_timeout_ms == 10_000
-        assert operation_timeout_ms == 30_000
+        assert statement_timeout_ms == 60_000
+        assert operation_timeout_ms == 60_000
         return Host()
 
     def create_assembly(_configuration: Any, _host: Any) -> Any:
@@ -766,7 +766,7 @@ def test_strict_probe_establishes_bounded_transaction_before_public_adoption(
         caller_identity: Any,
     ) -> Any:
         assert calls[0] == expected_first
-        assert calls[1] == "SET LOCAL statement_timeout = '10000ms'"
+        assert calls[1] == "SET LOCAL statement_timeout = '60000ms'"
         assert caller_identity == identity
         connection.rollback()
         return native._StrictProbe(
@@ -792,7 +792,7 @@ def test_strict_probe_establishes_bounded_transaction_before_public_adoption(
     assert probe.native_state_unchanged is True
     assert calls[:2] == [
         expected_first,
-        "SET LOCAL statement_timeout = '10000ms'",
+        "SET LOCAL statement_timeout = '60000ms'",
     ]
     assert calls[-1] == "ROLLBACK"
 

@@ -773,3 +773,14 @@ wheel. A lockfile or expected digest alone cannot substitute for the observed
 archive evidence; an installer that omits it leaves admission blocked. Keep
 credential references outside these artifacts and capture failed attempts
 without rewriting them as later passes.
+
+
+The managed strict-empty-policy installation probe uses the same 60,000 ms
+statement and operation bounds as Arras's existing installer path, including its
+transaction-local statement timeout. Both are within the selected public Truss
+0.0.49 host's 1–60,000 ms range. Deadline cancellation remains blocked and its original failed attempt is
+retained; only the expected typed platform-grant refusal can qualify the probe.
+The empty policy, exact refusal context, prior caller work/settings, detach,
+rollback and complete native-state equality requirements remain mandatory.
+Other operation, transport-fault and performance bounds remain unchanged; this
+alignment does not waive any timing assertion or permit an unbounded installer.

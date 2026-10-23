@@ -1801,3 +1801,31 @@ A subsequent actual read-only smoke observed all five authenticated connections,
 expected native identities and TLS facts, with Truss absent. This is admission
 readiness evidence only; all twelve managed acceptance cases still require a new
 full campaign with refreshed source, fixture and authorization bindings.
+
+
+Source `e7cddb7711e0fc565d8f117725230168c33e1976` passed all four CI jobs
+in run `39996494637`. The fourth managed attempt stopped before installation
+because fixture-owned preflight reads left the supplied connection in a
+transaction. The separately reviewed private correction settles those owned
+reads before handoff and enforces idle, non-autocommit connections. All 49
+combined private controls and the actual complete public read-only admission
+path then passed, including the exact not-installed backend status.
+
+The fifth actual attempt passed LB-ADMISSION but blocked at the strict-install
+probe. Its original receipt and equal before/after artifact binding are retained.
+A rollback-contained diagnostic observed successful host adoption and assembly
+construction, then an execution cancellation under the probe's 30-second bound;
+caller work and complete native state remained unchanged. The reviewed probe
+correction uses the existing adapter installer's 60-second statement/operation
+bounds within public49's supported maximum. Product defaults, other operation or
+fault budgets, refusal semantics and state-preservation assertions are unchanged.
+The failed 30-second attempt is not a managed pass.
+
+The corrected-wheel installed Mac conformance run completed with 63 passes,
+eight declared limits, zero failed cases and one harness error:
+`registry.validate-reports-without-applying`, fixture seed step 5, reported a
+timeout/cancellation. Its original failed receipt has SHA-256
+`26e445cecd6af4407a176333cd80a7ed0d0542a7c1a467cfbaaf1eb188036548`.
+Independent cleanup confirmed zero owned PostgreSQL/conformance processes and
+postmaster PID files. The private fixture and original receipt are retained for
+bounded diagnosis; the fresh-installed native gate remains open.

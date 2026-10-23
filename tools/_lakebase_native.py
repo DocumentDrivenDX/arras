@@ -319,7 +319,7 @@ def _strict_install_attempt(
     classified = _ClassifiedStrictResult("other_refusal")
     try:
         host = adopt_psycopg_host(
-            connection, statement_timeout_ms=10_000, operation_timeout_ms=30_000
+            connection, statement_timeout_ms=60_000, operation_timeout_ms=60_000
         )
         classified = _invoke_strict_install(host, selected)
         detached = host.detach()
@@ -385,7 +385,7 @@ def _strict_default_probe(sources: Mapping[str, Any], selected: tuple[str, ...])
             connection.execute("BEGIN ISOLATION LEVEL READ COMMITTED READ WRITE")
         else:
             connection.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED READ WRITE")
-        connection.execute("SET LOCAL statement_timeout = '10000ms'")
+        connection.execute("SET LOCAL statement_timeout = '60000ms'")
         caller_identity = connection.execute(_CALLER_IDENTITY_SQL).fetchone()
         temp_name = f"arras_probe_{uuid.uuid4().hex}"
         connection.execute(f'CREATE TEMP TABLE "{temp_name}" (value text)')
