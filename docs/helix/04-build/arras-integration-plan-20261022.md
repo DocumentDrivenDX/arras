@@ -1358,6 +1358,11 @@ release workflow `a8048b50dd8ce8c7eab728d254ab06d68b612e26a7648c86464da75bc67df4
 downstream workflow `f0f997fd7f93ea3ea08b001505dd246ea016520c6921e0f2b5ce42ad0e274e5d`,
 and selector `c34faf412d684ec01f292f5a786aac0e01818013bde4213e3013f8d3f4ff3cab`.
 These are driver checks; fresh remote qualification and publication remain pending.
+The first driver CI found an unresolved static import in its new test; Luna
+replaced that import with the existing explicit importlib test pattern. Full
+repository Pyright now passes with zero errors, the 77 focused checks pass again,
+and Sol approves the unchanged test behavior. Workflow and selector digests above
+remain unchanged; the corrected commit requires a fresh green CI run.
 
 ## Validation Plan
 

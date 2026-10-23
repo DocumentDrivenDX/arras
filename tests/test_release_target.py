@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import os
 import re
 import subprocess
@@ -10,6 +11,10 @@ import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = ROOT / ".github/scripts/release_target.py"
+SPEC = importlib.util.spec_from_file_location("release_target", SCRIPT)
+assert SPEC is not None and SPEC.loader is not None
+release_target = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(release_target)
 
 
 def git(path: Path, *args: str) -> str:
@@ -18,9 +23,6 @@ def git(path: Path, *args: str) -> str:
 
 
 def test_tag_push_selector_requires_semver_ref_and_event_commit() -> None:
-    sys.path.insert(0, str(SCRIPT.parent))
-    import release_target
-
     sha = "a" * 40
     assert release_target.select_target(
         event_name="push",
@@ -53,9 +55,6 @@ def test_tag_push_selector_requires_semver_ref_and_event_commit() -> None:
 
 
 def test_manual_selector_is_default_branch_only_and_fails_closed() -> None:
-    sys.path.insert(0, str(SCRIPT.parent))
-    import release_target
-
     target = "1234567890abcdef1234567890abcdef12345678"
     assert release_target.select_target(
         event_name="workflow_dispatch",
