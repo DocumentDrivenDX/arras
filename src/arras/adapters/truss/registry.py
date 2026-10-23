@@ -325,6 +325,8 @@ class Registry:
             # advisory (acceptance reauthorizes), and cheap: a person who is no registrar is refused
             # before any preparation, an absent install is `not_configured`
             self.require_registrar(call, operation)
+            if module.metadata_profile != "legacy-arras/1":
+                raise _unsupported("metadata profile")
             if unknown_endpoint not in ("reject", "provisional"):
                 raise Invalid([Violation("unknown_endpoint", "value", "reject or provisional")])
             if unknown_endpoint == "provisional":

@@ -199,6 +199,95 @@ Corpus version 4 carries the statement as written: a `query` step passes `sql` a
 
 Corpus version 5 adds validate-only registration and the `schema` grant (Schema administration, below). Corpus version 6 adds text search: a `query` step may carry `text` (`{words, properties}`), which the runner passes to the backend as a `TextMatch` beside the statement, never in the SQL; the rows are those of the statement's own order and bounds in which every word occurs, case-folded, in some named property, with `%`, `_` and `\` literal. A case's `requires` names `search` for its type, and a backend that does not declare `substring`, or a property not in its `searchable`, is held to `Unsupported`; refused and unavailable stay distinct. Corpus version 7 adds relational reads: `read.inner-join-is-a-bag` (an inner join keeps every matching combination and drops the unmatched, and an order by several columns, under `general`) and `read.count-over-a-join-by-several-columns` (`COUNT(*)` over a self join counts the bag, grouped by two columns and ordered by the whole grouping, under `count-summary`). The catalog module has no numeric field, so `SUM` is proven in `tests/test_weft_relational.py`, not in the corpus. Corpus version 8 makes every `reached` step name a person (`as`), because a backend answers `reached` for a person: a step without `as` fails, and a person who holds no grant is `Refused`. Corpus version 9 adds the cases a Truss adapter needs: `access.non-member-write-is-refused` (a person who is a member of no module is `Refused` a write and a dry run, and nothing changes), `freshness.non-member-reached-is-refused` (`reached` for a non-member is `Refused`, for a reader it is answered), `registry.rewritten-equal-document-registers-unchanged` (a document that is the registered one re-serialized, edit `rewrite`, is unchanged: no revision, the registered text stays verbatim, and writes still apply) and `action.retry-with-generated-keys-matches` (the module's `DraftSolution` generates its key; a retry under the same idempotency key and inputs returns the original receipt, replayed, and other inputs under the key are a `Conflict`). An undeterminable token already has its case (`freshness.undeterminable-token-is-unavailable-not-false`, an outage). Corpus version 10 adds `registry.registers-a-new-record-type` (a document that adds a record type, edit `add-record-type`, is a compatible change: the dry run says so and applies nothing, registering it makes a new revision readers see, and registering it again changes nothing) and gives the `add-optional-property` and `add-required-property` edits the authored `name` Truss requires of every field. The Truss registry (`tests/test_truss_registry.py`): always-on tests drive the adapter over a scripted fake of Truss's assembly (outcome mapping by code, the request key, equality before accept, `expected_revision` order and race, unknown-commit replay, cache hit and invalidation, status and describe); the Truss-marked tests check (the registry corpus cases run in `tests/test_truss_conformance.py`; Truss 0.0.45 accepts an optional property added to an existing record and refuses a required one, so one case ends at an `Unsupported` registration) the first registration on an install with nothing registered (catalog head 0), a rewritten equal document makes no revision, a dry run leaves no catalog row, a non-registrar is `Refused`, a reader sees exactly their modules, each call runs as its person, a reverted action edit registers again and a stale `expected_revision` conflicts. The Truss detected-race limit (no `expected_revision` on accept) is recorded in the `limits` field of the corpus case `registry.register-checks-the-revision-it-was-planned-against`, which the runner holds to the step the harness declares (`TrussHarness.LIMITS`, R16.1 and R16.5), and proved by the always-on `test_a_registration_that_lands_between_the_read_and_the_accept_is_a_conflict` and its repeat-after-unknown-commit variant. The Truss query (`tests/test_truss_query.py`): always-on tests drive the adapter over a scripted fake of Truss's assembly (the statement and parameters passed unchanged over the module's document id, `maximum_rows` 10,000 with rows capped at `limit` and `truncated`, the module checked before text and parameters, parameter types, the `complete-entity` profile for `alias.*` and the page-profile ladder for a keyset, the error map by Truss code and Weft diagnostic with the pinned message, absent values, related keys, fact timestamps, column typing, the declared profiles and capabilities); the read corpus cases run in `tests/test_truss_conformance.py`, where two end at a Truss limit (`read.relationship-columns-follow-ends`, whose explicit alias Weft refuses beside the relationship column Truss appends, and `read.relationship-columns-are-capped`, which Truss refuses for an entity with more than 100 related keys; both recorded in the case's `limits` and in truss-requirements R17), and the Truss-marked tests run a differential battery of statements on the memory adapter and on Truss comparing columns, types, rows and error classes, a non-member's statement as `Invalid` (`unknown_type`), and each query running as its person, read-only and rolled back. Corpus version 11 adds export: a `export` step (`limit`, `after`) reads a page of `export_records` and expects `export` (`records` exactly, `more`, `omitted`); the cases hold canonical order and the absent-property rule, `Refused` without a read grant (never an empty page) and `Unavailable` in an outage, and paging by the last record's place with a write between pages; a replica is held to `Unsupported`. Corpus version 12 adds the idempotency cases a Truss adapter diverges on: `action.keyed-retry-of-a-delete-replays`, `action.keyed-retry-of-an-unlink-replays` (the corpus action `catalog.UnlinkSolution`), `action.keyed-retry-after-its-target-was-deleted-replays` and `action.same-key-from-another-person-replays`. Each returns the original receipt, replayed, on the memory adapter; Truss ends the first three at `Conflict(idempotency_key_reused)` and the last at the second person's `PreconditionFailed`, each pinned in `TrussHarness.LIMITS` (truss-requirements R18.3). Corpus version 13 adds `import.original-time-names-its-offset`: an `original_at` with no offset, a bare date or a non-time rejects its entity record and stores nothing, and one that names its offset is kept, on both adapters (CONTRACT-003). The conformance corpus is version 13.
 
+### Official admission and metadata profile — bounded A2
+
+These gates govern the bounded feature and remain separate from the public
+0.5.1 release gates. The completed local source and installed evidence is linked
+below; governing adoption alone does not satisfy them.
+CONTRACT-002/003/004 separate official validity/completeness, source fidelity,
+projection support, provider qualification and executable capability.
+
+- Admission compares exact source bytes/SHA, `not_run`/null/null versus completed
+  official booleans, lexical versus structural-negative ordering, immutable
+  ordered diagnostics, unknown meaning, missing-engine refusal and unexpected
+  failure. Direct and nested repr tests use a valid source-only description
+  sentinel; source is `field(repr=False)`, not a comment. Diagnostic text is not
+  thereby safe for logs. Returned metadata or caller mutation cannot invalidate
+  later independent re-admission.
+- Projection has a documented STRING-primary derivative positive and unchanged
+  integer-primary/alternate-key valid-but-unsupported controls. Test actual IDs,
+  all members, requiredness/cardinality, unsupported semantics and source paths;
+  no title/namespace identity inference, silent member loss or evaluator.
+- Registration proves `RegisteredDocument.text.encode("utf-8")` equals admitted
+  bytes; equal/changed revisions and profile-transition refusal; existing
+  authentication, parse, placement, schema, GraphQL and CAS precedence. Unqualified
+  custom store and replica acceptance/dry-run/attach/CAS counters remain zero.
+  Missing profile capability is legacy-only; malformed carriers refuse, and the
+  exact qualified memory tuple is a positive control.
+- Host registration rederives metadata from source, never a caller's constructed
+  AdmissionReport/ModuleInfo or a mutable prior summary. Direct provider tests
+  retain authorization-first behavior and explicitly label the trusted
+  host-supplied pairing; they claim no independent official admission.
+- Metadata-only direct apply, dry run, both batch modes and import refuse after
+  authorization and before clock/replay/iteration/effects. Use uniterable input
+  and compare source/revision/graph/versions/journal/loads/position/replay state.
+  Legacy CRUD and unsupported-semantic safeguards remain intact.
+- The preparatory catalog extraction retains public identities/signatures,
+  token-before-call, failure priority, placement and copy selection, no cache,
+  exact module edges and unchanged 926-line ceiling. Forbidden-edge/cycle and
+  host-private-import negative controls remain meaningful.
+
+Vendor the exact 139-case official data from public `umf-v0.5.4`, commit
+`53de049136c7e41b482d1a73665d031cd5fbaec6`, fixture
+`fixtures/metamodel/current-conformance.json`, SHA-256
+`bb008a98b8448050748e65f867e7863475ccad9501a5b9229ae9e6d336691544`.
+Retain derivedFrom/source/corrections metadata and the tag's MIT OR Apache-2.0
+license/third-party notices. Independent tag/blob/digest/license evidence is
+sufficient; resolve actual ambiguities without adding an approval gate. Compare
+`validate_document(raw, upstream_case_registry)` valid/complete and every ordered
+diagnostic for all 139 IDs. Special callbacks are TEST ONLY; separately test the
+production fresh EMPTY Registry, where DDD/view declarations remain incomplete.
+No external worktree or generated baseline is a CI dependency.
+
+Quality and semantic CI explicitly install `--extra truss --extra umf` for honest
+SDK typing. A dedicated `ARRAS_REQUIRE_UMF=1` gate executes the nonempty exact
+139-ID set and admission/projection/registration tests without skips; no missing
+engine or module-level `importorskip` may make it green. Only the engine bridge
+imports the exact released pure wheel; no broad ignores or copied interpreter.
+
+Two fresh installed-wheel environments outside the checkout are mandatory:
+base-only proves official UMF absent, legacy behavior works and the explicit new
+route refuses without fallback; extra-enabled verifies wheel SHA before install,
+installed RECORD/payload/origins before API execution, then public admission,
+projection, memory metadata registration/readback, original bytes and refusal
+controls. Neither uses shared site packages/PTH/source aliases. Record observed
+versions/platform/scope; these proofs establish no native, UI or production
+semantics. `tools/verify_umf_admission.py --wheel PATH --output-json PATH`
+implements this selected-wheel gate; CI invokes it after the wheel build.
+Coordinate any feature release with the distribution owner; do not amend
+published 0.5.1 artifacts or receipts.
+
+**Execution checkpoint.** The [bounded A2 execution record](../04-build/arras-integration-plan-20261022.md#bounded-a2-execution-checkpoint)
+and [safe installed receipt](../04-build/evidence/umf-admission-projection-20261023/installed-proof.json)
+bind the unreleased source candidate `11c3dd0711ff6d556fed4fbea99cff1951506588`.
+The required source suite passes 3,031 tests with 199 Truss tests deselected;
+configured strict source/test typing, Ruff, formatting and content checks pass.
+The preceding source attempt passed 3,028 tests and failed two MCP subprocess
+cases because the new required-test flag was treated as configuration. The
+test-only ignored-prefix fix retains unknown-key refusal, and the final complete
+source run passes; the failed attempt remains recorded in the execution plan.
+
+The first actual installed attempt passes on CPython 3.11.17, macOS ARM64.
+Both fresh environments verify the selected Arras payload before import; the
+extra-enabled environment also verifies the selected official SDK payload.
+All 139 unique ordered reference cases match both the official TEST-ONLY case
+registries and separate fresh EMPTY production registries, with zero skips.
+Six base controls and ten extra-enabled controls pass, including original-byte
+readback, provider refusal, immutable metadata and write refusal without effects.
+The receipt records cleanup of both environments, no shared site packages and
+no source aliases. This is an unreleased installed feature proof, not native,
+browser, production or complete constraint/action-runtime qualification.
+
 ### The Truss adapter's conformance (TR-12)
 
 Three checks decide whether the adapter is conformant, beside the always-on adapter tests. First, `tests/test_truss_conformance.py` runs the whole corpus (every `store` and `reader` case) on the Truss harness once, about eleven minutes, and requires it to pass at the declared capabilities: each case passes or ends at the step, and in the refusal, of a documented Truss limit. The limits are the harness's own declaration (`TrussHarness.LIMITS`, ten cases: the whole-entity read of related keys, R17.2, the registration of a new property on an existing record, R16.5, and the four idempotency cases a keyed retry diverges on, R18.3; each case carries the ask in its corpus `limits` note), the runner records such a case as `limit` and fails it when it passes, ends at another step or names no case (CONTRACT-004), and `tests/test_conformance.py` proves the runner rule. Second, the executable model runs the Truss adapter (below). Third, `tests/test_truss_mutants.py` runs hand-written mutants of the adapter's pure mapping tables (plan to operation, result to receipt, the failure and refusal maps, the numeric domains, the bounds) against the suite that needs no Truss, each in a temporary copy of the package in a subprocess, and requires every one to be killed; a survivor names a rule no test pins, and a mutant whose text is not found exactly once fails the file. No mutation tool is added. A Truss-marked test in `tests/test_truss_reached.py` pins that a non-member with a malformed token is `Invalid` on Truss and `Refused` on memory, because Truss decodes before it authorizes.

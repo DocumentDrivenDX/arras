@@ -13,7 +13,12 @@ from arras import gqlschema, telemetry
 from arras.backend import Provider
 from arras.errors import Invalid, Unsupported, Violation
 from arras.model import EntityTypeInfo, ModuleInfo
-from arras.registration import as_revision, host_violations, placed
+from arras.registration import (
+    _profile_qualification_violations,  # pyright: ignore[reportPrivateUsage]
+    as_revision,
+    host_violations,
+    placed,
+)
 from arras.results import RegistrationCheck, RegistryResult, SchemaChange, SchemaPlan
 from arras.types import Revision
 
@@ -109,6 +114,8 @@ class Schema:
             raise Invalid(
                 [Violation("placement", "invalid_placement", "the record store takes no revisions")]
             )
+        if bad := _profile_qualification_violations(self.o.h, mod):
+            raise Invalid(bad)
         return raw, mod, cast(Provider, record)
 
     @staticmethod

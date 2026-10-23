@@ -29,7 +29,7 @@ ddx:
 
 **Contract ID**: CONTRACT-004
 **Type**: library
-**Version**: v5
+**Version**: v6
 **Status**: draft
 **Related**: FEAT-004, FEAT-005, ADR-013, ADR-014, CONTRACT-001 to CONTRACT-003; Truss CONTRACT-001 to CONTRACT-006; Ashlar PRD
 
@@ -79,6 +79,38 @@ Terms. Truss is the hot mutable store, deployed on Lakebase (Databricks managed 
 **Principal.** Every call is made over a connection authenticated with the principal's own token (ADR-017), so the backend's controls decide on the person. The adapter holds no role map, never sets a role and makes no access decision of its own, and a backend call with no token raises `Refused` before it is made.
 
 **Outcomes.** An adapter distinguishes three: an empty answer, `Refused` (the backend's own controls deny the principal) and `Unavailable` (unreachable or failing). It MUST NOT turn an outage into an empty answer or a refusal.
+
+### Metadata profile qualification
+
+`BackendInfo` gains a final defaulted field
+`metadata_profiles: tuple[str, ...] = ("legacy-arras/1",)`. It declares acceptance
+or attachment, source preservation, enumeration and document/metadata readback;
+it does not declare data mutability or value/action enforcement. A descriptor
+without the field is legacy-only. Only the qualified memory store and replica
+advertise `("legacy-arras/1", "umf-core-metadata/1")`; unchanged Truss and custom
+providers remain legacy-only. `PolicyBackend` preserves the delegated descriptor.
+
+For the new profile only, preflight MUST require an exact tuple whose entries
+are exact strings and compare the requested profile by equality. A string,
+substring, list, mapping or arbitrary truthy/mutable carrier never qualifies.
+Do not normalize malformed data into support or add a general plugin validator.
+CONTRACT-002 fixes authorization and placement precedence: unqualified placed
+stores or replicas are refused before acceptance, dry-run, attachment,
+preparation or CAS. Existing catalog/describe reads may occur. Direct provider
+registration retains schema authorization first, then refuses unsupported
+metadata before preparation or acceptance. A defensive Truss profile guard does
+not change its accepted-document parser or qualify native core metadata support.
+
+The official-admission guarantee belongs to Arras's source-taking Registry/Schema
+routes. Direct provider registration continues to trust its host-supplied
+ModuleInfo/source pairing after authorization; it does not certify official
+validity or independently re-admit bytes. The new descriptor is not an admission
+ticket. No memory-to-admission dependency is introduced by this profile.
+
+Every accepted `umf-core-metadata/1` type reports `mutable=false`. This profile
+has no implicit seed or write executor; direct writes are refused under
+CONTRACT-003. The legacy memory numeric profile remains a separate capability.
+No new Truss pin, native method, Ashlar adapter or feed behavior follows.
 
 ## Reference adapters
 
@@ -331,7 +363,7 @@ semantic profile follows from it.
 
 ## Precedence and Compatibility
 
-- Versioning: v5, the operations and shapes this contract states; `arras.CONTRACT_VERSIONS["backend"]`. The conformance corpus is version 13.
+- Versioning: v6, the operations and shapes this contract states; `arras.CONTRACT_VERSIONS["backend"]`. The conformance corpus is version 13.
 - Ordering or precedence: the backend's own access controls decide access and win over everything; the capability descriptor decides what Arras offers.
 - Backward compatibility: adding an optional operation or capability is compatible; removing or changing one is breaking.
 - Deprecation: as CONTRACT-001.

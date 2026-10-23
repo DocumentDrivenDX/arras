@@ -51,6 +51,8 @@ def check(old: ModuleInfo | None, new: ModuleInfo, stats: RecordStats) -> None:
     out: list[Violation] = []
     if new.name != old.name:
         out.append(_bad("module", "a module's name cannot change"))
+    if new.metadata_profile != old.metadata_profile:
+        out.append(_bad("metadata_profile", "a module's metadata profile cannot change"))
     new_types = {t.name: t for t in new.entity_types}
     named = {e for r in new.relationships for e in (*r.source, *r.target)}
     for ot in old.entity_types:

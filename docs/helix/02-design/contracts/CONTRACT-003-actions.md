@@ -29,7 +29,7 @@ ddx:
 
 **Contract ID**: CONTRACT-003
 **Type**: library
-**Version**: v1
+**Version**: v2
 **Status**: draft
 **Related**: FEAT-003, ADR-013, ADR-014, ADR-015, CONTRACT-001, CONTRACT-002, CONTRACT-004; UMF CONTRACT-900 (declarations), CONTRACT-079 (generated transport)
 
@@ -65,6 +65,19 @@ refused. Existing authorization checks retain precedence; import also retains
 its administrative/attribution checks. Refusal creates no receipt, journal or
 load entry and leaves graph state, versions, position and idempotency unchanged.
 Registration/read access is not itself refused by this write safeguard.
+
+**Core metadata profile.** `umf-core-metadata/1` (CONTRACT-002) declares no
+actions and permits metadata registration/readback and authorized empty-graph
+reads only. Direct memory `apply`, including dry run, both atomic and independent
+`apply_batch`, and `import_records` MUST raise `Unsupported` after their existing
+authentication, shape, administrative and attribution checks, but before clock,
+replay, record iteration or effects. No receipt, validation success or load result
+is returned; source, revision, graph, object versions, journal, loads, position
+and replay state stay unchanged. A forged direct plan cannot bypass this guard.
+High-level unknown-action resolution keeps its existing precedence. Official
+validity/completeness enables no execution: the legacy parser and unchanged
+canonical `umf.actions` probe remain outside this metadata profile. The existing
+legacy numeric and unsupported-profile safeguards remain independently in force.
 
 **Legacy declaration.** An action is defined in its module document (CONTRACT-002). Its elements:
 
@@ -167,7 +180,7 @@ validation, idempotency or authorization checks.
 
 ## Precedence and Compatibility
 
-- Versioning: v1. The contract version is `arras.CONTRACT_VERSIONS["actions"]`.
+- Versioning: v2. The contract version is `arras.CONTRACT_VERSIONS["actions"]`.
 - Ordering or precedence: access is the provider's own; preconditions precede effects; effects apply in order within one unit.
 - Backward compatibility: adding an optional element to the declaration, a predicate form, an effect form or a receipt field is compatible. Removing or renaming one, or changing a meaning, is breaking.
 - Deprecation: as CONTRACT-001.

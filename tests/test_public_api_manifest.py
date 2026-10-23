@@ -94,6 +94,9 @@ def test_manifest_versions_and_public_imports_are_exact() -> None:
         {
             "arras.conformance.__main__",
             "arras._doctor_types",
+            "arras._catalogs",
+            "arras._umf_engine",
+            "arras._umf_projection",
             "arras.adapters.truss._conformance",
             "arras.conformance._checks",
         },
@@ -146,6 +149,25 @@ def test_manifest_versions_and_public_imports_are_exact() -> None:
     }
     assert set(py["modules"]["arras.telemetry"]["names"]) == {"dropped", "TelemetryContext"}
     assert getattr(ui, brand_export) and operate.operators_in_groups and callable(telemetry.dropped)
+
+
+def test_official_admission_is_a_deliberate_module_surface_not_root_reexports() -> None:
+    py = catalog()["python"]
+    names = {
+        "UmfDiagnostic",
+        "AdmissionReport",
+        "ProjectionIssue",
+        "ProjectionReport",
+        "admit_document",
+        "project_document",
+    }
+    exact(set(py["modules"]["arras.umf_admission"]["names"]), names, "admission surface")
+    root_exports = set(arras.__all__)
+    exact(root_exports.intersection(names), set[str](), "admission root re-exports")
+    module = importlib.import_module("arras.umf_admission")
+    exact({name for name in names if hasattr(module, name)}, names, "admission exports")
+    assert "arras.model" in py["host_modules"]
+    exact(set(py["modules"]["arras.model"]["names"]), {"MetadataProfile"}, "profile type")
 
 
 def test_native_launcher_and_asset_exports_match_the_selected_catalog() -> None:
@@ -438,10 +460,10 @@ def test_contract_map_is_explicit_and_matches_runtime_keys() -> None:
     contracts = manifest["contracts"]
     expected = {
         "CONTRACT-001": ("interface", 2),
-        "CONTRACT-002": (None, 1),
-        "CONTRACT-003": ("actions", 1),
-        "CONTRACT-004": ("backend", 5),
-        "CONTRACT-005": ("lifecycle", 2),
+        "CONTRACT-002": (None, 2),
+        "CONTRACT-003": ("actions", 2),
+        "CONTRACT-004": ("backend", 6),
+        "CONTRACT-005": ("lifecycle", 3),
         "CONTRACT-006": ("console", 2),
         "CONTRACT-007": ("mcp", 2),
         "CONTRACT-008": (None, 1),

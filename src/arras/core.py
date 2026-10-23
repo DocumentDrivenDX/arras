@@ -16,6 +16,8 @@ from datetime import datetime
 from typing import Any, cast
 
 from arras import callscope, gqlschema, telemetry
+from arras._catalogs import Catalogs as _Catalogs
+from arras._catalogs import collect_catalogs
 from arras.actions import ActionInfo, Effect, Plan, resolve
 from arras.backend import Backend, Migrates, Provider
 from arras.errors import (
@@ -29,7 +31,7 @@ from arras.errors import (
     Unsupported,
     Violation,
 )
-from arras.model import Capabilities, EntityTypeInfo, ModuleInfo, Placement
+from arras.model import Capabilities, EntityTypeInfo, MetadataProfile, ModuleInfo, Placement
 from arras.registration import as_revision as _revision
 from arras.registration import check_document
 from arras.results import (
@@ -108,12 +110,19 @@ class Arras:
         admin: Principal | None = None,
         placement: Mapping[str, Placement] | None = None,
         default_placement: Placement | None = None,
+        metadata_profile: MetadataProfile = "legacy-arras/1",
     ) -> None:
+        if type(metadata_profile) is not str or metadata_profile not in (
+            "legacy-arras/1",
+            "umf-core-metadata/1",
+        ):
+            raise ValueError(f"unknown metadata profile: {metadata_profile!r}")
         self.backends = dict(backends)
+        self.metadata_profile = metadata_profile
         self.placements = dict(placement or {})  # the host's, by module name (CONTRACT-002)
-        self.default_placement = default_placement
+        self.default_placement: Placement | None = default_placement
         self.admin = admin  # the host's administrative principal, when it names one
-        self.expected = tuple(expected)
+        self.expected: tuple[str, ...] = tuple(expected)
         self.wait_bound = wait_bound
         self.sleep = sleep
         self.clock = clock
@@ -136,6 +145,7 @@ class Arras:
         admin: Principal | None = None,
         placement: Mapping[str, Placement] | None = None,
         default_placement: Placement | None = None,
+        metadata_profile: MetadataProfile = "legacy-arras/1",
     ) -> Arras:
         """Never raises for an availability failure: `status()` reports each backend.
 
@@ -155,6 +165,7 @@ class Arras:
             admin=admin,
             placement=placement,
             default_placement=default_placement,
+            metadata_profile=metadata_profile,
         )
 
     def placement_of(self, module: str) -> Placement | None:
@@ -229,33 +240,6 @@ class Arras:
         self.handlers.clear()
 
 
-@dataclass(frozen=True)
-class _Catalogs:
-    """What each backend said about the modules the principal may read, and who failed."""
-
-    by_backend: dict[str, Mapping[str, ModuleInfo]]
-    failures: dict[str, ArrasError]
-
-    def failure(self) -> ArrasError | None:
-        """The error to report: an expired token is `Refused`, whatever else is down."""
-        refused = [e for e in self.failures.values() if isinstance(e, Refused)]
-        return (refused or list(self.failures.values()) or [None])[0]
-
-    def module(self, name: str) -> ModuleInfo | None:
-        """The record store's copy where it answered, else another backend's."""
-        holders = [(b, c[name]) for b, c in self.by_backend.items() if name in c]
-        for b, m in holders:
-            if m.placement.record == b:
-                return m
-        return holders[0][1] if holders else None
-
-    def of(self, backend: str, name: str) -> ModuleInfo | None:
-        return self.by_backend.get(backend, {}).get(name)
-
-    def names(self) -> list[str]:
-        return sorted({n for c in self.by_backend.values() for n in c})
-
-
 class Ontology:
     """Every operation, for one principal."""
 
@@ -297,21 +281,7 @@ class Ontology:
 
     def _catalogs(self, op: str) -> _Catalogs:
         self.require_token(op)
-        by_backend: dict[str, Mapping[str, ModuleInfo]] = {}
-        failures: dict[str, ArrasError] = {}
-        for n, b in self.h.backends.items():
-            try:
-                held = b.catalog(self.principal)
-            except (Unavailable, Refused) as e:
-                failures[n] = e
-                continue
-            # a module is served as the host placed it, and only from the backends it names
-            by_backend[n] = {
-                m: replace(info, placement=p)
-                for m, info in held.items()
-                if (p := self.h.placement_of(m)) is not None and n in p.readers
-            }
-        return _Catalogs(by_backend, failures)
+        return collect_catalogs(self.h.backends, self.principal, self.h.placement_of)
 
     def _module(self, name: str, op: str) -> tuple[ModuleInfo, _Catalogs]:
         """A module the principal may read; a backend's outage is never reported as absence."""

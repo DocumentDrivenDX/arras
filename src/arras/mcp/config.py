@@ -85,9 +85,10 @@ NAMES = frozenset(k.name for k in KEYS)
 # A key that carries a name, in any number: a backend's endpoint.
 ENDPOINT_KEY = re.compile(r"ARRAS_BACKEND_([A-Z][A-Z0-9_]{0,40})_ENDPOINT")
 NAMED_KEYS = ("ARRAS_BACKEND_<NAME>_ENDPOINT: the handle of the backend the host calls <name>",)
-# The administrator's keys belong to another process (CONTRACT-007), and `ARRAS_REQUIRE_WEFT` to the
-# test suite (CI turns a skipped Weft check into a failure with it): present, never read, never an error.
-IGNORED_PREFIXES = ("ARRAS_ADMIN_", "ARRAS_REQUIRE_WEFT")
+# The administrator's keys belong to another process (CONTRACT-007), and the required-parser flags
+# belong to the test runner (CI turns a skipped optional-engine check into a failure with them):
+# present, never read, never an error.
+IGNORED_PREFIXES = ("ARRAS_ADMIN_", "ARRAS_REQUIRE_WEFT", "ARRAS_REQUIRE_UMF")
 
 # The keys of a committed file (layers 2 and 3). Anything else is an ops key or unknown.
 FILE_KEYS = frozenset(

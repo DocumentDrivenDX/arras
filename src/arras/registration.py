@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from collections.abc import Collection, Mapping
 from dataclasses import replace
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from arras.errors import Invalid, Violation
 from arras.model import ModuleInfo
@@ -32,14 +32,62 @@ def as_revision(r: Revision | Mapping[str, Any]) -> Revision:
 def placed(h: Arras, document: bytes | str) -> tuple[bytes, ModuleInfo]:
     """The document's bytes and its module as the host placed it; `Invalid` when it does not parse
     or the host placed no such module."""
-    raw = document.encode() if isinstance(document, str) else document
-    mod = parse_module(raw)
+    if h.metadata_profile == "legacy-arras/1":
+        raw = document.encode() if isinstance(document, str) else document
+        mod = parse_module(raw)
+    else:
+        from arras.umf_admission import project_document
+
+        projection = project_document(document)
+        if not projection.supported:
+            raise Invalid(
+                [Violation(issue.path, issue.code, issue.message) for issue in projection.issues]
+            )
+        assert projection.module is not None
+        mod = projection.module
+        raw = projection.admission.source
     placement = h.placement_of(mod.name)
     if placement is None:
         raise Invalid(
             [Violation("placement", "invalid_placement", f"the host placed no {mod.name!r}")]
         )
     return raw, replace(mod, placement=placement)
+
+
+def _profile_qualification_violations(h: Arras, mod: ModuleInfo) -> list[Violation]:
+    """Require each placed reader to explicitly advertise the selected non-legacy profile."""
+    if mod.metadata_profile == "legacy-arras/1":
+        return []
+    bad: list[Violation] = []
+    for name in mod.placement.readers:
+        backend = h.backends.get(name)
+        if backend is None:
+            bad.append(
+                Violation(
+                    "placement",
+                    "invalid_placement",
+                    f"{name!r} is not configured",
+                )
+            )
+            continue
+        profiles: object = getattr(backend.describe(), "metadata_profiles", None)
+        if type(profiles) is not tuple or any(
+            type(item) is not str for item in cast(tuple[object, ...], profiles)
+        ):
+            qualified = False
+        else:
+            qualified = any(
+                item == mod.metadata_profile for item in cast(tuple[str, ...], profiles)
+            )
+        if not qualified:
+            bad.append(
+                Violation(
+                    "placement",
+                    "invalid_placement",
+                    f"{name!r} does not qualify for metadata profile {mod.metadata_profile!r}",
+                )
+            )
+    return bad
 
 
 def host_violations(h: Arras, mod: ModuleInfo, readable: Collection[str]) -> list[Violation]:
@@ -71,6 +119,9 @@ def host_violations(h: Arras, mod: ModuleInfo, readable: Collection[str]) -> lis
                         f"relationships.{r.name}", "unreadable_module", f"cannot read {other!r}"
                     )
                 )
+    for violation in _profile_qualification_violations(h, mod):
+        if violation not in bad:
+            bad.append(violation)
     return bad
 
 

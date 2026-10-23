@@ -23,11 +23,11 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-      - run: uv sync --locked --extra truss
+      - run: uv sync --locked --extra truss --extra umf
       - name: Verify declared public origins and fixture provenance
-        run: uv run python tools/check_public_content.py
-      - run: uv run ruff check . && uv run ruff format --check .
-      - run: uv run pyright
+        run: uv run --no-sync python tools/check_public_content.py
+      - run: uv run --no-sync ruff check . && uv run --no-sync ruff format --check .
+      - run: uv run --no-sync pyright
       # The wheel carries the UI: the page and the npm tarball built from ui/ (ADR-027).
       - uses: actions/setup-node@v4
         with:
@@ -41,6 +41,16 @@ jobs:
         run: python tools/verify_distribution.py --output artifacts/distribution-verification.json dist/*.whl dist/*.tar.gz
       - name: Verify installed extension host with fresh public dependencies
         run: python tools/verify_extension_host.py --wheel dist/arras-*.whl --output-json artifacts/extension-host-fresh-dependencies.json --fresh-dependencies
+      - name: Verify installed UMF admission with fresh environments
+        run: |
+          mkdir -p artifacts
+          uv run --no-sync python tools/verify_umf_admission.py --wheel dist/arras-*.whl --output-json artifacts/umf-admission-installed.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: arras-umf-admission-installed
+          path: artifacts/umf-admission-installed.json
+          if-no-files-found: warn
       - name: The wheel installs on a clean interpreter and carries the UI
         run: |
           uv run --no-project --isolated --with dist/*.whl python -c "import importlib.util, arras, arras.ui, arras.adapters.truss; assert importlib.util.find_spec('truss') is None, 'the base wheel must not need Truss'; print(arras.CONTRACT_VERSIONS, arras.ui.npm_package().name); assert (arras.ui.STATIC / arras.ui.PAGE).is_file()"
@@ -185,7 +195,7 @@ jobs:
         with:
           enable-cache: true
           python-version: ${{ matrix.python }}
-      - run: uv sync --locked --extra truss
+      - run: uv sync --locked --extra truss --extra umf
       # Weft's own parser, for the checks that hold Arras's statements and the memory adapter to it
       # (tests/test_weft_parser.py, test_weft_relational.py, test_reserved_names.py). It is a test tool,
       # never a dependency of the package: installed after the locked sync, which would remove it, from
@@ -207,9 +217,14 @@ jobs:
           uv pip install --python "$GITHUB_WORKSPACE/.venv/bin/python" "$wheel"
       # includes the conformance corpus, the boundary check over the library and the host-style tests;
       # --no-sync keeps Weft installed, and ARRAS_REQUIRE_WEFT turns a Weft check's skip into a failure
+      - name: Compare every official UMF conformance vector
+        run: uv run --no-sync pytest -q tests/test_umf_admission.py::test_official_current_conformance_vectors_and_empty_registry_admission
+        env:
+          ARRAS_REQUIRE_UMF: "1"
       - run: uv run --no-sync pytest -q
         env:
           ARRAS_REQUIRE_WEFT: "1"
+          ARRAS_REQUIRE_UMF: "1"
 
   truss:
     name: Truss adapter on PostgreSQL 18.6

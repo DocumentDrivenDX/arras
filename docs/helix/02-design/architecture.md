@@ -202,6 +202,45 @@ Each module of the `arras` package belongs to one group, and a group imports onl
 | `__init__` (root) | The public surface: re-exports `arras.__all__` | Names in `arras.__all__` | Foundation, domain, core | Bindings, doubles |
 | `boundary` | The host-facing boundary check (US-033); reads the inert `arras/public-api.json` package resource and derives the host module allowlist from the reviewed catalog | `python -m arras.boundary` | The package root and catalog | Everything else |
 
+### Official admission and core metadata — bounded A2
+
+CONTRACT-002 defines the additive programmatic `umf-core-metadata/1` profile;
+the default remains `legacy-arras/1`. This is official source admission plus a
+reduced metadata projection, not a value validator or action interpreter.
+
+| Exact module / group | Responsibility and allowed edges | Forbidden edges |
+|---|---|---|
+| `umf_admission`, `_umf_projection` / `umf_admission` | Public immutable admission/projection results and explicit core-to-model projection; foundation, domain, own group and `umf_engine` | Core, backends, bindings, executable callbacks/codegen/native SDKs |
+| `_umf_engine` / `umf_engine` | Official JSON read/validation through a fresh internally owned empty Registry; standard library, lazy released official `umf` import and inert private result carriers only | Public admission module, core, backends, bindings and native SDKs |
+| `_catalogs` / core | Existing catalog collection and private result container; foundation, domain and contract | Core import/back-edge, fakes, adapters, bindings and UMF |
+
+Only the engine bridge imports the optional official SDK. Engine/projection
+helpers return private inert results; the public wrapper constructs public
+dataclasses, avoiding a helper-to-public cycle. Model never imports admission.
+Registration has the explicit admission consumer edge; profile dispatch
+lives in `registration.placed`, leaving legacy `umf.parse_module` unchanged.
+Public catalog and module-map changes must agree with these exact edges.
+
+The private `_Catalogs` and catalog loop are extracted from `core.py` into
+`_catalogs.py` before constructor/start integration.
+`Ontology._catalogs` keeps its signature and FIRST token check, then delegates to
+`collect_catalogs(backends, principal, placement_of)`. Preserve failure priority,
+backend order, placement filtering and record-store copy preference without
+caching, new exceptions or authority. `Arras`, `Ontology`, `Registry` and `Context`
+remain defined in core; the preparatory extraction preserves their identities
+and signatures. The later profile integration adds the explicit `metadata_profile`
+keyword to the constructor/start. The 926 physical-line ceiling stays unchanged;
+no compression or unrelated cleanup creates space.
+
+The bounded implementation has source and fresh installed-wheel evidence in the
+[A2 execution checkpoint](../04-build/arras-integration-plan-20261022.md#bounded-a2-execution-checkpoint).
+It supports explicit memory metadata registration/readback and authorized
+empty-graph reads; its descriptor enables no value or action execution. Truss
+refuses the profile before acceptance, and its native parser remains unchanged.
+The candidate retains package version 0.5.1 but is not the immutable public
+0.5.1 artifact. Native, UI, managed deployment and Ashlar qualification are outside
+this checkpoint.
+
 ### Offline qualification and validation modules
 
 EX-01–EX-08 retain the existing 926-line ceiling and dependency/cycle checks;

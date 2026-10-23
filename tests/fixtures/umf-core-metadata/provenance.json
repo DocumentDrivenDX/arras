@@ -1,0 +1,14 @@
+{
+  "provenance": "derived-official-upstream-fixture",
+  "source": "tests/fixtures/umf-core-reference/current-conformance.json#keys/primary-and-alternate",
+  "source_sha256": "bb008a98b8448050748e65f867e7863475ccad9501a5b9229ae9e6d336691544",
+  "source_case_sha256": "6a075ff00ad5a077c96d241f8994fcf4127ae8ddbdb4cc45e880a02a069b9800",
+  "license": "MIT OR Apache-2.0 (upstream notices preserved in tests/fixtures/umf-core-reference)",
+  "transformations": [
+    "Copy the upstream case document as a neutral derivative; retain its modules, members, keys, and field declarations.",
+    "Remove only the future top-level extensions payload and replace the future vocabulary declaration with an empty vocabularies object so the official core result is complete.",
+    "Keep only the existing explicit primary key; remove the alternate key.",
+    "Change only the primary id field scalarType from integer to string to fit the Arras metadata summary profile."
+  ],
+  "sha256": "da883657baefe7b7a4ab8654f78e7d84ef1e281eea7bc7cee48f8662007cd687"
+}

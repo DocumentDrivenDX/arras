@@ -17,7 +17,7 @@ import json
 import sys
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from types import SimpleNamespace
 from typing import Any
 
@@ -437,6 +437,54 @@ def test_a_person_who_is_no_registrar_is_refused_before_anything_is_prepared() -
             register(rig, document)
         assert raised.value.reason == "no_access"
     assert "prepare" not in rig.assembly.log and "accept" not in rig.assembly.log
+
+
+@pytest.mark.parametrize("operation", ["register", "validate_register"])
+@pytest.mark.parametrize("profile", ["umf-core-metadata/1", "unrecognized-profile"])
+def test_a_nonlegacy_profile_is_refused_after_registrar_auth_before_any_registry_work(
+    operation: str, profile: str
+) -> None:
+    rig = Rig()
+    backend = rig.backend()
+    profiled = replace(MODULE, metadata_profile=profile)
+    method = getattr(backend, operation)
+
+    with pytest.raises(Unsupported) as raised:
+        method(
+            ALICE,
+            b"not a document",
+            profiled,
+            unknown_endpoint="not a known option",
+        )
+
+    assert raised.value.construct == "metadata profile"
+    assert rig.assembly.log == ["registrar"]
+    assert backend.cache.seen() == []
+    assert all(conn.log[-1] == "rollback" for conn in rig.conns)
+
+
+@pytest.mark.parametrize("operation", ["register", "validate_register"])
+@pytest.mark.parametrize("profile", ["umf-core-metadata/1", "unrecognized-profile"])
+def test_truss_refuses_a_nonregistrar_before_inspecting_unsupported_profile(
+    operation: str, profile: str
+) -> None:
+    rig = Rig()
+    rig.assembly.registrar = ok(RegistrarStatus(False))
+    backend = rig.backend()
+    method = getattr(backend, operation)
+
+    with pytest.raises(Refused) as raised:
+        method(
+            ALICE,
+            b"not a document",
+            replace(MODULE, metadata_profile=profile),
+            unknown_endpoint="not a known option",
+        )
+
+    assert raised.value.reason == "no_access"
+    assert rig.assembly.log == ["registrar"]
+    assert backend.cache.seen() == []
+    assert all(conn.log[-1] == "rollback" for conn in rig.conns)
 
 
 def test_a_rewritten_equal_document_registers_nothing_and_calls_no_accept() -> None:

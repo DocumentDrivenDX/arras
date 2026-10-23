@@ -88,6 +88,7 @@ from arras.types import Freshness, Position, Principal, Statement
 MAX_BATCH = 100
 Mode = Literal["read", "write", "journal", "schema"]
 Clock = Callable[[], datetime]
+_MEMORY_METADATA_PROFILES = ("legacy-arras/1", "umf-core-metadata/1")
 
 
 class FakeAccess:
@@ -209,8 +210,11 @@ class _Store:
 
     def caps(self, t: EntityTypeInfo) -> Capabilities:
         """What it describes for a type; descriptive except `search`, which it holds `text` to."""
+        module = self.module(t.name.split(".", 1)[0])
         caps = _capabilities(
-            t, self.module(t.name.split(".", 1)[0]), mutable="provider" in self.roles
+            t,
+            module,
+            mutable=("provider" in self.roles and module.metadata_profile == "legacy-arras/1"),
         )
         declared = self.search_modes.get(t.name)
         if declared is None:
@@ -243,7 +247,13 @@ class _Store:
     def describe(self) -> BackendInfo:
         self.down("describe")
         caps = {t.name: self.caps(t) for m in self.modules.values() for t in m.entity_types}
-        return BackendInfo(self.name, self.roles, caps, self.weft)
+        return BackendInfo(
+            self.name,
+            self.roles,
+            caps,
+            self.weft,
+            metadata_profiles=_MEMORY_METADATA_PROFILES,
+        )
 
     def reached(self, principal: Principal, token: str) -> bool:
         self.gate(principal, None, None, "reached")
@@ -383,7 +393,7 @@ class MemoryStore(_Store, JournalReads, ImportRecords, ExportRecords, RegisterMo
         module = plan.action.split(".", 1)[0]
         self.gate(principal, module, "write", "apply")
         mod = self.module(module)
-        require_supported_write_profile(self.documents.get(module), module)
+        require_supported_write_profile(self.documents.get(module), module, mod.metadata_profile)
         if dry_run:
             return self._validate(principal, plan, mod, idempotency_key)
         journal_action = scope or plan.action
@@ -669,12 +679,18 @@ class MemoryStore(_Store, JournalReads, ImportRecords, ExportRecords, RegisterMo
         if not 1 <= len(plans) <= MAX_BATCH:
             raise Invalid([Violation("items", "bound", f"a batch holds 1 to {MAX_BATCH} items")])
         action = plans[0].action
+        module = action.split(".", 1)[0]
+        known = self.modules.get(module)
+        if known is not None and known.metadata_profile != "legacy-arras/1":
+            self.gate(principal, module, "write", "apply_batch")
+            require_supported_write_profile(
+                self.documents.get(module), module, known.metadata_profile
+            )
         if any(p.action != action for p in plans):
             raise Invalid([Violation("items", "mixed_actions", "a batch is one action")])
-        module = action.split(".", 1)[0]
         self.gate(principal, module, "write", "apply_batch")
         mod = self.module(module)
-        require_supported_write_profile(self.documents.get(module), module)
+        require_supported_write_profile(self.documents.get(module), module, mod.metadata_profile)
         if atomic:
             digest = self._digest(plans)
             held = self._held(f"{action}#atomic", idempotency_key, digest)
@@ -728,7 +744,7 @@ class MemoryStore(_Store, JournalReads, ImportRecords, ExportRecords, RegisterMo
         if initiated_by != principal.user:
             raise Invalid([Violation("initiated_by", "attribution", "a load is the caller's own")])
         mod = self.module(module)
-        require_supported_write_profile(self.documents.get(module), module)
+        require_supported_write_profile(self.documents.get(module), module, mod.metadata_profile)
         work = copy.deepcopy(self.state)
         now = self.clock()
         created = skipped = 0

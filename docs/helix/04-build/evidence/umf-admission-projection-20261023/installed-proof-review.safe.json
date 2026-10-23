@@ -1,0 +1,72 @@
+{
+  "arras_wheel": {
+    "filename": "arras-0.5.1-py3-none-any.whl",
+    "record_entries": 173,
+    "sha256": "948666bc38cc1ac00c0739d47da7b5a395c7a0b89721eb12b11456f61bbcb112",
+    "version": "0.5.1"
+  },
+  "fixed_probe_sha256": "3185ee3a4a52f991ab7da87e5c252c4ebcd9f8a48900a994eddc8966abcae4be",
+  "fixtures": {
+    "metadata_fixture_sha256": "da883657baefe7b7a4ab8654f78e7d84ef1e281eea7bc7cee48f8662007cd687",
+    "official_corpus_case_count": 139,
+    "official_corpus_sha256": "bb008a98b8448050748e65f867e7863475ccad9501a5b9229ae9e6d336691544"
+  },
+  "limitations": [
+    "This proves only the named installed wheel and runtime.",
+    "This does not qualify native Truss, browser, UI, or production behavior.",
+    "This is not a public Arras release or public-download qualification.",
+    "Installed environments were removed by the proof; review verifies retained receipt and archive/source identities, not live environments.",
+    "No public release, full value/action execution, native backend, UI or Ashlar support is established."
+  ],
+  "observed_proof": {
+    "base_controls": 6,
+    "extra_controls": 10,
+    "fresh_empty_registry_matches": 139,
+    "fresh_environments": 2,
+    "receipt_reports_cleanup_completed": true,
+    "receipt_reports_no_shared_site_packages_or_source_aliases": true,
+    "reference_registry_matches": 139,
+    "runtime": {
+      "implementation": "CPython",
+      "machine": "arm64",
+      "platform": "darwin",
+      "version": "3.11.17"
+    },
+    "skipped": 0,
+    "unique_ordered_ids": 139
+  },
+  "privacy": "Safe receipt contains no absolute host paths; original receipt bytes preserved.",
+  "receipt_filename": "installed-proof-attempt-01.json",
+  "receipt_sha256": "c7a7c0b98f5bafd4f7356cdfaf1d0e7f281fffc9a46c391ddfb9ddc4161fd13b",
+  "review_method": "Independent metadata, archive RECORD, byte-hash and tracked-source comparison; no API or runtime campaign repeated.",
+  "schema": "arras.umf-admission-installed-review/1",
+  "scope": "unreleased-built-wheel-installed-feature-proof",
+  "source_binding": {
+    "generated_package_members_match_working_build": 61,
+    "matching_tracked_package_members": 106,
+    "qualification": "Tracked packaged files match the named commit. Generated assets match working build bytes; this is not a whole-tree immutable-build attestation."
+  },
+  "source_commit": "11c3dd0711ff6d556fed4fbea99cff1951506588",
+  "source_test_evidence": {
+    "final": {
+      "result": "3031 passed, 199 deselected in 60.36 seconds",
+      "scope": "Retained source log inspected; runtime not repeated by reviewer.",
+      "sha256": "fab7528d7decf7f183e40ce421740676ca35d0f81ffd68f2e356dfbb48e7b6a9"
+    },
+    "initial": {
+      "result": "3028 passed, 2 failed, 199 deselected; MCP test-flag configuration refusal",
+      "scope": "Retained source log inspected; runtime not repeated by reviewer.",
+      "sha256": "29ee548439a6b2bd59163500822d9f9f8b8478ae280696af456a0ecae24a1bd4"
+    }
+  },
+  "status": "accepted",
+  "tool_sha256": "87bccd0a5639681923b1539918593601090bbd8cf8cd870c5a922d128992d3e3",
+  "umf_wheel": {
+    "filename": "umf_core-0.10.0-py3-none-any.whl",
+    "record_entries": 26,
+    "sha256": "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9",
+    "source_mode": "pinned-public-url",
+    "url": "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/umf_core-0.10.0-py3-none-any.whl",
+    "version": "0.10.0"
+  }
+}
