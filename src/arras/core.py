@@ -31,7 +31,7 @@ from arras.errors import (
     Unsupported,
     Violation,
 )
-from arras.model import Capabilities, EntityTypeInfo, ModuleInfo, Placement
+from arras.model import Capabilities, EntityTypeInfo, MetadataProfile, ModuleInfo, Placement
 from arras.registration import as_revision as _revision
 from arras.registration import check_document
 from arras.results import (
@@ -110,12 +110,19 @@ class Arras:
         admin: Principal | None = None,
         placement: Mapping[str, Placement] | None = None,
         default_placement: Placement | None = None,
+        metadata_profile: MetadataProfile = "legacy-arras/1",
     ) -> None:
+        if type(metadata_profile) is not str or metadata_profile not in (
+            "legacy-arras/1",
+            "umf-core-metadata/1",
+        ):
+            raise ValueError(f"unknown metadata profile: {metadata_profile!r}")
         self.backends = dict(backends)
+        self.metadata_profile = metadata_profile
         self.placements = dict(placement or {})  # the host's, by module name (CONTRACT-002)
         self.default_placement = default_placement
         self.admin = admin  # the host's administrative principal, when it names one
-        self.expected = tuple(expected)
+        self.expected: tuple[str, ...] = tuple(expected)
         self.wait_bound = wait_bound
         self.sleep = sleep
         self.clock = clock
@@ -138,6 +145,7 @@ class Arras:
         admin: Principal | None = None,
         placement: Mapping[str, Placement] | None = None,
         default_placement: Placement | None = None,
+        metadata_profile: MetadataProfile = "legacy-arras/1",
     ) -> Arras:
         """Never raises for an availability failure: `status()` reports each backend.
 
@@ -157,6 +165,7 @@ class Arras:
             admin=admin,
             placement=placement,
             default_placement=default_placement,
+            metadata_profile=metadata_profile,
         )
 
     def placement_of(self, module: str) -> Placement | None:
