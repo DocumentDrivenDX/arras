@@ -1,0 +1,89 @@
+{
+  "schema": "arras.a2.candidate-components.independent-review.v1",
+  "status": "approved-recorded-candidate-component-boundary",
+  "source_head": "613e6850f9595762e896bff8c072a3e4a52f1341",
+  "wheel": {
+    "filename": "arras-0.6.0-py3-none-any.whl",
+    "record_entries": 173,
+    "sha256": "03959567e77a547ed94014f55bd312630a276827753aafbb5615da0b216366ec",
+    "version": "0.6.0"
+  },
+  "npm_sha256": "cfdd2da7a13f088df2146322e14eba202e78b8def3afc86690e550a44d845749",
+  "final_sdist": {
+    "file": "arras-0.6.0.tar.gz",
+    "sha256": "82bf0d73dc980f2b5b3f7fe78cb00e00ea82ff07915003b3faf91cb734f53ce8"
+  },
+  "umf": {
+    "raw_receipt_sha256": "b8c98f78c7de436f766621d8b9ff726e52b16f72dc77a66904634742c4036953",
+    "safe_projection_sha256": "56b8bda9629a8922ef516f4b5a4af762e26e57ef3656fbcf68278c79cd958d48",
+    "safe_projection_recomputed_equal_by_frozen_validator": true,
+    "tool_sha256": "a97a2bb1970a32012cb733ed98ebb96369df9bfac475e2851144e77feaced4d2",
+    "probe_sha256": "3185ee3a4a52f991ab7da87e5c252c4ebcd9f8a48900a994eddc8966abcae4be",
+    "umf_wheel": {
+      "filename": "umf_core-0.10.0-py3-none-any.whl",
+      "version": "0.10.0",
+      "sha256": "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9",
+      "url": "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/umf_core-0.10.0-py3-none-any.whl",
+      "source_mode": "pinned-public-url"
+    },
+    "runtime": {
+      "implementation": "CPython",
+      "machine": "arm64",
+      "platform": "darwin",
+      "version": "3.11.17"
+    },
+    "reference_matches": 139,
+    "fresh_empty_registry_matches": 139,
+    "case_count": 139,
+    "ordered_ids_digest": "2f2513fef8820d95c0b77d5a8fb628f7b34c3f5f560924407b0666fc03a8ef57",
+    "fixture_digests": {
+      "metadata_fixture_sha256": "da883657baefe7b7a4ab8654f78e7d84ef1e281eea7bc7cee48f8662007cd687",
+      "official_corpus_sha256": "bb008a98b8448050748e65f867e7863475ccad9501a5b9229ae9e6d336691544"
+    },
+    "controls": {
+      "base": 6,
+      "extra": 10,
+      "fresh_environments_cleaned": 2
+    },
+    "payload_parity": {
+      "arras_exact_files": 172,
+      "umf_exact_files": 25
+    },
+    "base_optional_umf_absent": true,
+    "extra_pinned_umf_and_direct_url_verified": true,
+    "pth_reuse_or_source_aliases": false
+  },
+  "other_components": {
+    "doctor": {
+      "raw_sha256": "d0883ba8d2d5dfcd3da68aef40563090154cbcf93af23288f22871420736d5e3",
+      "safe_sha256": "44c6b3cc3e57022b91461b98262b5066460937183053e969dd72462d6f5f5422",
+      "python": "3.13.16",
+      "cases": 20,
+      "sdk_phases": 8,
+      "false_pass_controls": 3
+    },
+    "example": {
+      "raw_sha256": "1a8afe2a7c551caebe5618142ebd6a5cca6f81f615f5030e6cf234246c6660f7",
+      "safe_sha256": "ff95e62762729dcef271e402cf539b1ce0b4b0e718726fc44f36d2efe0364a6e",
+      "python": "3.11.17",
+      "tests": 4,
+      "memory_passed": 72
+    },
+    "distribution": {
+      "raw_sha256": "30d0aa850f0c9ba0e98aa575c24733f07c4f9cc41daad0e26a74e1e5131944e0",
+      "safe_sha256": "4da6a5927c89cbed1527e927db8a341303bcb3f329879f709ff7c5f5bf5ecf84",
+      "python": "3.11.17",
+      "source_sdist_wheel_same": true,
+      "javascript_dependencies": "workspace-linked UI dependencies; package itself extracted from each verified wheel"
+    }
+  },
+  "privacy": "Inspected safeUMF allowlist contains no source text, ordered IDs, official diagnostic messages, absolute origins or arbitrary installed-distribution inventory; checked all4safeJSONs for absolute local/runner paths and credential patterns. Rawdiagnostics remain private.",
+  "limitations": [
+    "Candidatecomponentproof only; source/native/UI/public17asset/currentrunpublication/download gates not closed by this review.",
+    "139referenceand139EMPTYregistry comparisons include expected invalid/incomplete outcomes; not139semanticallyvaliddocuments or native/action execution.",
+    "Metadata-only projection and memoryrefusal controls do not prove officialconstraints/actions/A3\u2013A7 semantics.",
+    "DoctorPython3.13.16 separate fromUMF/example/distributionPython3.11.17; no mergedruntimeclaim.",
+    "Onlyreadonlyreceipt/purefrozenvalidation/artifacthash inspection; no new producer/test/env/build/native/UI/download work.",
+    "Finaldistributionarchivechecked current82bf; earlier archives retainoriginalscope."
+  ]
+}

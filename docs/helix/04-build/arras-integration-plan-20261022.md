@@ -344,29 +344,60 @@ remain A3–A7; Ashlar's authorized publication/progress seam remains separate.
 
 ### Candidate release qualification
 
-Candidate source `6fe7b47` is the release-preparation checkpoint for the same A2
-scope as merged source `df923164`. It adds optional official source admission and
-bounded core-metadata projection relative to published 0.5.1. Legacy parsing
-remains default; hosts opt into `umf-core-metadata/1`, supported only by the memory
-adapter in this tranche. It allows schema registration/dry-run, description,
-document readback and authorized empty-graph reads; writes refuse before effects,
-and Truss refuses the profile before acceptance. This is not value/constraint or
-canonical action support. Truss 0.0.48, Weft 0.4.51 and UMF core 0.10.0 pins are unchanged. The source, UI and installed results below are
-macOS arm64 / CPython
-3.11.17 cohort evidence except where the doctor tool’s Python version is stated.
+Source commit `8f8097ab0bebb3f8eda6d76568c62ee5e84d33ef` is the release-preparation
+checkpoint for the same A2 scope as merged source `df923164`. Immutable tag
+object `686886c7ed2425e4e9e496b70fcc39272b8a52d9` identifies the tagged source.
+PR 7 main CI run `39960762557` passed all four checks. The 0.6.0 release adds
+optional official source admission and bounded core-metadata projection relative
+to published 0.5.1. Legacy parsing remains default; hosts opt into
+`umf-core-metadata/1`, supported only by the memory adapter in this tranche. It
+allows schema registration/dry-run, description, document readback and authorized
+empty-graph reads; writes refuse before effects, and Truss refuses the profile
+before acceptance. It does not qualify value/constraint execution, canonical
+actions, general native metadata, Ashlar or managed deployment. Truss 0.0.48,
+Weft 0.4.51 and UMF core 0.10.0 pins are unchanged.
 
 | Candidate evidence | Result and boundary |
 | --- | --- |
 | Source quality | Full default Python suite: 3,064 passed, 199 Truss tests deselected. Content, Ruff, format and full Pyright checks pass. |
 | UI source | Lint/type, 1,449 unit tests, audit, build and external checks pass. |
-| Exact artifacts | Final wheel SHA-256 `03959567e77a547ed94014f55bd312630a276827753aafbb5615da0b216366ec`; wheel-carried npm SHA-256 `cfdd2da7a13f088df2146322e14eba202e78b8def3afc86690e550a44d845749`. Final amended source/sdist parity passes. |
+| Integration suite | 205 checks pass on the named local candidate cohort. |
+| Exact artifacts | Candidate Mac wheel SHA-256 `03959567e77a547ed94014f55bd312630a276827753aafbb5615da0b216366ec`; candidate wheel-carried npm SHA-256 `cfdd2da7a13f088df2146322e14eba202e78b8def3afc86690e550a44d845749`. These are component identities, not public asset identities unless byte equality is established. Final amended source/sdist parity passes. |
 | Installed UMF gate | On macOS arm64 / CPython 3.11.17: 139 ordered reference and 139 fresh-empty production Registry comparisons, zero skips; six base and ten extra-enabled controls pass, with cleanup. |
 | Installed doctor/example | Doctor passes 20 cases, eight SDK phases and three controls using Python 3.13.16. Fresh extension example passes four tests and 72 memory cases. |
-| Remaining gates | Native 199-test execution is in progress. Fresh installed-native, packed-browser, hosted CI, exact-tag, public 17-asset assembly and public-download UMF repeat remain pending. These candidate results are not publication evidence. |
+| Native and packed UI | Full native suite passes 199; fresh-native run passes 64 with eight declared limits and seven replica-only cases inapplicable. Packed browser passes 272, including comparison of 67 canonical baselines. |
+| Public qualification | Published v0.6.0 from the pinned tag; release run `39963352238` and all required jobs passed. The 17-asset schema-v2 public bundle, exact public artifact identities, anonymous Linux UMF repeat, installed consumer, Linux native and UI checks are recorded in the deployment checklist and release notes. Final independent review is complete in the linked review receipt. |
 
-These are candidate results, not public-release evidence. They establish no
-value/constraint execution, canonical action, native metadata, UI, managed
-deployment or Ashlar qualification.
+The candidate results above remain evidence for their named local macOS cohorts;
+they are distinct from the public Linux release gates. The immutable
+[v0.6.0 release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.0)
+uses source `8f8097ab0bebb3f8eda6d76568c62ee5e84d33ef` and tag object
+`686886c7ed2425e4e9e496b70fcc39272b8a52d9`. Its
+[publication run `39963352238`](https://github.com/DocumentDrivenDX/arras/actions/runs/39963352238)
+passed all required jobs. The anonymous public-download UMF repeat passed on
+Linux x86_64 / CPython 3.11.17 with 139/139 ordered reference cases, 139/139
+fresh-empty production Registry cases, zero skips, six base and ten extra-enabled
+controls, and cleanup. Public installed doctor passed 20 cases, eight SDK phases
+and three controls; the fresh extension example passed four tests and 72 memory
+cases. Public UI qualification passed all 205 nonvisual cases without skips, and
+the Linux native adapter job passed. Registries remained deferred. The final
+independent public review is complete; the raw [public-repeat review](evidence/arras-0.6.0-release-20261023/public-repeat-review.json)
+has SHA-256 `1d38a416e3b161c2d769ca749267c57b56614f9d97a0cba28ff5a5e8ffef814d`.
+The [consolidated closeout manifest](evidence/arras-0.6.0-public-verification-review-20261023.json)
+indexes the release proof and supporting reviews.
+The official admission gate establishes admission-result parity,
+not 139 executable metadata cases.
+
+The exact public Arras wheel SHA-256 is
+`c3ace4273f483fbf41af3f70a71a65a6d0f9c963c5b1c71eb79c5bf1bd299a3d`; the sdist
+is `1e533d666b664cc99b1d3b8dedc8120e825988e7d997d69189a3507bc9e53ce2`, and the
+published npm archive is
+`73819275d2b784295e471c8b81fe251acb127b274cc9567946cdce9824ef9a71`. The
+independent local/tag payload comparison found all 321 unpacked npm files equal;
+the npm archive compression and wheel `RECORD` differ. It establishes payload
+correspondence only and does not claim macOS execution of the Linux release
+wheel. The public bundle carries 17 assets (16 SHA256SUMS entries plus
+`SHA256SUMS`) and release-evidence schema v2.
 
 ### Bounded A2 execution checkpoint
 

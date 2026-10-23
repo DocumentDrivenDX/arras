@@ -1,0 +1,50 @@
+{
+  "checks": [
+    "Six final result receipt hashes verified against actual cached files.",
+    "Anonymous input comparison covers 16 checksummed assets plus independently anchored SHA256SUMS, exact published 17-asset inventory.",
+    "Fresh public-download UMF raw receipt binds c3ace wheel, official SDK, 139 reference plus 139 empty-registry cases, zero skips, base6 extra10 cleanup2.",
+    "Public doctor exact wheel/npm, 20 cases, 8 telemetry phases and 3 successful-noop/misrouting false-pass controls inspected.",
+    "Fresh example exact wheel: 4 tests and memory corpus72 passed.",
+    "Linux UI raw receipt matches aggregate raw hash and exact wheel/npm;205 passed with zero failed/skipped, four negative controls, visual excluded."
+  ],
+  "findings": [],
+  "limits": [
+    "Receipt audit only; no new runtime, downloads or producer execution by reviewer.",
+    "Raw receipts retain private diagnostic paths and remain private; this safe summary does not copy them.",
+    "Linux UI receipt is identical to the pre-publication raw UI receipt and qualifies exact artifact payload; identity does not prove a separately executed second UI campaign.",
+    "Job/step success is reported by coordinator; local API jobs/run metadata not supplied to this bounded receipt audit.",
+    "Mac artifact execution scope and approved 0.6 payload-equivalence bridge remain distinct; no new Mac execution claim."
+  ],
+  "publication_run_id": "39963352238",
+  "receipt_hashes": [
+    {
+      "filename": "public-input-verification.json",
+      "sha256": "fe34098d8633f35d68d9b9d1827bb75b70f06a2ed8d3c89f144b39f5e5457028"
+    },
+    {
+      "filename": "public-distribution-verification.json",
+      "sha256": "fa93676b62df6df2d8814052a511862a0f06cf073e5adc650091153e96d641fa"
+    },
+    {
+      "filename": "public-doctor-installed.json",
+      "sha256": "dba0959d220c6d99d7d9c586443f50bf059c6cfefaa3c3380f378eda0a273377"
+    },
+    {
+      "filename": "public-extension-host-fresh-dependencies.json",
+      "sha256": "40f1c42b9e858573d310963513399ae5faf24e6c6c569982f61fe5103dd2c9ad"
+    },
+    {
+      "filename": "tests/downstream/evidence/linux/qualification-linux.json",
+      "sha256": "357969723b2fd133fa9e3bb585377389e38ff6af5095e871522c977e4914c191"
+    },
+    {
+      "filename": "public-umf-admission-installed.json",
+      "sha256": "ec5496e7af1fe6b4aba9cfa43263cbba1393ab8556b87b1928cdae3b61425b99"
+    }
+  ],
+  "result_sha256": "991d863fd47cd8343113f4397a7b70d787d04ae132c2fdbfba85aa77d00e4344",
+  "schema": "arras.independent-public-repeat-review.v1",
+  "status": "approved-with-scope",
+  "version": "0.6.0",
+  "wheel_sha256": "c3ace4273f483fbf41af3f70a71a65a6d0f9c963c5b1c71eb79c5bf1bd299a3d"
+}

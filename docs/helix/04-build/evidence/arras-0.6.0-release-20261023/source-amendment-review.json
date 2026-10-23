@@ -1,0 +1,20 @@
+{
+  "schema": "arras.a2.release-boundary-amendment-review.v1",
+  "status": "approved-static-test-only-amendment",
+  "original_commit": "163754553d1fdd6582cbea66b255af4e0352d986",
+  "amendment_commit": "6fe7b4712d9a52b1f11b6457b7835fd31836f45b",
+  "original_review_sha256": "29ebd9cbc0dff0392512a8891221520bcb9b4e39b9db4bb4650448cad9342911",
+  "changed_paths": [
+    "tests/test_truss_docs.py"
+  ],
+  "test_sha256": "84bba3b95ab5cea4ac919f3d394392cbb6f2883754082430b8300b80dec8b6b3",
+  "all14_previously_reviewed_files_unchanged": true,
+  "reviewed_change": "Exact required dependency lists now include umf-admission; added its check/build requirement, release-build phase/artifact and mandatory public-download phase/receipt assertions. Existing source/native/UI/public/registry gates remain asserted; no weakening.",
+  "head_and_worktree": "Exact amendment HEAD, clean before and after read-only review.",
+  "qualification_limits": [
+    "No test/runtime/native/UI/artifact execution by independent reviewer.",
+    "Candidate component receipts not independently audited by this amendment.",
+    "Finalsdist must contain amendedtests; previousarchives retain their exactoriginalidentities.",
+    "All actual newwheel/public17asset/runtime gates remain independently required."
+  ]
+}

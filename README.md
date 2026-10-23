@@ -12,12 +12,12 @@ Arras is embedded by host apps that supply their own identity and configuration.
 
 ## Status
 
-Beta (`0.x`). The in-memory and Truss adapters are implemented. Their qualified subsets, documented limits and exact artifact/platform evidence are recorded in the [downstream compatibility note](docs/helix/02-design/downstream-extensibility.md) and [release notes](docs/helix/05-deploy/release-notes.md). The Ashlar adapter and the feed from Truss to it are not built; the backend contract and packaged conformance corpus (`arras.conformance.run_corpus`) are what a new adapter is held to.
+Beta (`0.x`). The in-memory and Truss adapters are implemented. Arras 0.6.0 is the current published release; its [release notes](docs/helix/05-deploy/release-notes.md) identify the qualified subsets and exact artifact/platform evidence. The in-memory and Truss support claims remain bounded to those named cohorts. The Ashlar adapter and the feed from Truss to it are not built; the backend contract and packaged conformance corpus (`arras.conformance.run_corpus`) are what a new adapter is held to.
 
 ## Install
 
-After the 0.6.0 release is published, install its wheel from the GitHub Release
-after verifying the attached `SHA256SUMS`:
+Arras 0.6.0 is available from the [GitHub Release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.0).
+Install its wheel after checking the attached `SHA256SUMS`:
 
 ```bash
 pip install ./arras-0.6.0-py3-none-any.whl
@@ -301,7 +301,7 @@ Checks beyond the unit tests: `tests/test_modules.py` holds the library's module
 
 ## The Truss adapter
 
-`arras.adapters.truss.create_backend(name, source, installing=None, *, module_access=None)` builds the Truss backend (reader and provider). It is built, with its install-or-verify `migrate()`, `configure_access()` (a module's reader, writer and, optionally, auditor roles) and `install_roles()`, and a credential-free endpoint handle for the MCP process. The optional `truss` extra pins the public source tuple `truss-toolkit[native,query]==0.0.48` and `weft-sql==0.4.51`; the published 0.5.1 release qualifies its named native cohort. The 0.6.0 candidate adds optional official UMF admission and an opt-in, read-only memory metadata profile; exact-wheel release gates remain pending. The adapter is the only place that imports Truss.
+`arras.adapters.truss.create_backend(name, source, installing=None, *, module_access=None)` builds the Truss backend (reader and provider). It is built, with its install-or-verify `migrate()`, `configure_access()` (a module's reader, writer and, optionally, auditor roles) and `install_roles()`, and a credential-free endpoint handle for the MCP process. The optional `truss` extra pins the public source tuple `truss-toolkit[native,query]==0.0.48` and `weft-sql==0.4.51`. Arras 0.6.0 adds optional official UMF admission and an opt-in, read-only memory metadata profile; its public Linux release gates passed on the named release wheel. The earlier 0.5.1 native cohort remains historical evidence and does not transfer to this release. See the [0.6.0 release notes](docs/helix/05-deploy/release-notes.md) for exact cohort results, limits and the completed independent public review. The adapter is the only place that imports Truss.
 
 What the host provides:
 

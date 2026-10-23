@@ -1,0 +1,130 @@
+{
+  "schema": "arras.a2.tagged-build-independent-review.v1",
+  "status": "approved-recorded-tagged-build-umf-and-payload-boundary",
+  "source_driver_provenance": {
+    "driver": {
+      "ref": "refs/tags/v0.6.0",
+      "run_attempt": "1",
+      "run_id": "39963352238",
+      "sha": "8f8097ab0bebb3f8eda6d76568c62ee5e84d33ef",
+      "workflow_ref": "DocumentDrivenDX/arras/.github/workflows/release.yml@refs/tags/v0.6.0",
+      "workflow_sha": "8f8097ab0bebb3f8eda6d76568c62ee5e84d33ef"
+    },
+    "event": "push",
+    "schema": "arras.release-driver-provenance.v1",
+    "target": {
+      "source_sha": "8f8097ab0bebb3f8eda6d76568c62ee5e84d33ef",
+      "tag": "v0.6.0",
+      "tag_object_sha": "686886c7ed2425e4e9e496b70fcc39272b8a52d9",
+      "version": "0.6.0"
+    }
+  },
+  "provenance_sha256": "d1b4661f8b53c2076f0173fc1dc2b4f0136051f2599da4d7aaca02434f7df71f",
+  "build_transport_hashes": {
+    "arras-0.6.0-py3-none-any.whl": "c3ace4273f483fbf41af3f70a71a65a6d0f9c963c5b1c71eb79c5bf1bd299a3d",
+    "arras-0.6.0.tar.gz": "1e533d666b664cc99b1d3b8dedc8120e825988e7d997d69189a3507bc9e53ce2",
+    "documentdrivendx-arras-ui-0.6.0.tgz": "73819275d2b784295e471c8b81fe251acb127b274cc9567946cdce9824ef9a71",
+    "distribution-verification.json": "6091b9d05ad845c07f609f21b0c451ddfca0e0a2e1b4e01a17fc8b42dd4edce4",
+    "doctor-installed.json": "4a03c2423d77dfa064cd3a3850b96593c4b772ba1dc5b63a4f70d228aafa79b0"
+  },
+  "umf": {
+    "raw_receipt_sha256": "eaa5ab4e937503814bf4e83c18011152f4c75894ebe027f9a18ffa0df3d696d6",
+    "safe_receipt_sha256": "bfa03144ede16d3a8780c4b272f4b0e6ba5202cc4ea4f95eae58f1b85da67517",
+    "projection_recomputed_equal": true,
+    "wheel": {
+      "filename": "arras-0.6.0-py3-none-any.whl",
+      "sha256": "c3ace4273f483fbf41af3f70a71a65a6d0f9c963c5b1c71eb79c5bf1bd299a3d",
+      "version": "0.6.0"
+    },
+    "official_sdk": {
+      "filename": "umf_core-0.10.0-py3-none-any.whl",
+      "sha256": "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9",
+      "url": "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/umf_core-0.10.0-py3-none-any.whl",
+      "version": "0.10.0"
+    },
+    "tool_sha256": "a97a2bb1970a32012cb733ed98ebb96369df9bfac475e2851144e77feaced4d2",
+    "probe_sha256": "3185ee3a4a52f991ab7da87e5c252c4ebcd9f8a48900a994eddc8966abcae4be",
+    "fixture_digests": {
+      "metadata_fixture_sha256": "da883657baefe7b7a4ab8654f78e7d84ef1e281eea7bc7cee48f8662007cd687",
+      "official_corpus_sha256": "bb008a98b8448050748e65f867e7863475ccad9501a5b9229ae9e6d336691544"
+    },
+    "runtime": {
+      "implementation": "CPython",
+      "machine": "x86_64",
+      "platform": "linux",
+      "version": "3.11.17"
+    },
+    "corpus": {
+      "case_count": 139,
+      "empty_registry_matches": 139,
+      "ordered_case_ids_sha256": "2f2513fef8820d95c0b77d5a8fb628f7b34c3f5f560924407b0666fc03a8ef57",
+      "reference_matches": 139,
+      "skipped": 0,
+      "status": "passed"
+    },
+    "controls": {
+      "base": 6,
+      "cleanup": 2,
+      "extra": 10
+    },
+    "payload_parity": {
+      "arras_exact_files": 172,
+      "umf_exact_files": 25
+    },
+    "fresh_base_has_no_optional_umf": true,
+    "fresh_extra_direct_url_verified": true,
+    "cleanup_recorded": {
+      "completed": true,
+      "fresh_environments": 2,
+      "shared_site_packages": false
+    }
+  },
+  "other_components": {
+    "doctor": {
+      "raw_sha256": "4a03c2423d77dfa064cd3a3850b96593c4b772ba1dc5b63a4f70d228aafa79b0",
+      "python": "3.11.17",
+      "platform": {
+        "os": "linux",
+        "architecture": "x86_64",
+        "release": "6.17.0-1022-azure"
+      },
+      "cases": 20,
+      "sdk_phases": 8,
+      "false_pass_controls": 3
+    },
+    "distribution": {
+      "raw_sha256": "6091b9d05ad845c07f609f21b0c451ddfca0e0a2e1b4e01a17fc8b42dd4edce4",
+      "python": "3.11.17",
+      "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+      "source_sdist_rebuilt_wheel_exact": true,
+      "javascript_dependencies": "workspace-linked UI dependencies; package itself extracted from each verified wheel"
+    }
+  },
+  "payload_equivalence": {
+    "report_sha256": "95eccbab6fd66992dc928f8b1e64426dc2d61e4cd771c6a28c290791fa2a9f19",
+    "local": {
+      "wheel": "03959567e77a547ed94014f55bd312630a276827753aafbb5615da0b216366ec",
+      "npm": "cfdd2da7a13f088df2146322e14eba202e78b8def3afc86690e550a44d845749",
+      "sdist": "82bf0d73dc980f2b5b3f7fe78cb00e00ea82ff07915003b3faf91cb734f53ce8"
+    },
+    "tag": {
+      "wheel": "c3ace4273f483fbf41af3f70a71a65a6d0f9c963c5b1c71eb79c5bf1bd299a3d",
+      "npm": "73819275d2b784295e471c8b81fe251acb127b274cc9567946cdce9824ef9a71",
+      "sdist": "1e533d666b664cc99b1d3b8dedc8120e825988e7d997d69189a3507bc9e53ce2"
+    },
+    "npm_tar_literal_bytes_equal": true,
+    "npm_tar_stream_sha256": "9b5c078d5cab2f03d294c306b41f3ade63e56431e45e94772078ff38554aae5a",
+    "all321_file_headers_payloads_equal": true,
+    "both173_wheel_RECORDs_valid": true,
+    "wheel_type_mode_flags_equal": true,
+    "sdist480_files_only_nested_compressed_npm_differs": true,
+    "decision": "Compression-only qualified payload reuse; original Mac receipts stay bound to039595/cfdd and new explicitbridge binds c3ace/7381. No Mac execution oftaggedwheel claimed."
+  },
+  "limitations": [
+    "Actualtaggedbuild/UMFcomponent identity audit only; full17aggregate/publicassets/publicrepeat/native/UIresults remainpending.",
+    "139reference+139EMPTYcomparisons include expectedinvalid/incomplete outcomes; not139validdocuments or officialaction/nativeexecution.",
+    "Cleanup records only twoownedfreshUMFenvironments; no broaderprocesscleanupclaim.",
+    "Static/pureparsing/localartifacthashcomparison only, no producer/runtime/test/env/build/native/UI/networkexecution.",
+    "Differentartifactcontainerhashes explicit; prior0.5.1bridge not reused."
+  ]
+}
