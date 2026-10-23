@@ -21,6 +21,8 @@ sys.path.insert(0, str(ROOT))
 
 _checker = importlib.import_module("tools.check_public_content")
 _content_errors = _checker._content_errors
+_python_dependency_errors = _checker._python_dependency_errors
+_requirements_names = _checker._requirements_names
 _npm_dependency_errors = _checker._npm_dependency_errors
 check = _checker.check
 consumer_import_errors = _checker.consumer_import_errors
@@ -32,6 +34,46 @@ validate_workspace_path = _checker.validate_workspace_path
 
 def test_repository_public_origins_and_fixture_provenance_are_declared() -> None:
     assert check(ROOT) == []
+
+
+def test_pep508_direct_reference_name_and_locked_origin_checks(tmp_path: Path) -> None:
+    assert _requirements_names(
+        [
+            "plain-name",
+            "versioned_name>=1.2",
+            "extra-name[feature]==2.0",
+            "umf-core @ https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/umf_core-0.10.0-py3-none-any.whl#sha256=abc",
+        ]
+    ) == {"plain-name", "versioned-name", "extra-name", "umf-core"}
+
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    for name in ("pyproject.toml", "uv.lock"):
+        (workspace / name).write_bytes((ROOT / name).read_bytes())
+    policy = json.loads((ROOT / "tools/public-content-policy.json").read_text(encoding="utf-8"))
+    expected = policy["dependencies"]["python"]
+    lock_path = workspace / "uv.lock"
+    lock = lock_path.read_text(encoding="utf-8")
+    trusted = "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/umf_core-0.10.0-py3-none-any.whl"
+
+    lock_path.write_text(
+        lock.replace(trusted, "https://untrusted.invalid/umf.whl"), encoding="utf-8"
+    )
+    assert any(
+        "undeclared artifact origin" in error
+        for error in _python_dependency_errors(workspace, expected)
+    )
+
+    lock_path.write_text(
+        lock.replace(
+            "sha256:49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9",
+            "sha256:invalid",
+        ),
+        encoding="utf-8",
+    )
+    assert any(
+        "without SHA-256" in error for error in _python_dependency_errors(workspace, expected)
+    )
 
 
 def test_undeclared_import_fails_only_in_consumer_scope(tmp_path: Path) -> None:

@@ -7,13 +7,15 @@
       "optional_extras": {
         "devhost": ["uvicorn"],
         "otel": ["opentelemetry-api"],
-        "truss": ["truss-toolkit"]
+        "truss": ["truss-toolkit"],
+        "umf": ["umf-core"]
       },
       "imports": {
         "graphql": {"distribution": "graphql-core", "source": "required"},
         "uvicorn": {"distribution": "uvicorn", "source": "optional:devhost"},
         "opentelemetry": {"distribution": "opentelemetry-api", "source": "optional:otel"},
         "truss": {"distribution": "truss-toolkit", "source": "optional:truss"},
+        "umf": {"distribution": "umf-core", "source": "optional:umf"},
         "psycopg": {
           "distribution": "psycopg",
           "source": "transitive:truss",
@@ -67,6 +69,7 @@
       "examples",
       "src/arras/conformance",
       "tests/vectors",
+      "tests/fixtures/umf-core-reference",
       "ui/src/test"
     ],
     "entries": [
@@ -84,6 +87,7 @@
       {"path":"src/arras/conformance/corpus.json","provenance":"authored-conformance-corpus","source":"docs/helix/02-design/contracts/CONTRACT-004-backend-contract.md","sha256":"f6456cd2b61a0979d076886cc1bb5c785fc889e96cf75c8f876df38e13bfae31"},
       {"path":"src/arras/conformance/module.umf.json","provenance":"authored-conformance-fixture","source":"tests/test_conformance.py","sha256":"2aab3c0e8d8ba9a6d1e6bad6d852e1586bb1d3bf3b6aa7937871bed823aad289"},
       {"path":"src/arras/conformance/view_cases.json","provenance":"authored-conformance-fixture","source":"tests/test_view_conformance.py","sha256":"1b017c65e87c8a0141ffe7483b979194547c5cd01b23af2307dfbd0a26b87273"},
+      {"path":"tests/fixtures/umf-core-reference/current-conformance.json","provenance":"upstream-official-umf-core-conformance-corpus","source":"https://github.com/DocumentDrivenDX/umf/blob/umf-v0.5.4/fixtures/metamodel/current-conformance.json","license":"MIT OR Apache-2.0 (upstream notices preserved in tests/fixtures/umf-core-reference)","sha256":"bb008a98b8448050748e65f867e7863475ccad9501a5b9229ae9e6d336691544"},
       {"path":"tests/vectors/brand.json","provenance":"authored-test-vector","source":"tests/test_ui.py","sha256":"011675fd71c12bf7812d36a34b355b225dedf30e5b016c4863e8570df6a6c254"},
       {"path":"tests/vectors/graphfile.json","provenance":"authored-test-vector","source":"tests/test_graphfile.py","sha256":"e8e06d9d01dce42a338cabd418374c8a228605c3ac31bf6bc3825811aabf5d43"},
       {"path":"tests/vectors/inputs.json","provenance":"authored-test-vector","source":"tests/test_inputs_vectors.py","sha256":"5a461fafac10a7f030d51c5469d944b15507fb2e9560bb15b23dac7ca8b030a8"},

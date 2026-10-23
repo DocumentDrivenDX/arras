@@ -53,10 +53,14 @@ def _safe_https(url: str) -> bool:
 
 
 def _requirements_names(values: Iterable[str]) -> set[str]:
-    return {
-        re.split(r"[<>=!~;\[]", req, maxsplit=1)[0].strip().lower().replace("_", "-")
-        for req in values
-    }
+    names: set[str] = set()
+    for requirement in values:
+        # PEP 508 direct references put the distribution name before ` @ `;
+        # the URL's punctuation is not part of the dependency name.
+        candidate = requirement.partition(" @ ")[0] if " @ " in requirement else requirement
+        name = re.split(r"[<>=!~;\[]", candidate, maxsplit=1)[0]
+        names.add(name.strip().lower().replace("_", "-"))
+    return names
 
 
 def _dependency_errors(root: Path, policy: Mapping[str, Any]) -> list[str]:
