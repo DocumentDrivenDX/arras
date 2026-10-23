@@ -1807,12 +1807,62 @@ with the named SDK candidate: 36 tests passed, one failed and none skipped.
 The genuine generated public-host path, denial and uncertain-response controls
 passed. Invalid allowed-value validation exposed an unmapped official
 `CORE_SCHEMA_PROPERTIES` diagnostic; that failed attempt remains historical
-while a narrow fixed-code correction is reviewed. Independent archive/installed
+before the narrow fixed-code correction was reviewed. Independent archive/installed
 byte inspection matched all 174 selected Arras and 36 SDK payload members,
 but does not turn the failing run into an overall qualification pass.
 
 Corrected installed Arras whole-path proof and A2's 139 reference plus 139
-fresh-empty Registry regression checks remain pending. No new dependency pin,
-release, Truss/native/managed
+fresh-empty Registry regression checks were still pending at that source
+checkpoint; their later result follows. No new dependency pin, release, Truss/native/managed
 execution, durable restart, general action/constraint support or Ashlar
 qualification follows from this source checkpoint.
+
+### Corrected installed memory qualification — 2026-10-23
+
+Source `5ddfc34947994c33eebab04d017f06c43e396fac` builds exact Arras wheel
+`f5ccbd3bf5c6b21f44768f2283797a74e517f0f2053b77e58dbf0a93135b0626`,
+metadata version 0.6.0. It is an unreleased action-branch candidate, distinct
+from immutable public v0.6.0. A fresh environment with that wheel and the
+checksum-verified SDK candidate passes the required installed gate: 39 tests,
+zero failures/errors/skips, exit 0, 117.72 seconds reported by pytest. The
+retained XML records 105.000 seconds for its suite; those timings are separate
+observations. The coordinator executed the gate with isolated Python, outside
+the checkout, importlib test mode and required engine flags. Sol inspected the
+source, retained results and artifact bytes without rerunning the gate.
+
+The [path-free installed review](evidence/umf-actions-20261023/installed-memory-qualification.safe.json)
+binds the XML/log, installed-identity verifier, exact wheel and SDK, source
+fixtures and test hashes. Independent inspection matches all 174 selected Arras
+and 36 SDK archive/installed members plus all 181/43 hashed installed RECORD
+entries, with no mismatch or selected-origin escape. The observed environment
+is CPython 3.11.17 on macOS 27.0.1 arm64. This selected-package identity check
+does not imply a global dependency/alias audit or a new no-engine installed gate.
+
+Actual unchanged generation and `SyncActions` exercise public `InMemory`
+registration, officially admitted import, Apply/Validate and ordinary query
+read-at-least. Definite generated denial stays distinct from unknown lost or
+malformed responses after a real commit; the controlled transport wrappers
+make one call and do not retry. The corrected constraint-negative path returns
+fixed `Invalid` evidence without raw SDK prose. The single existing A2 oracle
+test checks 139 unique reference cases and 139 fresh-empty Registry comparisons,
+including validity, completeness and exact ordered diagnostics, under the same
+installed candidate. Reference-only registry callbacks remain test-only.
+
+Two later test-only custody controls leave runtime source `5ddfc34` unchanged.
+The coordinator's final same-file run reports 19 memory-control tests passing
+with no failures/errors/skips (9.09 seconds pytest wall time; 6.450 seconds in
+the retained XML), including both new controls: a
+fault after work-copy mutation preserves the prior state/rows/sequence/replay/
+tokens, and expiry waits for action publication before a later identical repeat
+is denied without readmission or replay. The final file includes an explicit
+shared-lock ownership assertion before the expiry attempt. Sol reviewed the
+source, exact file hash and retained XML without rerunning those controls; their
+bridge doubles prove custody rather than official semantic evaluation. The
+receipt binds their working-file hash separately from the installed wheel's
+runtime commit. The first failed installed attempt and interrupted full-source
+diagnostic remain retained. Remote CI still supplies the full base gate.
+
+This qualifies only the named one-module memory SET subset and same-process
+replay/token lifetime. No new SDK dependency pin, publication, generated get/read
+transport, replica, durable restart, Truss/native/managed execution, general
+action/constraint evaluation or Ashlar support is established.

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import hashlib
+import threading
 from collections.abc import Callable, Mapping
 from datetime import UTC, datetime
 from typing import Any, NoReturn, cast
@@ -137,6 +138,84 @@ def _registered_world(monkeypatch: pytest.MonkeyPatch) -> InMemory:
     assert set(world.backends) == {"memory"}
     world.register(SOURCE)
     return world
+
+
+def _lock_is_held_elsewhere(lock: Any) -> bool:
+    acquired = lock.acquire(blocking=False)
+    if acquired:
+        lock.release()
+    return not acquired
+
+
+def _release_and_join(
+    release: threading.Event,
+    action_thread: threading.Thread,
+    expiry_thread: threading.Thread | None,
+) -> None:
+    release.set()
+    action_thread.join(timeout=5)
+    if expiry_thread is not None:
+        expiry_thread.join(timeout=5)
+
+
+def _run_action_expiration_race(
+    world: InMemory,
+    store: MemoryStore,
+    writer: Principal,
+    request: Mapping[str, object],
+    monkeypatch: pytest.MonkeyPatch,
+) -> tuple[list[Mapping[str, object]], list[BaseException], list[bool]]:
+    validation_entered = threading.Event()
+    release_validation = threading.Event()
+    expiry_started = threading.Event()
+    expiry_finished = threading.Event()
+    action_results: list[Mapping[str, object]] = []
+    action_errors: list[BaseException] = []
+    action_admissions: list[bool] = []
+    original_expire = store.access.expire
+
+    def materialize(prepared: PreparedSetModule, raw: Mapping[str, object]) -> AdmittedSet:
+        action_admissions.append(True)
+        return _materialize_changed(prepared, raw)
+
+    def block_validation(prepared: PreparedSetModule, values: Mapping[str, str]) -> None:
+        validation_entered.set()
+        if not release_validation.wait(timeout=5):
+            raise AssertionError("test did not release action validation")
+        _validate_values(prepared, values)
+
+    def expire(token: str) -> None:
+        expiry_started.set()
+        original_expire(token)
+        expiry_finished.set()
+
+    monkeypatch.setattr(_umf_actions, "materialize", materialize)
+    monkeypatch.setattr(_umf_actions, "validate_candidate", block_validation)
+    monkeypatch.setattr(store.access, "expire", expire)
+
+    def perform_action() -> None:
+        try:
+            action_results.append(world.arras.session(writer).execute(request))
+        except BaseException as exc:
+            action_errors.append(exc)
+
+    action_thread = threading.Thread(target=perform_action)
+    expiry_thread: threading.Thread | None = None
+    try:
+        action_thread.start()
+        assert validation_entered.wait(timeout=5)
+        assert _lock_is_held_elsewhere(store.access.serialization_lock())
+        expiry_thread = threading.Thread(target=store.access.expire, args=(writer.token,))
+        expiry_thread.start()
+        assert expiry_started.wait(timeout=5)
+        assert not expiry_finished.wait(timeout=0.05)
+    finally:
+        _release_and_join(release_validation, action_thread, expiry_thread)
+
+    assert (
+        not action_thread.is_alive() and expiry_thread is not None and not expiry_thread.is_alive()
+    )
+    return action_results, action_errors, action_admissions
 
 
 def test_candidate_store_registration_is_byte_owned_and_store_only(
@@ -437,6 +516,90 @@ def test_provider_refusals_are_acknowledged_but_postpublish_uncertainty_is_not(
     with pytest.raises(Unsupported, match="action receipt shape"):
         world.arras.session(writer).execute(request)
     assert store.state.seq == before + 2
+
+
+def test_work_copy_failure_before_publish_keeps_rows_tokens_and_replays_atomic(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    world = _registered_world(monkeypatch)
+    store = _store(world)
+    monkeypatch.setattr(_umf_actions, "admit_record", _admit_initial)
+    world.import_records(
+        MODULE,
+        [{"type": "Probe", "key": "probe-1", "properties": {VALUE_FIELD: "Initial"}}],
+    )
+    writer = world.person("writer", MODULE, "read", "write")
+    monkeypatch.setattr(_umf_actions, "materialize", _materialize_changed)
+    monkeypatch.setattr(_umf_actions, "validate_candidate", _validate_values)
+    request: dict[str, object] = {
+        "contract": "umf.access/1",
+        "schema": hashlib.sha256(SOURCE).hexdigest(),
+        "kind": "apply",
+        "action": ACTION,
+        "inputs": {"item": {KEY_FIELD: "probe-1"}, "label": "Changed"},
+        "idempotency_key": "before-publish-fault",
+    }
+    before = store.state
+    before_entity = dict(before.entities[Ref(RECORD, "probe-1")].props)
+    before_tokens = dict(before.declared_tokens)
+    before_replays = dict(before.declared_replays)
+    saw_mutated_work = False
+
+    def fail_after_work_mutation(work: Any) -> str:
+        nonlocal saw_mutated_work
+        entity = work.entities[Ref(RECORD, "probe-1")]
+        assert entity.props[VALUE_FIELD] == "Changed"
+        assert work.seq == before.seq + 1
+        saw_mutated_work = True
+        raise RuntimeError("injected prepublication failure")
+
+    monkeypatch.setattr(store, "_new_declared_token", fail_after_work_mutation)
+    with pytest.raises(RuntimeError, match="injected prepublication failure"):
+        world.arras.session(writer).execute(request)
+
+    assert saw_mutated_work
+    assert store.state is before
+    assert before.entities[Ref(RECORD, "probe-1")].props == before_entity
+    assert store.state.declared_tokens == before_tokens
+    assert store.state.declared_replays == before_replays
+    assert store.state.seq == 1
+
+
+def test_expiration_waits_for_action_lock_then_denies_replay_before_admission(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    world = _registered_world(monkeypatch)
+    store = _store(world)
+    monkeypatch.setattr(_umf_actions, "admit_record", _admit_initial)
+    world.import_records(
+        MODULE,
+        [{"type": "Probe", "key": "probe-1", "properties": {VALUE_FIELD: "Initial"}}],
+    )
+    writer = world.person("writer", MODULE, "read", "write")
+    request: dict[str, object] = {
+        "contract": "umf.access/1",
+        "schema": hashlib.sha256(SOURCE).hexdigest(),
+        "kind": "apply",
+        "action": ACTION,
+        "inputs": {"item": {KEY_FIELD: "probe-1"}, "label": "Changed"},
+        "idempotency_key": "grant-race",
+    }
+    action_results, action_errors, action_admissions = _run_action_expiration_race(
+        world, store, writer, request, monkeypatch
+    )
+    assert action_errors == []
+    assert len(action_results) == 1
+    assert action_results[0]["status"] == "committed"
+    committed_state = store.state
+    assert committed_state.seq == 2
+    assert len(action_admissions) == 1
+    assert world.arras.session(writer).execute(request) == {
+        "schema": request["schema"],
+        "error": {"code": "DENIED"},
+    }
+    assert store.state is committed_state
+    assert store.state.seq == 2
+    assert len(action_admissions) == 1
 
 
 @pytest.mark.parametrize("key", ["", "probe/1", "é" * 4, "x" * 129])
