@@ -65,3 +65,16 @@ def read_and_validate(text: str) -> EngineResult | ReaderRefusal:
         for item in result.diagnostics
     )
     return EngineResult("umf-core", installed_version, result.valid, result.complete, diagnostics)
+
+
+def read_typed_snapshot(text: str) -> object:
+    """Read a post-validation document through the official typed reader.
+
+    The caller is responsible for admitting this exact text first. Returning only an
+    `exclude_unset` model dump keeps the mutable official model inside this bridge while
+    preserving which optional fields were explicitly supplied.
+    """
+    sdk = cast(Any, import_module("umf"))
+    reader = cast(Callable[[str, str], Any], sdk.read_document)
+    document = reader(text, "json")
+    return document.model_dump(mode="python", exclude_unset=True)

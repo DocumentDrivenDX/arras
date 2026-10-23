@@ -1,0 +1,57 @@
+{
+  "id": "keys",
+  "modules": [
+    {
+      "elements": [
+        {
+          "extensions": {},
+          "id": "Order",
+          "keys": [
+            {
+              "fields": [
+                {
+                  "element": "id",
+                  "module": "m"
+                }
+              ],
+              "id": "pk",
+              "name": "Order ID",
+              "primary": true
+            }
+          ],
+          "kind": "record",
+          "members": [
+            {
+              "element": "id",
+              "module": "m"
+            },
+            {
+              "element": "number",
+              "module": "m"
+            }
+          ]
+        },
+        {
+          "cardinality": "one",
+          "extensions": {},
+          "id": "id",
+          "kind": "field",
+          "nullability": "required",
+          "scalarType": "string"
+        },
+        {
+          "cardinality": "one",
+          "extensions": {},
+          "id": "number",
+          "kind": "field",
+          "nullability": "required",
+          "scalarType": "string"
+        }
+      ],
+      "id": "m",
+      "namespace": "sales"
+    }
+  ],
+  "umf": "0.10.0",
+  "vocabularies": {}
+}
