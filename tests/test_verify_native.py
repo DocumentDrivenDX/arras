@@ -10,6 +10,7 @@ import os
 import subprocess
 import sys
 import sysconfig
+import time
 import types
 import zipfile
 from contextlib import redirect_stdout
@@ -760,3 +761,104 @@ def test_owned_process_timeout_interrupts_and_reaps_its_process_group(tmp_path: 
         )
     assert "started" in captured.value.stdout
     assert not captured.value.leftovers
+
+
+def _owned_group_command(tmp_path: Path) -> tuple[list[str], Path]:
+    marker = tmp_path / "processes.txt"
+    ready = tmp_path / "grandchild-ready.txt"
+    child_code = (
+        "import signal, time; from pathlib import Path; "
+        "signal.signal(signal.SIGINT, signal.SIG_IGN); "
+        "signal.signal(signal.SIGTERM, signal.SIG_IGN); "
+        f"Path({str(ready)!r}).write_text('ready'); time.sleep(60)"
+    )
+    parent_code = (
+        "import os, subprocess, sys, time; from pathlib import Path\n"
+        f"child = subprocess.Popen([sys.executable, '-I', '-S', '-c', {child_code!r}], "
+        "stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)\n"
+        f"deadline = time.monotonic() + 5; ready = Path({str(ready)!r})\n"
+        "while not ready.exists() and time.monotonic() < deadline:\n"
+        "    time.sleep(0.01)\n"
+        "assert ready.exists()\n"
+        f"Path({str(marker)!r}).write_text(f'{{os.getpid()}} {{child.pid}}')\n"
+        "time.sleep(60)\n"
+    )
+    return [sys.executable, "-I", "-S", "-c", parent_code], marker
+
+
+def _install_owned_group_cancellation(
+    monkeypatch: pytest.MonkeyPatch, marker: Path
+) -> tuple[list[subprocess.Popen[str]], KeyboardInterrupt, KeyboardInterrupt, dict[str, bool]]:
+    processes: list[subprocess.Popen[str]] = []
+    original_init = subprocess.Popen.__init__
+    original_communicate = subprocess.Popen.communicate
+    cancellation = KeyboardInterrupt("test cancellation")
+    cleanup_cancellation = KeyboardInterrupt("second cleanup cancellation")
+    state = {"interrupted": False, "cleanup_interrupted": False}
+
+    def record_process(self: subprocess.Popen[str], *positional: Any, **keywords: Any) -> None:
+        original_init(self, *positional, **keywords)
+        processes.append(self)
+
+    def cancel_while_waiting(
+        self: subprocess.Popen[str], timeout: float | None = None
+    ) -> tuple[str, str]:
+        if processes and self is processes[0] and not state["interrupted"]:
+            deadline = time.monotonic() + 5
+            while not marker.exists() and time.monotonic() < deadline:
+                time.sleep(0.01)
+            assert marker.is_file(), "child processes did not start before cancellation"
+            state["interrupted"] = True
+            raise cancellation
+        if processes and self is processes[0] and not state["cleanup_interrupted"]:
+            state["cleanup_interrupted"] = True
+            raise cleanup_cancellation
+        return original_communicate(self, timeout=timeout)
+
+    monkeypatch.setattr(subprocess.Popen, "__init__", record_process)
+    monkeypatch.setattr(subprocess.Popen, "communicate", cancel_while_waiting)
+
+    return processes, cancellation, cleanup_cancellation, state
+
+
+def _pid_exists(pid: int) -> bool:
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
+def _assert_owned_group_reaped(process: subprocess.Popen[str], marker: Path) -> None:
+    assert process.returncode is not None
+    parent_pid, child_pid = (int(value) for value in marker.read_text().split())
+    assert parent_pid == process.pid
+    assert child_pid > 0
+    deadline = time.monotonic() + 5
+    while time.monotonic() < deadline:
+        if not _pid_exists(process.pid) and not _pid_exists(child_pid):
+            return
+        time.sleep(0.05)
+    pytest.fail("owned child or grandchild remained after cancellation cleanup")
+
+
+@pytest.mark.skipif(os.name == "nt", reason="process-group SIGINT semantics are POSIX-specific")
+def test_owned_process_cancellation_reaps_child_and_grandchild_and_preserves_interrupt(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    native_process = importlib.import_module("_native_process")
+    monkeypatch.setattr(native_process, "_INTERRUPT_GRACE_SECONDS", 0.15)
+    monkeypatch.setattr(native_process, "_TERM_GRACE_SECONDS", 0.15)
+    args, marker = _owned_group_command(tmp_path)
+    processes, cancellation, _cleanup_cancellation, state = _install_owned_group_cancellation(
+        monkeypatch, marker
+    )
+    with pytest.raises(KeyboardInterrupt, match="test cancellation") as captured:
+        verify_native.run_owned(args, cwd=tmp_path, env=dict(os.environ), timeout=60)
+
+    assert captured.value is cancellation
+    assert state == {"interrupted": True, "cleanup_interrupted": True}
+    assert len(processes) == 1
+    _assert_owned_group_reaped(processes[0], marker)

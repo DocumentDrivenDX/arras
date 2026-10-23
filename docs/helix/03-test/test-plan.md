@@ -784,3 +784,12 @@ The empty policy, exact refusal context, prior caller work/settings, detach,
 rollback and complete native-state equality requirements remain mandatory.
 Other operation, transport-fault and performance bounds remain unchanged; this
 alignment does not waive any timing assertion or permit an unbounded installer.
+
+
+PR 9 requires both complete campaigns against the exact final installed Arras
+wheel bytes: actual Lakebase and fresh installed macOS. Retain the canonical
+release-builder wheel before running them and bind its SHA-256 to both original
+receipts. The final tagged build and public-download wheel must have that same
+SHA-256. Any byte change, including packaging or metadata, requires both full
+campaigns rebound and rerun. Payload correspondence, earlier CI, a partial run
+or an isolated successful case cannot substitute for either complete campaign.

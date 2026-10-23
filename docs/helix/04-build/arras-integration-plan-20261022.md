@@ -1827,5 +1827,42 @@ eight declared limits, zero failed cases and one harness error:
 timeout/cancellation. Its original failed receipt has SHA-256
 `26e445cecd6af4407a176333cd80a7ed0d0542a7c1a467cfbaaf1eb188036548`.
 Independent cleanup confirmed zero owned PostgreSQL/conformance processes and
-postmaster PID files. The private fixture and original receipt are retained for
-bounded diagnosis; the fresh-installed native gate remains open.
+postmaster PID files. The verifier removed its temporary native environment after cleanup; the
+original receipt remains retained for reproduction from a fresh environment.
+The fresh-installed native gate remains open.
+
+
+The sixth actual attempt passed admission and the strict-empty-policy probe,
+including actual selected-role and caller/native containment checks, then stopped
+at selected-policy installation. Rollback-contained diagnostics identified a
+second exact platform role, `databricks_superuser`, through the public typed
+`third_party_grant` relation/pre-ownership result. The typed identity proof has
+SHA-256 `9b4aecbcbc91463860c88212ee746c5d13b193cd8dd9cc6b54d96adbb2c7353c`.
+An exhaustive owned scratch-object census covered schema, relation, sequence,
+routine, type and column ACLs, with no manual grants; the exact external set was
+four existing provider roles, with no unknown grantee. Its private proof has
+SHA-256 `a4748a0ecba5174a0c1d1213c0d60f16563693034641ebfb42309beef5b618f2`.
+Scratch objects were rolled back, native/bootstrap state was unchanged, and all
+sixteen ordinary-actor/platform-role membership, SET and USAGE closures were
+false. Independent review cleared only that explicit four-role target policy;
+this acknowledges existing provider raw access and grants no ordinary authority.
+Target/auth bindings were replaced explicitly; any additional role or identity
+or ACL drift remains blocked. The full managed gate remains open.
+
+The isolated seed case subsequently completed in 17.41 seconds, with its four
+record seed taking 0.40 seconds and no driver SQL error. This source-local
+diagnostic compared 104 Python/corpus members with the candidate wheel; it is
+not installed qualification. A post-report wrapper property error and its
+independent zero-process/PID cleanup supplement are retained separately.
+
+A later fresh-installed Mac retry of wheel `7608193d...` was intentionally
+cancelled after CI's Linux-built candidate was observed as different bytes
+(`5dc897a9a153fb004926dcbd69b3537f969875a2a4cc26f09d2de0cd25d7bfe8`).
+No partial corpus count is inferred. The original cancellation logs and receipt
+limitation remain retained, and independent cleanup confirmed zero owned native
+processes/PID files. Cancellation exposed missing parent interrupt reaping in
+the qualification helper, which is corrected separately. CI now retains its
+exact wheel/sdist alongside installed UMF evidence so canonical release-builder
+bytes can be selected before both full campaigns. README wording is made neutral
+before this final artifact freeze; no passed gate is transferred across a byte
+change. Final installed campaign and public-wheel identities must match exactly.

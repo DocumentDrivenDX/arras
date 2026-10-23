@@ -55,6 +55,16 @@ jobs:
         run: |
           uv run --no-project --isolated --with dist/*.whl python -c "import importlib.util, arras, arras.ui, arras.adapters.truss; assert importlib.util.find_spec('truss') is None, 'the base wheel must not need Truss'; print(arras.CONTRACT_VERSIONS, arras.ui.npm_package().name); assert (arras.ui.STATIC / arras.ui.PAGE).is_file()"
 
+      - name: Retain exact installed candidate artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: arras-installed-candidate-artifacts
+          path: |
+            dist/arras-*.whl
+            dist/arras-*.tar.gz
+            artifacts/umf-admission-installed.json
+          if-no-files-found: error
+
   ui:
     name: Operator Console UI
     runs-on: ubuntu-latest
