@@ -432,6 +432,14 @@ accepts a caller's prebuilt plan as authority. Current source/CAS, current
 grants, work-copy mutation and journal/receipt commit form one custody boundary.
 An unknown settlement remains unknown, with no automatic retry.
 
+Candidate receipt tokens are opaque issued identities bound to the store
+instance, module and exact registered source. Rows, receipt, token issuance and
+replay state publish atomically. `reached` authenticates the person, resolves an
+exact issued token and checks current read access to its module; a generic
+sequence prefix cannot prove source or issuer identity. Foreign or unknown
+tokens do not become fabricated successful/invalid local receipts. This is a
+same-process memory guarantee, with no replica or restart durability claim.
+
 `MemoryStore(..., *, action_profile="arras-umf-set/1")` is explicit opt-in;
 the default is `None`. Construction and default description do not load an
 optional action SDK. Only opted-in description may inspect runtime capability;

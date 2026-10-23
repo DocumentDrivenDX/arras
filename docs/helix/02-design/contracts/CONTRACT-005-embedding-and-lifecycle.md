@@ -884,6 +884,18 @@ The constructor and `Arras.start` also accept the programmatic keyword
 qualification before acceptance. Construction imports no optional engine and
 performs no I/O. This adds no TOML, environment, CLI or automatic profile selection.
 
+The candidate `arras-umf-set/1` profile is selected explicitly at the host and
+provider boundaries (CONTRACT-002/003/004). Its public memory construction path
+is `arras.testing.InMemory(*, store="memory", replica="memory_replica",
+action_profile=None)`. `None` preserves the existing authority/replica behavior;
+`"arras-umf-set/1"` selects one authority, store-only placement and the candidate
+host profile. It exposes no replica capability; feed/sync requests are
+unsupported in that mode. Construction remains lazy and performs no SDK loading,
+artifact build or I/O. Missing qualified action runtime leaves the profile
+unadvertised and candidate calls unsupported. This adds no configuration-file,
+environment or CLI selector, and introduces no fresh installation or native
+support claim.
+
 ### Composed UI schema authorization — EX-04
 
 `arras.ui.create_app(..., authorize_schema=None)` and its `UI` construction path

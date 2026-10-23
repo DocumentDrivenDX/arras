@@ -250,6 +250,10 @@ The existing STRING key carrier is retained. It MUST use a separately qualified
 opt-in execution profile; the read-only metadata profile and legacy dialect keep
 their present meaning. Canonical source MUST NOT be lowered by the legacy parser
 or by a new Arras rule, literal, selector or recipe evaluator.
+The admitted key component remains its original STRING value and must fit
+`[A-Za-z0-9._:-]{1,128}`. An official-valid key outside that native carrier is
+unsupported; tuple hex, coercion or Unicode normalization cannot substitute for
+it. This key restriction does not narrow official scalar-value semantics.
 
 UMF CONTRACT-049/900/901 owns value, declaration and invocation meaning;
 CONTRACT-079 owns the generated wire. A session-bound synchronous
@@ -262,6 +266,11 @@ idempotency key for validation and returns `{schema, valid: true}` on success.
 Wire fields/codes MUST follow that exact source cohort; no additional kind is
 inferred from Arras method names.
 Source mismatch and unsupported meanings MUST stop before planning or effects.
+A definite refusal uses the request's source digest in its matching-schema
+known-code error envelope, including `SCHEMA_MISMATCH`. A current-store digest
+in that refusal would instead be a wrong-schema response to the generated
+client. Post-commit receipt/serialization failures and unclassified dispatch
+failures retain write uncertainty; they MUST NOT become no-effect refusals.
 
 The qualified engine/provider MUST enforce the selected inputs, constraints and
 frames under current person authority. Unsupported condition meanings refuse

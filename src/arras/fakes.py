@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import threading
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import replace
 from datetime import datetime
@@ -39,6 +40,7 @@ from arras.errors import (
     Unsupported,
     Violation,
 )
+from arras.fakes_actions import DeclaredActions
 from arras.fakes_domain import domains, stored_props
 from arras.fakes_eval import evaluate
 from arras.fakes_export import ExportRecords
@@ -57,6 +59,7 @@ from arras.fakes_state import utcnow as _now
 from arras.fakes_weft import WEFT, check_profiles, resolve
 from arras.model import (
     COLUMN_SCALARS,
+    ActionProfile,
     Capabilities,
     EntityTypeInfo,
     ModuleInfo,
@@ -95,6 +98,7 @@ class FakeAccess:
     """Who the backend knows by token, and what each person may do in each module."""
 
     def __init__(self) -> None:
+        self._lock = threading.RLock()
         self.tokens: dict[str, str] = {}
         self.grants: dict[str, set[tuple[str, Mode]]] = {}
         self.admins: set[str] = set()
@@ -107,22 +111,30 @@ class FakeAccess:
         token: str | None = None,
         admin: bool = False,
     ) -> Principal:
-        token = token or f"token-{user}"
-        self.tokens[token] = user
-        self.grants.setdefault(user, set()).update((module, m) for m in modes)
-        if admin:
-            self.admins.add(user)
+        with self._lock:
+            token = token or f"token-{user}"
+            self.tokens[token] = user
+            self.grants.setdefault(user, set()).update((module, m) for m in modes)
+            if admin:
+                self.admins.add(user)
         return Principal(user=user, token=token, admin=admin)
 
     def expire(self, token: str) -> None:
-        self.tokens.pop(token, None)
+        with self._lock:
+            self.tokens.pop(token, None)
 
     def authenticated(self, principal: Principal) -> bool:
-        return bool(principal.token) and self.tokens.get(principal.token) == principal.user
+        with self._lock:
+            return bool(principal.token) and self.tokens.get(principal.token) == principal.user
 
     def allowed(self, principal: Principal, module: str, mode: Mode) -> bool:
-        held = self.grants.get(principal.user, set())
-        return (module, mode) in held or ("*", mode) in held  # "*": every module
+        with self._lock:
+            held = self.grants.get(principal.user, set())
+            return (module, mode) in held or ("*", mode) in held  # "*": every module
+
+    def serialization_lock(self) -> threading.RLock:
+        """Lock shared by grant checks and state publication in this fake authority."""
+        return self._lock
 
 
 def _capabilities(t: EntityTypeInfo, mod: ModuleInfo, *, mutable: bool) -> Capabilities:
@@ -159,6 +171,8 @@ class _Store:
         self.access = access
         self.clock = clock
         self.state = _State(at=clock())
+        # Candidate action access, grant changes and the state-pointer publish share one lock.
+        self._action_lock = access.serialization_lock()
         self.modules: dict[str, ModuleInfo] = {}
         self.outage: Reason | None = None
         self.weft: WeftSupport | None = WEFT  # the subset it serves; narrow it to refuse more
@@ -238,22 +252,26 @@ class _Store:
             self.search_modes[t.name] = (mode, searchable)
 
     def catalog(self, principal: Principal) -> Mapping[str, ModuleInfo]:
-        self.gate(principal, None, None, "catalog")
-        return {n: m for n, m in self.modules.items() if self.access.allowed(principal, n, "read")}
+        with self._action_lock:
+            self.gate(principal, None, None, "catalog")
+            return {
+                n: m for n, m in self.modules.items() if self.access.allowed(principal, n, "read")
+            }
 
     def describe_roles(self) -> tuple[Role, ...]:
         return self.roles
 
     def describe(self) -> BackendInfo:
-        self.down("describe")
-        caps = {t.name: self.caps(t) for m in self.modules.values() for t in m.entity_types}
-        return BackendInfo(
-            self.name,
-            self.roles,
-            caps,
-            self.weft,
-            metadata_profiles=_MEMORY_METADATA_PROFILES,
-        )
+        with self._action_lock:
+            self.down("describe")
+            caps = {t.name: self.caps(t) for m in self.modules.values() for t in m.entity_types}
+            return BackendInfo(
+                self.name,
+                self.roles,
+                caps,
+                self.weft,
+                metadata_profiles=_MEMORY_METADATA_PROFILES,
+            )
 
     def reached(self, principal: Principal, token: str) -> bool:
         self.gate(principal, None, None, "reached")
@@ -281,7 +299,8 @@ class _Store:
         limit: int,
         text: TextMatch | None = None,
     ) -> Answer:
-        return self._serve(self._statement(principal, module, statement, text), limit=limit)
+        with self._action_lock:
+            return self._serve(self._statement(principal, module, statement, text), limit=limit)
 
     def _statement(
         self, principal: Principal, module: str, statement: Statement, text: TextMatch | None
@@ -330,17 +349,57 @@ def _unsupported(op: str, kind: str) -> Unsupported:
     return Unsupported(op, [f"a {kind} does not support {op}"])
 
 
-class MemoryStore(_Store, JournalReads, ImportRecords, ExportRecords, RegisterModules):
+class MemoryStore(
+    _Store, JournalReads, ImportRecords, ExportRecords, RegisterModules, DeclaredActions
+):
     """The authoritative backend: applies actions atomically, imports records, takes catalogs."""
 
     roles: tuple[Role, ...] = ("reader", "provider")
 
-    def __init__(self, access: FakeAccess, name: str = "memory", clock: Clock = _now) -> None:
+    def __init__(
+        self,
+        access: FakeAccess,
+        name: str = "memory",
+        clock: Clock = _now,
+        *,
+        action_profile: ActionProfile | None = None,
+    ) -> None:
         super().__init__(name, access, clock)
+        if action_profile is not None and (
+            type(action_profile) is not str or action_profile != "arras-umf-set/1"
+        ):
+            raise ValueError("unsupported memory action profile")
+        self.action_profile = action_profile
+        self.action_source_owners: dict[str, str] = {}
         self.catalog_revision = 0
         self.documents: dict[str, bytes] = {}  # each module's document as registered, verbatim
         self.origin_actor: dict[str, str] = {}  # who registered its current revision
         self._journal: dict[tuple[str, str], tuple[str, Any]] = {}
+
+    def reached(self, principal: Principal, token: str) -> bool:
+        if self.action_profile == "arras-umf-set/1":
+            return self.reached_declared(principal, token)
+        return super().reached(principal, token)
+
+    def describe(self) -> BackendInfo:
+        with self._action_lock:
+            info = super().describe()
+            if self.action_profile is None:
+                return info
+            try:
+                from arras._umf_actions import runtime_available
+            except ModuleNotFoundError as exc:
+                if exc.name != "arras._umf_actions":
+                    raise
+                return replace(info, metadata_profiles=())
+
+            if not runtime_available():
+                return replace(info, metadata_profiles=())
+            return replace(
+                info,
+                metadata_profiles=(self.action_profile,),
+                action_profiles=(self.action_profile,),
+            )
 
     def status(self) -> BackendStatus:
         if self.outage is not None:
@@ -363,12 +422,17 @@ class MemoryStore(_Store, JournalReads, ImportRecords, ExportRecords, RegisterMo
 
     # -- registry: `register` and `validate_register` are in `RegisterModules`
     def document(self, principal: Principal, module: str) -> RegisteredDocument:
-        self.gate(principal, module, "read", "document")
-        mod = self.module(module)
-        raw = self.documents.get(module)
-        if raw is None:
-            raise Invalid([Violation("module", "unknown_type", f"{self.name} holds no document")])
-        return RegisteredDocument(module, mod.revision, document_text(raw), document_format(raw))
+        with self._action_lock:
+            self.gate(principal, module, "read", "document")
+            mod = self.module(module)
+            raw = self.documents.get(module)
+            if raw is None:
+                raise Invalid(
+                    [Violation("module", "unknown_type", f"{self.name} holds no document")]
+                )
+            return RegisteredDocument(
+                module, mod.revision, document_text(raw), document_format(raw)
+            )
 
     # -- actions
     def apply(
@@ -744,6 +808,16 @@ class MemoryStore(_Store, JournalReads, ImportRecords, ExportRecords, RegisterMo
         if initiated_by != principal.user:
             raise Invalid([Violation("initiated_by", "attribution", "a load is the caller's own")])
         mod = self.module(module)
+        if mod.metadata_profile == "arras-umf-set/1":
+            if self.action_profile != "arras-umf-set/1":
+                raise Unsupported("declared action import", ["the provider did not opt in"])
+            return self.import_declared_records(
+                principal,
+                module,
+                records,
+                load_id=load_id,
+                initiated_by=initiated_by,
+            )
         require_supported_write_profile(self.documents.get(module), module, mod.metadata_profile)
         work = copy.deepcopy(self.state)
         now = self.clock()

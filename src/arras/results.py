@@ -191,6 +191,7 @@ class BackendInfo:
         True  # False: it keeps no group-scoped journal, so `changes` and `loads` are Unsupported
     )
     metadata_profiles: tuple[str, ...] = ("legacy-arras/1",)
+    action_profiles: tuple[str, ...] = ()
 
     @property
     def reads(self) -> bool:

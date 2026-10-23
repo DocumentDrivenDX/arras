@@ -115,6 +115,7 @@ class Arras:
         if type(metadata_profile) is not str or metadata_profile not in (
             "legacy-arras/1",
             "umf-core-metadata/1",
+            "arras-umf-set/1",
         ):
             raise ValueError(f"unknown metadata profile: {metadata_profile!r}")
         self.backends = dict(backends)
@@ -542,6 +543,20 @@ class Ontology:
         )
 
     # -- actions
+    @telemetry.traced("arras.execute")
+    def execute(self, request: Mapping[str, object]) -> Mapping[str, object]:
+        """Run one generated `umf.access/1` request against its exact catalog action."""
+        from arras._action_transport import execute
+
+        return execute(
+            self.principal,
+            request,
+            require_user=self.require_user,
+            backends=self.h.backends,
+            collect=self._catalogs,
+            backend_for=self._backend,
+        )
+
     def _action(
         self, name: str, expected_revision: Revision | Mapping[str, Any] | None = None
     ) -> tuple[ActionInfo, ModuleInfo, Provider]:
@@ -568,6 +583,14 @@ class Ontology:
         if not b.describe().provides:
             raise Unsupported(what, [f"{backend} does not apply actions"])
         return cast(Provider, b)
+
+    @staticmethod
+    def _legacy_action_route(mod: ModuleInfo, operation: str) -> None:
+        if mod.metadata_profile == "arras-umf-set/1":
+            raise Unsupported(
+                operation,
+                ["use Ontology.execute for the registered arras-umf-set/1 action profile"],
+            )
 
     def _record_provider(self, mod: ModuleInfo, what: str) -> Provider:
         """The module's record store as a provider: imports, journal and document are its own."""
@@ -609,6 +632,7 @@ class Ontology:
         expected_revision: Revision | Mapping[str, Any] | None = None,
     ) -> Validation:
         a, mod, auth = self._action(action, expected_revision)
+        self._legacy_action_route(mod, "validate")
         telemetry.annotate(action=a.name, module=mod.name)
         try:
             plan = self._plan(a, mod, inputs)
@@ -630,6 +654,7 @@ class Ontology:
         expected_revision: Revision | Mapping[str, Any] | None = None,
     ) -> Receipt:
         a, mod, auth = self._action(action, expected_revision)
+        self._legacy_action_route(mod, "invoke")
         telemetry.annotate(action=a.name, module=mod.name)
         plan = self._plan(a, mod, inputs)
         r = auth.apply(self.principal, plan, idempotency_key=idempotency_key)
@@ -653,6 +678,7 @@ class Ontology:
         expected_revision: Revision | Mapping[str, Any] | None = None,
     ) -> BatchReceipt:
         a, mod, auth = self._action(action, expected_revision)
+        self._legacy_action_route(mod, "invoke_batch")
         telemetry.annotate(action=a.name, module=mod.name)
         if not 1 <= len(items) <= MAX_BATCH:
             raise Invalid([Violation("items", "bound", f"a batch holds 1 to {MAX_BATCH} items")])

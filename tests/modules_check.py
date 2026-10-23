@@ -31,6 +31,7 @@ GROUPS: dict[str, str] = {
     "arras.http": "foundation",
     "arras.model": "domain",
     "arras.actions": "domain",
+    "arras._action_types": "domain",
     "arras.actioncheck": "domain",
     "arras.results": "domain",
     "arras.compat": "domain",
@@ -44,6 +45,9 @@ GROUPS: dict[str, str] = {
     "arras.gqlschema": "schema",
     "arras.core": "core",
     "arras._catalogs": "core",
+    "arras._action_transport": "core",
+    "arras._umf_actions": "umf_actions",
+    "arras._umf_action_shapes": "umf_actions",
     "arras._umf_engine": "umf_engine",
     "arras._umf_projection": "umf_admission",
     "arras.umf_admission": "umf_admission",
@@ -59,6 +63,7 @@ GROUPS: dict[str, str] = {
     "arras.fakes_journal": "doubles",
     "arras.fakes_state": "doubles",
     "arras.fakes_registry": "doubles",
+    "arras.fakes_actions": "doubles",
     "arras.fakes_import": "doubles",
     "arras.fakes_export": "doubles",
     "arras.fakes_weft": "doubles",
@@ -94,6 +99,7 @@ ALLOWED: dict[str, frozenset[str]] = {
     "schema": frozenset({"foundation", "domain", "schema"}),
     "core": frozenset({"foundation", "domain", "contract", "schema", "core"}),
     "umf_admission": frozenset({"foundation", "domain", "umf_admission", "umf_engine"}),
+    "umf_actions": frozenset({"foundation", "domain", "umf_actions", "umf_engine"}),
     "umf_engine": frozenset(),
     "doubles": frozenset({"foundation", "domain", "contract", "core", "doubles"}),
     "console": frozenset({"foundation", "domain", "schema", "core", "console"}),
@@ -240,9 +246,23 @@ def violations(mods: Mapping[str, str]) -> list[str]:
 
 
 def _allowed_edge(importer: str, mine: str, target: str, theirs: str) -> bool:
-    """Narrow A2 source edge from registration into official-profile admission."""
+    """Keep official preparation behind its exact registration/provider consumers."""
     if target == "arras.umf_admission":
-        return importer == "arras.registration" and mine == "core"
+        return importer in {"arras.registration", "arras._umf_actions"}
+    if target == "arras._umf_actions":
+        return importer in {
+            "arras.registration",
+            "arras.fakes",
+            "arras.fakes_actions",
+            "arras.fakes_registry",
+            "arras.fakes_import",
+        }
+    if target == "arras._umf_engine":
+        return importer in {"arras.umf_admission", "arras._umf_actions"}
+    if target == "arras._umf_action_shapes":
+        return importer == "arras._umf_actions"
+    if importer == "arras._umf_engine" and target == "arras.errors":
+        return True
     return theirs in ALLOWED[mine]
 
 

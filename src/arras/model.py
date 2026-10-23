@@ -17,7 +17,8 @@ if TYPE_CHECKING:
 Cardinality = Literal["one", "optional", "many"]
 LatencyClass = Literal["interactive", "batch"]
 SearchMode = Literal["none", "substring"]  # `word` and `ranked` are reserved (CONTRACT-010)
-MetadataProfile = Literal["legacy-arras/1", "umf-core-metadata/1"]
+MetadataProfile = Literal["legacy-arras/1", "umf-core-metadata/1", "arras-umf-set/1"]
+ActionProfile = Literal["arras-umf-set/1"]
 
 SCALAR_FAMILIES = ("string", "integer", "decimal", "boolean", "binary", "timestamp")
 # Scalars `query` may select as columns, filter on, or count by (CONTRACT-001).

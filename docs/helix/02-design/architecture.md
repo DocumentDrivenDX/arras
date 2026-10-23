@@ -211,7 +211,7 @@ reduced metadata projection, not a value validator or action interpreter.
 | Exact module / group | Responsibility and allowed edges | Forbidden edges |
 |---|---|---|
 | `umf_admission`, `_umf_projection` / `umf_admission` | Public immutable admission/projection results and explicit core-to-model projection; foundation, domain, own group and `umf_engine` | Core, backends, bindings, executable callbacks/codegen/native SDKs |
-| `_umf_engine` / `umf_engine` | Official JSON read/validation through a fresh internally owned empty Registry; standard library, lazy released official `umf` import and inert private result carriers only | Public admission module, core, backends, bindings and native SDKs |
+| `_umf_engine` / `umf_engine` | Official JSON read/validation through a fresh internally owned empty Registry and separately qualified candidate action-engine calls; standard library, safe errors and lazy official `umf` imports only | Public admission module, core, backends, bindings and direct non-UMF SDK imports |
 | `_catalogs` / core | Existing catalog collection and private result container; foundation, domain and contract | Core import/back-edge, fakes, adapters, bindings and UMF |
 
 Only the engine bridge imports the optional official SDK. Engine/projection
@@ -456,6 +456,21 @@ The private adapter port is `runtime_available()`, `prepare(source)`,
 source digest/pin, original local and qualified identities, complete bindings,
 frame IDs and immutable exact STRING mappings. These types are internal facts,
 not public admission certificates or an injectable evaluator.
+
+| Candidate module / group | Allowed consumer/dependency boundary | Forbidden edges |
+| --- | --- | --- |
+| `_action_types` / domain | Immutable source/binding/STRING result facts; foundation and domain | Core, backend protocols, providers and SDKs |
+| `_action_transport` / core | Session/catalog routing and closed wire responses; foundation, domain, contract and core | Official SDK/engine/action bridge, fakes and bindings |
+| `_umf_actions` / `umf_actions` | Official result adaptation; foundation/domain, engine and its own group; exact shared admission edge for structural source admission | Core, backend protocols, providers, bindings and direct SDK imports |
+| `_umf_action_shapes` / `umf_actions` | Inert closed result-envelope validation, consumed only by `_umf_actions`; foundation and domain | Bridge back-edge, engine, providers and SDKs |
+| `fakes_actions` / doubles | Candidate memory custody; existing doubles dependencies and the exact private action-bridge edge | Direct official SDK/engine imports and native adapters |
+
+Only registration, memory description, registry/import and declared-action
+provider consumers may call `_umf_actions`; only that bridge and the existing
+public admission wrapper call `_umf_engine`. The engine's sole extra Arras edge
+is safe errors. The source checker enforces these named exceptions, detects
+cycles and rejects direct, lazy, aliased literal and type-only SDK bypasses.
+
 `raw_request` is the unchanged generated Apply or Validate envelope. The seed
 record retains the existing public `type`, `key`, `properties` import carrier;
 the bridge adapts it to the official complete Field-ID value map without

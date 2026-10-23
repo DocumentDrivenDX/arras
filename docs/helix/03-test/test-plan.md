@@ -717,3 +717,19 @@ extra must refuse the new route when action runtime is absent. Candidate tests
 must execute, with zero optional-engine skips, alongside the existing 139-vector
 A2 admission regressions. Keep candidate package identity separate from released
 core metadata support and from native/managed evidence.
+
+Prove generated SET followed by public `Ontology.query(at_least=receipt.token)`
+on the actual issuing store/source. Generated read/get transport is outside this
+apply/validate slice. Include foreign store, mismatched source, unknown
+token and current unreadable-person controls. Token issuance, receipt/replay
+and rows must either all appear or all remain unchanged after a failed commit;
+a legacy fake sequence prefix or a receipt-only assertion is insufficient.
+
+Exercise empty, Unicode and other out-of-carrier STRING keys as explicit native
+unsupported cases, while preserving the exact admitted key in the public import,
+read and action paths. Unicode scalar values remain subject to the official
+constraint oracle and the stated transport capacity. Extra stored properties
+must refuse without silently disappearing from a constructed candidate record.
+Known denial/conflict/unsupported/schema-mismatch responses must be consumed by
+the unchanged generated client as their fixed refusal codes, while a wrong-schema
+response, malformed post-commit receipt or lost result remains write uncertainty.

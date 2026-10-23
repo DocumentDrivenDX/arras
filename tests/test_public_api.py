@@ -142,9 +142,12 @@ def test_metadata_profiles_are_final_defaulted_host_metadata_fields() -> None:
     from arras.results import BackendInfo
 
     backend_fields = dataclasses.fields(BackendInfo)
-    assert backend_fields[-1].name == "metadata_profiles"
-    assert backend_fields[-1].default == ("legacy-arras/1",)
+    assert backend_fields[-2].name == "metadata_profiles"
+    assert backend_fields[-2].default == ("legacy-arras/1",)
+    assert backend_fields[-1].name == "action_profiles"
+    assert backend_fields[-1].default == ()
     assert BackendInfo("store", ("reader",)).metadata_profiles == ("legacy-arras/1",)
+    assert BackendInfo("store", ("reader",)).action_profiles == ()
     for method in (arras.Arras.__init__, arras.Arras.start):
         parameter = inspect.signature(method).parameters["metadata_profile"]
         assert parameter.kind is inspect.Parameter.KEYWORD_ONLY

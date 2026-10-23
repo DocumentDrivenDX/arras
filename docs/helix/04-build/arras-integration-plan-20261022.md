@@ -1740,3 +1740,55 @@ SDK plus unchanged generated client through registration, admitted import,
 validate, commit and readback. Memory same-process replay cannot establish
 durable restart, Truss, managed service or full action/constraint support.
 No new release or native campaign is authorized by this plan.
+
+### Coherent action source checkpoint — qualification pending
+
+The integrated source passes Sol's source-only review. The public route is
+unchanged official generation through `SyncActions` and `Ontology.execute`,
+with public opt-in `InMemory` registration, officially admitted seed import and
+ordinary query readback. Source controls cover immutable ownership, current
+authorization, source rebinding under the shared lock, atomic row/replay/token
+publication, direct legacy-write refusal, dry-run and no-op behavior. Known
+definite wire refusals remain distinct from uncertain post-publication failures.
+The genuine generated-client test is present, including denial and uncertain
+response controls, but has not yet run with the candidate SDK and installed
+Arras wheel. Structural bridge doubles qualify custody/control flow only.
+
+The coordinator reports configured strict typing, Ruff/format, public-content
+integrity and the UI source build gates passing. The first full base suite
+reported 3,127 passed and three candidate-only skips, with one existing
+100 ms child-start timing failure. Its diagnostic rerun is still active; this
+checkpoint does not record a full-suite pass. The source checkpoint precedes
+the exact-commit wheel build and is not an installed or immutable-build proof.
+
+SDK-only isolated preparation uses candidate-2 `umf-core` 0.10.0 from producing
+source `42cc635653972689d9443cbc06442df47eca92ca`, wheel SHA-256
+`041b80331075e8548fc863ab5e4224afdf14fb2bcf95e5f90c81e65e7776e673`.
+Independent archive inspection verifies all 40 RECORD entries and nine resource
+hashes against manifest
+`13c3fb58b94eefdb319637eb15e80d20501d3538ab7b6c152e12a1b481156dff`.
+The frozen source/vector digests remain
+`5b79b3dba5ebc52ac9452f85a75411dab5edaa34154adda76f872a53c21d0818` /
+`c811eefac81c4f5ff3a7aa60cbe7f7657f7599040cd0869b2616c450931a950e`.
+These archive observations do not establish installed Arras payload parity.
+
+The retained exploratory SDK meter receipt
+`888b4e715b12e6d43aca1dbd582f9212b400fb2ab84a9f70ba8a85b5fc719a37`
+binds probe source
+`e51f8f5f6a5127248432d7f7852ca018da8d228ed28a95bbd567ff4b51974cc6`.
+It sums incremental meter charges: the peak named operation is Apply at
+72,551,564 units. The selected finite budget is 100,000,000 units per SDK work
+closure, with a five-second absolute deadline per new engine instance.
+Constructor and individual calls reset their own work counters; the deadline
+does not reset. Factory-plus-capability charges span two closures, not one
+combined budget. Typed low-budget `RESOURCE_LIMIT`, elapsed `DEADLINE`,
+`CANCELLED` and `METER_FAILURE` controls were observed. The receipt's resource
+manifest field is an expected identity and its RECORD field is archive-derived;
+neither is an installed-payload measurement. A new SDK packet requires renewed
+budget and artifact review.
+
+The final owner meter/refusal/sdist-rebuild packet, exact installed Arras
+whole-path proof and A2's 139 reference plus 139 fresh-empty Registry regression
+checks remain pending. No new dependency pin, release, Truss/native/managed
+execution, durable restart, general action/constraint support or Ashlar
+qualification follows from this source checkpoint.

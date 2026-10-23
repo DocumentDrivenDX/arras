@@ -714,7 +714,7 @@ def test_reads_write_nothing_and_the_public_operations_are_the_known_ones(w: Wor
         n for n, f in inspect.getmembers(Ontology, inspect.isfunction) if not n.startswith("_")
     }
     guards = {"require_admin", "require_token", "require_user"}
-    writers = {"invoke", "invoke_batch", "import_records", "registry", "schema"}  # the registries
+    writers = {"execute", "invoke", "invoke_batch", "import_records", "registry", "schema"}
     reads = {
         "describe",
         "modules",
