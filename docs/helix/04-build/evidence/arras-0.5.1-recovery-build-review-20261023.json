@@ -1,0 +1,120 @@
+{
+  "schema": "arras.recovery-build.independent-review.v1",
+  "status": "approved-exact-current-run-inputs",
+  "provenance": {
+    "driver": {
+      "ref": "refs/heads/main",
+      "run_attempt": "1",
+      "run_id": "39879533273",
+      "sha": "c02bca2b5417227f8f28d72171be0f7378c9b0bf",
+      "workflow_ref": "DocumentDrivenDX/arras/.github/workflows/release.yml@refs/heads/main",
+      "workflow_sha": "c02bca2b5417227f8f28d72171be0f7378c9b0bf"
+    },
+    "event": "workflow_dispatch",
+    "schema": "arras.release-driver-provenance.v1",
+    "target": {
+      "source_sha": "8b786bb7629a6425e5a2b3b528378f0d92f0b847",
+      "tag": "v0.5.1",
+      "tag_object_sha": "11b690b3795518315fa643379acf0f94383f135e",
+      "version": "0.5.1"
+    }
+  },
+  "input_hashes": {
+    "arras-0.5.1-py3-none-any.whl": "17d50dedeaf9d4f7d27e0eb30cb16539bfa75de3a138dc9351284c2e2f390d4b",
+    "arras-0.5.1.tar.gz": "541aa91ae970ac16644679614d74b858f1a46e303b6429e0c10804c24bc0dd45",
+    "documentdrivendx-arras-ui-0.5.1.tgz": "76fc29a5a24747ef26d0e04263f1f8924034244b1169a41fb865e02274485e1f",
+    "distribution-verification.json": "be28c245dd1139c85bd276c7af4321a47e470cac508298144e055ad4477d49d9",
+    "doctor-installed.json": "36622c12fd28da18aaf7257c27ebe9d064277f3ba6d37a83d2a87be00d762991"
+  },
+  "provenance_sha256": "f1e4970e060d1bf72dd1335155931ce107741b7133778a29bdde93af8ab48f1b",
+  "doctor": {
+    "receipt_sha256": "36622c12fd28da18aaf7257c27ebe9d064277f3ba6d37a83d2a87be00d762991",
+    "cases": 20,
+    "sdk_phases": {
+      "direct": {
+        "spans": 8,
+        "events": 2,
+        "logs": 8,
+        "service_name": "extension-alpha+extension-beta"
+      },
+      "mcp_frame": {
+        "spans": 1,
+        "events": 1,
+        "logs": 1,
+        "service_name": "extension-beta"
+      },
+      "worker_backed_asgi_console": {
+        "spans": 1,
+        "events": 1,
+        "logs": 3,
+        "service_name": "extension-alpha"
+      },
+      "worker_backed_asgi_operate": {
+        "spans": 1,
+        "events": 1,
+        "logs": 1,
+        "service_name": "extension-alpha"
+      },
+      "concurrent_nested": {
+        "spans": 8,
+        "events": 2,
+        "logs": 8,
+        "service_name": "extension-alpha+extension-beta"
+      },
+      "nested_ambient_restoration": {
+        "spans": 4,
+        "events": 1,
+        "logs": 4,
+        "service_name": "extension-alpha"
+      },
+      "finish_time_snapshot": {
+        "spans": 4,
+        "events": 1,
+        "logs": 4,
+        "service_name": "extension-alpha"
+      },
+      "provider_fault_isolation": {
+        "spans": 4,
+        "events": 4,
+        "logs": 4,
+        "service_name": "extension-alpha"
+      }
+    },
+    "false_pass_controls": [
+      "MCP successful empty result",
+      "ASGI successful HTTP 200 empty body",
+      "finish-time ambient-context misrouting"
+    ],
+    "global_provider_unchanged": true,
+    "tripwires": "passed",
+    "python": "3.11.17",
+    "platform": {
+      "os": "linux",
+      "architecture": "x86_64",
+      "release": "6.17.0-1022-azure"
+    },
+    "versions": {
+      "arras": "0.5.1",
+      "example-extension-host": "0.1.0",
+      "graphql-core": "3.3.0",
+      "opentelemetry-api": "1.45.1",
+      "opentelemetry-sdk": "1.45.1"
+    },
+    "verifier_sha256": "9aa379d1f2b333f855aa9886da7b6e93dcf930bc789a3721e0862ee174c08455",
+    "probe_sha256": "2dd054ff5b832f279195d8e644027474181ff247d29d6b59ee0e8c2889836e0f"
+  },
+  "distribution": {
+    "receipt_sha256": "be28c245dd1139c85bd276c7af4321a47e470cac508298144e055ad4477d49d9",
+    "source_and_sdist_rebuilt_wheel_hashes_equal": true,
+    "both_consumers_passed": true,
+    "python": "3.11.17",
+    "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+    "javascript_dependencies": "workspace-linked UI dependencies; package itself extracted from each verified wheel"
+  },
+  "qualifications": [
+    "Rawabsolute diagnosticpaths intentionallyomitted; private receipts unchanged.",
+    "Distributionproducer conservative not_qualified_without_observation includesLinux despite explicitLinuxobservedfields; preserve rawboilerplate and scopeclaims to observedcurrentrun.",
+    "Binaryartifacthashes exactlyequal previously reviewedtagbuild; payload-equivalence bridge tolocalMac598/460 unchanged.",
+    "Native/UI/assembly/publication/anonymousdownload currentrun gates not inferredfrombuildsuccess."
+  ]
+}

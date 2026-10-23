@@ -156,6 +156,28 @@ Record operational provenance as CI evidence, not an extra public release asset.
 A changed runtime payload still requires its own affected qualification; a workflow
 repair is not authority to replace any published artifact bytes.
 
+A postpublication orchestration failure has a separate, verification-only recovery
+path. A reviewed default-branch driver with only `contents: read` and `actions: read`
+may verify the existing immutable release. It binds the original publication run,
+publication driver, target tag/source, wheel digest, trusted-stage `SHA256SUMS`
+digest and aggregate digest explicitly. Validate the original repository/workflow
+and successful prepublication jobs; an overall failed run is not a successful
+postpublication result. Download that run's original trusted stage and verify its
+exact inventory and digests before comparing anonymous public downloads.
+
+The fixed reusable installed-downstream job and the complete anonymous bundle,
+distribution, doctor/SDK, fresh example and portable themed UI consumers MUST pass
+in one new verification run. Every payload/consumer checkout still uses and checks
+the immutable source commit. Record the original publication identity and new
+verification driver/run separately, and recheck tag identity. This driver cannot
+build replacement release artifacts, assemble or join new public evidence, create
+or upload release assets, publish to registries, move a tag or request write
+permissions. The original prepublication receipts and aggregate stay unchanged,
+including `not_run_at_assembly`; do not relabel them as new-run execution. A
+successful supplemental verification completes the postpublication gate, not a
+new publication. New publication retains the single-current-run assembly rules
+below and all existing mandatory qualification.
+
 Release wiring preserves the existing source, native and UI gates. `build`
 transports its verified wheel/sdist/npm and distribution/doctor receipts as
 `release-build-inputs`; that early transport is not the final public bundle.

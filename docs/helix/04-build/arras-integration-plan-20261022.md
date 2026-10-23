@@ -1370,6 +1370,44 @@ consumer-path controls. All 89 public-content/release checks and full repository
 Pyright/Ruff/format/YAML checks pass. This test-only follow-up changes no payload
 or workflow bytes.
 
+The reviewed recovery driver merged as `c02bca2b5417227f8f28d72171be0f7378c9b0bf`
+after all four CI jobs passed in run `39878533951`. Fresh release run
+`39879533273` validated immutable source `8b786bb7629a6425e5a2b3b528378f0d92f0b847`,
+passed source/native/build/installed-native/UI/assembly gates and published the
+sixteen GitHub assets at `2026-10-23T01:02:46Z`. Its wheel, npm and sdist are
+byte-identical to the earlier tag-built 17d/76fc/541aa artifacts. Actual public
+sum-file digest is `43c41e44c3634724f0bccd0b92ee882f0771138044b5abbbde097890c839503c`;
+aggregate digest is `a84811a71b0180de8e3f2c225732c9c47410476d0389c229ef92090bf6314d7c`.
+These assets are published and immutable; final postpublication acceptance remains
+open. The called downstream job downloaded, verified and installed the public
+wheel, then failed shell parsing in an optional setup branch: its nested heredoc
+terminator retained indentation. The anonymous job consequently did not run.
+
+Both Sol reviews approve a separate read-only postpublication verification path,
+now explicitly governed by CONTRACT-005. Luna repairs the two affected reusable
+workflow heredocs and adds actual Bash syntax/optional-branch execution controls.
+A second Luna implements the dedicated verification driver with original-run and
+trusted-stage pins. All fresh installed/anonymous consumers must pass together;
+original qualification receipts are retained and no tag, asset or aggregate is
+replaced. The failed publication run is never reported as fully successful.
+
+The verification-only patch is frozen after 95 affected workflow/release tests
+pass, full repository Pyright reports zero errors, Ruff/format/YAML/Bash syntax
+checks pass, and the generic public-content gate remains current. Actual cached
+original run/job/workflow/provenance and all sixteen trusted assets pass the new
+provenance helper and existing public-asset planning checker. Sol's broad review
+approves the implementation for CI. Reviewed workflow SHA-256 is
+`a0093d0857f0f4715ad10f1ce3dea4c67702e1c9f6c1671aa1bc27c9a54b5958`;
+provenance helper is
+`abda7116afc5f1c05136eec829dae3a6c98f028ac618a25925b2e57f1feb6d3f`;
+fixed reusable workflow is
+`ff7442808eda1a79ddc6223b61421fe7a4b7fd14763e9c04096f2378df862eb5`.
+These are orchestration checks, not anonymous-download completion.
+Independent safe reviews of the actual publication are retained as
+[build proof](evidence/arras-0.5.1-recovery-build-review-20261023.json),
+[public bundle](evidence/arras-0.5.1-published-bundle-review-20261023.json) and
+[Mac payload bridge](evidence/arras-0.5.1-binary-bridge-peer-review-20261023.json).
+
 ## Validation Plan
 
 - A0: focused `tests/test_umf.py` and `tests/test_core.py`; existing module/host

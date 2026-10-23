@@ -1,0 +1,41 @@
+{
+  "independent_byte_checks": {
+    "each_wheel_record_validated_entries": 169,
+    "gzip_deflate_body_differs": true,
+    "gzip_header_and_trailer_identical": true,
+    "npm_gzip_decompressed_tar_byteidentical": true,
+    "npm_regular_members": 321,
+    "npm_tar_stream_bytes": 20401664,
+    "npm_tar_stream_sha256": "585209dbc4f777b582ecbaf86030bdbc889d2edd4282b7e2fd8c9983ff1a9e5d",
+    "sdist_non_npm_identical_members": 451,
+    "sdist_regular_members": 452,
+    "sdist_type_mode_owner_link_pax_headers_equal": true,
+    "wheel_external_permission_attributes_and_creator_system_equal": true,
+    "wheel_non_npm_identical_members": 167,
+    "wheel_nonrecord_regular_members": 168
+  },
+  "local_artifact_sha256": {
+    "npm": "460e1b1037d4965d17af8b3e689c364c22b51a09cc9d3d64c8ddf0296e34c943",
+    "sdist": "e8c8636d43a1392fa5f30c2b1adf86cff9e1c0e999be88008a8aa1f13994864d",
+    "wheel": "59827644e2e423980afed1047f75c7130dc5d8c542778df4b62a9e2244cdc24c"
+  },
+  "qualification_limits": [
+    "Archive SHA identities differ and remain separately recorded; no cause of differing compression is inferred.",
+    "Original Mac receipts remain bound to exact local598/460 artifacts and are not retargeted.",
+    "This byte-equivalence bridge permits qualified comparison of unchanged payloads; it is not a new Mac17d/76fc execution campaign.",
+    "Actual current-run Linux source/installed-native/UI/SDK/consumer evidence and anonymous public-download checks remain separate mandatory gates.",
+    "No artifact code execution, dependency import, download, native/browser/runtime campaign, or source/Git mutation was performed."
+  ],
+  "reviewed_report_sha256": {
+    "committed_review": "376216a9f10dd1ef26f9e471dd82b60f650dac2b460ef4ba16e8ec15d1b3a2fe",
+    "container_comparison": "2273a9d640a22ff501449a029ff6fc6014e2450fc927b2b1a59f5633e57d3e4f",
+    "payload_comparison": "dcf945a9ee4c14ff1b649bff60685bf8d716b8976500c18cb0b72be716f36c7c"
+  },
+  "schema": "arras.tag-binary-bridge-review.v1",
+  "status": "accepted_container_only_qualified_bridge",
+  "tag_artifact_sha256": {
+    "npm": "76fc29a5a24747ef26d0e04263f1f8924034244b1169a41fb865e02274485e1f",
+    "sdist": "541aa91ae970ac16644679614d74b858f1a46e303b6429e0c10804c24bc0dd45",
+    "wheel": "17d50dedeaf9d4f7d27e0eb30cb16539bfa75de3a138dc9351284c2e2f390d4b"
+  }
+}

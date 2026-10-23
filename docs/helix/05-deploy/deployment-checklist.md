@@ -97,3 +97,14 @@ CI/review and target identity, then run every mandatory gate freshly in the new
 current run. All payload and downstream checkouts use the validated source commit;
 record the separate driver identity. Recheck the remote tag before publication.
 Never move the tag, reuse failed-run receipts or overwrite published bytes.
+
+## Recovering postpublication verification
+
+If immutable assets are already published and a consumer orchestration step fails,
+use the reviewed read-only verification driver. Pin the original publication run
+and driver, source/tag, wheel, trusted-stage sum file and aggregate. Validate its
+successful prepublication jobs and trusted stage, then run the fixed installed
+consumer and complete anonymous public-download consumers in one new verification
+run. Record both runs and tag rechecks. Preserve every public asset and original
+receipt; no build/reassembly/publication/registry step is part of this recovery.
+Closure requires the new verification result and independent public-bundle review.
