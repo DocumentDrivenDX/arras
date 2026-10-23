@@ -247,7 +247,6 @@ def _trusted_imports() -> dict[str, str]:
     names = ("arras", "umf", "umf.action_runtime", "umf.rust_codegen")
     modules = {name: importlib.import_module(name) for name in names}
     site = Path(sysconfig.get_paths()["purelib"]).resolve()
-    repository = Path.cwd().resolve()
     prefix = Path(sys.prefix).resolve()
     if sys.prefix == sys.base_prefix or not _inside(site, prefix):
         raise ProbeError("imports", "fresh-venv-not-isolated")
@@ -278,7 +277,7 @@ def _trusted_imports() -> dict[str, str]:
     origins: dict[str, str] = {}
     for name, module in modules.items():
         origin = Path(cast(str, module.__file__)).resolve()
-        if not _inside(origin, site) or _inside(origin, repository):
+        if not _inside(origin, site):
             raise ProbeError("imports", "module-origin-outside-fresh-site")
         origins[name] = origin.relative_to(site).as_posix()
     for entry in sys.path:
@@ -286,9 +285,6 @@ def _trusted_imports() -> dict[str, str]:
             raise ProbeError("imports", "empty-import-path")
         if not _trusted_sys_path_entry(Path(entry), prefix, allowed_stdlib):
             raise ProbeError("imports", "external-import-path")
-        candidate = Path(entry).resolve()
-        if _inside(candidate, repository):
-            raise ProbeError("imports", "checkout-import-path")
     return origins
 
 

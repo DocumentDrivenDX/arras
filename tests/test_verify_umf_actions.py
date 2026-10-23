@@ -199,6 +199,86 @@ def test_wheel_payload_rejects_wrong_or_unknown_distribution_namespace(
         _PROBE._wheel_payload(known, "other-distribution")
 
 
+def _install_import_path_fixture(monkeypatch, tmp_path: Path, *, outside_module: bool = False):
+    working = tmp_path / "probe-cwd"
+    prefix = working / "venv"
+    site = prefix / "lib/python3.11/site-packages"
+    stdlib = tmp_path / "stdlib"
+    base = tmp_path / "base-python"
+    working.mkdir()
+    site.mkdir(parents=True)
+    stdlib.mkdir()
+    module_paths = {
+        "arras": site / "arras/__init__.py",
+        "umf": site / "umf/__init__.py",
+        "umf.action_runtime": site / "umf/action_runtime.py",
+        "umf.rust_codegen": (
+            tmp_path / "source-checkout/umf/rust_codegen.py"
+            if outside_module
+            else site / "umf/rust_codegen.py"
+        ),
+    }
+    monkeypatch.setattr(
+        _PROBE.importlib,
+        "import_module",
+        lambda name: types.SimpleNamespace(__file__=str(module_paths[name])),
+    )
+    monkeypatch.setattr(
+        _PROBE.sysconfig,
+        "get_paths",
+        lambda: {"purelib": str(site), "stdlib": str(stdlib), "platstdlib": str(stdlib)},
+    )
+    monkeypatch.setattr(_PROBE.sysconfig, "get_config_var", lambda _name: "3.11")
+    monkeypatch.setattr(
+        _PROBE,
+        "sys",
+        types.SimpleNamespace(
+            prefix=str(prefix),
+            base_prefix=str(base),
+            path=[str(site), str(stdlib), str(stdlib / "lib-dynload")],
+        ),
+    )
+    monkeypatch.setattr(Path, "cwd", lambda: working)
+    config = prefix / "pyvenv.cfg"
+    config.parent.mkdir(parents=True, exist_ok=True)
+    config.write_text("include-system-site-packages = false\n", encoding="utf-8")
+    return working, prefix, site, stdlib
+
+
+def test_import_origins_inside_fresh_venv_under_probe_cwd_are_accepted(
+    monkeypatch, tmp_path: Path
+) -> None:
+    _install_import_path_fixture(monkeypatch, tmp_path)
+
+    origins = _PROBE._trusted_imports()
+
+    assert origins == {
+        "arras": "arras/__init__.py",
+        "umf": "umf/__init__.py",
+        "umf.action_runtime": "umf/action_runtime.py",
+        "umf.rust_codegen": "umf/rust_codegen.py",
+    }
+
+
+def test_import_origin_outside_fresh_venv_checkout_path_is_rejected(
+    monkeypatch, tmp_path: Path
+) -> None:
+    _install_import_path_fixture(monkeypatch, tmp_path, outside_module=True)
+
+    with pytest.raises(_PROBE.ProbeError, match="module-origin-outside-fresh-site"):
+        _PROBE._trusted_imports()
+
+
+def test_checkout_import_path_outside_fresh_venv_or_stdlib_is_rejected(
+    monkeypatch, tmp_path: Path
+) -> None:
+    _working, _prefix, site, stdlib = _install_import_path_fixture(monkeypatch, tmp_path)
+    _PROBE.sys.path.append(str(tmp_path / "source-checkout"))
+
+    with pytest.raises(_PROBE.ProbeError, match="external-import-path"):
+        _PROBE._trusted_imports()
+
+
 def test_public_extra_pin_rejects_malformed_shadow_dependency() -> None:
     metadata = Message()
     metadata["Requires-Dist"] = (
