@@ -1,0 +1,78 @@
+{
+  "asset_count": 16,
+  "assets": [
+    {
+      "filename": "acceptance-inventory-neutral-theme.json",
+      "sha256": "925019da1651937a72a20b91a7a032f1101c2af024ae96c51ef423aa67bbe14c"
+    },
+    {
+      "filename": "acceptance-resources-neutral-theme.json",
+      "sha256": "bfb6ed43ff0accdb170b60cc7095365f2a7cc287a66b7dfcab31918106042f78"
+    },
+    {
+      "filename": "arras-0.6.0-py3-none-any.whl",
+      "sha256": "c3ace4273f483fbf41af3f70a71a65a6d0f9c963c5b1c71eb79c5bf1bd299a3d"
+    },
+    {
+      "filename": "arras-0.6.0.tar.gz",
+      "sha256": "1e533d666b664cc99b1d3b8dedc8120e825988e7d997d69189a3507bc9e53ce2"
+    },
+    {
+      "filename": "consumer-qualification.json",
+      "sha256": "d2ff92b4d3eba13497bf53f717d5f6f308985cbb8108bca94eb7b4697682fc45"
+    },
+    {
+      "filename": "distribution-verification.json",
+      "sha256": "d8b65c6d88e57bae3ae564ea16bab8b8d4eac59f6b547d14739ef9020dc12c09"
+    },
+    {
+      "filename": "doctor-installed.json",
+      "sha256": "2c915de938e3e04f1fb1d83cc9139d9e67e1d236d63914721610f4733d4af3c7"
+    },
+    {
+      "filename": "documentdrivendx-arras-ui-0.6.0.tgz",
+      "sha256": "73819275d2b784295e471c8b81fe251acb127b274cc9567946cdce9824ef9a71"
+    },
+    {
+      "filename": "native-cohort-binding.json",
+      "sha256": "e6c550d964bff15cb50a4e2f5fd33c9711dad7bf05dbd27d1f9808752f712b28"
+    },
+    {
+      "filename": "native-cohort.json",
+      "sha256": "9a11cd307c87d83dcedd7a792f54f87746062af0366cd60b1808b60d8f0b400e"
+    },
+    {
+      "filename": "native-find-links.html",
+      "sha256": "197d63b9a651530b43457b768533165d0cc522ad5d872db063a8279a14ebbcd5"
+    },
+    {
+      "filename": "native-qualification.json",
+      "sha256": "d5931b8eaf9ed395d3ba7d9529bb3a9b4b2d82022d12fe031e33701e133ec9b7"
+    },
+    {
+      "filename": "playwright-summary-neutral-theme.json",
+      "sha256": "6d84aa2dba1b5f45b3bcaa5577c05b2d85d135da4915d90f2237faa8e6384713"
+    },
+    {
+      "filename": "release-evidence.json",
+      "sha256": "659ffd6c08e118e357024491fa48c0605b962e4039282285bd561628606bbef1"
+    },
+    {
+      "filename": "ui-qualification.json",
+      "sha256": "ca10e5a3c26a6dfc9764b8261ecfc50c4ca18376a176bd4d60186212845d78db"
+    },
+    {
+      "filename": "umf-admission-installed.json",
+      "sha256": "bfa03144ede16d3a8780c4b272f4b0e6ba5202cc4ea4f95eae58f1b85da67517"
+    }
+  ],
+  "npm_matches_wheel_payload": true,
+  "schema_version": 1,
+  "status": "passed",
+  "sums_sha256": "db38b4e67897024cb23542a8d2c265967e88d204623e47faba3ef892d9a45aca",
+  "version": "0.6.0",
+  "wheel": {
+    "filename": "arras-0.6.0-py3-none-any.whl",
+    "sha256": "c3ace4273f483fbf41af3f70a71a65a6d0f9c963c5b1c71eb79c5bf1bd299a3d"
+  }
+}

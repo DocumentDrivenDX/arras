@@ -15,9 +15,109 @@ ddx:
       kind: informed_by
 ---
 
-# Arras 0.5.1 release notes
+# Arras release notes
 
-## Release scope and audience
+## 0.6.0
+
+Arras 0.6.0 adds optional official source admission and bounded core-metadata
+projection. Install `arras[umf]` to use `arras.umf_admission`:
+`admit_document(document)` returns the immutable admission result, and
+`project_document(document)` performs fresh admission before returning a supported
+metadata projection or explicit projection issues. Legacy parsing stays the
+default. A host opts into `metadata_profile="umf-core-metadata/1"` on
+`Arras.start`; only the memory adapter qualifies this profile. It allows schema
+registration/dry-run, description, document readback and authorized empty-graph
+reads. Writes refuse before effects, and the Truss adapter refuses this profile
+before acceptance. This does not qualify value/constraint execution, canonical
+actions, native metadata generally, Ashlar or managed deployment. See the [official
+admission and metadata contract](../02-design/contracts/CONTRACT-002-type-registry-and-placement.md#official-source-admission-and-core-metadata-profile)
+for input, profile and refusal details. Truss 0.0.48, Weft 0.4.51 and official UMF
+core 0.10.0 remain the selected dependency versions.
+
+## Recorded candidate qualification
+
+Source commit `8f8097ab0bebb3f8eda6d76568c62ee5e84d33ef` carries the same A2 scope
+as merged source `df923164`. PR 7's main CI run `39960762557` passed all four
+checks. The immutable tag object is `686886c7ed2425e4e9e496b70fcc39272b8a52d9`.
+On macOS, the full default Python suite passed 3,064 tests with 199 Truss tests
+deselected; content, Ruff, format and full Pyright checks passed. UI source
+lint/type, 1,449 unit tests, audit, build and external checks passed. The exact
+candidate wheel SHA-256 is `03959567e77a547ed94014f55bd312630a276827753aafbb5615da0b216366ec`;
+the candidate wheel-carried npm SHA-256 is
+`cfdd2da7a13f088df2146322e14eba202e78b8def3afc86690e550a44d845749`. These are
+named Mac component identities, not public asset hashes unless public byte
+identity is verified. The final amended source/sdist comparison passed.
+
+Installed admission compared all 139 ordered reference cases and 139 separate
+fresh-empty production Registry cases with zero skips; six base and ten
+extra-enabled controls passed and both environments were cleaned up. This proves
+admission-result parity, not 139 executable metadata cases. The installed doctor
+passed 20 cases, eight SDK phases and three controls using Python 3.13.16. The
+fresh example passed four tests and 72 memory cases. The candidate native run
+passed 199 tests; a separate fresh-native run passed 64 with eight declared limits
+and seven replica-only cases inapplicable. The packed browser run passed 272 cases,
+including comparison of 67 canonical baselines. These are named component results;
+they do not establish a general support matrix.
+
+### Published 0.6.0 qualification
+
+Arras [v0.6.0](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.0)
+was published on 2026-10-23 from source commit
+`8f8097ab0bebb3f8eda6d76568c62ee5e84d33ef`, identified by immutable tag object
+`686886c7ed2425e4e9e496b70fcc39272b8a52d9`. Release run
+[`39963352238`](https://github.com/DocumentDrivenDX/arras/actions/runs/39963352238)
+completed successfully. The required check, Truss adapter on PostgreSQL 18.6,
+build, exact-wheel UMF admission, Linux x86_64 native adapter, UI/packed-theme,
+evidence assembly, GitHub release, installed downstream consumer and anonymous
+public-bundle jobs all passed. PyPI and npm publication jobs were skipped as
+deferred; GitHub release assets are the delivery route.
+
+The public bundle has 17 assets: 16 payloads listed in `SHA256SUMS`, plus that
+sum file. It uses release-evidence schema v2 and includes the safe UMF admission
+receipt as the 17th asset. Key public asset SHA-256 values are:
+
+| Public asset | SHA-256 |
+| --- | --- |
+| `arras-0.6.0-py3-none-any.whl` | `c3ace4273f483fbf41af3f70a71a65a6d0f9c963c5b1c71eb79c5bf1bd299a3d` |
+| `arras-0.6.0.tar.gz` | `1e533d666b664cc99b1d3b8dedc8120e825988e7d997d69189a3507bc9e53ce2` |
+| `documentdrivendx-arras-ui-0.6.0.tgz` | `73819275d2b784295e471c8b81fe251acb127b274cc9567946cdce9824ef9a71` |
+| `SHA256SUMS` | `db38b4e67897024cb23542a8d2c265967e88d204623e47faba3ef892d9a45aca` |
+| `release-evidence.json` | `659ffd6c08e118e357024491fa48c0605b962e4039282285bd561628606bbef1` |
+| `umf-admission-installed.json` | `bfa03144ede16d3a8780c4b272f4b0e6ba5202cc4ea4f95eae58f1b85da67517` |
+
+The anonymous public-download UMF run installed the exact public Arras wheel on
+Linux x86_64 / CPython 3.11.17 and matched all 139 ordered reference cases and
+139 separate fresh-empty production Registry cases, with zero skips. Six base
+and ten extra-enabled controls passed, and both environments were cleaned up.
+This establishes admission-result parity and the scoped memory metadata
+controls, not executable value/constraint semantics. The release build's UMF
+receipt is a separate phase. The public installed doctor passed 20 cases, eight
+SDK phases and three controls; the fresh extension example passed four tests and
+72 memory cases. The public Linux UI qualification passed all 205 nonvisual
+checks with no skips; visual checks were inapplicable on Linux. The public Linux
+native adapter job also passed. These results are bounded to the named release
+wheel, versions and environments.
+
+The local macOS component wheel/npm hashes above remain component evidence. A
+separate independent payload comparison found the 321 files inside the local and
+published npm tarballs byte-identical, while their compressed npm archives and
+wheel `RECORD` entries differ; the wheel/sdist comparison therefore establishes
+packaging payload correspondence, not macOS execution of the Linux release
+wheel. Registry publication remains deferred.
+
+The final independent public audit is complete. The raw [independent public-repeat
+review](../04-build/evidence/arras-0.6.0-release-20261023/public-repeat-review.json)
+has SHA-256 `1d38a416e3b161c2d769ca749267c57b56614f9d97a0cba28ff5a5e8ffef814d`.
+The [consolidated closeout manifest](../04-build/evidence/arras-0.6.0-public-verification-review-20261023.json)
+indexes the final public proof and related independent reviews.
+The reviewed bundle supplement has SHA-256
+`30b9e0cde06c0cfc669d4898337dcbc005ec1d1a56276b5ad86574349f3a973d`, and the
+public UI execution supplement has SHA-256
+`a132d7f57db75731abb033df6868e2e00f8fc69fb018bc66c50fdb260e1493a8`.
+
+## Historical release: 0.5.1
+
+### Release scope and audience
 
 Arras 0.5.1 supplies generic Python/UI interfaces for hosts that wrap or embed
 Arras. Host developers consume the wheel, source archive and exact scoped npm
@@ -30,7 +130,7 @@ the release instruction. GitHub assets are the supported
 delivery route. The [release checklist](deployment-checklist.md) requires exact-tag
 checks before publication and fresh public-download qualification afterward.
 
-## Qualification state
+### Qualification state
 
 [Arras v0.5.1](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.5.1)
 is published with all sixteen assets (fifteen covered by SHA256SUMS). All eight generic downstream
@@ -52,7 +152,7 @@ preserved failure history, not replaced release results. This documentation
 closeout postdates the tagged package and its original GitHub notes; no artifact
 or tag has been rewritten.
 
-## Highlights
+### Highlights
 
 Arras exposes a deliberate public API catalog and generic downstream seams for
 presentation, UI themes/assets, current-principal policy, explicit content and
@@ -64,7 +164,7 @@ Persistent development hosts retain per-person credentials. Starting another
 host no longer resets those passwords or unrelated grants. Composed UI hosting
 also forwards the host's schema-authorization callback.
 
-## Changes by seam
+### Changes by seam
 
 | Seam | Consumer-visible behavior |
 | --- | --- |
@@ -77,7 +177,7 @@ also forwards the host's schema-authorization callback.
 | Testing | The packaged corpus and public UI checker can be run without the upstream test tree. Reusable CI installs an exact digest-qualified wheel and the consumer's selected test targets. Generic import-origin and fixture-provenance gates protect the public source. Public Node-only `./testkit` and browser-only `./testkit/host` carry the shared 17-spec, 83-resource suite. The current installed ordinary themed comparison passes 272 cases, including 67 unchanged reviewed visual baselines; historical capture approvals remain separate; the Linux profile selects 205 nonvisual cases. |
 | Upgrade | The offline doctor checks installed identities, contracts/exports, config/naming, role-token names, manifests and declared document profiles. Reports distinguish incompatibility, malformed requests and unavailable proof. It does not read ambient credentials or contact hosts. |
 
-## Required actions and compatibility
+### Required actions and compatibility
 
 Pin exact artifacts and verify SHA256SUMS before installing. Use the catalogued
 public exports, keep your theme/content downstream, and run installed/native/UI
@@ -92,7 +192,7 @@ credentials. Previously created roles whose credentials were not retained requir
 explicit administrator recovery. Normal startup refuses that situation instead of
 silently changing passwords. This release does not migrate a live database.
 
-## Qualified scope and known limits
+### Qualified scope and known limits
 
 The [compatibility matrix](../02-design/downstream-extensibility.md#compatibility-and-qualification-matrix)
 separates actual component cohorts from version declarations. The selected native
@@ -125,7 +225,7 @@ entitlements still require the host's policy and qualified provider capabilities
 Static doctor checks do not establish rendered accessibility or native writes.
 Python classifiers and matching version strings do not qualify untested platforms.
 
-## Hold, rollback and support
+### Hold, rollback and support
 
 Hold an upgrade on any doctor incompatibility, checksum mismatch or failed
 consumer/native/theme gate. Retain the previous artifact pin and owned data until
@@ -135,7 +235,7 @@ versions and bounded diagnostic codes in the repository's issue tracker, without
 credentials or sensitive records. Native recovery follows the provider's own
 qualified procedures.
 
-## References
+### References
 
 - [Deployment checklist](deployment-checklist.md)
 - [Per-seam design and compatibility matrix](../02-design/downstream-extensibility.md)

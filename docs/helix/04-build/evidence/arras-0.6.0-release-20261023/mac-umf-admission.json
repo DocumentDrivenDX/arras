@@ -1,0 +1,46 @@
+{
+  "arras_wheel": {
+    "filename": "arras-0.6.0-py3-none-any.whl",
+    "sha256": "03959567e77a547ed94014f55bd312630a276827753aafbb5615da0b216366ec",
+    "version": "0.6.0"
+  },
+  "controls": {
+    "base": 6,
+    "cleanup": 2,
+    "extra": 10
+  },
+  "corpus": {
+    "case_count": 139,
+    "empty_registry_matches": 139,
+    "ordered_case_ids_sha256": "2f2513fef8820d95c0b77d5a8fb628f7b34c3f5f560924407b0666fc03a8ef57",
+    "reference_matches": 139,
+    "skipped": 0,
+    "status": "passed"
+  },
+  "fixed_probe_sha256": "3185ee3a4a52f991ab7da87e5c252c4ebcd9f8a48900a994eddc8966abcae4be",
+  "fixtures": {
+    "metadata_fixture_sha256": "da883657baefe7b7a4ab8654f78e7d84ef1e281eea7bc7cee48f8662007cd687",
+    "official_corpus_sha256": "bb008a98b8448050748e65f867e7863475ccad9501a5b9229ae9e6d336691544"
+  },
+  "payload_parity": {
+    "arras_exact_files": 172,
+    "umf_exact_files": 25
+  },
+  "qualification_phase": "release-build",
+  "qualification_scope": "exact Arras wheel install, official UMF 0.10.0 admission parity (139 reference and 139 fresh-empty-registry cases), and fixed metadata-profile controls; no broader UMF execution claim",
+  "runtime": {
+    "implementation": "CPython",
+    "machine": "arm64",
+    "platform": "darwin",
+    "version": "3.11.17"
+  },
+  "schema": "arras.umf-admission-public-qualification/1",
+  "status": "passed",
+  "tool_sha256": "a97a2bb1970a32012cb733ed98ebb96369df9bfac475e2851144e77feaced4d2",
+  "umf_wheel": {
+    "filename": "umf_core-0.10.0-py3-none-any.whl",
+    "sha256": "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9",
+    "url": "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/umf_core-0.10.0-py3-none-any.whl",
+    "version": "0.10.0"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "canonical": {
+    "expectedTestCount": 272,
+    "sourceExpectedCounts": {
+      "browser": 70,
+      "chromium": 132,
+      "schema-admin": 3,
+      "visual": 67
+    },
+    "specCount": 17
+  },
+  "cohort": {
+    "npmSha256": "cfdd2da7a13f088df2146322e14eba202e78b8def3afc86690e550a44d845749",
+    "runnerSha256": "67633a3dcfbc5e1130e1135d7c3192f612370078882ac98e247c732f03f753b9",
+    "themeSha256": "1f1d31bf614fe472c99ad782729afe402cc5476d3ef52a8940503a79ad33be36",
+    "wheelSha256": "03959567e77a547ed94014f55bd312630a276827753aafbb5615da0b216366ec"
+  },
+  "negativeControls": {
+    "controlledFailure": "exit-1",
+    "invalidOptions": "refused",
+    "missingResource": "refused",
+    "tamperedResource": "refused"
+  },
+  "playwright": {
+    "expectedTestCount": 272,
+    "schema": "arras.ui.canonical-playwright-summary.v1",
+    "status": "passed",
+    "unexpectedSkips": 0
+  },
+  "projects": [
+    {
+      "discovered": 132,
+      "expected": 132,
+      "failed": 0,
+      "name": "chromium",
+      "passed": 132,
+      "skipped": 0
+    },
+    {
+      "discovered": 3,
+      "expected": 3,
+      "failed": 0,
+      "name": "schema-admin",
+      "passed": 3,
+      "skipped": 0
+    },
+    {
+      "discovered": 70,
+      "expected": 70,
+      "failed": 0,
+      "name": "browser",
+      "passed": 70,
+      "skipped": 0
+    },
+    {
+      "discovered": 67,
+      "expected": 67,
+      "failed": 0,
+      "name": "visual",
+      "passed": 67,
+      "skipped": 0
+    }
+  ],
+  "schema": "arras.ui.portable-acceptance.v1",
+  "status": "passed",
+  "themeId": "neutral-theme",
+  "visual": {
+    "comparedScreenshots": 67,
+    "status": "compared"
+  }
+}

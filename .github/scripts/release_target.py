@@ -176,6 +176,9 @@ def validate() -> None:
         "version": version,
         "driver_sha": driver_sha,
         "workflow_ref": workflow_ref,
+        "umf_admission_required": str(
+            tuple(int(part) for part in version.split(".")) >= (0, 6, 0)
+        ).lower(),
     }
     write_outputs(values)
     provenance = {

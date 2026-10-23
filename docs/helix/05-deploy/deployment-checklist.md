@@ -19,11 +19,10 @@ ddx:
 
 ## Release
 
-First public Arras Python/UI artifact release from the reviewed integration
-cohort. The working package version is `0.5.1`; version selection is not a tag or
-publication claim. A 2026-10-22 GitHub preflight found no existing Arras tags or
-releases. The [integration plan](../04-build/arras-integration-plan-20261022.md)
-tracks all eight required seams and named implementation/review owners.
+The immutable 0.5.1 release history below remains complete. Arras 0.6.0 adds
+bounded official-UMF admission and opt-in read-only memory metadata projection.
+Local candidate evidence and completed public acceptance are recorded below and
+in the [integration plan](../04-build/arras-integration-plan-20261022.md).
 
 GitHub Release assets are mandatory. Publish to real PyPI/npm only through
 existing configured access; the human explicitly permits deferring those uploads
@@ -62,6 +61,8 @@ if access cannot be found. Do not advertise an unavailable registry install.
 | Exact artifacts | Build wheel/sdist/npm from final source. Rebuild the wheel from that exact sdist, compare complete payloads/metadata, run fresh installed consumers and retain a separate verification receipt. Rebuild again after any packaged source/test/tool change. |
 | Tag and assets | Mandatory exact-tag source/native/UI/downstream/build gates precede GitHub publication. Attach wheel, sdist, wheel-carried npm tarball, receipt and `SHA256SUMS`; optional publishers use those same verified bytes. |
 | Downloaded release | Download the public release assets into a new directory, verify digests and repeat installed consumer/skeleton/doctor checks. A local build alone does not pass this gate. |
+| Official UMF qualification (0.6.0+) | The exact final wheel passes the installed admission/metadata gate with pinned official UMF 0.10.0: all 139 ordered reference and separate fresh-empty production Registry comparisons, six base and ten extra-enabled controls, zero skips, and verified cleanup. Repeat against the exact public-download wheel in a fresh environment; retain distinct receipts. The 0.5.1 candidate receipt is historical and cannot close this gate. |
+| Public assembly (0.6.0+) | Use release-evidence schema v2: include the mandatory safe UMF receipt projection as asset 17, bind it to the exact wheel, and repeat UMF qualification after public download. Keep v1/sixteen-asset evidence for historical releases unchanged. |
 
 ## Rollout Stages
 
@@ -88,6 +89,25 @@ if access cannot be found. Do not advertise an unavailable registry install.
 [Final evidence](../04-build/evidence/arras-0.5.1-public-verification-review-20261023.json)
 keeps original publication and supplemental verification distinct. All runtime
 and platform limits remain in the design matrix; this closeout changes no assets.
+
+## Recorded 0.6.0 candidate acceptance
+
+- [x] Source, UI, installed UMF, doctor, fresh example, native and packed-browser candidate gates pass on their named local cohorts; details and limits are recorded in the integration plan.
+- [x] PR 7 main CI run `39960762557` passes all four checks.
+- [x] Immutable tag `v0.6.0` was published from source `8f8097ab0bebb3f8eda6d76568c62ee5e84d33ef` (tag object `686886c7ed2425e4e9e496b70fcc39272b8a52d9`); [release run `39963352238`](https://github.com/DocumentDrivenDX/arras/actions/runs/39963352238) passed all required jobs, including Linux native, installed consumer and anonymous verification.
+- [x] The public [GitHub release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.0) contains 17 assets: 16 checksum-listed payloads plus `SHA256SUMS`; the public wheel, sdist, npm archive, sum file, aggregate and UMF receipt hashes are recorded in the release notes.
+- [x] Exact public-download UMF repeat passed on the published wheel: 139/139 reference cases, 139/139 fresh-empty Registry cases, zero skips, six base and ten extra-enabled controls, with cleanup. Public doctor, fresh example, Linux nonvisual UI and native adapter jobs also passed in the named release environment.
+- [x] Final independent public review completed; the raw [public-repeat review](../04-build/evidence/arras-0.6.0-release-20261023/public-repeat-review.json) has SHA-256 `1d38a416e3b161c2d769ca749267c57b56614f9d97a0cba28ff5a5e8ffef814d`. The [consolidated closeout manifest](../04-build/evidence/arras-0.6.0-public-verification-review-20261023.json) indexes the release proof and supporting reviews.
+- [x] The release claims no value/constraint execution, canonical action, general native metadata, Ashlar or managed deployment support.
+
+Source commit: `8f8097ab0bebb3f8eda6d76568c62ee5e84d33ef`; immutable tag object:
+`686886c7ed2425e4e9e496b70fcc39272b8a52d9`. The published wheel SHA-256 is
+`c3ace4273f483fbf41af3f70a71a65a6d0f9c963c5b1c71eb79c5bf1bd299a3d`, the sdist
+is `1e533d666b664cc99b1d3b8dedc8120e825988e7d997d69189a3507bc9e53ce2`, and the
+npm archive is `73819275d2b784295e471c8b81fe251acb127b274cc9567946cdce9824ef9a71`.
+Local Mac component hashes remain scoped component evidence; the independent
+payload comparison does not claim macOS execution of the Linux release wheel.
+Preserve the completed 0.5.1 receipts and acceptance below unchanged.
 
 ## Rollback
 
@@ -123,4 +143,12 @@ successful prepublication jobs and trusted stage, then run the fixed installed
 consumer and complete anonymous public-download consumers in one new verification
 run. Record both runs and tag rechecks. Preserve every public asset and original
 receipt; no build/reassembly/publication/registry step is part of this recovery.
+
+This recovery path currently supports only an original `workflow_dispatch`
+publication dispatched from the default branch whose original run concluded
+with failure, as enforced by `verify_publication_provenance.py`. The normal
+tag-push publication and anonymous verification flow is unaffected. If recovery
+is needed for a push-triggered publication, first review and adapt the
+default-branch verification driver to accept that original event identity; the
+existing helper fails closed for it.
 Closure requires the new verification result and independent public-bundle review.

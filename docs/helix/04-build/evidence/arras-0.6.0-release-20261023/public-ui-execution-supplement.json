@@ -1,0 +1,26 @@
+{
+  "finding": "Current public job step16 succeeded and its retained stdout explicitly invokes the downstream qualifier against the public release wheel, runs 205 tests, reports 205 passed, and completes Linux prebuilt and packed-host qualification. This supports a separate actual public UI execution despite deterministic identical JSON receipt bytes.",
+  "job_id": 120458875946,
+  "public_theme_stdout_sha256": "d51cdbf6074bf7798f982ebbff8fa529aac9b9eb1c43a2b190c2bf8b39e7d5be",
+  "public_ui_step": {
+    "completedAt": "2026-10-23T14:11:38Z",
+    "conclusion": "success",
+    "name": "Qualify the packed public wheel and complete themed suite",
+    "number": 16,
+    "startedAt": "2026-10-23T14:08:15Z",
+    "status": "completed"
+  },
+  "publication_run_id": "39963352238",
+  "run_metadata_sha256": "a2ffcf4534c345a6bd7a0e704eab62c071d3318f0fd632cc933e073ccf7be993",
+  "schema": "arras.independent-public-ui-execution-supplement.v1",
+  "scope": [
+    "Linux nonvisual205 only; no new Mac or Linux visual claim.",
+    "No new execution or downloads by reviewer."
+  ],
+  "source_sha": "8f8097ab0bebb3f8eda6d76568c62ee5e84d33ef",
+  "status": "approved",
+  "supersedes_limitations": [
+    "Previous public-repeat review lacked current job metadata and distinguished deterministic receipt equality from independent execution evidence."
+  ],
+  "version": "0.6.0"
+}

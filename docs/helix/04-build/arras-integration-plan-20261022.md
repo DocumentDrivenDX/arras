@@ -177,7 +177,7 @@ A2–A7 and P1/P2 contracts, native capabilities and deployments stay open below
 
 | After the scoped release | Owner/dependency | Bounded next acceptance |
 | --- | --- | --- |
-| P1 — bounded A2 implemented; broader semantics remain open | Arras semantic lane; exact released API/vector evidence and CONTRACT-002/003/004 | Source and fresh installed checks pass for immutable admission, fresh empty official Registry and explicit memory-only core metadata projection. Preserve distinct validity/completeness, projection, provider qualification and execution. Trusted extension registration and value/action runtime semantics remain later work. |
+| P1 — bounded A2 implemented; broader semantics remain open | Arras semantic lane; exact released API/vector evidence and CONTRACT-002/003/004 | Source and fresh installed checks passed on the unreleased 0.5.1 candidate for immutable admission, fresh-empty official Registry and explicit memory-only core metadata projection. This historical receipt is not a 0.6.0 wheel result. Preserve distinct validity/completeness, projection, provider qualification and execution. Trusted extension registration and value/action runtime semantics remain later work. |
 | P1 next — registration and one generated action/constraint slice | Arras + UMF + Truss; agreed A2 mapping and authoritative value/action boundary | Define owner/module/version/digest and upgrade/retirement/dependency authority. Run one unchanged generated action through canonical transport with actual constraints, current person authority, dry-run/violation zero effects, atomic rollback and receipt/retry/unknown-settlement behavior. Later generated reads/link keys, optional values and cross-module execution remain A5/A6. |
 | P2 design now; bounded reader after shared projection/runtime agreement | Arras + Ashlar owner `01a15c6c-3938-71e2-8a35-bdb7ed8d9867` | Start with the receipt/progress contract, then one authorized publication-pinned lookup/page and zero-wait receipt-inclusion check. Settle complete transactions/no-op progress, epochs and person-scoped disclosure. Implement this reader in parallel with the action lane where dependencies permit; do not wait for every action/cross-module feature. Prove real convergence and false versus unknown freshness. Full managed/production/scale qualification remains separate. |
 
@@ -343,16 +343,75 @@ and license/notices, not a new owner approval gate. TP-001 records these control
 Sol froze/reviewed governing decisions before Luna implemented each bounded
 slice. The public catalog, signatures, module edges and contract revisions agree:
 type registry 2, actions 2, backend 6 and lifecycle 3; interface remains 2.
-No version, tag, released receipt, Truss49 adoption, native/UI campaign or new
-registry publication follows from this feature checkpoint. Canonical
+Release preparation now carries package version 0.6.0; this feature checkpoint
+creates no tag or released receipt and does not establish Truss49 adoption, a new
+native/UI campaign or a new registry publication. Canonical
 actions/transport, official value enforcement and broader registration ownership
 remain A3–A7; Ashlar's authorized publication/progress seam remains separate.
 
+### Candidate release qualification
+
+Source commit `8f8097ab0bebb3f8eda6d76568c62ee5e84d33ef` is the release-preparation
+checkpoint for the same A2 scope as merged source `df923164`. Immutable tag
+object `686886c7ed2425e4e9e496b70fcc39272b8a52d9` identifies the tagged source.
+PR 7 main CI run `39960762557` passed all four checks. The 0.6.0 release adds
+optional official source admission and bounded core-metadata projection relative
+to published 0.5.1. Legacy parsing remains default; hosts opt into
+`umf-core-metadata/1`, supported only by the memory adapter in this tranche. It
+allows schema registration/dry-run, description, document readback and authorized
+empty-graph reads; writes refuse before effects, and Truss refuses the profile
+before acceptance. It does not qualify value/constraint execution, canonical
+actions, general native metadata, Ashlar or managed deployment. Truss 0.0.48,
+Weft 0.4.51 and UMF core 0.10.0 pins are unchanged.
+
+| Candidate evidence | Result and boundary |
+| --- | --- |
+| Source quality | Full default Python suite: 3,064 passed, 199 Truss tests deselected. Content, Ruff, format and full Pyright checks pass. |
+| UI source | Lint/type, 1,449 unit tests, audit, build and external checks pass. |
+| Integration suite | 205 checks pass on the named local candidate cohort. |
+| Exact artifacts | Candidate Mac wheel SHA-256 `03959567e77a547ed94014f55bd312630a276827753aafbb5615da0b216366ec`; candidate wheel-carried npm SHA-256 `cfdd2da7a13f088df2146322e14eba202e78b8def3afc86690e550a44d845749`. These are component identities, not public asset identities unless byte equality is established. Final amended source/sdist parity passes. |
+| Installed UMF gate | On macOS arm64 / CPython 3.11.17: 139 ordered reference and 139 fresh-empty production Registry comparisons, zero skips; six base and ten extra-enabled controls pass, with cleanup. |
+| Installed doctor/example | Doctor passes 20 cases, eight SDK phases and three controls using Python 3.13.16. Fresh extension example passes four tests and 72 memory cases. |
+| Native and packed UI | Full native suite passes 199; fresh-native run passes 64 with eight declared limits and seven replica-only cases inapplicable. Packed browser passes 272, including comparison of 67 canonical baselines. |
+| Public qualification | Published v0.6.0 from the pinned tag; release run `39963352238` and all required jobs passed. The 17-asset schema-v2 public bundle, exact public artifact identities, anonymous Linux UMF repeat, installed consumer, Linux native and UI checks are recorded in the deployment checklist and release notes. Final independent review is complete in the linked review receipt. |
+
+The candidate results above remain evidence for their named local macOS cohorts;
+they are distinct from the public Linux release gates. The immutable
+[v0.6.0 release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.0)
+uses source `8f8097ab0bebb3f8eda6d76568c62ee5e84d33ef` and tag object
+`686886c7ed2425e4e9e496b70fcc39272b8a52d9`. Its
+[publication run `39963352238`](https://github.com/DocumentDrivenDX/arras/actions/runs/39963352238)
+passed all required jobs. The anonymous public-download UMF repeat passed on
+Linux x86_64 / CPython 3.11.17 with 139/139 ordered reference cases, 139/139
+fresh-empty production Registry cases, zero skips, six base and ten extra-enabled
+controls, and cleanup. Public installed doctor passed 20 cases, eight SDK phases
+and three controls; the fresh extension example passed four tests and 72 memory
+cases. Public UI qualification passed all 205 nonvisual cases without skips, and
+the Linux native adapter job passed. Registries remained deferred. The final
+independent public review is complete; the raw [public-repeat review](evidence/arras-0.6.0-release-20261023/public-repeat-review.json)
+has SHA-256 `1d38a416e3b161c2d769ca749267c57b56614f9d97a0cba28ff5a5e8ffef814d`.
+The [consolidated closeout manifest](evidence/arras-0.6.0-public-verification-review-20261023.json)
+indexes the release proof and supporting reviews.
+The official admission gate establishes admission-result parity,
+not 139 executable metadata cases.
+
+The exact public Arras wheel SHA-256 is
+`c3ace4273f483fbf41af3f70a71a65a6d0f9c963c5b1c71eb79c5bf1bd299a3d`; the sdist
+is `1e533d666b664cc99b1d3b8dedc8120e825988e7d997d69189a3507bc9e53ce2`, and the
+published npm archive is
+`73819275d2b784295e471c8b81fe251acb127b274cc9567946cdce9824ef9a71`. The
+independent local/tag payload comparison found all 321 unpacked npm files equal;
+the npm archive compression and wheel `RECORD` differ. It establishes payload
+correspondence only and does not claim macOS execution of the Linux release
+wheel. The public bundle carries 17 assets (16 SHA256SUMS entries plus
+`SHA256SUMS`) and release-evidence schema v2.
+
 ### Bounded A2 execution checkpoint
 
-**The bounded feature passes local source and fresh installed checks on unreleased
-candidate `11c3dd0711ff6d556fed4fbea99cff1951506588`.** Package metadata remains
-0.5.1; these bytes are distinct from immutable public v0.5.1. The
+**Historical 0.5.1 candidate proof.** The bounded feature passed local source and
+fresh installed checks on unreleased source candidate
+`11c3dd0711ff6d556fed4fbea99cff1951506588`, package version 0.5.1. Those bytes
+are distinct from immutable public v0.5.1 and do not qualify the 0.6.0 package. The
 [installed receipt](evidence/umf-admission-projection-20261023/installed-proof.json)
 is preserved byte-for-byte, with a separate
 [independent review](evidence/umf-admission-projection-20261023/installed-proof-review.safe.json).

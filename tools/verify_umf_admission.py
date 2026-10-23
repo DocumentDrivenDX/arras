@@ -588,11 +588,13 @@ def _make_receipt(
     extra: dict[str, Any],
     runtime: dict[str, str],
     cleanup: dict[str, Any],
+    qualification_phase: str,
 ) -> dict[str, Any]:
     return {
         "schema": SCHEMA,
         "status": "passed",
-        "qualification_scope": "unreleased-built-wheel-installed-feature-proof",
+        "qualification_scope": "installed-wheel-umf-admission/1",
+        "qualification_phase": qualification_phase,
         "arras_wheel": {
             "filename": arras["filename"],
             "version": arras["version"],
@@ -635,7 +637,6 @@ def _make_receipt(
         "limitations": [
             "This proves only the named installed wheel and runtime.",
             "This does not qualify native Truss, browser, UI, or production behavior.",
-            "This is not a public Arras release or public-download qualification.",
         ],
     }
 
@@ -664,7 +665,7 @@ def _failed_receipt(stage: str, code: str, *, wheel: dict[str, Any] | None) -> d
             "version": wheel["version"],
             "sha256": wheel["sha256"],
         },
-        "qualification_scope": "unreleased-built-wheel-installed-feature-proof",
+        "qualification_scope": "installed-wheel-umf-admission/1",
         "limitations": ["A failed proof is not qualification."],
     }
 
@@ -741,6 +742,7 @@ def _run_fresh_proof(
     umf_path: Path | None,
     temp: Path,
     env: dict[str, str],
+    qualification_phase: str,
 ) -> dict[str, Any]:
     env["ARRAS_PRIVATE_DIAGNOSTICS"] = str(temp / "private-diagnostics")
     runtime = _python_identity(selected_python, temp, env)
@@ -805,6 +807,7 @@ def _run_fresh_proof(
         extra,
         runtime,
         {"completed": True, "fresh_environments": 2, "shared_site_packages": False},
+        qualification_phase,
     )
 
 
@@ -813,7 +816,10 @@ def verify(
     *,
     umf_path: Path | None = None,
     python_path: Path | None = None,
+    qualification_phase: str = "local-installed",
 ) -> dict[str, Any]:
+    if qualification_phase not in {"local-installed", "release-build", "public-download"}:
+        raise VerificationError("arguments", "unsupported-qualification-phase")
     repository = Path(__file__).resolve().parents[1]
     arras_path = _require_regular_file(arras_path, "arras-wheel")
     if umf_path is not None:
@@ -857,6 +863,7 @@ def verify(
             umf_path=umf_path,
             temp=temp,
             env=env,
+            qualification_phase=qualification_phase,
         )
     except VerificationError as error:
         preserve_temp = True
@@ -879,6 +886,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--umf-wheel", type=Path)
     parser.add_argument("--output-json", required=True, type=Path)
     parser.add_argument("--python", type=Path, help="selected CPython >=3.11")
+    parser.add_argument(
+        "--qualification-phase",
+        choices=("local-installed", "release-build", "public-download"),
+        default="local-installed",
+    )
     args = parser.parse_args(arguments)
     input_paths = [
         args.wheel,
@@ -896,7 +908,12 @@ def main(argv: list[str] | None = None) -> int:
         print(f"UMF installed proof refused output: {type(error).__name__}", file=sys.stderr)
         return 1
     try:
-        receipt = verify(args.wheel, umf_path=args.umf_wheel, python_path=args.python)
+        receipt = verify(
+            args.wheel,
+            umf_path=args.umf_wheel,
+            python_path=args.python,
+            qualification_phase=args.qualification_phase,
+        )
     except VerificationError as error:
         _atomic_json(args.output_json, _failed_receipt(error.stage, error.code, wheel=None))
         print(f"UMF installed proof failed at {error.stage}: {error.code}", file=sys.stderr)

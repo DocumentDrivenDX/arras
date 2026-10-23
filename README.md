@@ -12,15 +12,15 @@ Arras is embedded by host apps that supply their own identity and configuration.
 
 ## Status
 
-Beta (`0.x`). The in-memory and Truss adapters are implemented. Their qualified subsets, documented limits and exact artifact/platform evidence are recorded in the [downstream compatibility note](docs/helix/02-design/downstream-extensibility.md) and [release notes](docs/helix/05-deploy/release-notes.md). The Ashlar adapter and the feed from Truss to it are not built; the backend contract and packaged conformance corpus (`arras.conformance.run_corpus`) are what a new adapter is held to.
+Beta (`0.x`). The in-memory and Truss adapters are implemented. Arras 0.6.0 is the current published release; its [release notes](docs/helix/05-deploy/release-notes.md) identify the qualified subsets and exact artifact/platform evidence. The in-memory and Truss support claims remain bounded to those named cohorts. The Ashlar adapter and the feed from Truss to it are not built; the backend contract and packaged conformance corpus (`arras.conformance.run_corpus`) are what a new adapter is held to.
 
 ## Install
 
-Install the wheel from the selected GitHub Release after verifying the attached
-`SHA256SUMS`. For example, with the verified 0.5.1 wheel in the current directory:
+Arras 0.6.0 is available from the [GitHub Release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.0).
+Install its wheel after checking the attached `SHA256SUMS`:
 
 ```bash
-pip install ./arras-0.5.1-py3-none-any.whl
+pip install ./arras-0.6.0-py3-none-any.whl
 ```
 
 [Release notes](docs/helix/05-deploy/release-notes.md) record publication status and
@@ -301,13 +301,13 @@ Checks beyond the unit tests: `tests/test_modules.py` holds the library's module
 
 ## The Truss adapter
 
-`arras.adapters.truss.create_backend(name, source, installing=None, *, module_access=None)` builds the Truss backend (reader and provider). It is built, with its install-or-verify `migrate()`, `configure_access()` (a module's reader, writer and, optionally, auditor roles) and `install_roles()`, and a credential-free endpoint handle for the MCP process. The optional `truss` extra pins the public source tuple `truss-toolkit[native,query]==0.0.48` and `weft-sql==0.4.51`; Arras's qualification against this tuple is pending. The adapter is the only place that imports Truss.
+`arras.adapters.truss.create_backend(name, source, installing=None, *, module_access=None)` builds the Truss backend (reader and provider). It is built, with its install-or-verify `migrate()`, `configure_access()` (a module's reader, writer and, optionally, auditor roles) and `install_roles()`, and a credential-free endpoint handle for the MCP process. The optional `truss` extra pins the public source tuple `truss-toolkit[native,query]==0.0.48` and `weft-sql==0.4.51`. Arras 0.6.0 adds optional official UMF admission and an opt-in, read-only memory metadata profile; its public Linux release gates passed on the named release wheel. The earlier 0.5.1 native cohort remains historical evidence and does not transfer to this release. See the [0.6.0 release notes](docs/helix/05-deploy/release-notes.md) for exact cohort results, limits and the completed independent public review. The adapter is the only place that imports Truss.
 
 What the host provides:
 
 - A per-person `ConnectionSource` (each call runs as the person, never a service identity) and, for `migrate` and `configure_access`, a separate trusted installing connection and the module roles.
-- Prior Arras evidence qualified Truss 0.0.45 with PostgreSQL 18.6 and psycopg 3.3.6 (binary, libpq 18.6) on Linux x86_64 and macOS arm64; it declared Python 3.11 or later. Its runtime set (Truss, psycopg-binary 3.3.6 with cp311 to cp315 wheels, Weft as cp39-abi3) covered Python 3.11 and later; the local test PostgreSQL (`pgserver-pg18`, test group only) had wheels for 3.11 to 3.13. Installation needed `CREATEROLE`, database `CREATE` with grant option (or ownership), and a `statement_timeout` of 1 to 60,000 ms. These are prior-version results, not claims about the newly pinned tuple.
-- Prior Arras evidence also showed that Truss 0.0.45 prepared a module in embedded V8 (about 0.4 s per registration, `register`, and the `validate_register` dry run of a changed document) and derived a key in PostgreSQL, without a Bun or Node process. A host could register as a deploy-time job and keep the registrar's connection out of the serving process; qualification against the new tuple is pending.
+- Prior Arras evidence qualified Truss 0.0.45 with PostgreSQL 18.6 and psycopg 3.3.6 (binary, libpq 18.6) on Linux x86_64 and macOS arm64; it declared Python 3.11 or later. Its runtime set (Truss, psycopg-binary 3.3.6 with cp311 to cp315 wheels, Weft as cp39-abi3) covered Python 3.11 and later; the local test PostgreSQL (`pgserver-pg18`, test group only) had wheels for 3.11 to 3.13. Installation needed `CREATEROLE`, database `CREATE` with grant option (or ownership), and a `statement_timeout` of 1 to 60,000 ms. These are prior-version results, not claims about the pinned 0.0.48/0.4.51 tuple.
+- Prior Arras evidence also showed that Truss 0.0.45 prepared a module in embedded V8 (about 0.4 s per registration, `register`, and the `validate_register` dry run of a changed document) and derived a key in PostgreSQL, without a Bun or Node process. A host could register as a deploy-time job and keep the registrar's connection out of the serving process; the 0.5.1 release qualifies the selected 0.0.48/0.4.51 tuple for its named cohort.
 - The pinned Truss and Weft wheels. They are on no package index, and a release carries only the base dependencies, so the host vendors them from `tools/find-links/index.html` (digests from each release's `SHA256SUMS`).
 
 Declared limits, all Truss's and answered as `Unsupported` or a documented limit by the adapter: text search is `Unsupported`; the audit reads (`changes`, `loads`) are served from Truss's audit pages under its own audit grant, and state their limits (observed time, no key or version in an op, load discovery: CONTRACT-004, ask R20); a type over 10,000 rows is not queryable; an import is sent in calls of 128 records, each its own transaction, and is not atomic; and nine corpus cases end at a documented limit (R16.5, R17.2 and R18.3 in `docs/helix/02-design/truss-requirements.md`); an export of a type over 10,000 rows, or of an entity with over 100 related keys on a relationship, is `Unsupported` (R17.2, R17.5).
