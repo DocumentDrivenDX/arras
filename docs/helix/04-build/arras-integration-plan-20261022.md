@@ -344,21 +344,29 @@ remain A3–A7; Ashlar's authorized publication/progress seam remains separate.
 
 ### Candidate release qualification
 
-The 0.6.0 candidate adds optional official source admission and bounded core
-metadata projection relative to published 0.5.1. Legacy parsing remains default;
-hosts opt into `umf-core-metadata/1`, which only the memory adapter qualifies in
-this tranche. That profile allows schema registration/dry-run, description,
+Candidate source `6fe7b47` is the release-preparation checkpoint for the same A2
+scope as merged source `df923164`. It adds optional official source admission and
+bounded core-metadata projection relative to published 0.5.1. Legacy parsing
+remains default; hosts opt into `umf-core-metadata/1`, supported only by the memory
+adapter in this tranche. It allows schema registration/dry-run, description,
 document readback and authorized empty-graph reads; writes refuse before effects,
 and Truss refuses the profile before acceptance. This is not value/constraint or
-canonical action support. The candidate retains Truss 0.0.48, Weft 0.4.51 and UMF
-core 0.10.0 pins. Release-preparation edits add no further runtime behavior
-beyond the merged A2 source. The source and installed proof recorded below belongs
-to an unreleased 0.5.1 wheel and is historical evidence only. Before a 0.6.0 release, its exact final wheel must pass
-the installed UMF qualification and its exact public download must pass a fresh
-repeat. Release evidence schema v2 adds the mandatory UMF receipt projection and
-seventeen-asset inventory; v1 and the sixteen-asset 0.5.1 public evidence remain
-unchanged. No 0.6.0 wheel, public proof, value/constraint execution, canonical
-action, native metadata, UI or Ashlar qualification is claimed here.
+canonical action support. Truss 0.0.48, Weft 0.4.51 and UMF core 0.10.0 pins are unchanged. The source, UI and installed results below are
+macOS arm64 / CPython
+3.11.17 cohort evidence except where the doctor tool’s Python version is stated.
+
+| Candidate evidence | Result and boundary |
+| --- | --- |
+| Source quality | Full default Python suite: 3,064 passed, 199 Truss tests deselected. Content, Ruff, format and full Pyright checks pass. |
+| UI source | Lint/type, 1,449 unit tests, audit, build and external checks pass. |
+| Exact artifacts | Final wheel SHA-256 `03959567e77a547ed94014f55bd312630a276827753aafbb5615da0b216366ec`; wheel-carried npm SHA-256 `cfdd2da7a13f088df2146322e14eba202e78b8def3afc86690e550a44d845749`. Final amended source/sdist parity passes. |
+| Installed UMF gate | On macOS arm64 / CPython 3.11.17: 139 ordered reference and 139 fresh-empty production Registry comparisons, zero skips; six base and ten extra-enabled controls pass, with cleanup. |
+| Installed doctor/example | Doctor passes 20 cases, eight SDK phases and three controls using Python 3.13.16. Fresh extension example passes four tests and 72 memory cases. |
+| Remaining gates | Native 199-test execution is in progress. Fresh installed-native, packed-browser, hosted CI, exact-tag, public 17-asset assembly and public-download UMF repeat remain pending. These candidate results are not publication evidence. |
+
+These are candidate results, not public-release evidence. They establish no
+value/constraint execution, canonical action, native metadata, UI, managed
+deployment or Ashlar qualification.
 
 ### Bounded A2 execution checkpoint
 
