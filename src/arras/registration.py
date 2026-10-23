@@ -32,8 +32,20 @@ def as_revision(r: Revision | Mapping[str, Any]) -> Revision:
 def placed(h: Arras, document: bytes | str) -> tuple[bytes, ModuleInfo]:
     """The document's bytes and its module as the host placed it; `Invalid` when it does not parse
     or the host placed no such module."""
-    raw = document.encode() if isinstance(document, str) else document
-    mod = parse_module(raw)
+    if h.metadata_profile == "legacy-arras/1":
+        raw = document.encode() if isinstance(document, str) else document
+        mod = parse_module(raw)
+    else:
+        from arras.umf_admission import project_document
+
+        projection = project_document(document)
+        if not projection.supported:
+            raise Invalid(
+                [Violation(issue.path, issue.code, issue.message) for issue in projection.issues]
+            )
+        assert projection.module is not None
+        mod = projection.module
+        raw = projection.admission.source
     placement = h.placement_of(mod.name)
     if placement is None:
         raise Invalid(
