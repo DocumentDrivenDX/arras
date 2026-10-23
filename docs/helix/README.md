@@ -42,10 +42,14 @@ post-download failure remains historical; the separate verification run supplies
 the passing current receipts. Linux qualifies 205 nonvisual UI cases; its visual
 stage is explicitly not run. The Mac comparison and payload bridge retain their
 separate artifact scope. PyPI/npm uploads remain explicitly deferred. No downstream
-migration or general official-UMF execution is implied. The next bounded A2
-admission/metadata profile is governed by CONTRACT-002/003/004, the architecture,
-test plan and integration plan; implementation and its fresh installed proof
-remain open.
+migration or general official-UMF execution is implied. The bounded A2
+admission/metadata profile now passes source and fresh installed-wheel checks;
+the [execution checkpoint](04-build/arras-integration-plan-20261022.md#bounded-a2-execution-checkpoint)
+records the exact unreleased candidate and safe receipt. It uses the released
+official core with fresh empty registries and an explicit memory-only metadata
+profile. The candidate retains package version 0.5.1 and is distinct from the
+immutable public 0.5.1 assets. Official value/constraint execution, canonical
+actions, broader ownership/registration and the Ashlar adapter remain open.
 
 Raw incoming material goes in `docs/intake/`, outside HELIX. Author artifacts
 through the HELIX skill (`/helix`).

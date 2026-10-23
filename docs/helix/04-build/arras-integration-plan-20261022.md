@@ -177,7 +177,7 @@ A2–A7 and P1/P2 contracts, native capabilities and deployments stay open below
 
 | After the scoped release | Owner/dependency | Bounded next acceptance |
 | --- | --- | --- |
-| P1 — remaining A2 official admission/projection | Arras semantic lane; exact A1 released API/vector evidence and CONTRACT-002/003/004 | Govern the immutable admission result, fresh empty official Registry and explicit memory-only core metadata projection below. Implement one STRING-keyed core record without mandatory DDD; retain exact source/unknown content and separate validity/completeness, projection, provider qualification and execution. The completed memory safeguard is safety, not constraint enforcement; trusted extension registration and broader runtime semantics remain later work. |
+| P1 — bounded A2 implemented; broader semantics remain open | Arras semantic lane; exact released API/vector evidence and CONTRACT-002/003/004 | Source and fresh installed checks pass for immutable admission, fresh empty official Registry and explicit memory-only core metadata projection. Preserve distinct validity/completeness, projection, provider qualification and execution. Trusted extension registration and value/action runtime semantics remain later work. |
 | P1 next — registration and one generated action/constraint slice | Arras + UMF + Truss; agreed A2 mapping and authoritative value/action boundary | Define owner/module/version/digest and upgrade/retirement/dependency authority. Run one unchanged generated action through canonical transport with actual constraints, current person authority, dry-run/violation zero effects, atomic rollback and receipt/retry/unknown-settlement behavior. Later generated reads/link keys, optional values and cross-module execution remain A5/A6. |
 | P2 design now; bounded reader after shared projection/runtime agreement | Arras + Ashlar owner `01a15c6c-3938-71e2-8a35-bdb7ed8d9867` | Start with the receipt/progress contract, then one authorized publication-pinned lookup/page and zero-wait receipt-inclusion check. Settle complete transactions/no-op progress, epochs and person-scoped disclosure. Implement this reader in parallel with the action lane where dependencies permit; do not wait for every action/cross-module feature. Prove real convergence and false versus unknown freshness. Full managed/production/scale qualification remains separate. |
 
@@ -293,12 +293,13 @@ current Arras source, Linux, managed deployment or public release. Public
 publication/Arras adoption remain with the owning release and exact-cohort gate;
 Arras's dependency pins are unchanged.
 
-### Remaining A2 — governing adoption and ordered implementation
+### A2 — bounded implementation and remaining semantics
 
 P0 publication and supplemental public verification are closed; this is separate
-P1 work. A2-0 adopts the bounded API/default/order/subset in CONTRACT-002/003/004,
-the programmatic keyword in CONTRACT-005, architecture and TP-001. This records
-implementation requirements, not passing code or installed-feature evidence.
+P1 work. A2-0 adopted the bounded API/default/order/subset in CONTRACT-002/003/004,
+the programmatic keyword in CONTRACT-005, architecture and TP-001 before code.
+The ordered source slices below are implemented and Sol reviewed; the execution
+checkpoint binds their local source and fresh installed-feature evidence.
 
 Use only released pure `umf-core` 0.10.0 from `umf-v0.5.4`, exact wheel SHA-256
 `49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9`.
@@ -332,12 +333,57 @@ the two fresh installed environments. Vendoring the independently verified publi
 139-case fixture requires its exact tag/blob/digest, derived/correction metadata
 and license/notices, not a new owner approval gate. TP-001 records these controls.
 
-Sol freezes/reviews governing decisions before Luna implements each bounded
-slice. Contract revision/catalog changes and downstream file ownership are
-coordinated when implemented. No version, tag, released receipt, Truss49 adoption,
-native/UI campaign or new registry publication follows from A2-0. Canonical
+Sol froze/reviewed governing decisions before Luna implemented each bounded
+slice. The public catalog, signatures, module edges and contract revisions agree:
+type registry 2, actions 2, backend 6 and lifecycle 3; interface remains 2.
+No version, tag, released receipt, Truss49 adoption, native/UI campaign or new
+registry publication follows from this feature checkpoint. Canonical
 actions/transport, official value enforcement and broader registration ownership
 remain A3–A7; Ashlar's authorized publication/progress seam remains separate.
+
+### Bounded A2 execution checkpoint
+
+**The bounded feature passes local source and fresh installed checks on unreleased
+candidate `11c3dd0711ff6d556fed4fbea99cff1951506588`.** Package metadata remains
+0.5.1; these bytes are distinct from immutable public v0.5.1. The
+[installed receipt](evidence/umf-admission-projection-20261023/installed-proof.json)
+is preserved byte-for-byte, with a separate
+[independent review](evidence/umf-admission-projection-20261023/installed-proof-review.safe.json).
+
+| Evidence | Observed result and boundary |
+| --- | --- |
+| Required source suite | 3,031 passed; 199 Truss tests deselected; 60.36 seconds. Configured strict `src/tests` Pyright with the explicit quality interpreter, Ruff, formatting and content checks pass. No native campaign ran. |
+| Exact built Arras wheel | `arras-0.5.1-py3-none-any.whl`, SHA-256 `948666bc38cc1ac00c0739d47da7b5a395c7a0b89721eb12b11456f61bbcb112`; 173 RECORD entries. Independent review verifies every recorded payload hash. |
+| Exact official SDK | Released pure `umf-core` 0.10.0, SHA-256 `49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9`, default pinned-public-URL mode; 26 RECORD entries. No Rust/codegen candidate is used. |
+| Fresh installed attempt 01 | Passed on CPython 3.11.17, Darwin ARM64. Two new environments; six base controls and ten extra-enabled controls pass. Receipt records installed payload/origin checks before API use, no shared site packages/source aliases, and completed cleanup. |
+| Official fixture parity | Exact 139 unique ordered IDs, fixture SHA-256 `bb008a98b8448050748e65f867e7863475ccad9501a5b9229ae9e6d336691544`; 139 reference-registry matches and 139 separate fresh EMPTY production-registry matches; zero skips. This is admission-result parity, not 139 executable metadata cases. |
+| Feature controls | Base legacy registration/read works with no SDK installed; explicit new routes refuse. Extra-enabled public admission/projection and Arras-to-memory registration/readback pass. Unknown/incomplete and valid-but-unsupported cases, unqualified providers, profile transitions, repr privacy and direct-write zero effects are checked. |
+| Source binding | Frozen verifier/probe match the candidate commit. Independent archive review matches 106 tracked packaged members to that commit and 61 generated members to working-build bytes; this is not a whole-tree immutable-build attestation. |
+
+Receipt SHA-256 is
+`c7a7c0b98f5bafd4f7356cdfaf1d0e7f281fffc9a46c391ddfb9ddc4161fd13b`.
+Verifier SHA-256 is
+`87bccd0a5639681923b1539918593601090bbd8cf8cd870c5a922d128992d3e3`;
+fixed probe SHA-256 is
+`3185ee3a4a52f991ab7da87e5c252c4ebcd9f8a48900a994eddc8966abcae4be`.
+The installed receipt contains safe observed dependency versions and relative
+import origins, without raw document text, host paths or private command logs.
+
+**Failure history.** The preceding full source attempt passed 3,028 tests and
+failed two MCP subprocess cases. The child rejected `ARRAS_REQUIRE_UMF` as an
+unknown Arras configuration key. The narrow ignored-test-flag/catalog fix retains
+unknown-key refusal; the two original regressions and final complete source run
+pass. The first actual installed proof then passed; no failed installed attempt
+is hidden. The verifier's 17 offline controls pass. An optional standalone strict
+typing run over dynamic-JSON tools reported 113 issues; it is not represented as
+passing the configured strict `src/tests` gate.
+
+This proves official source admission and a reduced, explicitly immutable memory
+metadata profile. It enables no value/constraint or canonical action execution,
+qualifies no native backend or UI, and is not public release/download evidence.
+Truss remains legacy-only and refuses the new metadata profile before acceptance.
+Trusted extension registration, broader projection/ownership and Ashlar's
+authorized reader/progress work remain open.
 
 ## Extensibility Queue
 
@@ -1522,9 +1568,9 @@ gates above are reviewable. It does not establish integration completion.
   and source-fidelity checks; it does not establish constraint enforcement.
 - [x] The bounded A2 official admission/core metadata API, provider qualification,
   ordering, module boundaries and required test gates are governed before code.
-- [ ] Bounded A2 admission/projection, memory metadata integration and both fresh
-  installed proofs pass. Trusted extension registration and broader semantics
-  remain outside this first profile.
+- [x] Bounded A2 admission/projection, memory metadata integration and both fresh
+  installed environments pass on the named unreleased candidate. Trusted extension
+  registration and broader semantics remain outside this first profile.
 - [ ] A3–A7 prove current-source registration, declared execution, ownership,
   generated reads, selected optional/cross-module behavior and installed public-host
   conformance on their named native cohort. Unsupported cases remain explicit.

@@ -45,6 +45,12 @@ jobs:
         run: |
           mkdir -p artifacts
           uv run --no-sync python tools/verify_umf_admission.py --wheel dist/arras-*.whl --output-json artifacts/umf-admission-installed.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: arras-umf-admission-installed
+          path: artifacts/umf-admission-installed.json
+          if-no-files-found: warn
       - name: The wheel installs on a clean interpreter and carries the UI
         run: |
           uv run --no-project --isolated --with dist/*.whl python -c "import importlib.util, arras, arras.ui, arras.adapters.truss; assert importlib.util.find_spec('truss') is None, 'the base wheel must not need Truss'; print(arras.CONTRACT_VERSIONS, arras.ui.npm_package().name); assert (arras.ui.STATIC / arras.ui.PAGE).is_file()"

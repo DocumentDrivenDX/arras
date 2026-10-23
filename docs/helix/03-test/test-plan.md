@@ -201,7 +201,9 @@ Corpus version 5 adds validate-only registration and the `schema` grant (Schema 
 
 ### Official admission and metadata profile — bounded A2
 
-These are required future feature gates, not evidence added by governing adoption.
+These gates govern the bounded feature and remain separate from the public
+0.5.1 release gates. The completed local source and installed evidence is linked
+below; governing adoption alone does not satisfy them.
 CONTRACT-002/003/004 separate official validity/completeness, source fidelity,
 projection support, provider qualification and executable capability.
 
@@ -260,8 +262,31 @@ installed RECORD/payload/origins before API execution, then public admission,
 projection, memory metadata registration/readback, original bytes and refusal
 controls. Neither uses shared site packages/PTH/source aliases. Record observed
 versions/platform/scope; these proofs establish no native, UI or production
-semantics. Coordinate the installed probe and future feature release gate with
-the distribution owner; do not amend published 0.5.1 artifacts or receipts.
+semantics. `tools/verify_umf_admission.py --wheel PATH --output-json PATH`
+implements this selected-wheel gate; CI invokes it after the wheel build.
+Coordinate any feature release with the distribution owner; do not amend
+published 0.5.1 artifacts or receipts.
+
+**Execution checkpoint.** The [bounded A2 execution record](../04-build/arras-integration-plan-20261022.md#bounded-a2-execution-checkpoint)
+and [safe installed receipt](../04-build/evidence/umf-admission-projection-20261023/installed-proof.json)
+bind the unreleased source candidate `11c3dd0711ff6d556fed4fbea99cff1951506588`.
+The required source suite passes 3,031 tests with 199 Truss tests deselected;
+configured strict source/test typing, Ruff, formatting and content checks pass.
+The preceding source attempt passed 3,028 tests and failed two MCP subprocess
+cases because the new required-test flag was treated as configuration. The
+test-only ignored-prefix fix retains unknown-key refusal, and the final complete
+source run passes; the failed attempt remains recorded in the execution plan.
+
+The first actual installed attempt passes on CPython 3.11.17, macOS ARM64.
+Both fresh environments verify the selected Arras payload before import; the
+extra-enabled environment also verifies the selected official SDK payload.
+All 139 unique ordered reference cases match both the official TEST-ONLY case
+registries and separate fresh EMPTY production registries, with zero skips.
+Six base controls and ten extra-enabled controls pass, including original-byte
+readback, provider refusal, immutable metadata and write refusal without effects.
+The receipt records cleanup of both environments, no shared site packages and
+no source aliases. This is an unreleased installed feature proof, not native,
+browser, production or complete constraint/action-runtime qualification.
 
 ### The Truss adapter's conformance (TR-12)
 
