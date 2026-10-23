@@ -235,3 +235,48 @@ receipt = ontology.invoke("catalog.CreateCandidateSolution",
 The action shape follows the UMF build brief's description of UMF's action type: a name, a description, typed parameters, a result or handle, preconditions and effects, and optional compensation. The brief's caution applies: the declaration is the contract and a loss report, and the implementation remains the accurate semantics, so the declared effects are claims that the module's tests verify. Compensation and long-running work (sagas) are deferred.
 
 Open points: whether the closed set of predicates and effects is enough for the catalog, or a handler is needed in the first release; and how an action's declared authorization (which roles may invoke it) is expressed once UMF defines it, since v1 relies on the provider's module write access alone.
+
+## Planned one-action/constraint execution cut
+
+The next cut targets one module, one record with a required direct STRING key,
+one constrained scalar and one explicit-key SET action from the exact admitted
+generation source. The proposed first subset follows CONTRACT-902 at the named
+UMF source, subject to the owner's package/binding confirmation. It has empty
+conditions/outputs/failures and
+no handlers or relationships; nonempty conditions or failure declarations MUST
+refuse. Postcondition
+execution is a later profile, not a prerequisite for this bounded subset.
+The existing STRING key carrier is retained. It MUST use a separately qualified
+opt-in execution profile; the read-only metadata profile and legacy dialect keep
+their present meaning. Canonical source MUST NOT be lowered by the legacy parser
+or by a new Arras rule, literal, selector or recipe evaluator.
+
+UMF CONTRACT-049/900/901 owns value, declaration and invocation meaning;
+CONTRACT-079 owns the generated wire. A session-bound synchronous
+`execute(request) -> Mapping` remains the planned integration point. Its current
+wire uses `contract: "umf.access/1"`, exact source digest `schema`, and
+`kind: "apply"` with action identity, inputs and optional idempotency key.
+The selected CONTRACT-079 source also defines `kind: "validate"`, omits an
+idempotency key for validation and returns `{schema, valid: true}` on success.
+Wire fields/codes MUST follow that exact source cohort; no additional kind is
+inferred from Arras method names.
+Source mismatch and unsupported meanings MUST stop before planning or effects.
+
+The qualified engine/provider MUST enforce the selected inputs, constraints and
+frames under current person authority. Unsupported condition meanings refuse
+instead of being dropped. Dry run uses the source-qualified validation wire or
+host callable. It is advisory and leaves source, graph, revisions, journal,
+replay and position
+unchanged. Commit and idempotency state are atomic; same-key/same-input retry
+returns the original result on an explicit caller reissue, changed input
+conflicts, and uncertain settlement MUST NOT cause automatic retry or be treated
+as known rollback. Changed identities/counts and consistency tokens MUST follow
+the official wire, with complete fixed-code error mapping. Broader conditions,
+batch execution and durable restart/recovery are later qualifications; unsupported
+requests refuse before dispatch. Memory replay proves only its stated process
+lifetime. A post-dispatch unknown outcome remains unknown, never a safe retry.
+
+The executable API, exact profile/version and fixture/vector handoff remain
+unresolved. Metadata extension registration or `executionVerified:false`
+assessment alone cannot satisfy this gate. No action implementation or public
+support is asserted by this planned cut.

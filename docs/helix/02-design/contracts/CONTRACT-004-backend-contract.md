@@ -399,3 +399,25 @@ describe() -> BackendInfo(name="memory_replica", roles=("reader",),
 ## Non-Normative Notes
 
 The adapter operations are the ones the client interactions need once reads are a single `query`. Because the stores behind the adapters may change, the contract is the stable part: the corpus is written first, then each adapter is built to pass it. Whether Arras should wait inside `query` for a replica to reach a token, or leave the wait to the caller, is open (CONTRACT-001).
+
+## Planned qualified action-provider boundary
+
+An action-capable provider MUST explicitly qualify the selected execution
+profile, exact source binding, value/constraint and action-plan meanings before
+the host dispatches it. Generic `provider` status, successful metadata admission
+or support for legacy `Plan` does not establish canonical action capability.
+The current memory metadata profile stays read-only; Truss's refusal of that
+profile stays in force. No current descriptor is widened by this plan.
+
+The selected provider owns current per-person authorization, registered source
+and revision, pre/post-state evaluation, atomic rollback and settlement.
+Mapping an official plan to existing operations is permitted only when the
+qualified owner API proves complete meaning preservation; unrepresented frames,
+constraints or postconditions MUST refuse before effects. A caller-built report,
+plan or claimed capability cannot supply native ownership or execution authority.
+
+The first integrated proof may qualify a bounded memory execution profile; it
+cannot qualify Truss, durable restart replay or managed deployment. Native
+acceptance requires its own exact installed cohort and real transaction proof.
+No backend-independent evaluator, store layout, new SQL compiler or Ashlar write
+path is introduced. Exact adapter types/callables await the upstream handoff.

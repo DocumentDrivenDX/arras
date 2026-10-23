@@ -654,3 +654,44 @@ The `truss` tests run against a fresh local PostgreSQL 18.6 per run, with Truss 
 - [ ] Which technology runs the conformance corpus, the benchmark harness and the Ashlar test double, and which CI tool runs them? Ask Erik LaBianca and the host integration owners.
 - [ ] Who authors the story test plans, and in what order? Ask Erik LaBianca.
 - [ ] How are the first request after suspend and Ashlar interactive reads budgeted? Ask the platform owner and the Ashlar project.
+
+## Planned A3/A4 one-action acceptance
+
+Use one exact source for registration, generation and execution: one module,
+required direct STRING key, one constrained scalar and one SET action with empty
+conditions/outputs/failures and no handler/relationship. Record source,
+fixture, package/API and generated-client digests plus provenance/notices.
+An unchanged generated client must drive the real host/provider boundary.
+Legacy invocation is a regression control, not canonical execution evidence.
+
+Required controls are: second owner and source/version/digest mismatch; stale
+revision and downgrade under an explicit version policy; valid and violating
+values against the official oracle; unknown action identity, malformed or
+unsupported wire kind/operation before provider dispatch; unknown rule/profile/frame;
+nonempty condition or failure declaration, handler, multiple effects or
+relationship; current denied
+or revoked person; successful advisory dry run with zero graph/journal/replay/
+position effects; real commit/readback; provider-fault rollback where a qualified
+failure mechanism is available, otherwise an explicit unqualified boundary;
+explicit caller same-request retry and changed-input conflict; and honest unknown
+settlement with no automatic write retry. Dry run exercises the selected host
+validation wire/callable from the selected source cohort, never an undocumented
+generated-transport kind. Nonempty pre/postconditions are unsupported controls
+for this first subset, not required execution features. Broader conditions, batch
+execution and durable unknown-settlement/recovery remain later qualifications or
+honest pre-dispatch refusals. No automatic retry is allowed after dispatch loss.
+Before-refusal assertions include a provider-not-called or actual unchanged-state
+witness appropriate to the existing authorization order. A report alone does not
+prove zero effects. Memory-only or same-process retry results remain so labelled.
+
+`fixtures/actions/tutorial-postcondition.json` is a candidate postcondition probe,
+not proof of a scalar constraint, natural violation or later-effect rollback.
+Its fields are unconstrained and its effect sets the declared successful value.
+Mutating its recipe to manufacture a failed postcondition cannot be called
+unchanged official evidence.
+The UMF owner must identify the first SET/constrained-value fixture and the
+available provider rollback witness/vectors, or clearly separate a
+provenance-bound derivative and its independent
+oracle. No fabricated callback verdicts, permissive production registries or
+optional-engine skips may close the required gate. Real native/installed tests
+remain separately authorized after the pure integration freezes.

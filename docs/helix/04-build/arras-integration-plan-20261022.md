@@ -1642,3 +1642,84 @@ gates above are reviewable. It does not establish integration completion.
   remain outside the scoped P0 release. P0 delivery is closed against actual
   publication and supplemental fresh public-download evidence; remaining A2–A7 semantic work
   stays separately open.
+
+## Next A3/A4 cut — planned, executable seam unresolved
+
+This checkout starts at released main
+`8542d477c411c96a553ea84572b86c95c59d7cf2`, package 0.6.0, on public
+Truss 0.0.48/Weft 0.4.51 and the selected released pure UMF core 0.10.0.
+It is separate from Truss49 PR 9, managed acceptance and release closeout.
+No package/version/tag, dependency, runtime or public capability change has been
+made for this action cut.
+
+The bounded goal is one source-bound module with a required STRING key, one
+constrained scalar and an unchanged generated explicit-key SET action through
+a real provider. The candidate follows existing CONTRACT-902 at the named UMF
+source, pending owner confirmation of the public binding/package. It has empty
+conditions/outputs/failures and no handlers
+or relationships; nonempty pre/postconditions or failure declarations refuse
+and remain later work.
+CONTRACT-002/003/004 and TP-001 above retain authority, source fidelity, refusal,
+dry-run, rollback and retry obligations. The metadata-only profile is unchanged.
+A new opt-in execution profile is required; its identifier and signatures are
+not yet selected. Author-version ordering must be explicit; an ordinal is only
+a proposal and opaque native revisions are not ordered.
+
+### Exact upstream handoff required
+
+The official core wheel qualifies model admission, not action execution.
+The integration owner identifies existing TypeScript public APIs at `f323a2d`:
+`admitActionInputs`, `validateCoreFieldValue`, `validateCoreRecordValues` and
+`prepareActionPlanModel`. The latter supplies source-bound preparation for one
+SET effect with required boolean/integer/string values and no conditions,
+outputs, failure declarations, handlers or relationships. These source APIs are useful boundaries;
+the missing qualified Rust/Python binding, exact package and vectors remain
+the execution handoff dependency. No separate Python evaluator is proposed.
+At UMF source `f323a2dec16132c00eb1bc75c65c416f94804c26`, CONTRACT-900
+specifies actions 0.1.0/core 0.10.0. The separate inspected project checkout still
+has older 0.8.0 contract prose while its action package declares core 0.10.0;
+this is source-cohort drift, not proof that canonical declarations are absent.
+The package's description also retains 0.8.0 wording despite its 0.10.0
+`coreVersion`; the upstream handoff must resolve that metadata correspondence.
+CONTRACT-902 model-pin prose still names 0.8.0 while the inspected preparation
+implementation targets 0.10.0; the owner must reconcile that correspondence too.
+Action schemas and portable-plan assessments remain metadata/capability artifacts,
+not executable authority. CONTRACT-079/900/901 and companion 902–904 must be
+matched to the selected package rather than combined across cohorts.
+
+The current UMF owner must provide one reviewable handoff containing:
+
+1. Exact public callable/import path, package release or explicitly selected
+   candidate status, source commit, archive digest and dependency/native closure.
+2. Exact core/action/value/rule/selector versions and input/output types, including
+   source/registered-revision/owner custody; no document-loaded callbacks. Bind
+   the source-qualified CONTRACT-079 apply/validate inventory and the UMF-owned
+   bridge from generated entity-key Field-ID maps to canonical entity tuples.
+3. The authoritative Field value and action-plan/evaluation boundary, required
+   trusted host/provider ports, supported obligations and explicit refusals.
+   Private kernels and a copied Python evaluator are excluded by UMF ADR-006.
+4. Exact one-module fixture, unchanged generation command/output and positive/
+   negative vectors for constrained values, unsupported conditions/failure declarations/handlers/
+   multiple effects/relationships and authorization; identify available provider
+   fault/rollback and retry witnesses without inventing controls. The tutorial
+   postcondition fixture is outside
+   the first empty-condition subset and cannot prove its constrained-scalar claim.
+5. Outcome, error, dry-run, commit/unknown-settlement and replay contracts;
+   identify what is pure metadata, same-process, native or independently released.
+
+### Ordered ownership and implementation gate
+
+| Owner | Integrated deliverable after handoff | Gate |
+| --- | --- | --- |
+| Sol | Freeze selected profile, ownership/version policy, callable contract and module map in these existing artifacts | Resolve the numbered handoff; review source and evidence without substituting a local interpreter |
+| Luna A | Source-bound host transport/registration integration and real host/provider tests; minimal core delegation if needed | Actual current source/revision authority, unchanged generated client, positive legacy regression and mismatch/owner/refusal zero effects |
+| Luna B | Official action/value bridge, source fixtures/vectors and constrained scalar/action tests | Sole qualified SDK boundary; complete represented semantics, no private kernel or legacy reinterpretation |
+| Coordinated quality lane | Public catalog/contracts, DAG and required installed-extra gates after production freeze | Meaningful forbidden-edge controls, no-skip oracle checks and fresh installed candidate proof |
+
+These are provisional responsibility boundaries, not source-GO file lists.
+After callable selection, assign exact disjoint files (prefer cohesive new
+transport/bridge modules), preserve the 926-line ceiling, then let Luna implement
+and Sol review. Do not start unused identity/wire helpers merely to self-test a
+proposed API. Until the handoff, the completed work is governing preparation;
+action/constraint implementation remains blocked by the unresolved executable
+seam. No repeated runtime or new release campaign is authorized by this plan.

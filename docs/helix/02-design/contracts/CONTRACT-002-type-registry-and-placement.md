@@ -291,3 +291,26 @@ admission may preserve a default or other meaning that the selected metadata or
 execution profile refuses; preservation is not execution support.
 
 Open points: a primary key declared in UMF as several fields is refused in v1; whether a retired name may be redeclared once the backend defines it; and who supplies the Python UMF reader (a port of UMF's validator, or an adapter), which must pass the corpus's `umf` cases before Arras can claim conformance.
+
+## Planned bounded action-source binding
+
+The next action slice MUST bind the same exact source bytes used for generation
+and registration to its module, source SHA-256, trusted owner scope and current
+provider registration revision. A caller-supplied owner label or digest is not
+authority. Current ownership and authorization come from the qualified
+provider/host registration boundary; a process-local identity registry cannot
+stand in for native ownership or CAS.
+
+The selected boundary MUST define author-version identity and any downgrade
+ordering before implementation. UMF core version is not document version;
+opaque backend `Revision` values MUST NOT be ordered. An Arras-owned monotonic
+ordinal remains a proposal, not an adopted API. Required controls cover a second
+owner, equal-version/different-digest content, downgrade, stale expected revision
+and atomic upgrade. Missing upgrade/retirement/dependency semantics refuse those
+operations rather than admitting an implicit policy.
+
+This is a planned execution boundary, not a change to `umf-core-metadata/1`.
+Its profile name, registration carrier and public signature remain unresolved
+until the authoritative action/value API handoff in the integration plan.
+Existing admin/token/catalog, person-schema, placement and provider authorization
+precedence remains unchanged. This amendment advertises no executable profile.

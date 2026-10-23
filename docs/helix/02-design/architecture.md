@@ -427,3 +427,24 @@ Recovery time and recovery point objectives are not recorded (see Open Questions
 - [ ] How does the embedding host hand a user's token, and its refresh, to a per-session stdio process, and does Ashlar accept it? Ask the host integration owners and the platform owner.
 - [ ] Should the interface wait for a replica to reach a receipt's token, or only report that it has not? Ask Erik LaBianca.
 - [ ] Is the library interface synchronous in v1 only, or does the host need an asynchronous one? Ask the host owner.
+
+## Planned A3/A4 action integration boundary
+
+The next bounded action cut connects an unchanged generated synchronous client
+to a real session/provider boundary; unused identity registries or wire-parser
+mini-libraries are not a delivery slice. Keep original source, owner/version
+custody, generated request and actual transaction outcomes in one integration
+trace. Preserve current person authority and the metadata-only profile.
+
+Arras owns source/request binding, placement and outcome translation. The selected
+official UMF API owns value/action meaning; the provider owns native authority and
+commit. Sole SDK loading remains isolated in the engine integration boundary.
+A new cohesive action bridge/transport module is preferred over growing the
+894-line `core.py`; the unchanged ceiling is 926 physical lines. Exact modules,
+public method signatures and allowed edges freeze after the official callable
+handoff, before source implementation and module-map changes.
+
+No separately maintained Python evaluator or private constraint/literal kernel
+is permitted. Do not adopt experimental `umf_access.native_actions` or Rust/V8
+candidates merely because source exists. The bounded public package/API, source
+and native requirements must first be selected and independently qualified.
