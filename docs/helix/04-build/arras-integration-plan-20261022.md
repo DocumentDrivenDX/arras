@@ -1891,3 +1891,39 @@ with the native workflow shell controls (21 tests; retained log SHA-256
 `f8ccf0196fb70c0d2db8e62e87e98b0e147085c6876973ba6e32fd28525ddf46`).
 Workflow and documentation edits must still be followed by a CI
 rebuild comparison before this wheel is frozen for the campaigns.
+
+#### Canonical installed checkpoint, 2026-10-23
+
+CI run `40006406325` at source
+`e3e253c06129faa85ad18c1607880d318acd33d9` independently reproduced the exact
+`c31b56e53fa653ba090e08f2dcff1edb85849f56489b543b150108ae75eab57f` wheel.
+All four jobs passed, including 3,242 ordinary Python tests and 202 PostgreSQL
+adapter tests. The installed UMF receipt remained byte-identical to the first
+CI build. The exact-wheel fresh-installed doctor passed all 20 cases; its
+receipt has SHA-256
+`601a98926ed81cc3b3ed1baaa3c1fc8650e3635b16b0405ace11895d7c3fcc18`.
+
+The complete fresh-installed macOS arm64 / CPython 3.11.17 native campaign then
+completed all 72 applicable corpus-v13 cases: 64 passed and eight unchanged declared
+limits, with zero failed, harness-error or host-specific results. The original
+receipt has SHA-256
+`686417142143b507d2f7aa175a206a21ef1b807fe1b520d675c5dd18246e763e`;
+its bound cohort has SHA-256
+`32942570f4974c7f78aea9f2173f9c4d7f5d518baac03ce22cd3f639b400b5e1`.
+Independent review checked the unique complete case inventory, exact eight
+limits, all seven native archive identities, installed payloads and native-file
+hashes. The PostgreSQL archive's identical public bytes were retained from a
+separate verified cache after normal campaign cleanup removed the run's copy;
+that custody distinction is recorded and no campaign was retargeted or rerun.
+
+Independent process/filesystem closeout confirmed zero owned PostgreSQL or
+conformance processes, zero postmaster PID files and removal of the temporary
+environment, with the source and qualification-tool hashes unchanged. Its
+receipt has SHA-256
+`b9f578d0055d9d12e48a33ee3236586d29ac91ffef9e45fd6ce526ea0cf75b42`.
+Unrelated persistent PostgreSQL instances were left untouched. This closes the
+named final-wheel Mac campaign only. Full actual Lakebase acceptance remains
+open: the local selected-policy diagnostic reached the supported installer
+deadline, and explicit operator authorization for the reviewed disposable
+colocated runner and temporary subnet is pending. No new infrastructure has
+been created. Merge, tag, release-build and public-download gates remain open.

@@ -69,8 +69,12 @@ if access cannot be found. Do not advertise an unavailable registry install.
 
 ## PR 9 / 0.6.1 execution
 
-- [ ] Corrected final-version artifacts pass fresh installation, native, doctor,
-  distribution, official UMF and downstream UI gates on their recorded cohorts.
+- [x] The exact `c31b56e5...` 0.6.1 wheel passes the complete fresh-installed
+  macOS native campaign (64 passed, eight unchanged limits, no failures),
+  independent cleanup, installed doctor and CI-installed official UMF checks;
+  the integration plan records the original receipt and cohort digests.
+- [ ] Release-built artifacts match that exact wheel and complete their own
+  distribution, native, doctor, official UMF and downstream UI release gates.
 - [ ] All twelve actual Lakebase cases and independent owned cleanup pass; the
   original safe receipt, fixture/harness identities, review and support limits
   are linked from the integration plan and release notes.
