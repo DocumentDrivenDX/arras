@@ -85,6 +85,19 @@ AUTH_KEYS = {
     "authorized_module_access",
 }
 AUTH_PROFILES = frozenset({"native-password", "human-oauth", "nonhuman-oauth"})
+MIXED_AUTH_PROFILE = "mixed"
+TARGET_V2_KEYS = TARGET_KEYS | {"actor_auth_profiles", "human_actor"}
+AUTH_V2_KEYS = AUTH_KEYS | {"actor_auth_profiles", "human_actor"}
+
+
+def actor_auth_profiles(target: dict[str, Any]) -> dict[str, str]:
+    """Return the exact effective profile for each ordinary role, including legacy v1 targets."""
+    if target.get("schema_version") == 1:
+        return {label: target["auth_profile"] for label in PERSON_LABELS}
+    value = target.get("actor_auth_profiles")
+    if type(value) is not dict:
+        raise AdmissionError("target actor authentication profiles are missing")
+    return dict(value)
 
 
 class AdmissionError(ValueError):
@@ -207,12 +220,12 @@ def _case_set(value: object, label: str) -> tuple[str, ...]:
 
 
 def _validate_target_identity(value: dict[str, Any]) -> dict[str, Any]:
-    if type(value["schema_version"]) is not int or value["schema_version"] != 1:
-        raise AdmissionError("target schema_version must be integer 1")
+    schema_version = value["schema_version"]
+    if type(schema_version) is not int or schema_version not in (1, 2):
+        raise AdmissionError("target schema_version must be integer 1 or 2")
     if value["provider"] != "lakebase":
         raise AdmissionError("target provider must be lakebase")
-    if value["auth_profile"] not in AUTH_PROFILES:
-        raise AdmissionError("target auth_profile is not a supported authentication profile")
+    _validate_target_auth_profile(value, schema_version)
     for key in ("target_id", "provider_resource_id"):
         _text(value[key], f"target {key}")
         if "REPLACE" in value[key] or "PENDING" in value[key]:
@@ -236,6 +249,26 @@ def _validate_target_identity(value: dict[str, Any]) -> dict[str, Any]:
             raise AdmissionError(f"target expected {key} differs from the frozen cohort")
     _sha(expected["truss_wheel_sha256"], "target Truss wheel digest")
     return endpoint
+
+
+def _validate_target_auth_profile(value: dict[str, Any], schema_version: int) -> None:
+    if schema_version == 1:
+        if value["auth_profile"] not in AUTH_PROFILES:
+            raise AdmissionError("target auth_profile is not a supported authentication profile")
+        return
+    profiles = value["actor_auth_profiles"]
+    if (
+        value["auth_profile"] != MIXED_AUTH_PROFILE
+        or type(profiles) is not dict
+        or set(profiles) != set(PERSON_LABELS)
+    ):
+        raise AdmissionError("target schema 2 must bind mixed authentication for all four roles")
+    if any(
+        type(profile) is not str or profile not in AUTH_PROFILES for profile in profiles.values()
+    ):
+        raise AdmissionError("target actor authentication profile is unsupported")
+    if value["human_actor"] != "writer" or profiles["writer"] != "human-oauth":
+        raise AdmissionError("target must bind the required human OAuth writer")
 
 
 def _validate_target_resources(
@@ -310,7 +343,10 @@ def _validate_target_resources(
 
 
 def _validate_target(value: dict[str, Any]) -> None:
-    _exact_keys(value, TARGET_KEYS, "target")
+    if type(value.get("schema_version")) is int and value["schema_version"] == 2:
+        _exact_keys(value, TARGET_V2_KEYS, "target")
+    else:
+        _exact_keys(value, TARGET_KEYS, "target")
     endpoint = _validate_target_identity(value)
     _validate_target_resources(value["resources"], endpoint, value)
     requested = _case_set(value["requested_cases"], "requested cases")
@@ -321,18 +357,15 @@ def _validate_target(value: dict[str, Any]) -> None:
 def _validate_authorization(
     value: dict[str, Any], target: dict[str, Any], target_sha: str, fixture_sha: str
 ) -> None:
-    _exact_keys(value, AUTH_KEYS, "authorization")
-    if type(value["schema_version"]) is not int or value["schema_version"] != 1:
-        raise AdmissionError("authorization schema_version must be integer 1")
+    schema_version = target["schema_version"]
+    _exact_keys(value, AUTH_V2_KEYS if schema_version == 2 else AUTH_KEYS, "authorization")
+    if type(value["schema_version"]) is not int or value["schema_version"] != schema_version:
+        raise AdmissionError("authorization schema_version differs from target")
     if _sha(value["target_sha256"], "authorized target digest") != target_sha:
         raise AdmissionError("authorization target digest mismatch")
     if _sha(value["fixture_sha256"], "authorized fixture digest") != fixture_sha:
         raise AdmissionError("authorization fixture digest mismatch")
-    if (
-        value["auth_profile"] != target["auth_profile"]
-        or value["auth_profile"] not in AUTH_PROFILES
-    ):
-        raise AdmissionError("authorization auth_profile mismatch")
+    _validate_authorization_auth_profile(value, target, schema_version)
     _text(value["request_reference"], "authorization request reference")
     if value["authorized_resource_id"] != target["provider_resource_id"]:
         raise AdmissionError("authorization provider resource mismatch")
@@ -360,6 +393,22 @@ def _validate_authorization(
         raise AdmissionError("authorization does not cover every requested case")
     if not {"read", "cleanup"} <= set(operations):
         raise AdmissionError("authorization lacks required read/cleanup operations")
+
+
+def _validate_authorization_auth_profile(
+    value: dict[str, Any], target: dict[str, Any], schema_version: int
+) -> None:
+    if value["auth_profile"] != target["auth_profile"]:
+        raise AdmissionError("authorization auth_profile mismatch")
+    if schema_version == 1:
+        if value["auth_profile"] not in AUTH_PROFILES:
+            raise AdmissionError("authorization auth_profile is unsupported")
+    elif (
+        value["auth_profile"] != MIXED_AUTH_PROFILE
+        or value["human_actor"] != target["human_actor"]
+        or value["actor_auth_profiles"] != target["actor_auth_profiles"]
+    ):
+        raise AdmissionError("authorization actor authentication profiles mismatch")
 
 
 def validate_inputs(

@@ -1699,3 +1699,53 @@ and operational controls still require handoff without private coordinates in
 these artifacts. MP-01–06 and actual consumer acceptance remain open until
 original service evidence and confirmed owned cleanup pass. Official UMF
 value/action and Ashlar work remain separate.
+
+### PR 9 release execution continuation — 2026-10-23
+
+The human requested completion of the installed 0.0.49 and actual Lakebase gates,
+review, merge and release. The release owner now exclusively owns the adoption
+checkout and publication lane; action/constraint work proceeds in a separate
+checkout. The original draft/source receipts remain historical. The required
+managed schedules now have separate implementation and Sol review lanes, with
+the target owner supplying only private factual provider/credential controls.
+The TP-001 execution amendment governs mixed identities, original service proof,
+pre-cleanup sequencing and reusable setup without repeated admin activation.
+
+The first fresh installed native attempt failed conformance validation and then
+exposed a failure-receipt path serialization defect. Its failed logs and capture
+limitation are retained privately; it is not a pass. The reviewed Path-only
+serialization fix and regression test are committed separately, and the same
+candidate wheel is being rerun. Exact wheel/sdist parity, packed imports, doctor
+controls and fresh official UMF qualification passed for that candidate. These
+results do not qualify a later version bump, final release wheel or Lakebase.
+Actual service execution and publication remain pending their original evidence.
+
+The rerun of that original candidate passed 64 native cases with eight unchanged
+declared limits and zero failed/harness-error cases. A subsequent 0.6.1 candidate
+exposed incomplete version updates: its example host still required 0.6.0, and
+the public API catalog and theme fixture retained the previous version. The
+failed installed-doctor and extension-consumer attempts are retained; the version
+references are corrected together before rebuilding and qualifying a new wheel.
+The earlier wheel identities are candidate evidence only.
+
+Databricks bootstrap is now complete for the dedicated target: separately
+authenticated ordinary OAuth actors include one human writer and three service
+principals, all without elevated database attributes or ownership. Reusable
+credential references remain in private Keychain custody. Bootstrap and identity
+smoke evidence qualify setup only; the actual twelve-case managed campaign and
+independently confirmed owned cleanup are still pending.
+
+The corrected 0.6.1 wheel has SHA-256
+`7608193d46257e2666b11fabad2696f35d976f9253b032600868729041c60e02`.
+Its twenty installed doctor controls, fresh extension consumer and official UMF
+gate pass. Independent installed payload comparison covers 172 Arras and 474
+Truss wheel members, with the observed public49 archive/native/migration hashes.
+The prior `90e613e2...` candidate's native campaign reached the 35-minute command
+deadline without a conformance report. Its original failed receipt has SHA-256
+`9da367940231af13a3e136686c644ccd9cd7824377da68aeeb2104618e8eb203`;
+the exact owned PostgreSQL process was independently identified and stopped, and
+zero owned PID files/processes remained. The private failed state and supplemental
+cleanup record are retained. The reviewed optional conformance deadline preserves
+the 2,100-second default, bounds explicit overrides to 1–7,200 seconds, records
+the selected deadline and changes no acceptance assertion or operation timeout.
+The corrected wheel still requires its own installed native proof.

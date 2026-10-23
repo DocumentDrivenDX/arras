@@ -5,7 +5,7 @@ ddx:
   activity: test
   status: draft
   owner: Erik LaBianca
-  updated: 2026-10-22
+  updated: 2026-10-23
   authoring:
     home: repo
   links:
@@ -690,3 +690,86 @@ characterize strict-install success and owned cleanup; they do not exercise a
 managed platform-grant refusal. Fresh installed qualification and actual
 Lakebase/MP-01–06 acceptance remain unrun in this tranche. Historical evidence
 and the eight declared corpus limits remain unchanged.
+
+### PR 9 execution and reusable identity setup
+
+The human selected completion of the fresh installed 0.0.49 and actual Lakebase
+gates before review, merge and publication. Source CI and local PostgreSQL
+evidence cannot replace either gate. The managed campaign must pass all twelve
+named cases and independently verified owned cleanup on the selected artifacts;
+blocked, skipped, interrupted or partial campaigns do not pass.
+
+Schema 2 permits an explicitly mixed authentication cohort. Its exact four-actor
+map and `human_actor: writer` are repeated in target and authorization. One real,
+ordinary human OAuth writer suffices for the human criterion; the other distinct
+ordinary actors may use their explicitly declared profiles. The installer remains
+separate. Original issuer/subject/resource facts, fresh SQL identity, real
+credential expiry and refresh, denied credentials and membership revocation are
+required. Service identities cannot supply human evidence.
+
+The human also requires avoiding repeated admin activation. One-time identity
+bootstrap may use the activated Databricks admin authority, with scope and custody
+recorded. Subsequent campaigns must reuse securely referenced identities and
+demonstrate credential renewal, owned role operations, provider controls and
+cleanup through delegated permissions without account/workspace admin activation.
+Do not claim this requirement complete from identity creation alone. Reusable
+identity custody and disposable database cleanup are separate. The ordinary human
+SQL role must hold no effective elevated role or owned schema/database authority;
+broader human control-plane rights and unrelated resources remain unchanged.
+
+Person and managed schedules run inside the original installation interval,
+before cleanup. Cancellation stops later effects and retains failure evidence;
+unverified person lifecycle or restoration prevents managed follow-up. All native
+inventory rows stay in memory, including generated runtime secrets; only reviewed
+closed projections enter receipts. Real transport interruption and independent
+reconciliation are required for uncertain outcomes, without fabricated exceptions
+or assertions that a client-side fault proves server COMMIT arrival.
+
+For the exact selected Truss 0.0.49 CreateProbe validation schedule, successful
+dry-run rollback preserves every durable graph/history/receipt/feed/recovery row
+while PostgreSQL's nontransactional allocators may advance. Inventory and compare
+all sequences; allow monotonic counter-only changes during that successful
+validation alone for `id_seq`, `key_storage_row_seq`, `journal_seq`,
+`runtime_object_transition_seq`, `request_receipt_row_seq` and
+`runtime_feed_reservation_seq`. Preserve sequence definitions and report the
+allocation-gap count/digest separately. Bind this narrow exception to the exact
+0.0.49 wheel/native manifest and reviewed `groups.sql`, `operations.sql`,
+`layout.sql` and `feed.sql` members. Unknown changes, decreasing counters or any
+durable-row change fail. Invalid/denied/revoked and restored-state controls retain
+exact sequence equality. This rule requires new source/behavior review for any
+future selected runtime; version labels alone cannot carry it forward.
+
+MP-06 uses the reviewed [exact-0.0.49 extension requirements](../04-build/evidence/truss049-adoption-20261023/extension-requirements.json)
+as an input, separately from actual target qualification. Source and local
+catalog closure require `plpgsql` 1.0 for this ordinary native profile; the
+provider's `databricks_auth` OAuth bootstrap prerequisite is observed separately.
+Inventory every required extension member and its actual ordinary-role privilege
+vector. Internal language handlers are not application entrypoints: do not grant
+them merely to satisfy an all-true predicate. Actual source-declared public
+operations and denials establish ordinary behavior. Missing correspondence or
+an unreviewed source inventory blocks the case.
+
+MP-04 qualifies a bounded semantic replica for the selected public 0.0.49
+CreateProbe schedule. Decode the exact `truss-native-feed/0.1` envelope and
+source-bound runtime/layout pins, including the JSON layout-profile object.
+Admit only the separately checked `truss-native-owned-create/0.1` and
+`truss-native-scalar-create/0.2` history carriers; unknown profiles refuse.
+Preserve complete journal, reservation, source, revision and prerequisite facts,
+ownership/definition/version pins, property IDs/values and safe watermark. Drain
+contiguous pages for the same consumer/source/registration through one genuine
+terminal empty interval within explicit page/byte bounds. Persist semantic rows,
+original bytes and both canonical body/page hashes atomically with a bound
+receipt; replay is idempotent and reopening preserves the complete snapshot.
+Compare the full replicated Probe multiset with an independently queried source
+using schema-ID/pin-bound property mapping and explicit nontruncation. Verify
+each page's original ACK/reconciliation through replay and restart. Saving opaque
+page bytes alone does not qualify replication or a broader adapter.
+
+Fresh installed managed consumers must expose the independently observed exact
+Truss archive digest and native/migration manifests before mutation. Use a
+content-hash-verified installation whose PEP 610 metadata retains the archive
+SHA-256, then compare installed payload members against the selected public
+wheel. A lockfile or expected digest alone cannot substitute for the observed
+archive evidence; an installer that omits it leaves admission blocked. Keep
+credential references outside these artifacts and capture failed attempts
+without rewriting them as later passes.

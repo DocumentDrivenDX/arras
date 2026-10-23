@@ -17,6 +17,22 @@ ddx:
 
 # Arras release notes
 
+## 0.6.1 candidate
+
+This patch selects public Truss 0.0.49 and preserves Weft 0.4.51 and official UMF
+core 0.10.0. Fresh installation accepts an explicit immutable
+`tolerated_grantees` tuple; reconnect verifies stored policy without widening it.
+The existing metadata-only profile, runtime support boundaries and historical
+0.6.0 release artifacts remain unchanged.
+
+PR 9 is under qualification. Its earlier candidate with 0.6.0 package metadata
+passed fresh installed native conformance (64 cases and eight unchanged declared
+limits, zero failed/harness-error), artifact parity, doctor and official UMF
+checks. Those receipts retain their original wheel identity; final 0.6.1 artifacts
+require their own evidence. Actual Lakebase acceptance, final review, merge and
+publication remain pending. The TP-001 and integration-plan execution amendments
+govern the original managed proof and reusable least-privilege identity setup.
+
 ## 0.6.0
 
 Arras 0.6.0 adds optional official source admission and bounded core-metadata

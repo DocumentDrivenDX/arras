@@ -29,7 +29,8 @@ from _lakebase_acceptance import (
     validate_inputs,
     write_receipt,
 )
-from _lakebase_receipts import _safe_operation_observations
+from _lakebase_person import safe_person_observations
+from _lakebase_receipts import _safe_operation_observations, validate_managed_case_evidence
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -180,6 +181,21 @@ def _partial_execution_failure(
             for case in inputs.required_cases
             if case != "LB-ADMISSION"
         )
+    managed_evidence_valid = False
+    try:
+        observed = _safe_operation_observations(operation_result["observed"])
+        validate_managed_case_evidence(rows, observed.get("managed"))
+        managed_evidence_valid = True
+    except Exception:
+        observed = {}
+    if not managed_evidence_valid:
+        managed_cases = set(inputs.required_cases) - {"LB-ADMISSION", "LB-INSTALL", "LB-PERSON"}
+        rows = [
+            safe_case(row["case"], "blocked", "managed_evidence_projection_failed")
+            if row["case"] in managed_cases and row["status"] == "passed"
+            else row
+            for row in rows
+        ]
     # A projection failure cannot preserve an install pass without revalidating the strict probe.
     rows = [
         safe_case(row["case"], "blocked", "receipt_projection_failed")
@@ -187,10 +203,6 @@ def _partial_execution_failure(
         else row
         for row in rows
     ]
-    try:
-        observed = _safe_operation_observations(operation_result["observed"])
-    except Exception:
-        observed = {}
     try:
         cleanup = _validate_cleanup(inputs, operation_result.get("cleanup"))
     except Exception:
@@ -282,6 +294,32 @@ def _execution_receipt(
         raise AdmissionError("operation runner module document digest mismatch")
     rows = _operation_case_rows(inputs, operation_result)
     observed = _safe_operation_observations(operation_result["observed"])
+    validate_managed_case_evidence(rows, observed.get("managed"))
+    person_facts = operation_result["observed"].get("person")
+    person_row = next((row for row in rows if row["case"] == "LB-PERSON"), None)
+    person_proof_complete = False
+    if (
+        inputs.target["schema_version"] == 2
+        and person_row is not None
+        and person_row["status"] == "passed"
+    ):
+        if type(person_facts) is not dict:
+            raise AdmissionError("human person pass lacks closed identity lifecycle facts")
+        try:
+            person_facts = safe_person_observations(
+                person_facts,
+                target=inputs.target,
+                authorization=inputs.authorization,
+                provider_observation_sha256=provider["observation_sha256"],
+                role_sha256_by_actor={
+                    label: role_facts[label]["role_sha256"] for label in PERSON_LABELS
+                },
+            )
+        except Exception:
+            raise AdmissionError(
+                "human person identity facts do not match admission evidence"
+            ) from None
+        person_proof_complete = True
     _validate_strict_install_evidence(inputs, observed, rows)
     cleanup = _validate_cleanup(inputs, operation_result["cleanup"])
     safe_observed = {
@@ -311,8 +349,13 @@ def _execution_receipt(
     case_failed = any(row["status"] == "failed" for row in rows)
     case_blocked = any(row["status"] != "passed" for row in rows)
     blockers = [] if artifact_provenance_complete else ["installed_artifact_provenance_unavailable"]
-    if inputs.target["auth_profile"] in {"human-oauth", "nonhuman-oauth"}:
+    if inputs.target["schema_version"] != 2 and inputs.target["auth_profile"] in {
+        "human-oauth",
+        "nonhuman-oauth",
+    }:
         blockers.append("oauth_subject_evidence_unavailable")
+    if inputs.target["schema_version"] == 2 and not person_proof_complete:
+        blockers.append("human_writer_identity_lifecycle_unverified")
     passed = not case_failed and not case_blocked and cleanup["status"] == "passed" and not blockers
     status = (
         "passed"
@@ -409,6 +452,22 @@ def _harness_sha256() -> str:
         Path(__file__).with_name("_lakebase_operations.py"),
         Path(__file__).with_name("_lakebase_native.py"),
         Path(__file__).with_name("_lakebase_receipts.py"),
+        Path(__file__).with_name("_lakebase_person.py"),
+        Path(__file__).with_name("_lakebase_managed.py"),
+        Path(__file__).with_name("_lakebase_managed_access.py"),
+        Path(__file__).with_name("_lakebase_managed_common.py"),
+        Path(__file__).with_name("_lakebase_managed_feed.py"),
+        Path(__file__).with_name("_lakebase_managed_feed_carriers.py"),
+        Path(__file__).with_name("_lakebase_managed_feed_cases.py"),
+        Path(__file__).with_name("_lakebase_managed_feed_codec.py"),
+        Path(__file__).with_name("_lakebase_managed_feed_destination.py"),
+        Path(__file__).with_name("_lakebase_managed_feed_pages.py"),
+        Path(__file__).with_name("_lakebase_managed_feed_probe.py"),
+        Path(__file__).with_name("_lakebase_managed_feed_revisions.py"),
+        Path(__file__).with_name("_lakebase_managed_identity.py"),
+        Path(__file__).with_name("_lakebase_managed_lifecycle.py"),
+        Path(__file__).with_name("_lakebase_managed_native.py"),
+        Path(__file__).with_name("_lakebase_managed_public.py"),
     ):
         data = source.read_bytes()
         digest.update(source.name.encode("ascii"))
@@ -549,7 +608,15 @@ def _run_fixture_gate(inputs: Inputs, fixture_path: Path) -> dict[str, Any]:
         raise AdmissionError("module source digest differs from the fixed harness document")
     module, sources, provider, provenance = _admit_fixture_sources(inputs, fixture_path)
     observed = _observe_database_admission(inputs, module, sources)
-    operation_result = run_baseline(inputs, module, sources)
+    operation_result = run_baseline(
+        inputs,
+        module,
+        sources,
+        admission={
+            "provider_observation_sha256": provider["observation_sha256"],
+            "ordinary_roles": observed["role_facts"],
+        },
+    )
     if type(operation_result) is not dict:
         raise AdmissionError("operation runner returned an invalid result")
     base = _execution_or_partial_failure(
@@ -659,14 +726,14 @@ def _observe_connection(
     row = connection.execute(
         "SELECT current_user, session_user, current_database(), current_setting('role'), "
         "current_setting('server_version_num'), r.rolcanlogin, r.rolsuper, r.rolcreaterole, "
-        "r.rolcreatedb, r.rolbypassrls, s.ssl, s.version, s.cipher, "
+        "r.rolcreatedb, r.rolbypassrls, r.rolreplication, s.ssl, s.version, s.cipher, "
         "to_regnamespace('truss') IS NULL, EXISTS (SELECT 1 FROM pg_roles elevated "
         "WHERE (elevated.rolsuper OR elevated.rolcreaterole OR elevated.rolcreatedb "
         "OR elevated.rolbypassrls) AND pg_catalog.pg_has_role(current_user, elevated.oid, 'USAGE')) "
         "FROM pg_roles AS r JOIN pg_stat_ssl AS s ON s.pid = pg_backend_pid() "
         "WHERE r.rolname = current_user"
     ).fetchone()
-    if row is None or len(row) != 15:
+    if row is None or len(row) != 16:
         raise AdmissionError("connection identity or TLS session could not be observed")
     user, session_user, database, role_setting, version, *rest = row
     (
@@ -675,6 +742,7 @@ def _observe_connection(
         can_create_roles,
         can_create_database,
         bypass_rls,
+        can_replicate,
         ssl,
         tls_version,
         cipher,
@@ -700,12 +768,14 @@ def _observe_connection(
         or type(can_create_roles) is not bool
         or type(can_create_database) is not bool
         or type(bypass_rls) is not bool
+        or type(can_replicate) is not bool
         or expected_role is not None
         and (
             superuser
             or can_create_roles
             or can_create_database
             or bypass_rls
+            or can_replicate
             or effective_elevated
             or not can_login
         )
@@ -722,6 +792,7 @@ def _observe_connection(
         "superuser": superuser,
         "can_create_roles": can_create_roles,
         "can_create_database": can_create_database,
+        "can_replicate": can_replicate,
         "truss_namespace_absent_before_mutation": namespace_absent,
     }
 

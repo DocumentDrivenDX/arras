@@ -6,7 +6,9 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from _lakebase_acceptance import AdmissionError
+from _lakebase_acceptance import CASE_IDS, AdmissionError
+
+_MANAGED_CASE_IDS = frozenset(CASE_IDS) - {"LB-ADMISSION", "LB-INSTALL", "LB-PERSON"}
 
 
 def _require_digest(value: object, label: str) -> str:
@@ -190,12 +192,53 @@ def _safe_strict_probe(strict_probe: object) -> dict[str, Any]:
 
 def _safe_operation_observations(value: object) -> dict[str, Any]:
     keys = {"artifacts", "preconditions", "operations", "acl", "strict_probe"}
-    if type(value) is not dict or set(value) != keys:
+    if (
+        type(value) is not dict
+        or not keys.issubset(value)
+        or set(value) - keys - {"person", "managed"}
+    ):
         raise AdmissionError("operation runner observations have an unexpected shape")
-    return {
+    projected = {
         "artifacts": _safe_artifacts(value["artifacts"]),
         "preconditions": _safe_preconditions(value["preconditions"]),
         "operations": _safe_operations(value["operations"]),
         "acl": _safe_acl(value["acl"]),
         "strict_probe": _safe_strict_probe(value["strict_probe"]),
     }
+    for key in ("person", "managed"):
+        if key in value:
+            projected[key] = _safe_follow_up(key, value[key])
+    return projected
+
+
+def _safe_follow_up(key: str, value: object) -> Any:
+    if value is None:
+        return None
+    if key == "person":
+        if __package__:
+            from ._lakebase_person import safe_person_observations
+        else:
+            from _lakebase_person import safe_person_observations
+
+        return safe_person_observations(value)
+    if key == "managed":
+        if __package__:
+            from ._lakebase_managed import safe_managed_observations
+        else:
+            from _lakebase_managed import safe_managed_observations
+
+        return safe_managed_observations(value)
+    raise AdmissionError("unknown follow-up observation source")
+
+
+def validate_managed_case_evidence(rows: list[dict[str, str]], observations: object) -> None:
+    """Each managed pass needs its own closed factual observation, independently of merge."""
+    passed = {
+        row["case"]
+        for row in rows
+        if row["case"] in _MANAGED_CASE_IDS and row["status"] == "passed"
+    }
+    if observations is None and not passed:
+        return
+    if type(observations) is not dict or set(observations) != passed:
+        raise AdmissionError("managed case pass inventory lacks matching original observations")

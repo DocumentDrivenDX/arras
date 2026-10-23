@@ -87,6 +87,151 @@ def test_fixed_document_is_a_deterministic_legacy_arras_module() -> None:
     )
 
 
+@pytest.mark.parametrize(
+    "rows",
+    [
+        [],
+        [operations._case_row("LB-PERSON", "passed", "verified")] * 2,
+        [operations._case_row("MP-01", "passed", "verified")],
+        [{"case": "LB-PERSON", "status": "success", "code": "verified"}],
+    ],
+)
+def test_schedule_inventory_failure_never_promotes_existing_result(rows: Any) -> None:
+    original = operations._case_row("LB-PERSON", "blocked", "not_run")
+    results = {"LB-PERSON": original}
+    observed: dict[str, Any] = {}
+    with pytest.raises(ValueError):
+        operations._merge_schedule(
+            {"cases": rows, "observed": {}},
+            frozenset({"LB-PERSON"}),
+            results,
+            observed,
+            "person",
+        )
+    assert results == {"LB-PERSON": original}
+    assert observed == {}
+
+
+def test_unobserved_schedule_cannot_pass() -> None:
+    results: dict[str, Any] = {}
+    with pytest.raises(ValueError, match="observations unavailable"):
+        operations._merge_schedule(
+            {
+                "cases": [operations._case_row("LB-PERSON", "passed", "verified")],
+                "observed": None,
+            },
+            frozenset({"LB-PERSON"}),
+            results,
+            {},
+            "person",
+        )
+    assert results == {}
+
+
+@pytest.mark.parametrize("facts", [{}, {"MP-02": {"digest": "a" * 64}}])
+def test_managed_pass_requires_its_own_case_observation(facts: dict[str, Any]) -> None:
+    results: dict[str, Any] = {}
+    with pytest.raises(ValueError, match="pass observations differ"):
+        operations._merge_schedule(
+            {"cases": [operations._case_row("MP-01", "passed", "verified")], "observed": facts},
+            frozenset({"MP-01"}),
+            results,
+            {},
+            "managed",
+        )
+    assert results == {}
+
+
+def test_follow_up_authority_is_checked_before_dispatch() -> None:
+    inputs = _inputs(allowed_operations=("read",), scope="full-managed")
+    results: dict[str, Any] = {}
+    assert not operations._eligible_follow_ups(inputs, frozenset({"LB-PERSON", "MP-01"}), results)
+    assert {row["code"] for row in results.values()} == {"required_operation_not_authorized"}
+
+
+@pytest.mark.parametrize("interrupted_schedule", ["person", "managed"])
+def test_follow_up_cancellation_stops_dispatch_and_preserves_owned_cleanup(
+    monkeypatch: pytest.MonkeyPatch, interrupted_schedule: str
+) -> None:
+    events: list[str] = []
+    person_module, managed_module = ModuleType("_lakebase_person"), ModuleType("_lakebase_managed")
+    receipt_module = ModuleType("_lakebase_receipts")
+
+    def projected(_key: str, value: Any) -> Any:
+        return value
+
+    def person(**_: Any) -> dict[str, Any]:
+        events.append("person")
+        if interrupted_schedule == "person":
+            raise KeyboardInterrupt
+        return {
+            "cases": [operations._case_row("LB-PERSON", "passed", "controlled_person_result")],
+            "observed": {"controlled": True},
+        }
+
+    def managed(**_: Any) -> dict[str, Any]:
+        events.append("managed")
+        raise SystemExit
+
+    person_module.__dict__["run_person_lifecycle"] = person
+    managed_module.__dict__["run_managed"] = managed
+    receipt_module.__dict__["_safe_follow_up"] = projected
+    monkeypatch.setitem(sys.modules, "_lakebase_person", person_module)
+    monkeypatch.setitem(sys.modules, "_lakebase_managed", managed_module)
+    monkeypatch.setitem(sys.modules, "_lakebase_receipts", receipt_module)
+
+    def prepared(*_: object) -> tuple[Any, Any, dict[str, Any]]:
+        return object(), object(), {}
+
+    def fresh(*_: object) -> bool:
+        return True
+
+    def installed(*_: object) -> Any:
+        return operations._InstallState(object(), {("schema", "truss")}, True)
+
+    monkeypatch.setattr(operations, "_prepare_baseline", prepared)
+    monkeypatch.setattr(operations, "_fresh_install_preconditions", fresh)
+    monkeypatch.setattr(operations, "_attempt_selected_install", installed)
+
+    def access(*args: Any) -> None:
+        args[-1]["operations"].update(registration="passed", access_configuration="passed")
+        args[-1]["acl"]["intended_memberships_match"] = True
+
+    def cleanup(*_: Any, **__: Any) -> dict[str, str]:
+        events.append("cleanup")
+        return {"status": "passed"}
+
+    monkeypatch.setattr(operations, "_run_authorized_access", access)
+    monkeypatch.setattr(operations, "_cleanup_owned_run", cleanup)
+    all_ops_names: set[str] = set()
+    for operation_set in operations._CASE_OPERATIONS.values():
+        all_ops_names.update(operation_set)
+    all_ops = tuple(sorted(all_ops_names))
+    result = operations.run_baseline(
+        _inputs(allowed_operations=all_ops, scope="full-managed"),
+        ModuleType("fixture"),
+        {},
+        admission={"provider_observation_sha256": "a" * 64, "ordinary_roles": {}},
+    )
+    _assert_follow_up_cancellation(result, events, interrupted_schedule)
+
+
+def _assert_follow_up_cancellation(
+    result: dict[str, Any], events: list[str], interrupted_schedule: str
+) -> None:
+    rows = {row["case"]: row for row in result["cases"]}
+    if interrupted_schedule == "person":
+        assert events == ["person", "cleanup"]
+        assert rows["LB-PERSON"]["status"] == "failed"
+        assert rows["LB-PERSON"]["code"] == "operation_interrupted"
+        assert rows["LB-ACL"]["status"] == "blocked"
+    else:
+        assert events == ["person", "managed", "cleanup"]
+        assert rows["MP-01"]["status"] == "failed"
+        assert rows["MP-01"]["code"] == "managed_schedule_interrupted"
+    assert result["cleanup"] == {"status": "passed"}
+
+
 def test_fixed_document_reaches_public_truss_preparation_without_a_database() -> None:
     import truss
 

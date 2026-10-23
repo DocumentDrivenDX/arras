@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.6.1 — release candidate
+
+Adopts exact public Truss 0.0.49 while keeping Weft 0.4.51 and official UMF
+core 0.10.0 fixed. Hosts may explicitly supply an immutable `tolerated_grantees`
+tuple for fresh Truss installation; reconnect preserves stored policy. Typed
+third-party grant refusals retain bounded diagnostics and the original rollback,
+uncertainty and quarantine behavior.
+
+Adds separately authorized Lakebase qualification with original identity,
+transaction, feed, recovery and provider observations. Source/local checks and
+partial service evidence do not imply managed acceptance. Review, actual managed
+qualification, final artifact gates and publication are in progress.
+
 ## 0.6.0 — 2026-10-23
 
 Adds optional official UMF source admission through `arras.umf_admission` and an

@@ -13,6 +13,8 @@ ddx:
       kind: informed_by
     - id: CONTRACT-005
       kind: informed_by
+    - id: TP-001
+      kind: informed_by
 ---
 
 # Arras artifact release checklist
@@ -63,6 +65,22 @@ if access cannot be found. Do not advertise an unavailable registry install.
 | Downloaded release | Download the public release assets into a new directory, verify digests and repeat installed consumer/skeleton/doctor checks. A local build alone does not pass this gate. |
 | Official UMF qualification (0.6.0+) | The exact final wheel passes the installed admission/metadata gate with pinned official UMF 0.10.0: all 139 ordered reference and separate fresh-empty production Registry comparisons, six base and ten extra-enabled controls, zero skips, and verified cleanup. Repeat against the exact public-download wheel in a fresh environment; retain distinct receipts. The 0.5.1 candidate receipt is historical and cannot close this gate. |
 | Public assembly (0.6.0+) | Use release-evidence schema v2: include the mandatory safe UMF receipt projection as asset 17, bind it to the exact wheel, and repeat UMF qualification after public download. Keep v1/sixteen-asset evidence for historical releases unchanged. |
+| Truss 0.0.49 adoption / PR 9 | Before merge or tagging, retain and independently review the original fresh-installed exact-cohort proof and full actual Lakebase receipt: LB-ADMISSION, LB-INSTALL, LB-PERSON, LB-CUSTODY, LB-SETTLEMENT, LB-ACL and MP-01–06 all pass, with independent owned-cleanup confirmation. Bind the managed receipt to the executed harness/fixture hashes, actual installed Truss archive/manifests and qualified Arras wheel. Document exact source correspondence to the release artifact; source-local checks, bootstrap evidence, partial schedules and earlier candidate artifacts cannot close this gate. |
+
+## PR 9 / 0.6.1 execution
+
+- [ ] Corrected final-version artifacts pass fresh installation, native, doctor,
+  distribution, official UMF and downstream UI gates on their recorded cohorts.
+- [ ] All twelve actual Lakebase cases and independent owned cleanup pass; the
+  original safe receipt, fixture/harness identities, review and support limits
+  are linked from the integration plan and release notes.
+- [ ] Reusable ordinary identity setup and private credential-reference custody
+  are documented separately from disposable database cleanup, so routine future
+  campaigns use that setup without repeating admin provisioning.
+- [ ] Final source/control/service-evidence review and exact-commit CI pass;
+  PR 9 is merged and the version-matching immutable release workflow passes.
+- [ ] Public anonymous download and installed-consumer repeats pass on the
+  published bytes; registry delivery or the authorized deferral is recorded.
 
 ## Rollout Stages
 

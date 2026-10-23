@@ -123,6 +123,38 @@ def _validate(tmp_path: Path, scope: str = "full-managed") -> Any:
     return gate.validate_inputs(target, auth, fixture, digest, output, scope=scope)
 
 
+def _mixed_auth_files(tmp_path: Path) -> tuple[Path, Path, Path, Path, str]:
+    target_path, auth_path, fixture_path, output_path, digest = _input_files(tmp_path)
+    target = _target()
+    target.update(
+        {
+            "schema_version": 2,
+            "auth_profile": "mixed",
+            "actor_auth_profiles": {
+                "registrar": "nonhuman-oauth",
+                "writer": "human-oauth",
+                "reader": "native-password",
+                "denied": "nonhuman-oauth",
+            },
+            "human_actor": "writer",
+        }
+    )
+    target_raw = (json.dumps(target, sort_keys=True) + "\n").encode()
+    target_path.write_bytes(target_raw)
+    authorization = json.loads(auth_path.read_text(encoding="utf-8"))
+    authorization.update(
+        {
+            "schema_version": 2,
+            "auth_profile": "mixed",
+            "actor_auth_profiles": target["actor_auth_profiles"],
+            "human_actor": "writer",
+            "target_sha256": hashlib.sha256(target_raw).hexdigest(),
+        }
+    )
+    auth_path.write_text(json.dumps(authorization, sort_keys=True) + "\n", encoding="utf-8")
+    return target_path, auth_path, fixture_path, output_path, digest
+
+
 def test_exact_closed_inputs_admit_only_the_requested_scope_without_importing_fixture(
     tmp_path: Path,
 ) -> None:
@@ -134,6 +166,59 @@ def test_exact_closed_inputs_admit_only_the_requested_scope_without_importing_fi
         inputs.target_sha256 == hashlib.sha256((tmp_path / "target.json").read_bytes()).hexdigest()
     )
     assert not (tmp_path / "receipt.json").exists()
+
+
+def test_schema2_mixed_auth_binds_human_writer_and_explicit_other_actor_profiles(
+    tmp_path: Path,
+) -> None:
+    target, auth, fixture, output, digest = _mixed_auth_files(tmp_path)
+    inputs = gate.validate_inputs(target, auth, fixture, digest, output, scope="full-managed")
+    assert inputs.target["auth_profile"] == "mixed"
+    assert gate.actor_auth_profiles(inputs.target) == {
+        "registrar": "nonhuman-oauth",
+        "writer": "human-oauth",
+        "reader": "native-password",
+        "denied": "nonhuman-oauth",
+    }
+    assert inputs.target["human_actor"] == "writer"
+
+
+_SCHEMA2_PROFILE_MUTATIONS: tuple[Callable[[dict[str, Any]], object], ...] = (
+    lambda target: target["actor_auth_profiles"].update(writer="native-password"),
+    lambda target: target["actor_auth_profiles"].pop("denied"),
+    lambda target: target.update(human_actor="reader"),
+    lambda target: target.update(auth_profile="human-oauth"),
+)
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    _SCHEMA2_PROFILE_MUTATIONS,
+    ids=["writer-not-human", "missing-actor", "wrong-human-actor", "wrong-profile-mode"],
+)
+def test_schema2_mixed_auth_rejects_ambiguous_actor_profiles(
+    tmp_path: Path, mutate: Callable[[dict[str, Any]], object]
+) -> None:
+    target_path, auth_path, fixture_path, output_path, digest = _mixed_auth_files(tmp_path)
+    target = json.loads(target_path.read_text(encoding="utf-8"))
+    mutate(target)
+    target_path.write_text(json.dumps(target, sort_keys=True) + "\n", encoding="utf-8")
+    authorization = json.loads(auth_path.read_text(encoding="utf-8"))
+    authorization["target_sha256"] = hashlib.sha256(target_path.read_bytes()).hexdigest()
+    auth_path.write_text(json.dumps(authorization, sort_keys=True) + "\n", encoding="utf-8")
+    with pytest.raises(gate.AdmissionError):
+        gate.validate_inputs(
+            target_path, auth_path, fixture_path, digest, output_path, scope="full-managed"
+        )
+
+
+def test_schema2_authorization_must_repeat_exact_actor_profile_map(tmp_path: Path) -> None:
+    target, auth_path, fixture, output, digest = _mixed_auth_files(tmp_path)
+    authorization = json.loads(auth_path.read_text(encoding="utf-8"))
+    authorization["actor_auth_profiles"]["reader"] = "human-oauth"
+    auth_path.write_text(json.dumps(authorization, sort_keys=True) + "\n", encoding="utf-8")
+    with pytest.raises(gate.AdmissionError, match="profiles mismatch"):
+        gate.validate_inputs(target, auth_path, fixture, digest, output, scope="full-managed")
 
 
 def test_cli_default_writes_blocked_not_run_without_importing_fixture(
@@ -375,6 +460,8 @@ def test_projection_failure_preserves_partial_execution_and_cleanup_facts(
         target, authorization, fixture, digest, output, scope="full-managed"
     )
     operation_result = _operation_result_with_partial_success(inputs)
+    mp01 = next(row for row in operation_result["cases"] if row["case"] == "MP-01")
+    mp01.update(status="passed", code="source_control_verified")
 
     def fail_projection(_inputs: Any, **_kwargs: Any) -> Any:
         raise gate.AdmissionError("deliberate projection control")
@@ -394,6 +481,7 @@ def test_projection_failure_preserves_partial_execution_and_cleanup_facts(
     assert receipt["status"] == "failed"
     assert receipt["managed_gate"] == "failed"
     assert next(row for row in receipt["cases"] if row["case"] == "LB-PERSON")["status"] == "passed"
+    assert next(row for row in receipt["cases"] if row["case"] == "MP-01")["status"] == "blocked"
     assert receipt["cleanup"]["status"] == "blocked"
     assert receipt["cleanup"]["resources"][0]["removed"] is False
     assert {row["status"] for row in receipt["cases"]} != {"not_run"}
@@ -426,6 +514,17 @@ def test_projection_failure_preserves_partial_execution_and_cleanup_facts(
     assert published["cleanup"]["status"] == "blocked"
 
 
+@pytest.mark.parametrize(
+    "observations", [None, {}, {"MP-02": {}}], ids=["missing", "empty", "foreign"]
+)
+def test_managed_pass_requires_exact_original_observation_inventory(
+    observations: object,
+) -> None:
+    rows = [{"case": "MP-01", "status": "passed", "code": "source_control_verified"}]
+    with pytest.raises(cli.AdmissionError, match="managed case pass inventory"):
+        cli.validate_managed_case_evidence(rows, observations)
+
+
 @pytest.mark.parametrize("value", ["TLSv1.3\nsecret-host", "TLSv1.3\x00", "bad"])
 def test_tls_protocol_observation_rejects_unsafe_tokens(value: str) -> None:
     with pytest.raises(cli.AdmissionError, match="safe token"):
@@ -435,3 +534,90 @@ def test_tls_protocol_observation_rejects_unsafe_tokens(value: str) -> None:
 @pytest.mark.parametrize("value", ["TLS_AES_256_GCM_SHA384", "ECDHE-RSA-AES256-GCM-SHA384"])
 def test_tls_cipher_observation_preserves_safe_driver_value(value: str) -> None:
     assert cli._tls_token(value, "cipher", r"[A-Za-z0-9_.+-]+", 128) == value
+
+
+class _ConnectionInfo:
+    host = "lakebase.test.invalid"
+    port = 5432
+    dbname = "arras_lakebase_acceptance"
+    dsn_parameters = {"sslmode": "verify-full", "sslrootcert": "/tmp/root.pem"}
+
+
+class _PgConnection:
+    ssl_in_use = True
+
+
+class _IdentityResult:
+    def __init__(self, row: tuple[object, ...]) -> None:
+        self.row = row
+
+    def fetchone(self) -> tuple[object, ...]:
+        return self.row
+
+
+class _AdmissionConnection:
+    info = _ConnectionInfo()
+    pgconn = _PgConnection()
+
+    def __init__(self, role: str, replication: object) -> None:
+        self.role = role
+        self.replication = replication
+        self.query = ""
+
+    def execute(self, query: str) -> _IdentityResult:
+        self.query = query
+        return _IdentityResult(
+            (
+                self.role,
+                self.role,
+                "arras_lakebase_acceptance",
+                "none",
+                "180006",
+                True,
+                False,
+                False,
+                False,
+                False,
+                self.replication,
+                True,
+                "TLSv1.3",
+                "TLS_AES_256_GCM_SHA384",
+                True,
+                False,
+            )
+        )
+
+
+def test_ordinary_admission_rejects_replication_role() -> None:
+    target = _target()
+    role = target["resources"]["ordinary_role_names"][1]
+    connection = _AdmissionConnection(role, True)
+    with pytest.raises(cli.AdmissionError, match="identity, server version, or TLS"):
+        cli._observe_connection(connection, target, expected_role=role)
+    assert "r.rolreplication" in connection.query
+
+
+def test_ordinary_admission_records_strict_false_replication_fact() -> None:
+    target = _target()
+    role = target["resources"]["ordinary_role_names"][1]
+    observed = cli._observe_connection(
+        _AdmissionConnection(role, False), target, expected_role=role
+    )
+    assert observed["can_replicate"] is False
+    assert type(observed["can_replicate"]) is bool
+
+
+def test_installer_admission_allows_replication_privilege() -> None:
+    target = _target()
+    observed = cli._observe_connection(
+        _AdmissionConnection("arras_installer", True), target, expected_role=None
+    )
+    assert observed["can_replicate"] is True
+    assert type(observed["can_replicate"]) is bool
+
+
+def test_admission_rejects_non_boolean_replication_fact() -> None:
+    target = _target()
+    role = target["resources"]["ordinary_role_names"][1]
+    with pytest.raises(cli.AdmissionError, match="identity, server version, or TLS"):
+        cli._observe_connection(_AdmissionConnection(role, 0), target, expected_role=role)

@@ -33,6 +33,102 @@ def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def test_conformance_timeout_is_strictly_bounded_before_input_effects(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    for invalid in (0, -1, 7201, True, 35.0, "2100"):
+        with pytest.raises(verify_native.VerificationError, match="conformance timeout"):
+            verify_native.validate_conformance_timeout(invalid)
+
+    def inputs_must_not_be_read(*_args: Any, **_kwargs: Any) -> Any:
+        raise AssertionError("input preparation ran before timeout validation")
+
+    monkeypatch.setattr(verify_native, "_prepare_inputs", inputs_must_not_be_read)
+    with pytest.raises(verify_native.VerificationError, match="conformance timeout"):
+        verify_native.verify(
+            Path("arras.whl"),
+            Path("cohort.json"),
+            Path("find-links.html"),
+            Path("receipt.json"),
+            conformance_timeout_seconds=7201,
+        )
+    assert verify_native.validate_conformance_timeout(1) == 1
+    assert verify_native.validate_conformance_timeout(7200) == 7200
+    assert verify_native._conformance_timeout_argument("2100") == 2100
+    for invalid in ("1.5", "1e2", "7201"):
+        with pytest.raises(verify_native.argparse.ArgumentTypeError):
+            verify_native._conformance_timeout_argument(invalid)
+
+
+def test_runner_keeps_default_for_setup_and_forwards_override_only_when_selected(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls: list[int] = []
+
+    def capture(
+        _args: list[str], *, cwd: Path, env: dict[str, str], timeout: int
+    ) -> subprocess.CompletedProcess[str]:
+        calls.append(timeout)
+        return subprocess.CompletedProcess([], 0, "", "")
+
+    monkeypatch.setattr(verify_native, "run_owned", capture)
+    verify_native._run(["setup"], cwd=tmp_path, env={})
+    verify_native._run(["conformance"], cwd=tmp_path, env={}, timeout=123)
+    assert calls == [verify_native.DEFAULT_CONFORMANCE_TIMEOUT_SECONDS, 123]
+
+
+def test_conformance_timeout_failure_retains_selected_deadline(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def timeout(*_args: Any, **_kwargs: Any) -> Any:
+        raise verify_native.ProcessTimeout("partial stdout", "partial stderr", [])
+
+    monkeypatch.setattr(verify_native, "run_owned", timeout)
+    with pytest.raises(verify_native.VerificationError) as captured:
+        verify_native._run(["conformance"], cwd=tmp_path, env={}, timeout=123)
+    assert captured.value.details["process"]["timed_out"] is True
+    assert captured.value.details["process"]["timeout_seconds"] == 123
+
+
+def test_conformance_receipt_records_selected_timeout_on_success(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    report = good_report()
+    monkeypatch.setattr(
+        verify_native,
+        "_run",
+        lambda *_args, **_kwargs: subprocess.CompletedProcess([], 0, json.dumps(report), ""),
+    )
+    context = {
+        "venv_python": tmp_path / "python",
+        "env": {},
+        "probe": {
+            "applicable_case_ids": ["case-one"],
+            "skipped_case_ids": ["skip-me"],
+            "corpus_version": 4,
+            "roles": ["reader", "provider"],
+            "limits": {},
+            "distributions": {},
+        },
+        "runtime": {"python": "3.11", "sys_platform": "darwin", "machine": "arm64"},
+        "downloaded": [],
+        "parity": {"actual_versions": {}, "native_inventory": {}, "payloads": {}},
+        "install_inventory": [],
+    }
+    receipt = verify_native._run_and_record(
+        tmp_path,
+        context,
+        {"corpus": {"roles": ["reader", "provider"], "version": 4, "limits": {}}},
+        conformance_timeout_seconds=123,
+    )
+    assert receipt["conformance_timeout_seconds"] == 123
+    assert receipt["cli"] == {
+        "command": "python -I -m arras.conformance --backend truss",
+        "exit_code": 0,
+        "timeout_seconds": 123,
+    }
+
+
 def cohort() -> dict[str, Any]:
     native = [
         ("truss-toolkit", "truss_toolkit-1.0-py3-none-any.whl"),
@@ -451,6 +547,9 @@ def test_failed_cli_validation_retains_raw_report_and_streams(
     assert captured.value.details["cli"]["stdout"] == stdout
     assert captured.value.details["cli"]["stderr"] == "fixture stderr"
     assert captured.value.details["cli"]["exit_code"] == 1
+    assert captured.value.details["cli"]["timeout_seconds"] == (
+        verify_native.DEFAULT_CONFORMANCE_TIMEOUT_SECONDS
+    )
     assert captured.value.details["cli"]["report"] == report
 
 
@@ -492,9 +591,15 @@ def test_failed_receipt_keeps_input_hashes_and_cli_evidence(
     monkeypatch.setattr(
         verify_native, "_validate_installed", lambda *_args: installed_context["parity"]
     )
-    cli_evidence = {"exit_code": 1, "stdout": "case report", "stderr": "details"}
+    cli_evidence = {
+        "exit_code": 1,
+        "stdout": "case report",
+        "stderr": "details",
+        "timeout_seconds": 123,
+    }
 
-    def failed_run(*_args: Any) -> dict[str, Any]:
+    def failed_run(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+        assert kwargs["conformance_timeout_seconds"] == 123
         raise verify_native.VerificationError("failed conformance", details={"cli": cli_evidence})
 
     monkeypatch.setattr(verify_native, "_run_and_record", failed_run)
@@ -509,12 +614,15 @@ def test_failed_receipt_keeps_input_hashes_and_cli_evidence(
                 str(links),
                 "--output-json",
                 str(output),
+                "--conformance-timeout-seconds",
+                "123",
             ]
         )
         == 1
     )
     saved = json.loads(output.read_text())
     assert saved["inputs"] == input_receipt
+    assert saved["conformance_timeout_seconds"] == 123
     assert saved["cli"] == cli_evidence
     assert saved["runtime"] == installed_context["runtime"]
     assert saved["native_wheels"] == installed_context["downloaded"]

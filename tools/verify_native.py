@@ -37,6 +37,9 @@ else:
 PUBLIC_INDEX = "https://pypi.org/simple"
 REQUIRED_NATIVE = {"truss-toolkit", "weft-sql", "pgserver-pg18"}
 STATUS_NAMES = ("passed", "failed", "harness_error", "limit", "host_specific")
+DEFAULT_CONFORMANCE_TIMEOUT_SECONDS = 35 * 60
+MIN_CONFORMANCE_TIMEOUT_SECONDS = 1
+MAX_CONFORMANCE_TIMEOUT_SECONDS = 2 * 60 * 60
 _SHA = re.compile(r"^[0-9a-f]{64}$")
 
 
@@ -50,6 +53,27 @@ class VerificationError(ValueError):
 
 def _fail(message: str) -> NoReturn:
     raise VerificationError(message)
+
+
+def validate_conformance_timeout(value: object) -> int:
+    """Validate the caller-selected deadline without accepting bools or coercions."""
+    if type(value) is not int:
+        _fail("conformance timeout must be an integer number of seconds")
+    if not MIN_CONFORMANCE_TIMEOUT_SECONDS <= value <= MAX_CONFORMANCE_TIMEOUT_SECONDS:
+        _fail(
+            "conformance timeout must be between "
+            f"{MIN_CONFORMANCE_TIMEOUT_SECONDS} and {MAX_CONFORMANCE_TIMEOUT_SECONDS} seconds"
+        )
+    return value
+
+
+def _conformance_timeout_argument(value: str) -> int:
+    if re.fullmatch(r"-?[0-9]+", value) is None:
+        raise argparse.ArgumentTypeError("must be an integer number of seconds")
+    try:
+        return validate_conformance_timeout(int(value))
+    except VerificationError as exc:
+        raise argparse.ArgumentTypeError(str(exc)) from None
 
 
 def _sha(data: bytes) -> str:
@@ -273,9 +297,15 @@ def _sanitize_environment(base: dict[str, str], cache: Path) -> dict[str, str]:
     return env
 
 
-def _run(args: list[str], *, cwd: Path, env: dict[str, str]) -> subprocess.CompletedProcess[str]:
+def _run(
+    args: list[str],
+    *,
+    cwd: Path,
+    env: dict[str, str],
+    timeout: int = DEFAULT_CONFORMANCE_TIMEOUT_SECONDS,
+) -> subprocess.CompletedProcess[str]:
     try:
-        return run_owned(args, cwd=cwd, env=env)
+        return run_owned(args, cwd=cwd, env=env, timeout=timeout)
     except ProcessTimeout as exc:
         cleanup = (
             f"; owned PostgreSQL state remains under private TMPDIR: {exc.leftovers}"
@@ -283,12 +313,13 @@ def _run(args: list[str], *, cwd: Path, env: dict[str, str]) -> subprocess.Compl
             else ""
         )
         raise VerificationError(
-            "owned verifier command timed out after cleanup signal; "
+            f"owned verifier command timed out after {timeout} seconds and cleanup signal; "
             f"stdout={exc.stdout!r}; stderr={exc.stderr!r}{cleanup}",
             details={
                 "process": {
                     "command": args,
                     "timed_out": True,
+                    "timeout_seconds": timeout,
                     "stdout": exc.stdout,
                     "stderr": exc.stderr,
                     "remaining_postmaster_pid_files": [str(path) for path in exc.leftovers],
@@ -593,10 +624,13 @@ def verify(
     output: Path,
     *,
     python: Path | None = None,
+    conformance_timeout_seconds: int = DEFAULT_CONFORMANCE_TIMEOUT_SECONDS,
 ) -> dict[str, Any]:
+    selected_timeout = validate_conformance_timeout(conformance_timeout_seconds)
     cohort, wheel, find_links, selected_python, output, receipt = _prepare_inputs(
         wheel, cohort_path, find_links, output, python
     )
+    receipt["conformance_timeout_seconds"] = selected_timeout
     temp = Path(tempfile.mkdtemp(prefix="arras-native-", dir=temp_parent()))
     context: dict[str, Any] | None = None
     try:
@@ -604,11 +638,21 @@ def verify(
         context["parity"] = _validate_installed(
             context["probe"], context["venv_python"], wheel, cohort, context["wheel_paths"]
         )
-        receipt.update(_run_and_record(temp, context, cohort))
+        receipt.update(
+            _run_and_record(
+                temp,
+                context,
+                cohort,
+                conformance_timeout_seconds=selected_timeout,
+            )
+        )
         output.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
         return receipt
     except Exception as exc:
-        failure_details = {"inputs": receipt["inputs"]}
+        failure_details = {
+            "inputs": receipt["inputs"],
+            "conformance_timeout_seconds": selected_timeout,
+        }
         if context is not None:
             failure_details["runtime"] = context.get("runtime")
             failure_details["native_wheels"] = context.get("downloaded")
@@ -817,13 +861,24 @@ def _validate_selected_versions(
     return versions
 
 
-def _run_and_record(temp: Path, context: dict[str, Any], cohort: dict[str, Any]) -> dict[str, Any]:
+def _run_and_record(
+    temp: Path,
+    context: dict[str, Any],
+    cohort: dict[str, Any],
+    *,
+    conformance_timeout_seconds: int = DEFAULT_CONFORMANCE_TIMEOUT_SECONDS,
+) -> dict[str, Any]:
+    selected_timeout = validate_conformance_timeout(conformance_timeout_seconds)
     python, env = context["venv_python"], context["env"]
     cli = _run(
-        [str(python), "-I", "-m", "arras.conformance", "--backend", "truss"], cwd=temp, env=env
+        [str(python), "-I", "-m", "arras.conformance", "--backend", "truss"],
+        cwd=temp,
+        env=env,
+        timeout=selected_timeout,
     )
     cli_evidence: dict[str, Any] = {
         "command": "python -I -m arras.conformance --backend truss",
+        "timeout_seconds": selected_timeout,
         "exit_code": cli.returncode,
         "stdout": cli.stdout,
         "stderr": cli.stderr,
@@ -855,6 +910,7 @@ def _run_and_record(temp: Path, context: dict[str, Any], cohort: dict[str, Any])
         raise VerificationError(str(exc), details={"cli": cli_evidence}) from exc
     return {
         "status": "passed",
+        "conformance_timeout_seconds": selected_timeout,
         "runtime": context["runtime"],
         "native_wheels": context["downloaded"],
         "installed_distributions": context["parity"]["actual_versions"],
@@ -874,6 +930,7 @@ def _run_and_record(temp: Path, context: dict[str, Any], cohort: dict[str, Any])
         "cli": {
             "command": cli_evidence["command"],
             "exit_code": cli.returncode,
+            "timeout_seconds": selected_timeout,
         },
         "native_binary_scope": {
             "observed": "native files declared by installed Python distributions",
@@ -891,6 +948,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--python", type=Path, help="Python 3.11 interpreter (defaults to this process)"
     )
+    parser.add_argument(
+        "--conformance-timeout-seconds",
+        type=_conformance_timeout_argument,
+        default=DEFAULT_CONFORMANCE_TIMEOUT_SECONDS,
+        help=(
+            "deadline for the conformance command only "
+            f"({MIN_CONFORMANCE_TIMEOUT_SECONDS}..{MAX_CONFORMANCE_TIMEOUT_SECONDS}; "
+            f"default {DEFAULT_CONFORMANCE_TIMEOUT_SECONDS})"
+        ),
+    )
     args = parser.parse_args(argv)
     if _output_aliases_input(
         args.output_json,
@@ -905,14 +972,34 @@ def main(argv: list[str] | None = None) -> int:
         ),
     ):
         message = "receipt output must not overwrite any selected input"
-        print(json.dumps({"status": "failed", "error": message}, sort_keys=True), file=sys.stderr)
+        print(
+            json.dumps(
+                {
+                    "status": "failed",
+                    "error": message,
+                    "conformance_timeout_seconds": args.conformance_timeout_seconds,
+                },
+                sort_keys=True,
+            ),
+            file=sys.stderr,
+        )
         return 1
     try:
         receipt = verify(
-            args.wheel, args.cohort, args.find_links, args.output_json, python=args.python
+            args.wheel,
+            args.cohort,
+            args.find_links,
+            args.output_json,
+            python=args.python,
+            conformance_timeout_seconds=args.conformance_timeout_seconds,
         )
     except Exception as exc:
-        receipt = {"schema_version": 1, "status": "failed", "error": f"{type(exc).__name__}: {exc}"}
+        receipt = {
+            "schema_version": 1,
+            "status": "failed",
+            "error": f"{type(exc).__name__}: {exc}",
+            "conformance_timeout_seconds": args.conformance_timeout_seconds,
+        }
         if isinstance(exc, VerificationError) and exc.details:
             receipt.update(exc.details)
         args.output_json.parent.mkdir(parents=True, exist_ok=True)

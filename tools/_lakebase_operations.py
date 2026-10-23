@@ -15,6 +15,7 @@ from types import ModuleType
 from typing import Any
 
 if __package__:
+    from ._lakebase_acceptance import safe_case
     from ._lakebase_native import (
         _artifact_facts,
         _digest_name,
@@ -23,6 +24,7 @@ if __package__:
         _strict_default_probe,
     )
 else:
+    from _lakebase_acceptance import safe_case
     from _lakebase_native import (
         _artifact_facts,
         _digest_name,
@@ -159,6 +161,10 @@ class _OwnershipUncertain(Exception):
 
     def __init__(self, *, interrupted: bool = False) -> None:
         self.interrupted = interrupted
+
+
+class _FollowUpInterrupted(Exception):
+    """A follow-up already retained its cancellation classification."""
 
 
 @dataclass
@@ -612,7 +618,9 @@ def _baseline_initial(
             results[case] = _case_row(case, "blocked", "case_not_authorized")
         elif _CASE_OPERATIONS.get(case, frozenset()).difference(allowed_ops):
             results[case] = _case_row(case, "blocked", "required_operation_not_authorized")
-    if target_auth := inputs.target.get("auth_profile"):
+    if inputs.target.get("schema_version") != 2 and (
+        target_auth := inputs.target.get("auth_profile")
+    ):
         if target_auth in {"human-oauth", "nonhuman-oauth"}:
             for case in ("LB-PERSON", "LB-CUSTODY", "LB-SETTLEMENT", "LB-ACL"):
                 if case in results:
@@ -691,10 +699,7 @@ def _prepare_baseline(
     observed_artifacts = observed["artifacts"]
     artifact_ok = (
         observed_artifacts["truss_version"] == artifact_expected["truss_version"]
-        and (
-            observed_artifacts["truss_wheel_sha256"] is None
-            or observed_artifacts["truss_wheel_sha256"] == artifact_expected["truss_wheel_sha256"]
-        )
+        and observed_artifacts["truss_wheel_sha256"] == artifact_expected["truss_wheel_sha256"]
         and observed_artifacts["native_manifest_sha256"]
         == artifact_expected["native_manifest_sha256"]
         and observed_artifacts["migration_manifest_sha256"]
@@ -752,8 +757,136 @@ def _prepare_baseline(
     return access, backend, principals
 
 
+def _merge_schedule(
+    schedule: object,
+    case_ids: frozenset[str],
+    results: dict[str, Any],
+    observed: dict[str, Any],
+    observation_key: str,
+) -> None:
+    if type(schedule) is not dict or set(schedule) != {"cases", "observed"}:
+        raise ValueError("schedule result shape mismatch")
+    rows = schedule["cases"]
+    if type(rows) is not list or len(rows) != len(case_ids):
+        raise ValueError("schedule inventory mismatch")
+    checked = {}
+    for row in rows:
+        if type(row) is not dict or set(row) != {"case", "status", "code"}:
+            raise ValueError("schedule row shape mismatch")
+        item = safe_case(row["case"], row["status"], row["code"])
+        if item["case"] in checked or item["case"] not in case_ids:
+            raise ValueError("schedule case identity mismatch")
+        checked[item["case"]] = item
+    facts = schedule["observed"]
+    if facts is None and all(row["status"] != "passed" for row in checked.values()):
+        results.update(checked)
+        observed[observation_key] = None
+        return
+    if type(facts) is not dict:
+        raise ValueError("schedule observations unavailable")
+    if observation_key == "managed" and set(facts) != {
+        case for case, row in checked.items() if row["status"] == "passed"
+    }:
+        raise ValueError("managed pass observations differ from the result inventory")
+    if __package__:
+        from ._lakebase_receipts import _safe_follow_up
+    else:
+        from _lakebase_receipts import _safe_follow_up
+
+    facts = _safe_follow_up(observation_key, facts)
+    results.update(checked)
+    observed[observation_key] = facts
+
+
+def _run_follow_up_cases(
+    inputs: Any,
+    fixture_module: ModuleType,
+    sources: Mapping[str, Any],
+    backend: Any,
+    principals: Mapping[str, Any],
+    installed: Any,
+    observed: dict[str, Any],
+    results: dict[str, Any],
+    admission: Mapping[str, Any] | None,
+) -> None:
+    if __package__:
+        from ._lakebase_managed import run_managed
+        from ._lakebase_person import run_person_lifecycle
+    else:
+        from _lakebase_managed import run_managed
+        from _lakebase_person import run_person_lifecycle
+
+    context = {
+        "inputs": inputs,
+        "fixture_module": fixture_module,
+        "sources": sources,
+        "backend": backend,
+        "principals": principals,
+        "installed": installed,
+        "baseline_observed": observed,
+    }
+    person_cases = frozenset({"LB-PERSON"}.intersection(results))
+    managed_cases = frozenset({"LB-CUSTODY", "LB-SETTLEMENT", "LB-ACL"}) | frozenset(
+        f"MP-{number:02}" for number in range(1, 7)
+    )
+    selected_managed = frozenset(managed_cases.intersection(results))
+    eligible_person = _eligible_follow_ups(inputs, person_cases, results)
+    eligible_managed = _eligible_follow_ups(inputs, selected_managed, results)
+    if eligible_person and admission is not None:
+        try:
+            person = run_person_lifecycle(
+                **context,
+                provider_observation_sha256=admission["provider_observation_sha256"],
+                baseline_roles=admission["ordinary_roles"],
+            )
+            _merge_schedule(person, person_cases, results, observed, "person")
+        except (KeyboardInterrupt, SystemExit):
+            results["LB-PERSON"] = _case_row("LB-PERSON", "failed", "operation_interrupted")
+            raise _FollowUpInterrupted from None
+        except Exception:
+            results["LB-PERSON"] = _case_row(
+                "LB-PERSON", "failed", "person_schedule_result_unavailable"
+            )
+    if person_cases and results["LB-PERSON"]["status"] != "passed":
+        for case in selected_managed:
+            if results[case]["status"] != "failed":
+                results[case] = _case_row(case, "blocked", "person_prerequisite_not_verified")
+        return
+    if eligible_managed:
+        try:
+            managed = run_managed(**context)
+            _merge_schedule(managed, selected_managed, results, observed, "managed")
+        except (KeyboardInterrupt, SystemExit):
+            for case in selected_managed:
+                results[case] = _case_row(case, "failed", "managed_schedule_interrupted")
+            raise _FollowUpInterrupted from None
+        except Exception:
+            for case in selected_managed:
+                results[case] = _case_row(case, "failed", "managed_schedule_result_unavailable")
+
+
+def _eligible_follow_ups(
+    inputs: Any, cases: frozenset[str], results: dict[str, Any]
+) -> frozenset[str]:
+    eligible = set()
+    allowed_cases = inputs.authorization["allowed_cases"]
+    allowed_ops = frozenset(inputs.authorization["allowed_operations"])
+    for case in cases:
+        if case not in allowed_cases:
+            results[case] = _case_row(case, "blocked", "case_not_authorized")
+        elif not _CASE_OPERATIONS[case].issubset(allowed_ops):
+            results[case] = _case_row(case, "blocked", "required_operation_not_authorized")
+        else:
+            eligible.add(case)
+    return frozenset(eligible)
+
+
 def run_baseline(
-    inputs: Any, fixture_module: ModuleType, sources: Mapping[str, Any]
+    inputs: Any,
+    fixture_module: ModuleType,
+    sources: Mapping[str, Any],
+    *,
+    admission: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Run authorized, independently observable public Arras/Truss baseline operations.
 
@@ -813,6 +946,24 @@ def run_baseline(
                 results,
                 observed,
             )
+            if (
+                observed["operations"]["registration"] == "passed"
+                and observed["operations"]["access_configuration"] == "passed"
+                and observed["acl"]["intended_memberships_match"] is True
+            ):
+                _run_follow_up_cases(
+                    inputs,
+                    fixture_module,
+                    sources,
+                    backend,
+                    principals,
+                    state.migrated,
+                    observed,
+                    results,
+                    admission,
+                )
+    except _FollowUpInterrupted:
+        pass
     except _ObservedFailure as failure:
         results[failure.case] = _case_row(failure.case, "failed", failure.code)
     except _OwnershipUncertain as ownership:

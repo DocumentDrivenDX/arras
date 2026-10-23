@@ -2,7 +2,7 @@
 license = "MIT OR Apache-2.0"
 license-files = ["LICENSE.md", "LICENSE-MIT", "LICENSE-APACHE"]
 name = "arras"
-version = "0.6.0"
+version = "0.6.1"
 description = "The interface to an ontology: UMF types and actions, freshness-stating reads, Truss and Ashlar backends."
 readme = "README.md"
 keywords = ["ontology", "umf", "truss", "ashlar", "graphql", "data-access", "freshness"]
