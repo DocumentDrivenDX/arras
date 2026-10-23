@@ -1317,7 +1317,8 @@
       ],
       "ignored_prefixes": [
         "ARRAS_ADMIN_",
-        "ARRAS_REQUIRE_WEFT"
+        "ARRAS_REQUIRE_WEFT",
+        "ARRAS_REQUIRE_UMF"
       ],
       "token_exclusion": "ARRAS_TOKEN and ARRAS_TOKEN_FILE cannot both be supplied",
       "pattern": {

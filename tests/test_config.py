@@ -94,7 +94,12 @@ def test_every_problem_is_reported_by_key_and_never_by_value() -> None:
 
 def test_the_administrators_keys_are_not_this_processs_and_not_an_error() -> None:
     c = Config.from_env(
-        {"ARRAS_ADMIN_TOKEN": "x", "ARRAS_ADMIN_USER": "root", "ARRAS_REQUIRE_WEFT": "1"}
+        {
+            "ARRAS_ADMIN_TOKEN": "x",
+            "ARRAS_ADMIN_USER": "root",
+            "ARRAS_REQUIRE_WEFT": "1",
+            "ARRAS_REQUIRE_UMF": "1",
+        }
     )
     assert c == Config()
 

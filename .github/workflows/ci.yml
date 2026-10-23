@@ -41,6 +41,10 @@ jobs:
         run: python tools/verify_distribution.py --output artifacts/distribution-verification.json dist/*.whl dist/*.tar.gz
       - name: Verify installed extension host with fresh public dependencies
         run: python tools/verify_extension_host.py --wheel dist/arras-*.whl --output-json artifacts/extension-host-fresh-dependencies.json --fresh-dependencies
+      - name: Verify installed UMF admission with fresh environments
+        run: |
+          mkdir -p artifacts
+          uv run --no-sync python tools/verify_umf_admission.py --wheel dist/arras-*.whl --output-json artifacts/umf-admission-installed.json
       - name: The wheel installs on a clean interpreter and carries the UI
         run: |
           uv run --no-project --isolated --with dist/*.whl python -c "import importlib.util, arras, arras.ui, arras.adapters.truss; assert importlib.util.find_spec('truss') is None, 'the base wheel must not need Truss'; print(arras.CONTRACT_VERSIONS, arras.ui.npm_package().name); assert (arras.ui.STATIC / arras.ui.PAGE).is_file()"
