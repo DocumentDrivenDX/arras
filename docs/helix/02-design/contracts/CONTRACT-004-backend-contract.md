@@ -399,3 +399,36 @@ describe() -> BackendInfo(name="memory_replica", roles=("reader",),
 ## Non-Normative Notes
 
 The adapter operations are the ones the client interactions need once reads are a single `query`. Because the stores behind the adapters may change, the contract is the stable part: the corpus is written first, then each adapter is built to pass it. Whether Arras should wait inside `query` for a replica to reach a token, or leave the wait to the caller, is open (CONTRACT-001).
+
+## Later public 0.0.49 adoption — separate unqualified tranche
+
+This amendment governs the later adoption branch only. It does not change the
+independent frozen release's 0.0.48/0.4.51 cohort or its historical evidence.
+Public Truss 0.0.49 has native digest
+`288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4`;
+its shared `0.74-candidate` release label alone does not identify those bytes.
+Its exact server admission remains PostgreSQL `180006`; Lakebase correspondence
+requires actual target evidence, not a hostname, product label or local pass.
+
+`create_backend` and `TrussBackend` gain keyword-only
+`tolerated_grantees: tuple[str, ...] = ()`. Arras accepts an immutable exact tuple
+with at most 32 exact nonempty UTF-8 names, each at most 63 bytes and without NUL.
+It preserves the names without coercion, patterns, discovery or normalization.
+Upstream Truss owns native identity/reserved-role/ACL interpretation. Only fresh
+installation forwards the tuple; an installed/reconnected backend uses stored
+policy and cannot widen trust from fresh host configuration. Empty remains strict.
+Tolerance preserves existing platform authority; it creates no platform grants,
+membership or ordinary-person access and weakens no protected-profile refusal.
+
+A contained public `InstallRefused(third_party_grant)` maps to
+`Unavailable(migration_failed)` with the bounded JSON-escaped role name and closed
+object-class/phase context. Arbitrary server or ValueError text is not exposed.
+Malformed context yields a fixed safe refusal. A typed grant refusal cannot be
+relabeled by the legacy opaque CREATEROLE fallback. Original rollback,
+cancellation, unknown settlement and quarantine meanings retain precedence.
+
+Actual managed qualification is separate: the adapter requires idle supplied
+connections and owns each operation's transaction. Caller-active transaction and
+savepoint claims require separately labelled direct public Truss-host evidence.
+The metadata-only UMF profile remains unsupported by Truss; this adoption does
+not introduce an official value/action runtime or Ashlar support.

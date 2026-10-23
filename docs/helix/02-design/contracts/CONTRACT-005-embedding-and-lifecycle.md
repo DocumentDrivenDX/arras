@@ -1347,3 +1347,28 @@ ontology.query("catalog", "SELECT u.workArea, COUNT(*) FROM catalog.UseCase u GR
 ## Non-Normative Notes
 
 The embedding host supplies a current person credential for each new connection through its own pool; a per-principal connection source keeps Arras out of credential handling and keeps every backend call attributable to the person (ADR-017). Whether the host installs at startup or as a deploy step is the host's choice: it calls `migrate()` at start or runs it as a deploy step. The adapter needs no executable on `PATH`: Truss prepares a module in an embedded V8 and spawns no process, so registration, a write, an import and a key lookup all work with no Bun, no Node and an empty `PATH`. The module role names are the host's `module_access`, and whoever holds the installing connection calls `configure_access` after a runtime registration of a new module (the host's decision, which Arras does not take). Warehouse credential delivery and refresh belong to the embedding host under ADR-017. CONTRACT-007 defines the stdio token-file reread and claim-selection mechanisms; the host owns their deployment wiring.
+
+## Later public 0.0.49 managed-host handoff
+
+This later-tranche amendment leaves the independent frozen release and its
+receipts unchanged. The host may supply `tolerated_grantees=()` through the
+explicit Truss factory/backend constructor (CONTRACT-004). Construction performs
+no connection, environment lookup or SDK import; fresh install alone forwards
+the tuple. Reconnect verifies upstream stored policy without replacing it.
+The setting is not a policy-change, migration or role-management API.
+
+Managed execution requires the exact human-authorized provider target, secure
+credential source and disposable resource scope. The designated Truss owner alone
+provisions the Lakebase target; Arras must not create a competing instance.
+Public Truss installs the fixed `truss` namespace and creates installation roles.
+Authorization for an unrelated disposable schema is insufficient. Dedicated
+database or explicit fixed-namespace/created-role custody must be established
+before effects, with unrelated installations and resources left untouched.
+
+The installer and each person use their own authorized connection sources.
+TLS verification, provider identity, token expiry/refresh, actual role privileges,
+server/driver/native tuple and resource custody require original observations.
+No service-identity fallback, trigger disabling, inferred superuser/extension
+trust, automatic role widening or compatibility retry is permitted. Missing
+target/source/privilege/control requirements block dependent cases; local or
+synthetic evidence cannot satisfy actual Lakebase acceptance.

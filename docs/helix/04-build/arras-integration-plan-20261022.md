@@ -1583,3 +1583,42 @@ gates above are reviewable. It does not establish integration completion.
   remain outside the scoped P0 release. P0 delivery is closed against actual
   publication and supplemental fresh public-download evidence; remaining A2–A7 semantic work
   stays separately open.
+
+## Later public Truss 0.0.49 adoption — isolated work
+
+The isolated adoption branch starts from `df923164840cb225a278d760ba911c106fa3c080`;
+package metadata remains 0.5.1. The independent 0.6.0 release work remains frozen
+on Truss 0.0.48/Weft 0.4.51. No merge, version/tag/publication or competing native,
+UI, Spark or build campaign follows from this plan. Rebase/release ownership
+requires the explicit release handoff.
+
+| Owner | Bounded deliverable | Gate and retained boundary |
+| --- | --- | --- |
+| Sol | CONTRACT-004/005 and TP-001 later-tranche amendments; source/evidence review | Preserve frontmatter/history; distinguish forwarding, local qualification and real managed acceptance |
+| Luna A | Exact public49 pin/lock/artifact references; factory/backend/lifecycle forwarding and safe named refusal; catalog/signature and pure controls | Empty strict default; no reconnect widening or ACL-policy interpreter; keep 926-line ceiling and error/transaction precedence |
+| Luna B | Explicit target/authority/fixture-bound executable Lakebase harness and pure gate controls | Actual public operations after admission; original redacted service evidence; no local fallback, inferred provider trust or fabricated MP pass |
+
+The selected public49 source is
+`dd13e95804abc30202d449a756240c6a684ab942`, wheel SHA-256
+`7ea14b2787f02cbeec9ad99d835adbcc30c684fd5be8e0765a1d8198b50e7182`.
+Native digest is `288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4`;
+migration digest is `96addcdb95523f478d8f50b0b47198e47a860680c7400dd359711930e837e535`.
+Weft stays 0.4.51, source `557153731e9f5d0583193a1189a07c6ed485d3d3`.
+The Truss/public49 and managed-target owner
+`01a16383-183c-7680-9518-f69ff40383e5` retains the immutable public49 proof and
+Lakebase custody. The independent A2/0.6.0 release owner
+`01a16023-fabd-7fa3-9abf-44d42e7fd673` controls that separate release handoff.
+The published49 proof labels actual Lakebase not_run.
+
+The human authorized the managed-target owner to create a dedicated Lakebase
+with the Databricks CLI. That target is now provisioned; its read-only preflight
+observes PostgreSQL 18.6 (`180006`), psycopg 3.3.6/libpq `180006`, verified TLS
+with a maintained CA bundle, and no `truss` schema. No service mutation is implied
+by these observations. An ordinary OAuth identity remains blocked by workspace
+service-principal creation permission; the owner awaits the human identity
+handoff. Neither a native-password baseline nor a nonhuman OAuth actor may be
+reported as human-token acceptance. The secure source, exact authorized roles
+and operational controls still require handoff without private coordinates in
+these artifacts. MP-01–06 and actual consumer acceptance remain open until
+original service evidence and confirmed owned cleanup pass. Official UMF
+value/action and Ashlar work remain separate.

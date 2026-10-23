@@ -639,3 +639,33 @@ The `truss` tests run against a fresh local PostgreSQL 18.6 per run, with Truss 
 - [ ] Which technology runs the conformance corpus, the benchmark harness and the Ashlar test double, and which CI tool runs them? Ask Erik LaBianca and the host integration owners.
 - [ ] Who authors the story test plans, and in what order? Ask Erik LaBianca.
 - [ ] How are the first request after suspend and Ashlar interactive reads budgeted? Ask the platform owner and the Ashlar project.
+
+## Later 0.0.49 adoption and managed qualification gates
+
+The separate adoption branch first verifies exact public Truss 0.0.49 artifact
+identity and keeps Weft 0.4.51 fixed. Pure factory/lifecycle tests prove immutable
+tuple forwarding on fresh installation, strict empty defaults, no stored-policy
+update on reconnect, bounded named refusal, rollback and unchanged outer failure
+precedence. Base imports remain SDK/I/O-free; public signatures/catalog stay in
+parity. Historical 0.0.48 results and declared corpus limits are not relabelled
+as 0.0.49 qualification.
+
+The executable Lakebase harness uses only real public Arras/Truss operations and
+independent native observations after an explicit target/authorization/fixture
+handoff. Offline negative controls refuse absent or mismatched provider/resource
+scope, credentials, hashes, symlink/alias paths, malformed manifests and incomplete
+case membership before fixture/driver loading or connections. Synthetic controls
+qualify only these gates. Safe original case receipts preserve failures,
+uncertainty and cleanup separately; no credential, DSN or raw error prose is
+persisted.
+
+Required managed schedules follow Truss MP-01–06: populated durable state through
+restart; original ended-session/lease refusal; actual managed role/ACL behavior;
+complete feed/ACK independence; enforceable settings and uncertain outcomes;
+and required extension correspondence. TLS/person-token/credential-refresh,
+dry-run residue, caller work/savepoints and quarantine also require actual
+target evidence. Caller-owned cases use public Truss directly and are not
+advertised as Arras active-transaction support. Missing provider restart/refresh
+controls or observation privileges remain blocked/not_run; no zero-case, skipped
+or partial receipt can pass the full managed scope. Native/installed/service
+campaigns require the separately coordinated slot; none has run in this tranche.
