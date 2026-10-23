@@ -1757,8 +1757,10 @@ Arras wheel. Structural bridge doubles qualify custody/control flow only.
 The coordinator reports configured strict typing, Ruff/format, public-content
 integrity and the UI source build gates passing. The first full base suite
 reported 3,127 passed and three candidate-only skips, with one existing
-100 ms child-start timing failure. Its diagnostic rerun is still active; this
-checkpoint does not record a full-suite pass. The source checkpoint precedes
+100 ms child-start timing failure. The coordinator later stopped the diagnostic
+rerun's owned process tree (exit 137) for resource coordination and retained its
+interrupted log; timing follow-up is deferred. Neither attempt is recorded as a
+full-suite pass. The source checkpoint precedes
 the exact-commit wheel build and is not an installed or immutable-build proof.
 
 SDK-only isolated preparation uses candidate-2 `umf-core` 0.10.0 from producing
@@ -1787,8 +1789,30 @@ manifest field is an expected identity and its RECORD field is archive-derived;
 neither is an installed-payload measurement. A new SDK packet requires renewed
 budget and artifact review.
 
-The final owner meter/refusal/sdist-rebuild packet, exact installed Arras
-whole-path proof and A2's 139 reference plus 139 fresh-empty Registry regression
-checks remain pending. No new dependency pin, release, Truss/native/managed
+The final upstream handoff manifest
+`8ed84e84e3070b24333f53fae5eb0ecdd8db2fe047dc3d6063e55cbdb4834e69`
+now binds 24 artifacts to the same SDK source/wheel, including the sdist,
+rebuilt-wheel, installed refusal/control and browser evidence. Independent
+read/hash review found no artifact mismatch; the path-free
+[handoff review](evidence/umf-actions-20261023/upstream-handoff-review.safe.json)
+retains identities and clearly separates owner-reported checks from that review.
+The owner qualifies only local macOS arm64 CPython 3.11.17 semantic admission,
+with `executionVerified:false`; its 1,000,000,000-unit/30-second measurements
+are distinct from Arras's smaller measured consumer budget. This is not a public
+SDK release, provider execution or general declaration-size qualification.
+
+The first installed Arras attempt on checkpoint `0dd13d2` used exact wheel
+`d9a291f1db94b17c1bc8bc97f842ea94ee0d008093f64a0577499860093e13d2`
+with the named SDK candidate: 36 tests passed, one failed and none skipped.
+The genuine generated public-host path, denial and uncertain-response controls
+passed. Invalid allowed-value validation exposed an unmapped official
+`CORE_SCHEMA_PROPERTIES` diagnostic; that failed attempt remains historical
+while a narrow fixed-code correction is reviewed. Independent archive/installed
+byte inspection matched all 174 selected Arras and 36 SDK payload members,
+but does not turn the failing run into an overall qualification pass.
+
+Corrected installed Arras whole-path proof and A2's 139 reference plus 139
+fresh-empty Registry regression checks remain pending. No new dependency pin,
+release, Truss/native/managed
 execution, durable restart, general action/constraint support or Ashlar
 qualification follows from this source checkpoint.

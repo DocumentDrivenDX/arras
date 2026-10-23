@@ -172,6 +172,7 @@ def test_runtime_api_import_dependency_failure_is_not_misreported_as_absent(
     [
         ("ACTION_RUNTIME_INTEGRITY", "/source", Invalid, "schema_mismatch"),
         ("ACTION_RUNTIME_INVALID", "/inputs/secret", Invalid, "umf_invalid"),
+        ("CORE_SCHEMA_PROPERTIES", "", Invalid, "umf_invalid"),
         ("RESOURCE_LIMIT", "/inputs/value", Invalid, "limit_exceeded"),
         ("ACTION_RUNTIME_UNSUPPORTED", "/profile", Unsupported, None),
     ],
@@ -686,8 +687,11 @@ def test_candidate_bridge_admits_apply_validate_and_import_vectors(
     assert dict(imported.properties) == {"item_id": "item-1", "label": "ready"}
     _umf_actions.validate_candidate(prepared, dict(imported.properties))
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid) as invalid_candidate:
         _umf_actions.validate_candidate(prepared, {"item_id": "item-1", "label": "pending"})
+    assert invalid_candidate.value.violations[0].code == "umf_invalid"
+    assert invalid_candidate.value.violations[0].path == "action"
+    assert "Literal is not an allowed value" not in str(invalid_candidate.value)
     invalid_request = dict(validate_request)
     invalid_request["inputs"] = {
         "item": {"item_id": "item-1"},

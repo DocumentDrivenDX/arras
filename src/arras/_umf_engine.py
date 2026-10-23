@@ -236,6 +236,9 @@ def translate_action_error(code: object, path: object) -> Invalid | Unsupported 
         return Unsupported("official UMF single-SET profile", ["single string SET actions"])
     if code in {
         "ACTION_RUNTIME_INVALID",
+        # The single-SET record admission path forwards this documented core
+        # literal/schema diagnostic when a supplied value violates its field.
+        "CORE_SCHEMA_PROPERTIES",
         "REQUEST",
         "WIRE_FORMAT",
         "NON_JSON",
