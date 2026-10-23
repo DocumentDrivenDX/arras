@@ -491,6 +491,10 @@ def _token(value: Any) -> str:
     return token
 
 
+def _sync_actions(session: Any, generated: Any) -> Any:
+    return generated.SyncActions(generated.SyncClient(session))
+
+
 def _action_host(source: bytes, vectors: dict[str, Any], generated: Any) -> None:
     from arras.testing import InMemory
 
@@ -505,7 +509,7 @@ def _action_host(source: bytes, vectors: dict[str, Any], generated: Any) -> None
         raise ProbeError("host", "public-seed-import-mismatch")
     writer = world.person("writer", "catalog", "read", "write")
     reader = world.person("reader", "catalog", "read")
-    actions = generated.SyncActions(world.arras.session(writer))
+    actions = _sync_actions(world.arras.session(writer), generated)
     item = generated.ItemKey(item_id="item-1")
     reader_session = world.arras.session(reader)
     _validate_without_effect(world, writer, reader_session, actions, item, vectors, generated)
@@ -599,7 +603,7 @@ def _uncertain_response(
             raise RuntimeError("unobservable transport response")
 
     lost = LostResponse()
-    uncertain_actions = generated.SyncActions(generated.SyncClient(lost))
+    uncertain_actions = _sync_actions(lost, generated)
     try:
         uncertain_actions.set_label(
             item=item, label_value="abcdefgh", idempotency_key="lost-response"
@@ -623,7 +627,7 @@ def _uncertain_response(
             return {"schema": request["schema"], "status": "committed"}
 
     malformed = MalformedResponse()
-    malformed_actions = generated.SyncActions(generated.SyncClient(malformed))
+    malformed_actions = _sync_actions(malformed, generated)
     try:
         malformed_actions.set_label(
             item=item, label_value="held", idempotency_key="malformed-response"
@@ -701,7 +705,7 @@ def run_probe(arguments: list[str]) -> dict[str, Any]:
     engine = runtime.create_action_engine()
     generated, generated_sha = _generate_client(engine, source, Path.cwd() / "generated-client")
     capture = _Capture()
-    generated_actions = generated.SyncActions(generated.SyncClient(capture))
+    generated_actions = _sync_actions(capture, generated)
     generated_actions.set_label(
         item=generated.ItemKey(item_id="item-1"), label_value="ready", idempotency_key="fixture-key"
     )

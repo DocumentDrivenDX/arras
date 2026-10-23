@@ -199,7 +199,9 @@ def test_wheel_payload_rejects_wrong_or_unknown_distribution_namespace(
         _PROBE._wheel_payload(known, "other-distribution")
 
 
-def _install_import_path_fixture(monkeypatch, tmp_path: Path, *, outside_module: bool = False):
+def _install_import_path_fixture(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, *, outside_module: bool = False
+) -> tuple[Path, Path, Path, Path]:
     working = tmp_path / "probe-cwd"
     prefix = working / "venv"
     site = prefix / "lib/python3.11/site-packages"
@@ -218,17 +220,19 @@ def _install_import_path_fixture(monkeypatch, tmp_path: Path, *, outside_module:
             else site / "umf/rust_codegen.py"
         ),
     }
-    monkeypatch.setattr(
-        _PROBE.importlib,
-        "import_module",
-        lambda name: types.SimpleNamespace(__file__=str(module_paths[name])),
-    )
-    monkeypatch.setattr(
-        _PROBE.sysconfig,
-        "get_paths",
-        lambda: {"purelib": str(site), "stdlib": str(stdlib), "platstdlib": str(stdlib)},
-    )
-    monkeypatch.setattr(_PROBE.sysconfig, "get_config_var", lambda _name: "3.11")
+
+    def fake_import_module(name: str) -> types.SimpleNamespace:
+        return types.SimpleNamespace(__file__=str(module_paths[name]))
+
+    def fake_get_paths() -> dict[str, str]:
+        return {"purelib": str(site), "stdlib": str(stdlib), "platstdlib": str(stdlib)}
+
+    def fake_get_config_var(_name: str) -> str:
+        return "3.11"
+
+    monkeypatch.setattr(_PROBE.importlib, "import_module", fake_import_module)
+    monkeypatch.setattr(_PROBE.sysconfig, "get_paths", fake_get_paths)
+    monkeypatch.setattr(_PROBE.sysconfig, "get_config_var", fake_get_config_var)
     monkeypatch.setattr(
         _PROBE,
         "sys",
@@ -246,7 +250,7 @@ def _install_import_path_fixture(monkeypatch, tmp_path: Path, *, outside_module:
 
 
 def test_import_origins_inside_fresh_venv_under_probe_cwd_are_accepted(
-    monkeypatch, tmp_path: Path
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     _install_import_path_fixture(monkeypatch, tmp_path)
 
@@ -261,7 +265,7 @@ def test_import_origins_inside_fresh_venv_under_probe_cwd_are_accepted(
 
 
 def test_import_origin_outside_fresh_venv_checkout_path_is_rejected(
-    monkeypatch, tmp_path: Path
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     _install_import_path_fixture(monkeypatch, tmp_path, outside_module=True)
 
@@ -270,9 +274,9 @@ def test_import_origin_outside_fresh_venv_checkout_path_is_rejected(
 
 
 def test_checkout_import_path_outside_fresh_venv_or_stdlib_is_rejected(
-    monkeypatch, tmp_path: Path
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    _working, _prefix, site, stdlib = _install_import_path_fixture(monkeypatch, tmp_path)
+    _working, _prefix, _site, _stdlib = _install_import_path_fixture(monkeypatch, tmp_path)
     _PROBE.sys.path.append(str(tmp_path / "source-checkout"))
 
     with pytest.raises(_PROBE.ProbeError, match="external-import-path"):
@@ -553,6 +557,25 @@ def test_validation_result_requires_explicit_valid_true() -> None:
     assert not _PROBE._is_valid_validation_result(
         type("Wrong", (), {"valid": 1})(), generated.__name__
     )
+
+
+def test_generated_actions_wrap_the_public_session_in_sync_client() -> None:
+    class SyncClient:
+        def __init__(self, session: object) -> None:
+            self.session = session
+
+    class SyncActions:
+        def __init__(self, client: SyncClient) -> None:
+            if type(client) is not SyncClient:
+                raise TypeError("generated actions require SyncClient")
+            self.client = client
+
+    generated = types.SimpleNamespace(SyncClient=SyncClient, SyncActions=SyncActions)
+    session = object()
+    actions = _PROBE._sync_actions(session, generated)
+    assert type(actions) is SyncActions
+    assert type(actions.client) is SyncClient
+    assert actions.client.session is session
 
 
 def test_noop_requires_empty_receipt_counts_and_replay_content() -> None:
