@@ -1,0 +1,228 @@
+{
+  "schema": "arras.public-release-final.independent-review.v1",
+  "status": "approved-scoped-public-release-verification",
+  "result_sha256": "c02767057805896c24acfa98ed5bd5f0fc1d8aa4b89adcd1a56d02893a742023",
+  "release": {
+    "source_sha": "8b786bb7629a6425e5a2b3b528378f0d92f0b847",
+    "tag": "v0.5.1"
+  },
+  "published_wheel": {
+    "filename": "arras-0.5.1-py3-none-any.whl",
+    "sha256": "17d50dedeaf9d4f7d27e0eb30cb16539bfa75de3a138dc9351284c2e2f390d4b"
+  },
+  "original_publication": {
+    "driver_sha": "c02bca2b5417227f8f28d72171be0f7378c9b0bf",
+    "evidence_sha256": "a84811a71b0180de8e3f2c225732c9c47410476d0389c229ef92090bf6314d7c",
+    "run_attempt": "1",
+    "run_id": "39879533273",
+    "sums_sha256": "43c41e44c3634724f0bccd0b92ee882f0771138044b5abbbde097890c839503c",
+    "tag_object_sha": "11b690b3795518315fa643379acf0f94383f135e",
+    "workflow_ref": "DocumentDrivenDX/arras/.github/workflows/release.yml@refs/heads/main"
+  },
+  "verification": {
+    "driver_sha": "4bcccd4be9c437eb9957d74134a84b4421322c65",
+    "run_attempt": "1",
+    "run_id": "39883764998",
+    "workflow_ref": "DocumentDrivenDX/arras/.github/workflows/verify-published-release.yml@refs/heads/main"
+  },
+  "all_three_current_verification_jobs_successful": true,
+  "final_tag_recheck_step_successful": true,
+  "anonymous_assets": {
+    "total_including_sums": 16,
+    "checksummed": 15,
+    "sums_sha256": "43c41e44c3634724f0bccd0b92ee882f0771138044b5abbbde097890c839503c",
+    "aggregate_sha256": "a84811a71b0180de8e3f2c225732c9c47410476d0389c229ef92090bf6314d7c",
+    "npm_matches_wheel_payload": true,
+    "assets": [
+      {
+        "filename": "acceptance-inventory-neutral-theme.json",
+        "sha256": "925019da1651937a72a20b91a7a032f1101c2af024ae96c51ef423aa67bbe14c"
+      },
+      {
+        "filename": "acceptance-resources-neutral-theme.json",
+        "sha256": "bfb6ed43ff0accdb170b60cc7095365f2a7cc287a66b7dfcab31918106042f78"
+      },
+      {
+        "filename": "arras-0.5.1-py3-none-any.whl",
+        "sha256": "17d50dedeaf9d4f7d27e0eb30cb16539bfa75de3a138dc9351284c2e2f390d4b"
+      },
+      {
+        "filename": "arras-0.5.1.tar.gz",
+        "sha256": "541aa91ae970ac16644679614d74b858f1a46e303b6429e0c10804c24bc0dd45"
+      },
+      {
+        "filename": "consumer-qualification.json",
+        "sha256": "6e8ffcde4d3a0d7a8ee59b12452a97542556fbfb37501391ac8653d83b01a9e1"
+      },
+      {
+        "filename": "distribution-verification.json",
+        "sha256": "a1f58db196d3d6af8622e3da3c9bae78ba5058c049755c7c3e3ff7e3366d4fac"
+      },
+      {
+        "filename": "doctor-installed.json",
+        "sha256": "8cf81c507981df05f415a38fd52a935a27e5d6f3323fbcb0b3f082aa5641fa73"
+      },
+      {
+        "filename": "documentdrivendx-arras-ui-0.5.1.tgz",
+        "sha256": "76fc29a5a24747ef26d0e04263f1f8924034244b1169a41fb865e02274485e1f"
+      },
+      {
+        "filename": "native-cohort-binding.json",
+        "sha256": "4803459cfceb995d4939860da38edf18ad195a505f368c29084761f92c1a57c2"
+      },
+      {
+        "filename": "native-cohort.json",
+        "sha256": "68a858d6bd4d63f8a346bece353472f7f4441664d1ae625b7f60b152a87937d6"
+      },
+      {
+        "filename": "native-find-links.html",
+        "sha256": "197d63b9a651530b43457b768533165d0cc522ad5d872db063a8279a14ebbcd5"
+      },
+      {
+        "filename": "native-qualification.json",
+        "sha256": "d5931b8eaf9ed395d3ba7d9529bb3a9b4b2d82022d12fe031e33701e133ec9b7"
+      },
+      {
+        "filename": "playwright-summary-neutral-theme.json",
+        "sha256": "6d84aa2dba1b5f45b3bcaa5577c05b2d85d135da4915d90f2237faa8e6384713"
+      },
+      {
+        "filename": "release-evidence.json",
+        "sha256": "a84811a71b0180de8e3f2c225732c9c47410476d0389c229ef92090bf6314d7c"
+      },
+      {
+        "filename": "ui-qualification.json",
+        "sha256": "9cdd509a35ab9e7f240f9d3c227268c300d6e1265540d915435f919622e3ac22"
+      }
+    ]
+  },
+  "receipts": [
+    {
+      "filename": "public-input-verification.json",
+      "sha256": "398467a2cd1347c125666f027dda556f060d3e36ff5df27d38616a1412d97ef2"
+    },
+    {
+      "filename": "public-distribution-verification.json",
+      "sha256": "027a7d05bda9c46c95f1f134b2fa3c4b2072c57e1deb02cd7fa57695351e696b"
+    },
+    {
+      "filename": "public-doctor-installed.json",
+      "sha256": "d0f80144a84bee71597a4704a7bff60899f976db7cb596265130e71a347a2fdb"
+    },
+    {
+      "filename": "public-extension-host-fresh-dependencies.json",
+      "sha256": "2d3840f742325ea2c6c0f19bafd6ba6ebcfcf81c7af0d4cddd96fdb887bb6a73"
+    },
+    {
+      "filename": "tests/downstream/evidence/linux/qualification-linux.json",
+      "sha256": "8f62d26fcbd15f9f817c339c846a4c68a60234b5cc3f67a1eddded962f832ae7"
+    }
+  ],
+  "original_anchors": {
+    "provenance_sha256": "f1e4970e060d1bf72dd1335155931ce107741b7133778a29bdde93af8ab48f1b",
+    "validation_sha256": "996eb1273907cb508537cb8c6adb6ab3c8bb7559489c60807c4e066b1f497b49",
+    "original_overall_conclusion": "failure; publication succeeded, old consumer failed"
+  },
+  "doctor": {
+    "cases": 20,
+    "phases": 8,
+    "false_pass_controls": [
+      "MCP successful empty result",
+      "ASGI successful HTTP 200 empty body",
+      "finish-time ambient-context misrouting"
+    ],
+    "global_provider_unchanged": true,
+    "tripwires": "passed",
+    "python": "3.11.17",
+    "platform": {
+      "os": "linux",
+      "architecture": "x86_64",
+      "release": "6.17.0-1022-azure"
+    },
+    "versions": {
+      "arras": "0.5.1",
+      "example-extension-host": "0.1.0",
+      "graphql-core": "3.3.0",
+      "opentelemetry-api": "1.45.1",
+      "opentelemetry-sdk": "1.45.1"
+    },
+    "probe_sha256": "2dd054ff5b832f279195d8e644027474181ff247d29d6b59ee0e8c2889836e0f",
+    "verifier_sha256": "9aa379d1f2b333f855aa9886da7b6e93dcf930bc789a3721e0862ee174c08455"
+  },
+  "fresh_example": {
+    "tests": 4,
+    "memory_passed": 72,
+    "replica_only_inapplicable": 7,
+    "python": "3.11.17",
+    "fresh_public_index": true
+  },
+  "ui": {
+    "passed": 205,
+    "failures": 0,
+    "skipped_applicable": 0,
+    "visual": "skipped-non-Darwin",
+    "projects": [
+      {
+        "name": "chromium",
+        "expected": 132,
+        "discovered": 132,
+        "passed": 132,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "name": "schema-admin",
+        "expected": 3,
+        "discovered": 3,
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "name": "browser",
+        "expected": 70,
+        "discovered": 70,
+        "passed": 70,
+        "failed": 0,
+        "skipped": 0
+      }
+    ],
+    "negative_controls": {
+      "missingResource": "refused",
+      "tamperedResource": "refused",
+      "invalidOptions": "refused",
+      "controlledFailure": "exit-1"
+    },
+    "routes": 4,
+    "runtime": {
+      "python": "Python 3.11.17",
+      "node": "v24.21.0",
+      "npm": "11.19.0",
+      "browser": "Chromium 153.0.8010.12",
+      "packages": {
+        "react": "19.3.0",
+        "reactDom": "19.3.0",
+        "typescript": "6.0.3",
+        "vite": "8.3.2",
+        "playwright": "1.63.0",
+        "axePlaywright": "4.13.0"
+      },
+      "platform": "linux",
+      "javascriptDependencies": "npm-installed from the public registry into a temporary consumer; Arras and theme installed from exact cohort tarballs"
+    }
+  },
+  "distribution": {
+    "parity": "source/sdist-rebuilt wheel identical",
+    "runtime_python": "3.11.17",
+    "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+    "javascript_dependencies": "workspace-linked UI dependencies; package itself extracted from each verified wheel"
+  },
+  "qualifications": [
+    "Receipt/cohort/sidecar/API-job review of actual retained artifacts; no additional runtime/download execution by this reviewer.",
+    "Public asset binary/file privacy review owned separately; raw diagnostic receipts retain private paths and are deliberately not copied into this safe review.",
+    "Successful hosted producer finally-cleanup/source guards and completed jobs support scoped cleanup only; no independent process inventory or external-host absence claimed.",
+    "Mac272/75baseline review remains exact local598/460 plus independently approved identical-payload bridge; no Mac execution of17d/76fc claimed.",
+    "Original publication run remains failed overall; this distinct verification-only run completes postpublication gate without changing any release asset.",
+    "Native/semantic/OS-minimum/managed-host limits unchanged; no Linux visual result or registry upload claim."
+  ]
+}

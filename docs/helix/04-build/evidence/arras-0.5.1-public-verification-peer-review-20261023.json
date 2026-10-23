@@ -1,0 +1,93 @@
+{
+  "anchor_sha256": {
+    "original-publication-verification.json": "996eb1273907cb508537cb8c6adb6ab3c8bb7559489c60807c4e066b1f497b49",
+    "release-driver-provenance.json": "f1e4970e060d1bf72dd1335155931ce107741b7133778a29bdde93af8ab48f1b"
+  },
+  "checks": {
+    "all_comparison_digests_match_independently_reviewed_trusted_stage": true,
+    "all_five_current_run_receipt_links_rehashed": true,
+    "all_recorded_new_run_steps_success": true,
+    "all_three_new_run_jobs_completed_success": true,
+    "anonymous_comparison_receipt_assets": 15,
+    "distribution_doctor_consumer_ui_artifact_identities_match": true,
+    "explicit_reusable_driver_revision_matches_new_verification_driver": true,
+    "linux_visual_status": "skipped-non-Darwin",
+    "new_fresh_example_tests_passed": 4,
+    "new_linux_ui_nonvisual_passed": 205,
+    "new_run_completed_success": true,
+    "new_sdk_cases": 20,
+    "new_sdk_false_pass_controls": 3,
+    "new_sdk_phases": 8,
+    "original_aggregate_public_download_field": "not_run_at_assembly",
+    "original_publication_failure_preserved": true,
+    "original_source_tag_object_driver_and_run_bound": true,
+    "original_trusted_sums_and_aggregate_unchanged": true,
+    "total_published_files_including_sums": 16,
+    "whole_carried_npm_comparison_recorded_pass": true
+  },
+  "evidence_scope": "Independent cached artifact and digest inspection plus actual completed new-run job/step metadata and current-run tool receipts. The new anonymous-download execution is evidenced by successful workflow steps and the linked full-bundle comparison/consumer receipts; no network retrieval or runtime campaign was repeated by this reviewer.",
+  "final_result_sha256": "c02767057805896c24acfa98ed5bd5f0fc1d8aa4b89adcd1a56d02893a742023",
+  "jobs": [
+    {
+      "conclusion": "success",
+      "id": 120187031792,
+      "name": "Verify the original publication provenance",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 120187122832,
+      "name": "Re-test the published wheel in a fresh consumer / Install verified wheel and run explicit qualification stages",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 120187209180,
+      "name": "Re-verify anonymous public assets and consumers",
+      "status": "completed"
+    }
+  ],
+  "jobs_metadata_sha256": "df186f36867a3fc4aaf1d8c5b97d784af19d2a611ca01fdda4e2a484d8757aaa",
+  "linked_receipt_sha256": {
+    "public-distribution-verification.json": "027a7d05bda9c46c95f1f134b2fa3c4b2072c57e1deb02cd7fa57695351e696b",
+    "public-doctor-installed.json": "d0f80144a84bee71597a4704a7bff60899f976db7cb596265130e71a347a2fdb",
+    "public-extension-host-fresh-dependencies.json": "2d3840f742325ea2c6c0f19bafd6ba6ebcfcf81c7af0d4cddd96fdb887bb6a73",
+    "public-input-verification.json": "398467a2cd1347c125666f027dda556f060d3e36ff5df27d38616a1412d97ef2",
+    "tests/downstream/evidence/linux/qualification-linux.json": "8f62d26fcbd15f9f817c339c846a4c68a60234b5cc3f67a1eddded962f832ae7"
+  },
+  "original_publication": {
+    "driver_sha": "c02bca2b5417227f8f28d72171be0f7378c9b0bf",
+    "evidence_sha256": "a84811a71b0180de8e3f2c225732c9c47410476d0389c229ef92090bf6314d7c",
+    "run_attempt": "1",
+    "run_id": "39879533273",
+    "sums_sha256": "43c41e44c3634724f0bccd0b92ee882f0771138044b5abbbde097890c839503c",
+    "tag_object_sha": "11b690b3795518315fa643379acf0f94383f135e",
+    "workflow_ref": "DocumentDrivenDX/arras/.github/workflows/release.yml@refs/heads/main"
+  },
+  "published_wheel": {
+    "filename": "arras-0.5.1-py3-none-any.whl",
+    "sha256": "17d50dedeaf9d4f7d27e0eb30cb16539bfa75de3a138dc9351284c2e2f390d4b"
+  },
+  "qualification_limits": [
+    "The old publication run remains failed in its postpublication orchestration; the successful new run supplements that gate without new publication or asset mutation.",
+    "Original public aggregate remains not_run_at_assembly; it is not rewritten to claim later execution.",
+    "Linux205nonvisual success and skipped visual tier do not claim Darwin67visual execution or new Mac tag-binary execution.",
+    "Optional reusable native/theme stages have empty inputs and are not claimed as independently executed native/theme qualifications.",
+    "Published raw bytes were not retained in this local verification artifact; the downloaded-byte comparison is recorded in the current-run verifier receipt and independently checked against the cached trusted-stage digests.",
+    "Broader semantic/control/privacy qualification remains the owning root reviewer\u2019s scope; this peer review covers identity, provenance, DAG and receipt bindings only.",
+    "No downloads, artifact-code imports, runtime/source/Git/tracked-file changes were performed by this reviewer."
+  ],
+  "release": {
+    "source_sha": "8b786bb7629a6425e5a2b3b528378f0d92f0b847",
+    "tag": "v0.5.1"
+  },
+  "run_metadata_sha256": "b362343c35d6ff75c285f19c1762a36a3bfe682996e315cdb1d3d50e6ccc357d",
+  "schema": "arras.postpublication-verification-peer-review.v1",
+  "status": "accepted_supplemental_postpublication_verification",
+  "verification": {
+    "driver_sha": "4bcccd4be9c437eb9957d74134a84b4421322c65",
+    "run_attempt": "1",
+    "run_id": "39883764998",
+    "workflow_ref": "DocumentDrivenDX/arras/.github/workflows/verify-published-release.yml@refs/heads/main"
+  }
+}

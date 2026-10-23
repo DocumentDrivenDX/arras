@@ -73,6 +73,22 @@ if access cannot be found. Do not advertise an unavailable registry install.
 | GitHub release | Workflow attaches verified artifacts and receipt. | Fresh public download/installed-consumer checks pass. |
 | Registry delivery | Use existing PyPI/npm access if available; otherwise record the explicit deferral. | Successful registry installs are qualified separately, or notes clearly name GitHub assets as the delivery route. |
 
+## Recorded 0.5.1 acceptance
+
+- [x] Generic eight-seam implementation, catalog, contracts and Sol reviews.
+- [x] Exact source/native/build/SDK/installed-native/UI/assembly gates in publication
+  run `39879533273`; sixteen immutable GitHub assets published.
+- [x] Original trusted stage/SUMS/aggregate pinned and independently reviewed.
+- [x] Fixed reusable installed consumer and complete anonymous asset/distribution/
+  doctor/example/themed Linux 205 checks in verification run `39883764998`.
+- [x] Final independent receipt/provenance/cohort review and tag recheck.
+- [x] Registry deferral recorded under the human's instruction; GitHub assets are
+  the supported delivery route, with no PyPI/npm publication claim.
+
+[Final evidence](../04-build/evidence/arras-0.5.1-public-verification-review-20261023.json)
+keeps original publication and supplemental verification distinct. All runtime
+and platform limits remain in the design matrix; this closeout changes no assets.
+
 ## Rollback
 
 This artifact release does not install or migrate a live customer database. A
