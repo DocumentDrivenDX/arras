@@ -253,7 +253,8 @@ or by a new Arras rule, literal, selector or recipe evaluator.
 
 UMF CONTRACT-049/900/901 owns value, declaration and invocation meaning;
 CONTRACT-079 owns the generated wire. A session-bound synchronous
-`execute(request) -> Mapping` remains the planned integration point. Its current
+`Ontology.execute(request: Mapping[str, object]) -> Mapping[str, object]` is the
+candidate integration point. Its current
 wire uses `contract: "umf.access/1"`, exact source digest `schema`, and
 `kind: "apply"` with action identity, inputs and optional idempotency key.
 The selected CONTRACT-079 source also defines `kind: "validate"`, omits an
@@ -276,7 +277,31 @@ batch execution and durable restart/recovery are later qualifications; unsupport
 requests refuse before dispatch. Memory replay proves only its stated process
 lifetime. A post-dispatch unknown outcome remains unknown, never a safe retry.
 
-The executable API, exact profile/version and fixture/vector handoff remain
-unresolved. Metadata extension registration or `executionVerified:false`
-assessment alone cannot satisfy this gate. No action implementation or public
-support is asserted by this planned cut.
+The Arras-owned execution profile is `arras-umf-set/1`; direct legacy
+`validate`, `invoke`, batch and provider `Plan` routes MUST refuse candidate
+modules. The generated request supplies neither host policy evidence nor a
+prepared plan. Its action is the exact qualified generated string, and entity
+inputs retain the authored Field-ID map. The official bridge owns key codecs,
+value constraints, materialized assignments and the business-input digest.
+Arras may mechanically apply only the complete admitted native STRING SET.
+
+The only supported authorization declaration is the host-interpreted
+`arras.module-write/1` policy with exact declared frame IDs. It requires current
+person read and write access to the selected module and exact bounded frame
+coverage. It does not interpret arbitrary role or policy declarations. The
+provider rechecks token, grants, current source and revision under the same
+lock immediately before commit and before replay; grant/expiry API changes
+participate in that lock. No public prepared-report injection is permitted.
+
+The existing public administrative `import_records` path is the sole candidate
+seed path. Official complete record/key/value admission precedes native record
+construction; legacy coercion, direct fake-state seeding and profile relabeling
+cannot qualify it. Import permission, attribution, load identity, native
+uniqueness and atomicity remain provider obligations.
+
+Metadata extension registration or `executionVerified:false` assessment alone
+cannot satisfy this gate. The new official `prepare_single_set_action` branch
+must preserve original checked/unchecked obligations and separate host-supported
+policy assessment; the historical strict `plan-model/1` API is unchanged.
+Closed SDK envelope details, apply/validate correspondence, fixture/vectors and
+artifact identity must be confirmed before positive semantic qualification.

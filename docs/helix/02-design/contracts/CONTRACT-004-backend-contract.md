@@ -407,7 +407,9 @@ profile, exact source binding, value/constraint and action-plan meanings before
 the host dispatches it. Generic `provider` status, successful metadata admission
 or support for legacy `Plan` does not establish canonical action capability.
 The current memory metadata profile stays read-only; Truss's refusal of that
-profile stays in force. No current descriptor is widened by this plan.
+profile stays in force. `BackendInfo.action_profiles` is a final optional tuple
+with legacy-compatible default `()`. Generic provider status or method presence
+does not qualify it.
 
 The selected provider owns current per-person authorization, registered source
 and revision, pre/post-state evaluation, atomic rollback and settlement.
@@ -419,5 +421,24 @@ plan or claimed capability cannot supply native ownership or execution authority
 The first integrated proof may qualify a bounded memory execution profile; it
 cannot qualify Truss, durable restart replay or managed deployment. Native
 acceptance requires its own exact installed cohort and real transaction proof.
-No backend-independent evaluator, store layout, new SQL compiler or Ashlar write
-path is introduced. Exact adapter types/callables await the upstream handoff.
+No backend-independent evaluator, new SQL compiler or Ashlar write path is
+introduced.
+
+The optional `DeclaredActionProvider.apply_declared_action(principal, module,
+request) -> Receipt | Validation` port receives the original request. It
+rederives official preparation and values from current stored bytes after the
+authorization gate under the shared registration/import/action lock; it never
+accepts a caller's prebuilt plan as authority. Current source/CAS, current
+grants, work-copy mutation and journal/receipt commit form one custody boundary.
+An unknown settlement remains unknown, with no automatic retry.
+
+`MemoryStore(..., *, action_profile="arras-umf-set/1")` is explicit opt-in;
+the default is `None`. Construction and default description do not load an
+optional action SDK. Only opted-in description may inspect runtime capability;
+missing or incompatible action runtime leaves both candidate action and metadata
+profile capabilities absent. A selected candidate call then raises
+`Unsupported` before backend acceptance or effects. Advertisement requires the
+selected official API/resource capability, not merely installed core0.10 or a
+module import. Descriptor qualification precedes registration without relying
+on an already registered module. Public support still requires actual semantic
+and provider evidence.

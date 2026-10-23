@@ -301,16 +301,25 @@ authority. Current ownership and authorization come from the qualified
 provider/host registration boundary; a process-local identity registry cannot
 stand in for native ownership or CAS.
 
-The selected boundary MUST define author-version identity and any downgrade
-ordering before implementation. UMF core version is not document version;
-opaque backend `Revision` values MUST NOT be ordered. An Arras-owned monotonic
-ordinal remains a proposal, not an adopted API. Required controls cover a second
-owner, equal-version/different-digest content, downgrade, stale expected revision
-and atomic upgrade. Missing upgrade/retirement/dependency semantics refuse those
-operations rather than admitting an implicit policy.
+The first Arras-owned candidate profile is `arras-umf-set/1`. It qualifies one
+dedicated memory store and one immutable source registration. The first
+authenticated schema principal owns that source. Exact same bytes and same
+owner are idempotent; another owner is refused. Every source change, including
+an upgrade, downgrade or equivalent JSON with different bytes, is unsupported
+before effects. Broader upgrade/retirement/dependency policy remains later work.
+The host source pin is `sha256:<lowercase exact-source SHA-256>`; it is distinct
+from UMF core version, publisher version and the provider's opaque catalog
+`Revision`. None implies an ordering of another.
 
-This is a planned execution boundary, not a change to `umf-core-metadata/1`.
-Its profile name, registration carrier and public signature remain unresolved
-until the authoritative action/value API handoff in the integration plan.
-Existing admin/token/catalog, person-schema, placement and provider authorization
-precedence remains unchanged. This amendment advertises no executable profile.
+The selected host registration path derives metadata from original source
+through the official bridge. Caller-provided reports or `ModuleInfo` values
+cannot establish admission or ownership. Registration, source rebinding,
+administrative import and action commit share the candidate store's lock and
+CAS boundary; a host-only earlier check cannot replace it. Mixed legacy and
+candidate write paths in this dedicated store are unsupported.
+
+This is an implementation contract for the candidate, not a change to
+`umf-core-metadata/1` or an assertion of qualified execution. Existing
+admin/token/catalog, person-schema, placement and provider authorization
+precedence remains unchanged. Qualification requires the actual official
+action/value binding and whole-path evidence in the integration plan.

@@ -1643,14 +1643,14 @@ gates above are reviewable. It does not establish integration completion.
   publication and supplemental fresh public-download evidence; remaining A2–A7 semantic work
   stays separately open.
 
-## Next A3/A4 cut — planned, executable seam unresolved
+## Next A3/A4 cut — candidate implementation, qualification pending
 
 This checkout starts at released main
 `8542d477c411c96a553ea84572b86c95c59d7cf2`, package 0.6.0, on public
 Truss 0.0.48/Weft 0.4.51 and the selected released pure UMF core 0.10.0.
 It is separate from Truss49 PR 9, managed acceptance and release closeout.
-No package/version/tag, dependency, runtime or public capability change has been
-made for this action cut.
+Package/version/tag and the released dependency cohort remain unchanged for
+this action cut. Candidate source work is isolated from release and Truss49.
 
 The bounded goal is one source-bound module with a required STRING key, one
 constrained scalar and an unchanged generated explicit-key SET action through
@@ -1661,18 +1661,23 @@ or relationships; nonempty pre/postconditions or failure declarations refuse
 and remain later work.
 CONTRACT-002/003/004 and TP-001 above retain authority, source fidelity, refusal,
 dry-run, rollback and retry obligations. The metadata-only profile is unchanged.
-A new opt-in execution profile is required; its identifier and signatures are
-not yet selected. Author-version ordering must be explicit; an ordinal is only
-a proposal and opaque native revisions are not ordered.
+The Arras-owned opt-in execution profile is `arras-umf-set/1`. Its first source
+is immutable: same owner plus exact same bytes is idempotent, another owner is
+refused, and all changes/upgrades/downgrades are unsupported. The explicit host
+pin `sha256:<raw source SHA-256>` is separate from opaque native revision and
+UMF core version; no ordinal or semantic-version ordering is inferred.
 
 ### Exact upstream handoff required
 
 The official core wheel qualifies model admission, not action execution.
 The integration owner identifies existing TypeScript public APIs at `f323a2d`:
 `admitActionInputs`, `validateCoreFieldValue`, `validateCoreRecordValues` and
-`prepareActionPlanModel`. The latter supplies source-bound preparation for one
-SET effect with required boolean/integer/string values and no conditions,
-outputs, failure declarations, handlers or relationships. These source APIs are useful boundaries;
+`prepareActionPlanModel`. The latter's unchanged strict branch refuses opaque
+authorization obligations. The new candidate `prepare_single_set_action`
+branch must separately preserve those obligations and host-supported policy
+assessment. The first installed subset is one STRING SET with required STRING
+key/value, no conditions, outputs, failure declarations, handlers or relationships.
+These source APIs are useful boundaries;
 the missing qualified Rust/Python binding, exact package and vectors remain
 the execution handoff dependency. No separate Python evaluator is proposed.
 At UMF source `f323a2dec16132c00eb1bc75c65c416f94804c26`, CONTRACT-900
@@ -1711,15 +1716,27 @@ The current UMF owner must provide one reviewable handoff containing:
 
 | Owner | Integrated deliverable after handoff | Gate |
 | --- | --- | --- |
-| Sol | Freeze selected profile, ownership/version policy, callable contract and module map in these existing artifacts | Resolve the numbered handoff; review source and evidence without substituting a local interpreter |
-| Luna A | Source-bound host transport/registration integration and real host/provider tests; minimal core delegation if needed | Actual current source/revision authority, unchanged generated client, positive legacy regression and mismatch/owner/refusal zero effects |
-| Luna B | Official action/value bridge, source fixtures/vectors and constrained scalar/action tests | Sole qualified SDK boundary; complete represented semantics, no private kernel or legacy reinterpretation |
+| Sol | Freeze selected profile, immutable ownership/source policy, internal ports and module map in these existing artifacts | Review actual source and official artifact evidence without substituting a local interpreter |
+| Luna A | `_action_types`, model/results/compat/provider protocol; `_action_transport` and minimal core delegation; registration; `fakes_actions` and narrow registry/import/profile/store changes; connected type/transport/memory tests | Current authority/source under shared lock, direct Plan refusal, official administrative seed path, positive legacy regression and mismatch/owner/refusal zero effects |
+| Luna B | `_umf_engine`, `_umf_actions`, exact source fixtures/provenance/vectors and bridge tests | Sole SDK import boundary; actual closed upstream API/resources and complete represented semantics, no private kernel or legacy reinterpretation |
 | Coordinated quality lane | Public catalog/contracts, DAG and required installed-extra gates after production freeze | Meaningful forbidden-edge controls, no-skip oracle checks and fresh installed candidate proof |
 
-These are provisional responsibility boundaries, not source-GO file lists.
-After callable selection, assign exact disjoint files (prefer cohesive new
-transport/bridge modules), preserve the 926-line ceiling, then let Luna implement
-and Sol review. Do not start unused identity/wire helpers merely to self-test a
-proposed API. Until the handoff, the completed work is governing preparation;
-action/constraint implementation remains blocked by the unresolved executable
-seam. No repeated runtime or new release campaign is authorized by this plan.
+Luna A may implement the connected host/provider custody paths against the frozen
+private bridge port while Luna B adopts the delivered closed semantic packet.
+No unused helper-only library, public callback injection or default-success
+semantic wrapper qualifies delivery. Preserve the 926-line ceiling and review
+production changes before catalog/module-map/CI updates. Current SDK packet
+names `umf.action_runtime.create_action_engine`, `prepare_single_set_action`,
+`admit_generated_action_invocation` and `admit_generated_record_values`; exact
+apply/validate correspondence, source/model pin and fixture naming must match
+the owner's final contract and vectors rather than consumer guesses.
+
+The released `umf` extra and lock stay intact until actual releasable artifact
+handoff. Use an explicitly supplied checksum-verified candidate wheel in a
+separate environment, record resource/native/source/vector identities and run
+the A2 139-vector regressions. Missing runtime/capability refuses cleanly in
+base/released-extra environments. Positive semantic support requires the actual
+SDK plus unchanged generated client through registration, admitted import,
+validate, commit and readback. Memory same-process replay cannot establish
+durable restart, Truss, managed service or full action/constraint support.
+No new release or native campaign is authorized by this plan.

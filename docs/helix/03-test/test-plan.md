@@ -664,8 +664,10 @@ fixture, package/API and generated-client digests plus provenance/notices.
 An unchanged generated client must drive the real host/provider boundary.
 Legacy invocation is a regression control, not canonical execution evidence.
 
-Required controls are: second owner and source/version/digest mismatch; stale
-revision and downgrade under an explicit version policy; valid and violating
+Required controls are: second owner and source/pin/digest mismatch; same-owner
+exact-byte registration replay; refusal of every source change, including
+reformatted equivalent content, upgrade and downgrade; stale opaque revision;
+valid and violating
 values against the official oracle; unknown action identity, malformed or
 unsupported wire kind/operation before provider dispatch; unknown rule/profile/frame;
 nonempty condition or failure declaration, handler, multiple effects or
@@ -695,3 +697,23 @@ provenance-bound derivative and its independent
 oracle. No fabricated callback verdicts, permissive production registries or
 optional-engine skips may close the required gate. Real native/installed tests
 remain separately authorized after the pure integration freezes.
+
+The `arras-umf-set/1` provider controls MUST also prove: default store and missing
+action runtime advertise no candidate capability; explicit opt-in qualifies
+before registration; direct legacy Plan/invoke/validate/batch routes refuse;
+current read plus write and exact policy/frame coverage are required before
+effects and replay; source replacement, token expiry and grant changes cannot
+race through check/commit; and registration/import/action CAS share one lock.
+Direct public administrative import must use official complete record/key/value
+admission, with exact source readback and a real subsequent generated SET.
+Use guarded records/callbacks or before/after state witnesses to prove refusal
+does not consume untrusted input or advance state/journal/replay/position.
+
+Typed-port doubles may test denial, source mismatch and transaction custody but
+cannot supply positive semantic qualification. Required whole-path positives use
+the actual checksum-verified official candidate wheel/resources, unchanged
+generated client and exact source/vector inventory. Base and released metadata
+extra must refuse the new route when action runtime is absent. Candidate tests
+must execute, with zero optional-engine skips, alongside the existing 139-vector
+A2 admission regressions. Keep candidate package identity separate from released
+core metadata support and from native/managed evidence.

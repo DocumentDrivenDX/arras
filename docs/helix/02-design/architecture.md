@@ -440,11 +440,45 @@ Arras owns source/request binding, placement and outcome translation. The select
 official UMF API owns value/action meaning; the provider owns native authority and
 commit. Sole SDK loading remains isolated in the engine integration boundary.
 A new cohesive action bridge/transport module is preferred over growing the
-894-line `core.py`; the unchanged ceiling is 926 physical lines. Exact modules,
-public method signatures and allowed edges freeze after the official callable
-handoff, before source implementation and module-map changes.
+894-line `core.py`; the unchanged ceiling is 926 physical lines. The candidate
+uses `_action_transport` for session-wire routing, `_action_types` for immutable
+inert values, `_umf_actions` for the official-result adapter and `fakes_actions`
+for the qualified memory transaction. Sole SDK imports stay in `_umf_engine`;
+the transport and provider do not interpret recipes, constraints or key codecs.
+The provider deliberately repeats preparation/materialization from current
+stored source after authorization under its lock; a host-created ticket is not
+commit authority.
+
+The private adapter port is `runtime_available()`, `prepare(source)`,
+`materialize(prepared, raw_request)`, `admit_record(prepared, record)` and
+`validate_candidate(prepared, complete_values)`. It returns frozen
+`PreparedSetModule`, `AdmittedSet` and `AdmittedRecord` values with exact source,
+source digest/pin, original local and qualified identities, complete bindings,
+frame IDs and immutable exact STRING mappings. These types are internal facts,
+not public admission certificates or an injectable evaluator.
+`raw_request` is the unchanged generated Apply or Validate envelope. The seed
+record retains the existing public `type`, `key`, `properties` import carrier;
+the bridge adapts it to the official complete Field-ID value map without
+coercing the key or evaluating values.
+
+Preparation may inertly index exact module/action/frame identities from the
+official snapshot and retained source to construct the official request. The
+host fixes its `arras.module-write/1` policy and inert evidence marker; incoming
+wire cannot configure either. The official engine must validate every pin and
+resource correspondence. The provider separately enforces current person access.
+No dot-splitting guesses or authored-value/recipe interpretation are permitted.
+
+The candidate memory profile uses a shared lock across registration, imports,
+actions and access grant/expiry APIs, with current checks before commit/replay.
+It allows one immutable source and refuses mixed legacy writes. Direct mutation
+of test scaffolding dictionaries is not a qualified concurrent access API.
 
 No separately maintained Python evaluator or private constraint/literal kernel
 is permitted. Do not adopt experimental `umf_access.native_actions` or Rust/V8
 candidates merely because source exists. The bounded public package/API, source
 and native requirements must first be selected and independently qualified.
+Until the candidate artifact is delivered, the released metadata extra/pin stays
+unchanged; missing action runtime produces an explicit unsupported operation and
+no advertised action capability. A separate exact candidate-wheel environment
+qualifies the connected implementation and reruns A2 admission regressions;
+source availability alone does not qualify it.
