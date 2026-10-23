@@ -113,11 +113,11 @@ def test_release_assets_are_gated_and_registry_publishing_is_opt_in() -> None:
     # GitHub asset creation has only required gates. Both registry jobs follow that release and
     # remain skipped unless their separate repository opt-in is exactly true.
     assert re.search(
-        r"(?m)^    needs: \[check, truss, build, umf-admission, ui-qualification, installed-native, assemble-evidence\]$",
+        r"(?m)^    needs: \[check, truss, build, umf-admission, umf-actions, ui-qualification, installed-native, assemble-evidence\]$",
         github,
     )
     assert re.search(
-        r"(?m)^    needs: \[check, build, umf-admission, installed-native, ui-qualification\]$",
+        r"(?m)^    needs: \[check, build, umf-admission, umf-actions, installed-native, ui-qualification\]$",
         assemble,
     )
     assert (

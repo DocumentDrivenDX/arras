@@ -384,6 +384,17 @@ def _write_v2_bundle(directory: Path, proof: dict[str, Any] | None = None) -> tu
     wheel_buffer = io.BytesIO()
     with zipfile.ZipFile(wheel_buffer, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr(f"arras/ui/npm/{npm}", b"npm bytes")
+        archive.writestr(
+            f"arras-{version}.dist-info/METADATA",
+            "Metadata-Version: 2.3\n"
+            "Name: arras\n"
+            f"Version: {version}\n"
+            "Requires-Dist: umf-core @ "
+            + receipt_gate._UMF_URL
+            + "#sha256="
+            + receipt_gate._UMF_SHA
+            + "; extra == 'umf'\n\n",
+        )
     payloads[wheel] = wheel_buffer.getvalue()
     payloads[sdist] = b"sdist bytes"
     payloads[npm] = b"npm bytes"
