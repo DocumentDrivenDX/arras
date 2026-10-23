@@ -15,13 +15,32 @@ from typing import Any, NoReturn, cast
 from arras.errors import Unsupported
 
 
-def require_supported_write_profile(document: bytes | None, module_name: str) -> None:
+def require_supported_write_profile(
+    document: bytes | None,
+    module_name: str,
+    metadata_profile: str = "legacy-arras/1",
+) -> None:
     """Refuse writes when a registered raw document declares semantics memory does not serve.
 
-    A missing document is the explicit legacy baseline for hand-built ModuleInfo fixtures. A
-    present document is checked at known semantic locations only; arbitrary extension content is
-    not searched for similarly named keys.
+    A metadata-only profile refuses writes regardless of its source bytes. A missing legacy
+    document is the explicit baseline for hand-built ModuleInfo fixtures. Present legacy source
+    is checked at known semantic locations only; arbitrary extension content is not searched for
+    similarly named keys.
     """
+    if metadata_profile == "umf-core-metadata/1":
+        raise Unsupported(
+            f"writes to {module_name} with a metadata-only profile",
+            ["the selected metadata profile supports schema registration and reads only"],
+        )
+    if metadata_profile != "legacy-arras/1":
+        raise Unsupported(
+            f"writes to {module_name} with an unsupported metadata profile",
+            ["the selected metadata profile is not recognized by the memory writer"],
+        )
+    _require_legacy_document_profile(document, module_name)
+
+
+def _require_legacy_document_profile(document: bytes | None, module_name: str) -> None:
     if document is None:
         return
     try:
