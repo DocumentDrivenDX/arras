@@ -111,7 +111,12 @@ def _valid_probe() -> dict[str, Any]:
         "umf_wheel_sha256": "c" * 64,
         "source_sha256": _MODULE._FIXTURE_HASHES["source.json"],
         "vectors_sha256": _MODULE._FIXTURE_HASHES["vectors.json"],
-        "runtime": {"python": "3.11.9", "platform": "darwin"},
+        "runtime": {
+            "python": "3.11.9",
+            "platform": "darwin",
+            "machine": "arm64",
+            "implementation": "CPython",
+        },
         "origins": {
             "arras": "arras/__init__.py",
             "umf": "umf/__init__.py",
@@ -438,3 +443,16 @@ def test_noop_requires_empty_receipt_counts_and_replay_content() -> None:
     assert _PROBE._is_noop_receipt(receipt)
     receipt.counts = {"created": 1, "updated": 0, "deleted": 0, "linked": 0, "unlinked": 0}
     assert not _PROBE._is_noop_receipt(receipt)
+
+
+def test_requirement_check_reports_historical_sdk_as_not_action_required(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    wheel = _wheel(
+        tmp_path / "arras-0.6.0-py3-none-any.whl",
+        "arras",
+        "0.6.0",
+        "arras-0.6.0-py3-none-any.whl",
+    )
+    assert _MODULE.main(["--wheel", str(wheel), "--check-requirement"]) == 0
+    assert capsys.readouterr().out.strip() == "false"

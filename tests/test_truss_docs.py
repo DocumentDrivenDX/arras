@@ -203,7 +203,7 @@ def test_release_requires_ui_and_public_downstream_qualification() -> None:
     public_download = release_job(release, "downloaded-release")
     assembled = release_job(release, "assemble-evidence")
     assert (
-        "needs: [check, truss, build, umf-admission, ui-qualification, installed-native, assemble-evidence]"
+        "needs: [check, truss, build, umf-admission, umf-actions, ui-qualification, installed-native, assemble-evidence]"
         in release_job(release, "github-release")
     )
     for required in (
@@ -258,7 +258,10 @@ def test_release_requires_ui_and_public_downstream_qualification() -> None:
     )
     assert "continue-on-error" not in public_download
     assert "if: always()" in public_download
-    assert "needs: [check, build, umf-admission, installed-native, ui-qualification]" in assembled
+    assert (
+        "needs: [check, build, umf-admission, umf-actions, installed-native, ui-qualification]"
+        in assembled
+    )
     assert "--qualification-phase public-download" in public_download
     assert "public-umf-admission-installed.json" in public_download
     assert "name: release-assets" in assembled
@@ -347,7 +350,7 @@ def test_release_requires_exact_installed_native_qualification_and_evidence() ->
     github_release = release_job(release, "github-release")
     assert "needs: [check, build]" in native
     assert (
-        "needs: [check, truss, build, umf-admission, ui-qualification, installed-native, assemble-evidence]"
+        "needs: [check, truss, build, umf-admission, umf-actions, ui-qualification, installed-native, assemble-evidence]"
         in github_release
     )
     assert "timeout-minutes: 60" in native

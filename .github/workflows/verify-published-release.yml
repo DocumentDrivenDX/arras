@@ -57,6 +57,7 @@ jobs:
       publication_run_attempt: ${{ steps.verify.outputs.publication_run_attempt }}
       tag_object_sha: ${{ steps.verify.outputs.tag_object_sha }}
       umf_admission_required: ${{ steps.verify.outputs.umf_admission_required }}
+      umf_actions_required: ${{ steps.verify.outputs.umf_actions_required }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -283,6 +284,13 @@ jobs:
             --wheel "public-release-assets/${{ needs.trusted-publication.outputs.wheel_name }}" \
             --qualification-phase public-download \
             --output-json artifacts/public-umf-admission-installed.json
+      - name: Repeat generated-action proof from the anonymous public wheel
+        if: needs.trusted-publication.outputs.umf_actions_required == 'true'
+        run: |
+          uv run --no-project --python 3.11 python tools/verify_umf_actions.py \
+            --wheel "public-release-assets/${{ needs.trusted-publication.outputs.wheel_name }}" \
+            --qualification-phase public-download \
+            --output-json artifacts/public-umf-actions-installed.json
       - name: Run the installed doctor from the published wheel
         run: uv run --no-sync python tools/verify_doctor.py --wheel "public-release-assets/${{ needs.trusted-publication.outputs.wheel_name }}" --output-json artifacts/public-doctor-installed.json
       - name: Verify the fresh installed extension host
@@ -352,6 +360,7 @@ jobs:
           TARGET_SOURCE_SHA: ${{ needs.trusted-publication.outputs.source_sha }}
           TARGET_TAG_OBJECT_SHA: ${{ needs.trusted-publication.outputs.tag_object_sha }}
           UMF_ADMISSION_REQUIRED: ${{ needs.trusted-publication.outputs.umf_admission_required }}
+          UMF_ACTIONS_REQUIRED: ${{ needs.trusted-publication.outputs.umf_actions_required }}
         run: |
           set -euo pipefail
           cd verification-driver
@@ -372,6 +381,8 @@ jobs:
           ]
           if os.environ.get("UMF_ADMISSION_REQUIRED") == "true":
               receipts.append("public-umf-admission-installed.json")
+          if os.environ.get("UMF_ACTIONS_REQUIRED") == "true":
+              receipts.append("public-umf-actions-installed.json")
           records = []
           for name in receipts:
               path = Path(name) if name.startswith("tests/") else Path("artifacts") / name
@@ -384,6 +395,7 @@ jobs:
               "purpose": "verification-only; no release assets were created or changed",
               "release": {"tag": os.environ["RELEASE_TAG"], "source_sha": os.environ["SOURCE_SHA"]},
               "published_wheel": {"filename": os.environ["WHEEL_NAME"], "sha256": os.environ["WHEEL_SHA256"]},
+              "umf_actions_required": os.environ.get("UMF_ACTIONS_REQUIRED") == "true",
               "original_publication": {
                   "run_id": os.environ["PUBLICATION_RUN_ID"],
                   "run_attempt": os.environ["PUBLICATION_RUN_ATTEMPT"],

@@ -6,6 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 RELEASE = ROOT / ".github/workflows/release.yml"
 DOWNSTREAM = ROOT / ".github/workflows/downstream.yml"
+CI = ROOT / ".github/workflows/ci.yml"
 
 
 def job_text(workflow: str, name: str) -> str:
@@ -99,7 +100,7 @@ def test_umf_admission_is_required_before_assembly_and_repeated_from_public_whee
     assert "--qualification-phase release-build" in proof
     assembly = job_text(workflow, "assemble-evidence")
     assert re.search(
-        r"(?m)^    needs: \[check, build, umf-admission, installed-native, ui-qualification\]$",
+        r"(?m)^    needs: \[check, build, umf-admission, umf-actions, installed-native, ui-qualification\]$",
         assembly,
     )
     assert "--umf-admission-receipt umf-admission/umf-admission-installed.json" in assembly
@@ -113,3 +114,23 @@ def test_umf_admission_is_required_before_assembly_and_repeated_from_public_whee
     assert "public-release-assets/${{ needs.trusted-publication.outputs.wheel_name }}" in anonymous
     assert "--qualification-phase public-download" in anonymous
     assert 'receipts.append("public-umf-admission-installed.json")' in anonymous
+
+
+def test_ci_qualifies_installed_actions_when_the_built_wheel_requires_them() -> None:
+    workflow = CI.read_text()
+    check = job_text(workflow, "check")
+    assert "steps.umf-actions-requirement.outputs.required" in check
+    assert "--check-requirement" in check
+    assert "--qualification-phase local-installed" in check
+    assert "name: arras-umf-actions-installed" in check
+    assert "path: artifacts/umf-actions-installed.json" in check
+    assert "if-no-files-found: warn" in check
+
+    tests = job_text(workflow, "test")
+    assert "needs: check" in tests
+    assert (
+        tests.count(
+            "ARRAS_REQUIRE_UMF_ACTIONS: ${{ needs.check.outputs.umf_actions_required == 'true' && '1' || '0' }}"
+        )
+        == 2
+    )

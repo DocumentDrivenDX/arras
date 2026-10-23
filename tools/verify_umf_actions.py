@@ -10,6 +10,7 @@ import csv
 import dataclasses
 import email.parser
 import hashlib
+import importlib.util
 import json
 import os
 import platform as host_platform
@@ -24,7 +25,7 @@ import zipfile
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
-from _umf_sdk_cohorts import SDKCohort, select_sdk_cohort
+from _umf_sdk_cohorts import SDKCohort, select_sdk_cohort, single_set_capability
 
 SCHEMA = "arras.umf-actions-installed/1"
 MAX_WHEEL_BYTES = 64 * 1024 * 1024
@@ -33,6 +34,7 @@ MAX_RUN_SECONDS = 30 * 60
 PUBLIC_INDEX = "https://pypi.org/simple"
 _SHA = re.compile(r"^[0-9a-f]{64}$")
 _VERSION = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._+-]{0,127}$")
+_PHASES = {"local-installed", "release-build", "public-download"}
 _GENERATED_DIST_INFO = {"INSTALLER", "REQUESTED", "direct_url.json", "RECORD"}
 _FIXTURE_HASHES = {
     "source.json": "5b79b3dba5ebc52ac9452f85a75411dab5edaa34154adda76f872a53c21d0818",
@@ -395,10 +397,13 @@ def _validate_probe(
     corpus = value.get("corpus")
     if (
         not isinstance(runtime, dict)
-        or set(runtime) != {"python", "platform"}
+        or set(runtime) != {"python", "platform", "machine", "implementation"}
         or not all(
             type(runtime.get(key)) is str and _VERSION.fullmatch(runtime[key]) for key in runtime
         )
+        or runtime.get("platform") not in {"linux", "darwin"}
+        or runtime.get("machine") not in {"x86_64", "arm64", "aarch64", "AMD64"}
+        or runtime.get("implementation") != "CPython"
         or not isinstance(origins, dict)
         or set(origins) != {"arras", "umf", "umf.action_runtime", "umf.rust_codegen"}
         or not all(_safe_origin(item, module) for module, item in origins.items())
@@ -508,7 +513,12 @@ def verify(
     python_path: Path | None = None,
     umf_wheel_path: Path | None = None,
     umf_sha256: str | None = None,
+    qualification_phase: str = "local-installed",
 ) -> dict[str, Any]:
+    if qualification_phase not in _PHASES:
+        raise VerificationError("arguments", "qualification-phase-invalid")
+    if umf_wheel_path is not None and qualification_phase != "local-installed":
+        raise VerificationError("arguments", "candidate-phase-invalid")
     tool_path = Path(__file__).resolve()
     probe_path = tool_path.with_name("_umf_actions_probe.py")
     selector_path = tool_path.with_name("_umf_sdk_cohorts.py")
@@ -525,6 +535,7 @@ def verify(
         if temp.exists():
             raise VerificationError("cleanup", "temporary-workspace-remains")
         receipt["cleanup"] = {"completed": True, "fresh_venvs": 1, "shared_site_packages": False}
+        receipt["qualification_phase"] = qualification_phase
         return receipt
     except VerificationError as error:
         if temp.exists():
@@ -582,6 +593,12 @@ def _prepare_inputs(
     if _sha_file(wheel) != wheel_sha:
         raise VerificationError("arras-wheel", "wheel-changed-during-validation")
     public_cohort = _public_cohort(metadata)
+    try:
+        action_capable = single_set_capability(metadata)
+    except ValueError as error:
+        raise VerificationError("arras-wheel", "umf-action-capability-invalid") from error
+    if candidate is None and not action_capable:
+        raise VerificationError("arras-wheel", "umf-cohort-lacks-single-set-capability")
     public_url, public_sha = public_cohort.url, public_cohort.sha256
     sdk_version = public_cohort.distribution_version
     if candidate is not None:
@@ -800,11 +817,40 @@ def _write_receipt(path: Path, value: dict[str, Any]) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--wheel", required=True, type=Path)
-    parser.add_argument("--output-json", required=True, type=Path)
+    parser.add_argument("--output-json", type=Path)
+    parser.add_argument("--check-requirement", action="store_true")
     parser.add_argument("--python", type=Path)
     parser.add_argument("--umf-wheel", type=Path)
     parser.add_argument("--umf-sha256")
+    parser.add_argument("--qualification-phase", choices=sorted(_PHASES), default="local-installed")
     args = parser.parse_args(argv)
+    if args.check_requirement:
+        if (
+            args.output_json is not None
+            or args.python is not None
+            or args.umf_wheel is not None
+            or args.umf_sha256 is not None
+        ):
+            parser.error("--check-requirement cannot be combined with proof options")
+        try:
+            wheel = _regular(args.wheel, "arras-wheel")
+            receipt_path = (
+                Path(__file__).resolve().parents[1] / ".github/scripts/_umf_actions_receipt.py"
+            )
+            spec = importlib.util.spec_from_file_location("arras_action_receipt_gate", receipt_path)
+            if spec is None or spec.loader is None:
+                raise VerificationError("arras-wheel", "capability-gate-unavailable")
+            receipt_module = importlib.util.module_from_spec(spec)
+            sys.modules[spec.name] = receipt_module
+            spec.loader.exec_module(receipt_module)
+            required = receipt_module.required_for_wheel(wheel, wheel_sha256=_sha_file(wheel))
+            print("true" if required else "false")
+            return 0
+        except (VerificationError, ValueError):
+            print("cannot determine verified UMF action capability", file=sys.stderr)
+            return 2
+    if args.output_json is None:
+        parser.error("--output-json is required unless --check-requirement is used")
     try:
         receipt = verify(
             args.wheel,
@@ -812,12 +858,14 @@ def main(argv: list[str] | None = None) -> int:
             python_path=args.python,
             umf_wheel_path=args.umf_wheel,
             umf_sha256=args.umf_sha256,
+            qualification_phase=args.qualification_phase,
         )
     except VerificationError as error:
         safe = {
             "schema": SCHEMA,
             "status": "failed",
             "public_gate": False,
+            "qualification_phase": args.qualification_phase,
             "attempted_mode": "local-candidate" if args.umf_wheel is not None else "public-extra",
             "failure": {"stage": error.stage, "code": error.code},
             "cleanup": {"status": error.cleanup_status},

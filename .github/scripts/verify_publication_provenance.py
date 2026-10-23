@@ -14,9 +14,11 @@ from pathlib import Path
 from typing import Any, NoReturn
 
 if __package__:
+    from . import _umf_actions_receipt as _actions_receipt
     from . import _umf_admission_receipt as _umf_receipt
 else:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import _umf_actions_receipt as _actions_receipt
     import _umf_admission_receipt as _umf_receipt
 
 _SHA40 = re.compile(r"[0-9a-f]{40}\Z")
@@ -114,7 +116,9 @@ def _validate_run_identity(
         _fail("source commit identity is malformed")
 
 
-def _validate_required_jobs(jobs: dict[str, Any], version: str) -> None:
+def _validate_required_jobs(
+    jobs: dict[str, Any], version: str, *, actions_required: bool = False
+) -> None:
     raw_jobs = jobs.get("jobs")
     if not isinstance(raw_jobs, list) or len(raw_jobs) > 1000:
         _fail("publication jobs response is malformed or incomplete")
@@ -131,6 +135,10 @@ def _validate_required_jobs(jobs: dict[str, Any], version: str) -> None:
     required_jobs = dict(_REQUIRED_JOBS)
     if _umf_receipt.required_for_version(version):
         required_jobs["umf-admission"] = {"Fresh installed UMF admission proof on exact wheel"}
+    if actions_required:
+        required_jobs["umf-actions"] = {
+            "Fresh installed generated-action proof when the wheel requires it"
+        }
     missing = [
         job_id
         for job_id, possible_names in required_jobs.items()
@@ -152,10 +160,12 @@ def _validate_required_jobs(jobs: dict[str, Any], version: str) -> None:
         _fail("the GitHub release publication step did not succeed")
 
 
-def _required_job_ids(version: str) -> list[str]:
+def _required_job_ids(version: str, *, actions_required: bool = False) -> list[str]:
     required_jobs = set(_REQUIRED_JOBS)
     if _umf_receipt.required_for_version(version):
         required_jobs.add("umf-admission")
+    if actions_required:
+        required_jobs.add("umf-actions")
     return sorted(required_jobs)
 
 
@@ -170,6 +180,7 @@ def validate_run(
     source_sha: str,
     driver_sha: str,
     default_branch: str,
+    actions_required: bool = False,
 ) -> None:
     _validate_run_identity(
         run,
@@ -181,7 +192,9 @@ def validate_run(
         driver_sha=driver_sha,
         default_branch=default_branch,
     )
-    _validate_required_jobs(jobs, ".".join(_TAG.fullmatch(tag).groups()))
+    _validate_required_jobs(
+        jobs, ".".join(_TAG.fullmatch(tag).groups()), actions_required=actions_required
+    )
 
 
 def validate_publication_receipt(
@@ -258,31 +271,60 @@ def _verify_bundle_assets(directory: Path, entries: dict[str, str]) -> None:
         _fail("trusted release artifact inventory has unexpected or missing files")
 
 
-def validate_bundle(
+def _action_capability_required(directory: Path, version: str, wheel_sha256: str) -> bool:
+    wheel = directory / f"arras-{version}-py3-none-any.whl"
+    if wheel.is_symlink() or not wheel.is_file():
+        _fail("published release wheel is missing or non-regular")
+    if hashlib.sha256(wheel.read_bytes()).hexdigest() != wheel_sha256:
+        _fail("published release wheel digest differs")
+    try:
+        return _actions_receipt.required_for_wheel(wheel, wheel_sha256=wheel_sha256)
+    except _actions_receipt.ActionReceiptError as error:
+        raise ProvenanceError("published wheel action capability is not verified") from error
+
+
+def _validate_action_component(
     directory: Path,
+    aggregate: dict[str, Any],
+    entries: dict[str, str],
     *,
     version: str,
-    expected_sums_sha256: str,
-    expected_evidence_sha256: str,
-    expected_wheel_sha256: str,
-) -> str:
-    wheel_name = f"arras-{version}-py3-none-any.whl"
-    if directory.is_symlink() or not directory.is_dir():
-        _fail("downloaded trusted release artifact must be a real directory")
-    sums = directory / "SHA256SUMS"
-    evidence = directory / "release-evidence.json"
-    for path, expected, label, cap in (
-        (sums, expected_sums_sha256, "SHA256SUMS", _MAX_SUMS),
-        (evidence, expected_evidence_sha256, "release evidence", _MAX_JSON),
-    ):
-        if path.is_symlink() or not path.is_file() or path.stat().st_size > cap:
-            _fail(f"trusted {label} is missing, non-regular, or too large")
-        digest = hashlib.sha256(path.read_bytes()).hexdigest()
-        if digest != expected:
-            _fail(f"trusted {label} does not match its dispatch digest")
-    has_umf_admission = _umf_receipt.required_for_version(version)
-    entries = _read_sums_entries(sums, expected_count=16 if has_umf_admission else 15)
-    expected_entries = {
+    wheel_name: str,
+    wheel_sha256: str,
+) -> None:
+    name = "umf-actions-installed.json"
+    path = directory / name
+    try:
+        proof = _umf_receipt.strict_json_loads(path.read_text(encoding="utf-8"))
+        _actions_receipt.validate_public_projection(
+            proof,
+            version=version,
+            wheel_name=wheel_name,
+            wheel_sha256=wheel_sha256,
+            phase="release-build",
+            wheel_path=directory / wheel_name,
+            repository=Path(__file__).resolve().parents[2],
+        )
+    except (
+        OSError,
+        UnicodeDecodeError,
+        ValueError,
+        _actions_receipt.ActionReceiptError,
+    ) as error:
+        _fail(f"trusted UMF actions receipt is invalid: {type(error).__name__}")
+    if aggregate.get("umf_actions") != {
+        "filename": name,
+        "sha256": entries[name],
+        "qualification_phase": "release-build",
+        "status": "passed",
+    }:
+        _fail("trusted release aggregate does not bind the UMF actions receipt")
+
+
+def _expected_bundle_entries(
+    version: str, *, has_umf_admission: bool, actions_required: bool
+) -> set[str]:
+    entries = {
         f"arras-{version}-py3-none-any.whl",
         f"arras-{version}.tar.gz",
         f"documentdrivendx-arras-ui-{version}.tgz",
@@ -300,54 +342,183 @@ def validate_bundle(
         "native-find-links.html",
     }
     if has_umf_admission:
-        expected_entries.add("umf-admission-installed.json")
+        entries.add("umf-admission-installed.json")
+    if actions_required:
+        entries.add("umf-actions-installed.json")
+    return entries
+
+
+def _validate_dispatch_files(
+    directory: Path,
+    *,
+    expected_sums_sha256: str,
+    expected_evidence_sha256: str,
+) -> tuple[Path, Path]:
+    paths = (directory / "SHA256SUMS", directory / "release-evidence.json")
+    expected_values = (expected_sums_sha256, expected_evidence_sha256)
+    labels = ("SHA256SUMS", "release evidence")
+    caps = (_MAX_SUMS, _MAX_JSON)
+    for path, expected, label, cap in zip(paths, expected_values, labels, caps, strict=True):
+        if path.is_symlink() or not path.is_file() or path.stat().st_size > cap:
+            _fail(f"trusted {label} is missing, non-regular, or too large")
+        if hashlib.sha256(path.read_bytes()).hexdigest() != expected:
+            _fail(f"trusted {label} does not match its dispatch digest")
+    return paths
+
+
+def _validate_bundle_inventory(
+    sums: Path,
+    *,
+    version: str,
+    wheel_name: str,
+    expected_wheel_sha256: str,
+    has_umf_admission: bool,
+    actions_required: bool,
+) -> tuple[dict[str, str], str]:
+    expected_count = 15 + int(has_umf_admission) + int(actions_required)
+    entries = _read_sums_entries(sums, expected_count=expected_count)
+    expected_entries = _expected_bundle_entries(
+        version,
+        has_umf_admission=has_umf_admission,
+        actions_required=actions_required,
+    )
     if set(entries) != expected_entries:
         _fail("trusted SHA256SUMS differs from the exact versioned asset inventory")
     wheel_sha = entries.get(wheel_name)
     if wheel_sha != expected_wheel_sha256:
         _fail("trusted wheel digest differs from the dispatch digest")
-    aggregate = _json(evidence, "trusted release aggregate")
-    expected_schema = 2 if has_umf_admission else 1
+    return entries, wheel_sha
+
+
+def _validate_aggregate_identity(
+    aggregate: dict[str, Any],
+    *,
+    version: str,
+    wheel_name: str,
+    wheel_sha: str,
+    has_umf_admission: bool,
+    actions_required: bool,
+) -> None:
+    expected_schema = 3 if actions_required else 2 if has_umf_admission else 1
     if (
         type(aggregate.get("schema_version")) is not int
         or aggregate.get("schema_version") != expected_schema
     ):
         _fail("trusted release aggregate schema does not match the expected release version")
     artifacts = aggregate.get("release_artifacts")
-    if not isinstance(artifacts, dict):
-        _fail("trusted release aggregate has no release-artifact map")
-    wheel_artifact = artifacts.get("wheel")
-    if not isinstance(wheel_artifact, dict):
+    wheel = artifacts.get("wheel") if isinstance(artifacts, dict) else None
+    if not isinstance(wheel, dict):
         _fail("trusted release aggregate has no wheel identity")
     if (
         aggregate.get("status") != "passed"
         or aggregate.get("version") != version
-        or wheel_artifact.get("filename") != wheel_name
-        or wheel_artifact.get("sha256") != wheel_sha
+        or wheel.get("filename") != wheel_name
+        or wheel.get("sha256") != wheel_sha
     ):
         _fail("trusted release aggregate does not bind the expected wheel and version")
+
+
+def _validate_bundle_receipts(
+    directory: Path,
+    aggregate: dict[str, Any],
+    entries: dict[str, str],
+    *,
+    version: str,
+    wheel_name: str,
+    wheel_sha: str,
+    has_umf_admission: bool,
+    actions_required: bool,
+) -> None:
     if has_umf_admission:
-        component = aggregate.get("umf_admission")
-        proof_path = directory / "umf-admission-installed.json"
-        try:
-            proof = _umf_receipt.strict_json_loads(proof_path.read_text(encoding="utf-8"))
-            _umf_receipt.validate_public_projection(
-                proof, version=version, wheel_name=wheel_name, wheel_sha256=wheel_sha
-            )
-        except (
-            OSError,
-            UnicodeDecodeError,
-            ValueError,
-            _umf_receipt.AdmissionReceiptError,
-        ) as exc:
-            _fail(f"trusted UMF admission receipt is invalid: {type(exc).__name__}")
-        if not isinstance(component, dict) or component != {
-            "filename": "umf-admission-installed.json",
-            "sha256": entries["umf-admission-installed.json"],
-            "qualification_phase": "release-build",
-            "status": "passed",
-        }:
-            _fail("trusted release aggregate does not bind the UMF admission receipt")
+        _validate_umf_admission_component(
+            directory, aggregate, entries, wheel_name, version, wheel_sha
+        )
+    elif "umf_admission" in aggregate:
+        _fail("legacy release aggregate has an unsupported UMF admission component")
+    if actions_required:
+        _validate_action_component(
+            directory,
+            aggregate,
+            entries,
+            version=version,
+            wheel_name=wheel_name,
+            wheel_sha256=wheel_sha,
+        )
+    elif "umf_actions" in aggregate:
+        _fail("release aggregate has an unsupported UMF actions component")
+
+
+def _validate_umf_admission_component(
+    directory: Path,
+    aggregate: dict[str, Any],
+    entries: dict[str, str],
+    wheel_name: str,
+    version: str,
+    wheel_sha: str,
+) -> None:
+    component = aggregate.get("umf_admission")
+    proof_path = directory / "umf-admission-installed.json"
+    try:
+        proof = _umf_receipt.strict_json_loads(proof_path.read_text(encoding="utf-8"))
+        _umf_receipt.validate_public_projection(
+            proof, version=version, wheel_name=wheel_name, wheel_sha256=wheel_sha
+        )
+    except (OSError, UnicodeDecodeError, ValueError, _umf_receipt.AdmissionReceiptError) as exc:
+        _fail(f"trusted UMF admission receipt is invalid: {type(exc).__name__}")
+    if not isinstance(component, dict) or component != {
+        "filename": "umf-admission-installed.json",
+        "sha256": entries["umf-admission-installed.json"],
+        "qualification_phase": "release-build",
+        "status": "passed",
+    }:
+        _fail("trusted release aggregate does not bind the UMF admission receipt")
+
+
+def validate_bundle(
+    directory: Path,
+    *,
+    version: str,
+    expected_sums_sha256: str,
+    expected_evidence_sha256: str,
+    expected_wheel_sha256: str,
+) -> str:
+    wheel_name = f"arras-{version}-py3-none-any.whl"
+    if directory.is_symlink() or not directory.is_dir():
+        _fail("downloaded trusted release artifact must be a real directory")
+    actions_required = _action_capability_required(directory, version, expected_wheel_sha256)
+    sums, evidence = _validate_dispatch_files(
+        directory,
+        expected_sums_sha256=expected_sums_sha256,
+        expected_evidence_sha256=expected_evidence_sha256,
+    )
+    has_umf_admission = _umf_receipt.required_for_version(version)
+    entries, wheel_sha = _validate_bundle_inventory(
+        sums,
+        version=version,
+        wheel_name=wheel_name,
+        expected_wheel_sha256=expected_wheel_sha256,
+        has_umf_admission=has_umf_admission,
+        actions_required=actions_required,
+    )
+    aggregate = _json(evidence, "trusted release aggregate")
+    _validate_aggregate_identity(
+        aggregate,
+        version=version,
+        wheel_name=wheel_name,
+        wheel_sha=wheel_sha,
+        has_umf_admission=has_umf_admission,
+        actions_required=actions_required,
+    )
+    _validate_bundle_receipts(
+        directory,
+        aggregate,
+        entries,
+        version=version,
+        wheel_name=wheel_name,
+        wheel_sha=wheel_sha,
+        has_umf_admission=has_umf_admission,
+        actions_required=actions_required,
+    )
     _verify_bundle_assets(directory, entries)
     return wheel_name
 
@@ -360,7 +531,7 @@ def _load_inputs(args: argparse.Namespace) -> tuple[dict[str, Any], dict[str, An
     )
 
 
-def main(argv: list[str] | None = None) -> int:
+def _parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--release-tag", required=True)
     parser.add_argument("--expected-source-sha", required=True)
@@ -379,7 +550,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--publication-provenance-json", type=Path)
     parser.add_argument("--trusted-dir", type=Path)
     parser.add_argument("--output-json", type=Path)
-    args = parser.parse_args(argv)
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = _parse_args(argv)
     try:
         validate_inputs(args)
         if args.validate_inputs_only:
@@ -398,6 +573,12 @@ def main(argv: list[str] | None = None) -> int:
         ):
             _fail("complete provenance and bundle inputs are required")
         run, jobs, workflow = _load_inputs(args)
+        match = _TAG.fullmatch(args.release_tag)
+        assert match is not None
+        version = ".".join(match.groups())
+        actions_required = _action_capability_required(
+            args.trusted_dir, version, args.expected_wheel_sha256
+        )
         validate_run(
             run,
             jobs,
@@ -408,10 +589,8 @@ def main(argv: list[str] | None = None) -> int:
             source_sha=args.expected_source_sha,
             driver_sha=args.expected_publication_driver_sha,
             default_branch=args.default_branch,
+            actions_required=actions_required,
         )
-        match = _TAG.fullmatch(args.release_tag)
-        assert match is not None
-        version = ".".join(match.groups())
         publication_receipt = _json(
             args.publication_provenance_json, "original release-driver provenance"
         )
@@ -447,6 +626,7 @@ def main(argv: list[str] | None = None) -> int:
             "publication_workflow_ref": publication_receipt["driver"]["workflow_ref"],
             "publication_run_attempt": publication_receipt["driver"]["run_attempt"],
             "umf_admission_required": str(_umf_receipt.required_for_version(version)).lower(),
+            "umf_actions_required": str(actions_required).lower(),
         }
         target = os.environ.get("GITHUB_OUTPUT")
         if target:
@@ -461,7 +641,9 @@ def main(argv: list[str] | None = None) -> int:
             "publication_run_status": run.get("status"),
             "publication_run_conclusion": run.get("conclusion"),
             "publication_workflow_id": run.get("workflow_id"),
-            "required_successful_jobs": _required_job_ids(version),
+            "required_successful_jobs": _required_job_ids(
+                version, actions_required=actions_required
+            ),
         }
         args.output_json.write_text(
             json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"

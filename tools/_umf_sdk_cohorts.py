@@ -29,6 +29,7 @@ class SDKCohort:
     filename: str
     url: str
     sha256: str
+    supports_single_set: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -124,6 +125,33 @@ def _declarations(metadata: email.message.Message) -> tuple[_Declaration, ...]:
 
 def _matches(row: _Declaration, platform: str, machine: str) -> bool:
     return row.universal or (row.platform == platform and row.machine == machine)
+
+
+def single_set_capability(
+    metadata: email.message.Message, registry: Sequence[SDKCohort] = KNOWN_COHORTS
+) -> bool:
+    """Return the wheel's action capability only when every pin is known and agrees."""
+    declarations = _declarations(metadata)
+    capabilities: list[bool] = []
+    for declaration in declarations:
+        matches = [
+            row
+            for row in registry
+            if (row.url, row.sha256, row.platform, row.machine, row.platform == "any")
+            == (
+                declaration.url,
+                declaration.sha256,
+                declaration.platform,
+                declaration.machine,
+                declaration.universal,
+            )
+        ]
+        if len(matches) != 1:
+            raise ValueError("UMF SDK declaration is not a unique verified cohort")
+        capabilities.append(matches[0].supports_single_set)
+    if len(set(capabilities)) != 1:
+        raise ValueError("UMF SDK declarations disagree on action capability")
+    return capabilities[0]
 
 
 def select_sdk_cohort(

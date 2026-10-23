@@ -12,6 +12,7 @@ import hashlib
 import importlib
 import importlib.metadata
 import json
+import platform
 import sys
 import sysconfig
 import zipfile
@@ -728,7 +729,12 @@ def run_probe(arguments: list[str]) -> dict[str, Any]:
         "umf_wheel_sha256": _sha(umf_wheel.read_bytes()),
         "source_sha256": _sha(source),
         "vectors_sha256": _sha(vectors_raw),
-        "runtime": {"python": sys.version.split()[0], "platform": sys.platform},
+        "runtime": {
+            "python": sys.version.split()[0],
+            "platform": sys.platform,
+            "machine": platform.machine(),
+            "implementation": platform.python_implementation(),
+        },
         "origins": origins,
         "installed": {"arras": arras_identity, "umf_core": umf_identity},
         "generated_client_sha256": generated_sha,
