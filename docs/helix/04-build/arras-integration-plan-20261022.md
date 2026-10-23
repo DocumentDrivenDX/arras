@@ -195,30 +195,34 @@ candidate. These do not qualify Arras or managed authorization. TD-006 proposes
 bounded incremental publication as a replacement for whole-history processing.
 The owner identifies `resolve_publication`/`read_singleton` with exact snapshot
 pins and mandatory policy owners, plus `AshlarTarget` scoped typed reads/pages,
-as usable surfaces. An installed Arras-compatible cohort is still unqualified;
-the current `.4-xxhash64` managed-page target also conflicts with an older
-`AshlarTarget` allowlist and must be reconciled. Opaque Truss feed cursors in
+as usable surfaces. An installed Arras-compatible cohort is still unqualified.
+Current `AshlarTarget` source explicitly maps the managed
+`0.2.0-managed-current-core-xxhash64-pages-candidate` target to
+`ashlar-delta/0.4-xxhash64` and `spark-xxhash64-typed-key/0.1`; the earlier
+allowlist conflict is no longer a source blocker. This source inspection does
+not qualify an installed Arras/Ashlar cohort. Opaque Truss feed cursors in
 publication progress are not a general `reached(receipt)` API; generic
 `minimumProgress`/`reached` remain contract-only. Source ACK never establishes
 destination visibility.
 Publication/receipt/freshness contract design can proceed now without a new seed,
 scale trial or cloud run. Separate seed/scale approvals do not block that design.
 
-Managed Truss 0.0.49/PR 30 is a separate lane awaiting the public Weft 0.4.51/
-Truss 0.0.48 base and its own final qualification. Its candidate/local stand-in
-passes are not public 0.0.49 or actual Lakebase evidence. Managed roles/ACL/TLS/
-token behavior remains unrun; no new public value/action/lowering API is implied.
-It is not a dependency of the bounded 0.0.48 local Arras release unless a managed
-service deployment is separately selected.
+Public Truss 0.0.49 and Weft 0.4.51 are available. The separate Arras adoption
+branch pins those exact artifacts; its [local qualification](evidence/truss049-adoption-20261023/local-qualification.json)
+records 199 adapter cases and two transaction-mode cases on editable source
+`40ed2481507f11a61ed81260fbfffbfc8ff91eba`. These local results do not qualify
+fresh installed artifacts or actual Lakebase behavior. Managed roles/ACL/TLS/
+token acceptance remains `not_run`; no new public value/action/lowering API is
+implied. This adoption leaves the earlier bounded 0.0.48 release evidence intact.
 
 “Subgraph” currently means a placed module; `Backend.query` refuses cross-module
 statements. Ashlar is a reader/replica, not a write provider. Arbitrary federation
 and cross-backend atomic writes are not promised. GraphQL/schema-admin servability
 coupling remains architecture debt; this release does not claim a decoupled pure
 kernel. Address it along affected later contract slices, not as a new P0 feature.
-The exact authoritative UMF execution boundary and refreshed public native
-artifacts remain unresolved; owner reports above are not independently rerun
-native evidence.
+The exact authoritative UMF execution boundary and Arras qualification of later
+native capabilities remain open. Public artifact availability alone does not
+close either integration obligation.
 
 ### A1 installed-release probe — completed locally 2026-10-22
 
@@ -1587,10 +1591,10 @@ gates above are reviewable. It does not establish integration completion.
 ## Later public Truss 0.0.49 adoption — isolated work
 
 The isolated adoption branch starts from `df923164840cb225a278d760ba911c106fa3c080`;
-package metadata remains 0.5.1. The independent 0.6.0 release work remains frozen
-on Truss 0.0.48/Weft 0.4.51. No merge, version/tag/publication or competing native,
-UI, Spark or build campaign follows from this plan. Rebase/release ownership
-requires the explicit release handoff.
+package metadata remains 0.5.1. The independent 0.6.0 release retains its
+Truss 0.0.48/Weft 0.4.51 cohort. No merge or version/tag/publication follows
+from this plan; integration requires the explicit release-owner handoff.
+Runtime campaigns require separately coordinated resource slots.
 
 | Owner | Bounded deliverable | Gate and retained boundary |
 | --- | --- | --- |
@@ -1608,7 +1612,13 @@ The Truss/public49 and managed-target owner
 `01a16383-183c-7680-9518-f69ff40383e5` retains the immutable public49 proof and
 Lakebase custody. The independent A2/0.6.0 release owner
 `01a16023-fabd-7fa3-9abf-44d42e7fd673` controls that separate release handoff.
-The published49 proof labels actual Lakebase not_run.
+The published49 proof labels actual Lakebase `not_run`. The separate
+[source review](evidence/truss049-adoption-20261023/source-review.json) binds
+the harness and reported 52 pure controls. The
+[local qualification](evidence/truss049-adoption-20261023/local-qualification.json)
+binds the later source-native 199-case run and coordinator-observed two local
+transaction-mode passes. Its editable Arras 0.5.1, runtime, cleanup and artifact
+capture limits remain explicit; neither receipt is a managed-service result.
 
 The human authorized the managed-target owner to create a dedicated Lakebase
 with the Databricks CLI. That target is now provisioned; its read-only preflight

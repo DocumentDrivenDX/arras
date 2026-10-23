@@ -667,5 +667,11 @@ dry-run residue, caller work/savepoints and quarantine also require actual
 target evidence. Caller-owned cases use public Truss directly and are not
 advertised as Arras active-transaction support. Missing provider restart/refresh
 controls or observation privileges remain blocked/not_run; no zero-case, skipped
-or partial receipt can pass the full managed scope. Native/installed/service
-campaigns require the separately coordinated slot; none has run in this tranche.
+or partial receipt can pass the full managed scope. Campaigns require separately
+coordinated resource slots. The [local qualification](../04-build/evidence/truss049-adoption-20261023/local-qualification.json)
+records source `40ed2481507f11a61ed81260fbfffbfc8ff91eba`: 199 local adapter
+cases and two local strict-probe transaction-mode cases passed. The latter
+characterize strict-install success and owned cleanup; they do not exercise a
+managed platform-grant refusal. Fresh installed qualification and actual
+Lakebase/MP-01–06 acceptance remain unrun in this tranche. Historical evidence
+and the eight declared corpus limits remain unchanged.
