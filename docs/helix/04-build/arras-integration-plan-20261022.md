@@ -1866,3 +1866,28 @@ exact wheel/sdist alongside installed UMF evidence so canonical release-builder
 bytes can be selected before both full campaigns. README wording is made neutral
 before this final artifact freeze; no passed gate is transferred across a byte
 change. Final installed campaign and public-wheel identities must match exactly.
+
+The four-role rollback-only public49 timing diagnostic reached the unchanged
+60,000 ms operation limit. Its 1,272 delegated driver calls consumed 60.38
+seconds; client process CPU was 0.245 seconds over 61.71 seconds of scoped wall
+time. This supports sequential round-trip cost as the next investigation target,
+without separating wire time from server execution. Hooks were restored, caller
+and native state were unchanged, and Truss remained absent. The private timing
+proof has SHA-256
+`a1cd6f2c43877ee43a70ba51f12b20934be9e7f3a6f0ac665f9423dbb5971de8`;
+the independent fresh native-absence proof has SHA-256
+`77b0874e0cb122897142fe106aa5a51a5e884ba049e2ef73930f114da7892b7d`.
+No final Arras acceptance is asserted. A closer runner is being assessed before
+any provisioning, credential transport or new full campaign.
+
+CI run `40005187951` retained the wheel built at `91c6308a` with SHA-256
+`c31b56e53fa653ba090e08f2dcff1edb85849f56489b543b150108ae75eab57f`.
+Its build and installed UMF checks passed; the other CI jobs and both complete
+final-wheel campaigns remain pending. The release build must reproduce that
+exact filename and digest before verification or artifact upload. Updating a
+future release's admitted digest requires its own complete qualification. The
+guard's workflow-order and actual matching/changed/missing-byte controls passed
+with the native workflow shell controls (21 tests; retained log SHA-256
+`f8ccf0196fb70c0d2db8e62e87e98b0e147085c6876973ba6e32fd28525ddf46`).
+Workflow and documentation edits must still be followed by a CI
+rebuild comparison before this wheel is frozen for the campaigns.
