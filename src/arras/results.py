@@ -190,6 +190,7 @@ class BackendInfo:
     audit: bool = (
         True  # False: it keeps no group-scoped journal, so `changes` and `loads` are Unsupported
     )
+    metadata_profiles: tuple[str, ...] = ("legacy-arras/1",)
 
     @property
     def reads(self) -> bool:
