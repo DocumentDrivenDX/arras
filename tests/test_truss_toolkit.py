@@ -176,9 +176,9 @@ def test_every_toolkit_and_weft_file_in_the_lock_carries_a_hash() -> None:
     lock = tomllib.loads((ROOT / "uv.lock").read_text())
     expected = {
         "truss-toolkit": {
-            "version": "0.0.48",
+            "version": "0.0.49",
             "files": {
-                "truss_toolkit-0.0.48-py3-none-any.whl": "sha256:1aedf614ff3d3ff7a61bd4d91887ede650a7135d1239e8564c1c297c0ddc37c3",
+                "truss_toolkit-0.0.49-py3-none-any.whl": "sha256:7ea14b2787f02cbeec9ad99d835adbcc30c684fd5be8e0765a1d8198b50e7182",
             },
         },
         "weft-sql": {
@@ -230,7 +230,7 @@ def test_a_missing_or_other_toolkit_names_the_extra(monkeypatch: pytest.MonkeyPa
     with pytest.raises(ImportError, match=r"arras\[truss\]"):
         require_toolkit()
     monkeypatch.setattr(metadata, "version", lambda name: "0.0.2")
-    with pytest.raises(ImportError, match="0.0.2 is installed but 0.0.48 is pinned"):
+    with pytest.raises(ImportError, match="0.0.2 is installed but 0.0.49 is pinned"):
         require_toolkit()
     monkeypatch.setattr(metadata, "version", lambda name: TOOLKIT_VERSION)
     assert require_toolkit() == TOOLKIT_VERSION
@@ -240,7 +240,7 @@ def test_a_missing_or_other_toolkit_names_the_extra(monkeypatch: pytest.MonkeyPa
 def test_the_installed_extra_is_the_pinned_tuple() -> None:
     import psycopg
 
-    assert require_toolkit() == "0.0.48"
+    assert require_toolkit() == "0.0.49"
     assert metadata.version("weft-sql") == WEFT_VERSION
     assert metadata.version("psycopg") == "3.3.6"
     assert psycopg.pq.version() == 180006  # libpq 18.6

@@ -33,7 +33,7 @@ from arras.adapters.truss.describe import NOT_INSTALLED
 from arras.adapters.truss.describe import describe as _describe
 from arras.adapters.truss.describe import status as _status
 from arras.adapters.truss.export import Exporter
-from arras.adapters.truss.lifecycle import Lifecycle, ModuleAccess
+from arras.adapters.truss.lifecycle import Lifecycle, ModuleAccess, validate_tolerated_grantees
 from arras.adapters.truss.load import Importer
 from arras.adapters.truss.query import Reader
 from arras.adapters.truss.reach import Visibility
@@ -63,7 +63,7 @@ from arras.types import Principal, Revision, Statement
 
 # The pinned release (the optional extra `truss` in pyproject.toml names the same).
 TOOLKIT_DISTRIBUTION = "truss-toolkit"
-TOOLKIT_VERSION = "0.0.48"
+TOOLKIT_VERSION = "0.0.49"
 EXTRA = "truss"
 
 __all__ = [
@@ -111,10 +111,18 @@ class TrussBackend:
         connections: Connections | None = None,
         wire: Wire | None = None,
         module_access: Mapping[str, ModuleAccess] | None = None,
+        *,
+        tolerated_grantees: tuple[str, ...] = (),
     ) -> None:
+        selected_grantees = validate_tolerated_grantees(tolerated_grantees)
         self.name = name
         self.connections = connections
-        self._lifecycle = Lifecycle(name, connections, module_access)
+        self._lifecycle = Lifecycle(
+            name,
+            connections,
+            module_access,
+            tolerated_grantees=selected_grantees,
+        )
         self.cache = CatalogCache()
         self._registry = Registry(name, connections, self.cache) if connections else None
         self._reader = (
@@ -386,6 +394,7 @@ def create_backend(
     installing: InstallingSource | None = None,
     *,
     module_access: Mapping[str, ModuleAccess] | None = None,
+    tolerated_grantees: tuple[str, ...] = (),
     statement_timeout_ms: int = STATEMENT_TIMEOUT_MS,
     operation_timeout_ms: int = OPERATION_TIMEOUT_MS,
 ) -> TrussBackend:
@@ -398,10 +407,17 @@ def create_backend(
     It never connects, imports Truss or psycopg, or reads the environment; a bad `name` is a
     `ValueError`, a programming error rather than an availability failure.
     """
+    selected_grantees = validate_tolerated_grantees(tolerated_grantees)
     if not isinstance(name, str) or not BACKEND_NAME.fullmatch(name):  # pyright: ignore[reportUnnecessaryIsInstance]
         raise ValueError(f"a backend name matches {BACKEND_NAME.pattern}")
     if source is None:
-        return TrussBackend(name, None, None, module_access)
+        return TrussBackend(
+            name,
+            None,
+            None,
+            module_access,
+            tolerated_grantees=selected_grantees,
+        )
     connections = Connections(
         name,
         source,
@@ -409,4 +425,10 @@ def create_backend(
         operation_timeout_ms=operation_timeout_ms,
         installing=installing,
     )
-    return TrussBackend(name, connections, None, module_access)
+    return TrussBackend(
+        name,
+        connections,
+        None,
+        module_access,
+        tolerated_grantees=selected_grantees,
+    )

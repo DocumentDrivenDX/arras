@@ -71,6 +71,7 @@ class Script:
         self.install_answer: Any = None
         self.configure_answer: Any = None
         self.grants: tuple[Any, ...] = ()
+        self.install_tolerated_grantees: tuple[str, ...] | None = None
 
     def status_in_transaction(self, tx: Any) -> Any:
         self.calls.append("status")
@@ -83,8 +84,11 @@ class Script:
             )
         )
 
-    def install_in_transaction(self, tx: Any) -> Any:
+    def install_in_transaction(
+        self, tx: Any, *, tolerated_grantees: tuple[str, ...] = ()
+    ) -> Any:
         self.calls.append("install")
+        self.install_tolerated_grantees = tolerated_grantees
         if self.install_answer is not None:
             return self.install_answer
         self.installed = True
@@ -184,6 +188,7 @@ def test_migrate_installs_an_absent_truss_after_taking_the_lock() -> None:
         True, RELEASE, "truss_owner_0123456789abcdef", "truss_registrar_0123456789abcdef"
     )
     assert rig.script.calls == ["status", "install"]
+    assert rig.script.install_tolerated_grantees == ()
     log = rig.conns[0].log
     assert log[0] == "SET TRANSACTION ISOLATION LEVEL READ COMMITTED READ WRITE"
     lock = log.index(f"SELECT pg_advisory_xact_lock({INSTALL_LOCK})")
@@ -198,9 +203,44 @@ def test_migrate_installs_an_absent_truss_after_taking_the_lock() -> None:
 
 
 def test_migrate_verifies_a_present_truss_and_installs_nothing() -> None:
-    rig = Rig(Script(installed=True))
+    selected = ("lakebase_reader",)
+    rig = Rig(Script(installed=True), tolerated_grantees=selected)
     assert rig.backend().migrate() == MigrationResult(False, RELEASE)
     assert rig.script.calls == ["status"]
+    assert rig.script.install_tolerated_grantees is None
+
+
+def test_fresh_install_passes_the_exact_tolerated_tuple_once() -> None:
+    selected = ("raw_reader", "lakebase_reader")
+    rig = Rig(tolerated_grantees=selected)
+    assert rig.backend().migrate().ran is True
+    assert rig.script.install_tolerated_grantees is selected
+    assert rig.script.calls == ["status", "install"]
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [
+        ["reader"],
+        ("reader",) * 33,
+        ("",),
+        ("x" * 64,),
+        ("\x00role",),
+        ("\ud800",),
+        (type("RoleString", (str,), {})("reader"),),
+    ],
+)
+def test_malformed_tolerated_grantees_are_rejected_before_connection_creation(
+    bad: object, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import arras.adapters.truss as adapter
+
+    def no_connection(*_args: Any, **_kwargs: Any) -> Any:
+        raise AssertionError("the malformed carrier must fail before connection creation")
+
+    monkeypatch.setattr(adapter, "Connections", no_connection)
+    with pytest.raises(ValueError):
+        create_backend("truss", lambda _principal: None, tolerated_grantees=bad)  # type: ignore[arg-type]
 
 
 def test_the_migrate_timeout_bounds_the_lock_wait_not_truss() -> None:
@@ -449,8 +489,8 @@ def test_a_commit_of_unknown_outcome_with_another_installation_id_is_not_ours() 
     rig.first_commit_raises = Exception("connection lost")
     original = rig.script.install_in_transaction
 
-    def another_instance_won(tx: Any) -> Any:
-        out = original(tx)
+    def another_instance_won(tx: Any, *, tolerated_grantees: tuple[str, ...] = ()) -> Any:
+        out = original(tx, tolerated_grantees=tolerated_grantees)
         rig.script.installation_id = "inst-b"  # the committed install is another instance's
         return out
 
@@ -469,8 +509,8 @@ def test_a_commit_of_unknown_outcome_with_no_readable_truss_is_migration_failed(
     backend = rig.backend()
     original = rig.script.install_in_transaction
 
-    def install_then_vanish(tx: Any) -> Any:
-        out = original(tx)
+    def install_then_vanish(tx: Any, *, tolerated_grantees: tuple[str, ...] = ()) -> Any:
+        out = original(tx, tolerated_grantees=tolerated_grantees)
         if read == "absent":
             rig.script.installed = False  # the commit never happened
         else:
@@ -828,6 +868,9 @@ def test_the_installing_calls_run_as_the_installer(cluster: Any) -> None:  # noq
 @dataclass(frozen=True)
 class InstallRefused:
     code: str
+    role_name: Any = None
+    object_class: Any = None
+    phase: Any = None
 
 
 @dataclass(frozen=True)
@@ -910,6 +953,70 @@ def test_a_typed_install_refusal_is_the_error_of_its_code_and_installs_nothing(
     assert caught.value.reason == reason
     assert rig.conns[0].log[-1] == "rollback" and "commit" not in rig.conns[0].log
     assert backend.status().reason != "migration_failed" or reason == "migration_failed"
+
+
+def test_a_third_party_grant_refusal_names_bounded_escaped_context_and_rolls_back() -> None:
+    import json
+
+    role = 'vendor"role\\line\n café'
+    rig = Rig(Typed())
+    rig.creates_roles = False  # typed detail must not enter the opaque missing-CREATEROLE mapping
+    rig.script.install_answer = ok(
+        InstallRefused(
+            "third_party_grant",
+            role_name=role,
+            object_class="relation",
+            phase="post_installation",
+        )
+    )
+    with pytest.raises(Unavailable) as caught:
+        rig.backend().migrate()
+    assert caught.value.reason == "migration_failed"
+    assert caught.value.detail == (
+        f"truss third_party_grant role={json.dumps(role, ensure_ascii=True, separators=(',', ':'))} "
+        "object_class=relation phase=post_installation"
+    )
+    assert "server" not in caught.value.detail
+    assert rig.conns[0].log[-1] == "rollback" and "commit" not in rig.conns[0].log
+    assert rig.script.calls == ["status", "install"]
+
+
+def test_other_typed_migration_refusals_keep_the_missing_createrole_priority() -> None:
+    rig = Rig(Typed())
+    rig.creates_roles = False
+    rig.script.install_answer = ok(InstallRefused("role_exists"))
+    with pytest.raises(Unavailable) as caught:
+        rig.backend().migrate()
+    assert (caught.value.reason, caught.value.detail) == (
+        "access_denied",
+        "the installing role cannot create roles",
+    )
+
+
+@pytest.mark.parametrize(
+    "context",
+    [
+        {"role_name": "bad\x00role", "object_class": "relation", "phase": "pre_ownership"},
+        {"role_name": "x" * 64, "object_class": "relation", "phase": "pre_ownership"},
+        {"role_name": "role", "object_class": "server text", "phase": "pre_ownership"},
+        {"role_name": "role", "object_class": "relation", "phase": "unknown"},
+        {"role_name": 7, "object_class": "relation", "phase": "pre_ownership"},
+        {"role_name": "role", "object_class": ["relation"], "phase": "pre_ownership"},
+        {"role_name": "role", "object_class": "relation", "phase": True},
+        {"role_name": "\ud800", "object_class": "relation", "phase": "pre_ownership"},
+    ],
+)
+def test_malformed_third_party_grant_context_is_generic_and_does_not_leak(context: dict[str, Any]) -> None:
+    rig = Rig(Typed())
+    rig.script.install_answer = ok(InstallRefused("third_party_grant", **context))
+    with pytest.raises(Unavailable) as caught:
+        rig.backend().migrate()
+    assert (caught.value.reason, caught.value.detail) == (
+        "migration_failed",
+        "truss third_party_grant context unavailable",
+    )
+    assert "server text" not in caught.value.detail
+    assert rig.conns[0].log[-1] == "rollback" and "commit" not in rig.conns[0].log
 
 
 def test_an_install_refused_as_already_installed_is_verified_not_repeated() -> None:
