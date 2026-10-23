@@ -19,11 +19,11 @@ ddx:
 
 ## Release
 
-First public Arras Python/UI artifact release from the reviewed integration
-cohort. The working package version is `0.5.1`; version selection is not a tag or
-publication claim. A 2026-10-22 GitHub preflight found no existing Arras tags or
-releases. The [integration plan](../04-build/arras-integration-plan-20261022.md)
-tracks all eight required seams and named implementation/review owners.
+The immutable 0.5.1 release history below remains complete. The current candidate
+package version is `0.6.0`; version selection is not a tag or publication claim.
+Its selected change is bounded official-UMF admission and read-only memory
+metadata projection. The [integration plan](../04-build/arras-integration-plan-20261022.md)
+tracks the candidate scope and its remaining release gates.
 
 GitHub Release assets are mandatory. Publish to real PyPI/npm only through
 existing configured access; the human explicitly permits deferring those uploads
@@ -62,6 +62,8 @@ if access cannot be found. Do not advertise an unavailable registry install.
 | Exact artifacts | Build wheel/sdist/npm from final source. Rebuild the wheel from that exact sdist, compare complete payloads/metadata, run fresh installed consumers and retain a separate verification receipt. Rebuild again after any packaged source/test/tool change. |
 | Tag and assets | Mandatory exact-tag source/native/UI/downstream/build gates precede GitHub publication. Attach wheel, sdist, wheel-carried npm tarball, receipt and `SHA256SUMS`; optional publishers use those same verified bytes. |
 | Downloaded release | Download the public release assets into a new directory, verify digests and repeat installed consumer/skeleton/doctor checks. A local build alone does not pass this gate. |
+| Official UMF qualification (0.6.0+) | The exact final wheel passes the installed admission/metadata gate with pinned official UMF 0.10.0: all 139 ordered reference and separate fresh-empty production Registry comparisons, six base and ten extra-enabled controls, zero skips, and verified cleanup. Repeat against the exact public-download wheel in a fresh environment; retain distinct receipts. The 0.5.1 candidate receipt is historical and cannot close this gate. |
+| Public assembly (0.6.0+) | Use release-evidence schema v2: include the mandatory safe UMF receipt projection as asset 17, bind it to the exact wheel, and repeat UMF qualification after public download. Keep v1/sixteen-asset evidence for historical releases unchanged. |
 
 ## Rollout Stages
 
@@ -88,6 +90,16 @@ if access cannot be found. Do not advertise an unavailable registry install.
 [Final evidence](../04-build/evidence/arras-0.5.1-public-verification-review-20261023.json)
 keeps original publication and supplemental verification distinct. All runtime
 and platform limits remain in the design matrix; this closeout changes no assets.
+
+## 0.6.0 candidate gates
+
+- [ ] Exact final wheel passes the official UMF installed qualification and zero-skip controls.
+- [ ] Public download of that exact wheel passes the same gate in a new environment.
+- [ ] Schema-v2 release evidence contains the mandatory UMF projection in the 17-asset inventory and binds the raw receipt and wheel.
+- [ ] No value/constraint execution, canonical action, native metadata, UI or Ashlar support is claimed from this admission/metadata profile.
+
+The completed 0.5.1 candidate receipt is historical evidence only. It does not
+qualify the 0.6.0 wheel or public download.
 
 ## Rollback
 

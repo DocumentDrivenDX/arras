@@ -232,14 +232,14 @@ and signatures. The later profile integration adds the explicit `metadata_profil
 keyword to the constructor/start. The 926 physical-line ceiling stays unchanged;
 no compression or unrelated cleanup creates space.
 
-The bounded implementation has source and fresh installed-wheel evidence in the
-[A2 execution checkpoint](../04-build/arras-integration-plan-20261022.md#bounded-a2-execution-checkpoint).
+The bounded implementation passed source and fresh installed-wheel checks on an
+unreleased 0.5.1 candidate, as recorded in the [A2 execution checkpoint](../04-build/arras-integration-plan-20261022.md#bounded-a2-execution-checkpoint).
 It supports explicit memory metadata registration/readback and authorized
 empty-graph reads; its descriptor enables no value or action execution. Truss
 refuses the profile before acceptance, and its native parser remains unchanged.
-The candidate retains package version 0.5.1 but is not the immutable public
-0.5.1 artifact. Native, UI, managed deployment and Ashlar qualification are outside
-this checkpoint.
+That historical candidate is not the immutable public 0.5.1 artifact and does not
+qualify the current 0.6.0 candidate wheel or download. Native, UI, managed
+deployment and Ashlar qualification remain outside this checkpoint.
 
 ### Offline qualification and validation modules
 

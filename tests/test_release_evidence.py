@@ -23,7 +23,7 @@ try:
 finally:
     sys.path.pop(0)
 
-VERSION = "9.8.7"
+VERSION = "0.5.1"
 WHEEL_NAME = f"arras-{VERSION}-py3-none-any.whl"
 
 
@@ -89,14 +89,16 @@ def make_npm(version: str = VERSION) -> tuple[bytes, bytes]:
 
 def make_wheel(path: Path, npm: bytes) -> None:
     with zipfile.ZipFile(path, "w") as archive:
-        archive.writestr("arras-9.8.7.dist-info/METADATA", "Name: arras\nVersion: 9.8.7\n")
+        archive.writestr(
+            f"arras-{VERSION}.dist-info/METADATA", f"Name: arras\nVersion: {VERSION}\n"
+        )
         archive.writestr("arras/ui/npm/arras-ui.tgz", npm)
 
 
 def make_sdist(path: Path) -> None:
     with tarfile.open(path, "w:gz") as archive:
-        raw = b"Metadata-Version: 2.1\nName: arras\nVersion: 9.8.7\n"
-        item = tarfile.TarInfo("arras-9.8.7/PKG-INFO")
+        raw = f"Metadata-Version: 2.1\nName: arras\nVersion: {VERSION}\n".encode()
+        item = tarfile.TarInfo(f"arras-{VERSION}/PKG-INFO")
         item.size = len(raw)
         archive.addfile(item, io.BytesIO(raw))
 

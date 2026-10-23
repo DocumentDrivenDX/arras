@@ -15,9 +15,11 @@ from typing import Any, cast
 if __package__:
     from . import _release_evidence_inputs as _inputs
     from . import _release_evidence_public as _public
+    from . import _umf_admission_receipt as _umf_receipt
 else:
     import _release_evidence_inputs as _inputs
     import _release_evidence_public as _public
+    import _umf_admission_receipt as _umf_receipt
 
 MAX_INDEX = _inputs.MAX_INDEX
 MAX_JSON = _inputs.MAX_JSON
@@ -53,6 +55,67 @@ _string = _inputs.string
 _load_json = _inputs.load_json
 
 _SHA = re.compile(r"[0-9a-f]{64}\Z")
+
+
+def _read_umf_admission(
+    version: str,
+    path: Path | None,
+    *,
+    wheel_name: str,
+    wheel_sha: str,
+    selected_inputs: dict[str, tuple[Path, bytes, str]],
+) -> tuple[dict[str, Any] | None, str | None]:
+    required = _umf_receipt.required_for_version(version)
+    if required != (path is not None):
+        _fail("UMF admission receipt presence does not match the release version")
+    if not required:
+        return None, None
+    raw = selected_inputs["UMF admission receipt"][1]
+    digest = selected_inputs["UMF admission receipt"][2]
+    projection = _umf_receipt.validate_receipt(
+        _parse_json_object(raw, "UMF admission receipt"),
+        version=version,
+        wheel_name=wheel_name,
+        wheel_sha256=wheel_sha,
+        phase="release-build",
+        repository=Path(__file__).resolve().parents[2],
+    )
+    return projection, digest
+
+
+def _source_evidence_hashes(
+    digests: dict[str, str],
+    *,
+    native_sha: str,
+    binding_sha: str,
+    cohort_sha: str,
+    index_sha: str,
+    ui_sha: str,
+    consumer_sha: str,
+    ui_sidecars: dict[str, bytes],
+    umf_admission_sha: str | None,
+) -> dict[str, str]:
+    source_hashes = {
+        **digests,
+        "native_receipt.json": native_sha,
+        "native_binding.json": binding_sha,
+        "native_cohort.json": cohort_sha,
+        "native_index.html": index_sha,
+        "ui_receipt.json": ui_sha,
+        "consumer_receipt.json": consumer_sha,
+        **{f"{name}.sha256": _sha(raw) for name, raw in ui_sidecars.items()},
+        "distribution-verification.json": digests["distribution-verification.json"],
+        "doctor-installed.json": digests["doctor-installed.json"],
+    }
+    if umf_admission_sha is not None:
+        source_hashes["umf-admission-receipt.json"] = umf_admission_sha
+    return source_hashes
+
+
+def _selected_receipt_bytes(
+    values: dict[str, tuple[Path, bytes, str]], label: str
+) -> tuple[Path, bytes, str]:
+    return values[label]
 
 
 def _verify_build(
@@ -717,6 +780,7 @@ def assemble(
     index_path: Path,
     ui_path: Path,
     consumer_path: Path,
+    umf_admission_receipt_path: Path | None = None,
     expected_version: str,
     expected_wheel: str,
     expected_wheel_sha256: str,
@@ -729,27 +793,47 @@ def assemble(
     selected, digests, distribution, doctor, npm_name, npm_resources, doctor_runtime = (
         _verify_build(build_bundle, version, expected_wheel, wheel_sha)
     )
-    selected_inputs = _read_qualification_inputs(
-        (
-            ("native receipt", native_receipt_path, MAX_JSON),
-            ("binding receipt", binding_path, MAX_JSON),
-            ("bound cohort", cohort_path, MAX_JSON),
-            ("native index", index_path, MAX_INDEX),
-            ("full UI receipt", ui_path, MAX_JSON),
-            ("fresh consumer receipt", consumer_path, MAX_JSON),
-        )
-    )
+    qualification_rows = [
+        ("native receipt", native_receipt_path, MAX_JSON),
+        ("binding receipt", binding_path, MAX_JSON),
+        ("bound cohort", cohort_path, MAX_JSON),
+        ("native index", index_path, MAX_INDEX),
+        ("full UI receipt", ui_path, MAX_JSON),
+        ("fresh consumer receipt", consumer_path, MAX_JSON),
+    ]
+    if umf_admission_receipt_path is not None:
+        qualification_rows.append(("UMF admission receipt", umf_admission_receipt_path, MAX_JSON))
+    selected_inputs = _read_qualification_inputs(tuple(qualification_rows))
     input_paths = [*selected.values(), (build_bundle / "SHA256SUMS").resolve(strict=True)] + [
         row[0] for row in selected_inputs.values()
     ]
     output_dir = _check_output_target(output_dir, build_bundle, input_paths)
-    native_path, native_raw, native_sha = selected_inputs["native receipt"]
-    binding_source, binding_raw, binding_sha = selected_inputs["binding receipt"]
-    cohort_source, cohort_raw, cohort_sha = selected_inputs["bound cohort"]
-    index_source, index_raw, index_sha = selected_inputs["native index"]
-    ui_source, ui_raw, ui_sha = selected_inputs["full UI receipt"]
-    consumer_source, consumer_raw, consumer_sha = selected_inputs["fresh consumer receipt"]
-    _ = native_path, binding_source, cohort_source, index_source, ui_source, consumer_source
+    (
+        (native_path, native_raw, native_sha),
+        (binding_source, binding_raw, binding_sha),
+        (cohort_source, cohort_raw, cohort_sha),
+        (index_source, index_raw, index_sha),
+        (ui_source, ui_raw, ui_sha),
+        (consumer_source, consumer_raw, consumer_sha),
+    ) = tuple(
+        _selected_receipt_bytes(selected_inputs, label)
+        for label in (
+            "native receipt",
+            "binding receipt",
+            "bound cohort",
+            "native index",
+            "full UI receipt",
+            "fresh consumer receipt",
+        )
+    )
+    umf_admission, umf_admission_sha = _read_umf_admission(
+        version,
+        umf_admission_receipt_path,
+        wheel_name=expected_wheel,
+        wheel_sha=wheel_sha,
+        selected_inputs=selected_inputs,
+    )
+    _ = native_path, binding_source, cohort_source, index_source, consumer_source
     cohort = _parse_json_object(cohort_raw, "bound native cohort")
     _validate_cohort(cohort, version, wheel_sha)
     if cohort["find_links"]["sha256"] != index_sha:
@@ -781,18 +865,17 @@ def assemble(
         version,
     )
     _validate_corpus_parity(native["corpus"], consumer["memory_corpus"])
-    source_hashes = {
-        **{name: digest for name, digest in digests.items()},
-        "native_receipt.json": native_sha,
-        "native_binding.json": binding_sha,
-        "native_cohort.json": cohort_sha,
-        "native_index.html": index_sha,
-        "ui_receipt.json": ui_sha,
-        "consumer_receipt.json": consumer_sha,
-        **{f"{name}.sha256": _sha(raw) for name, raw in ui_sidecars.items()},
-        "distribution-verification.json": digests["distribution-verification.json"],
-        "doctor-installed.json": digests["doctor-installed.json"],
-    }
+    source_hashes = _source_evidence_hashes(
+        digests,
+        native_sha=native_sha,
+        binding_sha=binding_sha,
+        cohort_sha=cohort_sha,
+        index_sha=index_sha,
+        ui_sha=ui_sha,
+        consumer_sha=consumer_sha,
+        ui_sidecars=ui_sidecars,
+        umf_admission_sha=umf_admission_sha,
+    )
     projections = {
         "native-qualification.json": native,
         "native-cohort-binding.json": _public.binding_projection(binding),
@@ -810,6 +893,10 @@ def assemble(
     }
     component_hashes["native-cohort.json"] = cohort_sha
     component_hashes["native-find-links.html"] = index_sha
+    if umf_admission is not None:
+        component_hashes["umf-admission-installed.json"] = _sha(
+            _inputs.canonical_json(umf_admission)
+        )
     component_hashes.update({name: _sha(raw) for name, raw in ui_sidecars.items()})
     aggregate = _public.release_evidence_projection(
         version=version,
@@ -825,8 +912,11 @@ def assemble(
         sdist_name=f"arras-{version}.tar.gz",
         sdist_sha=digests[f"arras-{version}.tar.gz"],
         doctor_runtime=doctor_runtime,
+        umf_admission=umf_admission,
     )
     projections["release-evidence.json"] = aggregate
+    if umf_admission is not None:
+        projections["umf-admission-installed.json"] = umf_admission
     raw_files = {
         "native-cohort.json": cohort_raw,
         "native-find-links.html": index_raw,
@@ -866,6 +956,7 @@ def main(argv: list[str] | None = None) -> int:
             expected_version=args.expected_version,
             expected_wheel=args.expected_wheel,
             expected_wheel_sha256=args.expected_wheel_sha256,
+            umf_admission_receipt_path=args.umf_admission_receipt,
             output_dir=args.output_dir,
         )
     except (AssemblyError, OSError, tarfile.TarError, zipfile.BadZipFile) as exc:

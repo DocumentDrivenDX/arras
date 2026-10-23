@@ -15,7 +15,7 @@
     "./favicon.svg": "./src/favicon.svg"
   },
   "peerDependencies": {
-    "@documentdrivendx/arras-ui": "0.5.1",
+    "@documentdrivendx/arras-ui": "0.6.0",
     "react": "^19.3.0"
   }
 }

@@ -13,6 +13,11 @@ import zipfile
 from pathlib import Path
 from typing import NoReturn
 
+if __package__:
+    from . import _umf_admission_receipt as _umf_receipt
+else:
+    import _umf_admission_receipt as _umf_receipt
+
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
 _VERSION = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+\Z")
 _BASENAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._+-]{0,199}\Z")
@@ -32,6 +37,7 @@ _PUBLISHED_COMPONENTS = {
     "playwright-summary-neutral-theme.json",
     "ui-qualification.json",
 }
+_UMF_COMPONENT = "umf-admission-installed.json"
 
 
 class AssetError(ValueError):
@@ -43,7 +49,7 @@ def _fail(message: str) -> NoReturn:
 
 
 def _expected_names(version: str, wheel: str) -> set[str]:
-    return {
+    names = {
         wheel,
         f"arras-{version}.tar.gz",
         f"documentdrivendx-arras-ui-{version}.tgz",
@@ -60,6 +66,9 @@ def _expected_names(version: str, wheel: str) -> set[str]:
         "playwright-summary-neutral-theme.json",
         "native-find-links.html",
     }
+    if _umf_receipt.required_for_version(version):
+        names.add(_UMF_COMPONENT)
+    return names
 
 
 def _read_sums(path: Path) -> tuple[bytes, dict[str, str]]:
@@ -135,6 +144,56 @@ def _digest(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _validate_umf_component(
+    directory: Path,
+    *,
+    version: str,
+    wheel: str,
+    wheel_sha256: str,
+    entry_sha256: str,
+    aggregate: dict[str, object],
+) -> None:
+    proof_path = directory / _UMF_COMPONENT
+    try:
+        proof = _umf_receipt.strict_json_loads(proof_path.read_text(encoding="utf-8"))
+        _umf_receipt.validate_public_projection(
+            proof, version=version, wheel_name=wheel, wheel_sha256=wheel_sha256
+        )
+    except _umf_receipt.AdmissionReceiptError as exc:
+        _fail(f"trusted UMF admission receipt is invalid: {exc}")
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        _fail(f"trusted UMF admission receipt is invalid: {type(exc).__name__}")
+    binding = aggregate.get("umf_admission")
+    if (
+        not isinstance(binding, dict)
+        or set(binding) != {"filename", "sha256", "qualification_phase", "status"}
+        or binding
+        != {
+            "filename": _UMF_COMPONENT,
+            "sha256": entry_sha256,
+            "qualification_phase": "release-build",
+            "status": "passed",
+        }
+        or hashlib.sha256(proof_path.read_bytes()).hexdigest() != entry_sha256
+    ):
+        _fail("trusted aggregate does not bind the exact UMF admission receipt")
+
+
+def _validate_components(
+    aggregate: dict[str, object], entries: dict[str, str], *, version: str
+) -> None:
+    expected = _PUBLISHED_COMPONENTS | (
+        {_UMF_COMPONENT} if _umf_receipt.required_for_version(version) else set()
+    )
+    components = aggregate.get("published_components")
+    if not isinstance(components, dict) or set(components) != expected:
+        _fail("trusted release aggregate has an invalid published-component inventory")
+    for name in sorted(expected):
+        digest = components[name]
+        if not isinstance(digest, str) or not _DIGEST.fullmatch(digest) or digest != entries[name]:
+            _fail(f"trusted published-component digest differs from its emitted asset: {name}")
+
+
 def _validate_trusted(
     directory: Path, version: str, wheel: str, wheel_sha256: str
 ) -> tuple[bytes, dict[str, str]]:
@@ -156,13 +215,16 @@ def _validate_trusted(
         if _digest(path) != expected:
             _fail(f"trusted release asset checksum failed: {name}")
     try:
-        aggregate = json.loads((directory / "release-evidence.json").read_text(encoding="utf-8"))
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        aggregate = _umf_receipt.strict_json_loads(
+            (directory / "release-evidence.json").read_text(encoding="utf-8")
+        )
+    except (OSError, UnicodeDecodeError, ValueError) as exc:
         _fail(f"trusted release aggregate is invalid: {type(exc).__name__}")
+    expected_schema = 2 if _umf_receipt.required_for_version(version) else 1
     if (
         not isinstance(aggregate, dict)
         or type(aggregate.get("schema_version")) is not int
-        or aggregate.get("schema_version") != 1
+        or aggregate.get("schema_version") != expected_schema
         or aggregate.get("status") != "passed"
         or aggregate.get("version") != version
     ):
@@ -191,13 +253,18 @@ def _validate_trusted(
         ):
             _fail(f"trusted release aggregate differs from the verified {artifact} identity")
 
-    components = aggregate.get("published_components")
-    if not isinstance(components, dict) or set(components) != _PUBLISHED_COMPONENTS:
-        _fail("trusted release aggregate has an invalid published-component inventory")
-    for name in sorted(_PUBLISHED_COMPONENTS):
-        digest = components[name]
-        if not isinstance(digest, str) or not _DIGEST.fullmatch(digest) or digest != entries[name]:
-            _fail(f"trusted published-component digest differs from its emitted asset: {name}")
+    _validate_components(aggregate, entries, version=version)
+    if _umf_receipt.required_for_version(version):
+        _validate_umf_component(
+            directory,
+            version=version,
+            wheel=wheel,
+            wheel_sha256=wheel_sha256,
+            entry_sha256=entries[_UMF_COMPONENT],
+            aggregate=aggregate,
+        )
+    elif "umf_admission" in aggregate:
+        _fail("legacy release aggregate has an unsupported UMF admission component")
     return sums_raw, entries
 
 

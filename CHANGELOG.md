@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.6.0 candidate — 2026-10-23 (not yet released)
+
+Adds optional official UMF source admission through `arras.umf_admission` and an
+opt-in `umf-core-metadata/1` profile for bounded memory-backend metadata
+registration and readback. Legacy parsing remains the default; writes refuse for
+the metadata-only profile, and the Truss adapter refuses it before acceptance.
+This does not add value/constraint execution, canonical actions, native metadata
+or Ashlar support. The official UMF core 0.10.0, Truss 0.0.48 and Weft 0.4.51
+pins remain unchanged.
+
+Release qualification is pending: the exact final wheel must pass fresh base and
+UMF-extra environments with all 139 reference and 139 fresh-empty production
+Registry comparisons plus six base and ten extra-enabled controls, with no skips;
+the same gate must pass again against the exact public-download wheel. Release
+evidence schema v2 adds the mandatory UMF receipt to the 17-asset bundle. No
+publication is claimed. See the [release notes](docs/helix/05-deploy/release-notes.md)
+and [deployment checklist](docs/helix/05-deploy/deployment-checklist.md).
+
 ## 0.5.1 — 2026-10-22
 
 This patch preserves the generic downstream interfaces described below. It

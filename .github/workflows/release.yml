@@ -39,6 +39,7 @@ jobs:
       tag_object_sha: ${{ steps.version.outputs.tag_object_sha }}
       driver_sha: ${{ steps.version.outputs.driver_sha }}
       workflow_ref: ${{ steps.version.outputs.workflow_ref }}
+      umf_admission_required: ${{ steps.version.outputs.umf_admission_required }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -167,6 +168,7 @@ jobs:
             dist/*.whl
             dist/*.tar.gz
           if-no-files-found: error
+
       - name: Prepare verified build inputs for release assembly
         run: |
           mkdir -p artifacts/release-build-inputs
@@ -194,6 +196,57 @@ jobs:
         with:
           name: release-build-inputs
           path: artifacts/release-build-inputs/*
+          if-no-files-found: error
+
+  # On 0.6.0 and later, install the exact built wheel in fresh base/extra environments and prove the
+  # fixed official UMF admission parity profile before the release bundle can be assembled.
+  umf-admission:
+    name: Fresh installed UMF admission proof on exact wheel
+    needs: [check, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      required: ${{ steps.requirement.outputs.required }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.check.outputs.source_sha }}
+      - name: Assert validated source identity
+        env:
+          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
+        run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
+      - id: requirement
+        name: Require proof for the selected release version
+        env:
+          REQUIRED: ${{ needs.check.outputs.umf_admission_required }}
+        run: |
+          case "$REQUIRED" in
+            true|false) printf 'required=%s\n' "$REQUIRED" >> "$GITHUB_OUTPUT" ;;
+            *) printf '%s\n' 'release target omitted the UMF admission requirement decision' >&2; exit 1 ;;
+          esac
+      - uses: astral-sh/setup-uv@v5
+        if: steps.requirement.outputs.required == 'true'
+        with:
+          enable-cache: true
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        if: steps.requirement.outputs.required == 'true'
+        with:
+          name: release-build-inputs
+          path: release-build-inputs
+      - name: Verify official UMF admission on the exact release wheel
+        if: steps.requirement.outputs.required == 'true'
+        run: |
+          mkdir -p artifacts
+          uv run --no-project --python 3.11 python tools/verify_umf_admission.py \
+            --wheel "release-build-inputs/${{ needs.build.outputs.wheel_name }}" \
+            --qualification-phase release-build \
+            --output-json artifacts/umf-admission-installed.json
+      - uses: actions/upload-artifact@v4
+        if: steps.requirement.outputs.required == 'true'
+        with:
+          name: umf-admission-qualification
+          path: artifacts/umf-admission-installed.json
           if-no-files-found: error
 
   # Bind the actual verified Arras wheel to the reviewed Linux cohort and qualify its native adapter.
@@ -271,7 +324,7 @@ jobs:
   # Link only successful current-run receipts to the exact verified build inputs. This job has no
   # publishing credentials and creates a fresh final public bundle.
   assemble-evidence:
-    needs: [check, build, installed-native, ui-qualification]
+    needs: [check, build, umf-admission, installed-native, ui-qualification]
     runs-on: ubuntu-latest
     outputs:
       sums_sha256: ${{ steps.sums.outputs.sha256 }}
@@ -295,9 +348,16 @@ jobs:
         with:
           name: exact-tag-ui-qualification
           path: ui-qualification
+      - uses: actions/download-artifact@v4
+        if: needs.umf-admission.outputs.required == 'true'
+        with:
+          name: umf-admission-qualification
+          path: umf-admission
       - name: Assemble release evidence from exact successful receipts
+        env:
+          UMF_ADMISSION_REQUIRED: ${{ needs.umf-admission.outputs.required }}
         run: |
-          python .github/scripts/assemble_release_evidence.py \
+          args=(
             --build-bundle release-build-inputs \
             --native-receipt native-qualification/artifacts/native-verification.json \
             --native-binding native-qualification/artifacts/native-cohort-binding.json \
@@ -309,6 +369,11 @@ jobs:
             --expected-wheel "${{ needs.build.outputs.wheel_name }}" \
             --expected-wheel-sha256 "${{ needs.build.outputs.wheel_sha256 }}" \
             --output-dir release-assets
+          )
+          if [ "$UMF_ADMISSION_REQUIRED" = true ]; then
+            args+=(--umf-admission-receipt umf-admission/umf-admission-installed.json)
+          fi
+          python .github/scripts/assemble_release_evidence.py "${args[@]}"
       - id: sums
         name: Publish final release bundle checksum identity
         run: |
@@ -323,7 +388,7 @@ jobs:
 
   # GitHub assets are released after the required source/native gates, regardless of registry setup.
   github-release:
-    needs: [check, truss, build, ui-qualification, installed-native, assemble-evidence]
+    needs: [check, truss, build, umf-admission, ui-qualification, installed-native, assemble-evidence]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -624,6 +689,13 @@ jobs:
             --fresh-dependencies \
             > artifacts/public-extension-host.stdout.log \
             2> artifacts/public-extension-host.stderr.log
+      - name: Repeat UMF admission proof from the anonymous public wheel
+        if: needs.check.outputs.umf_admission_required == 'true'
+        run: |
+          uv run --no-project --python 3.11 python tools/verify_umf_admission.py \
+            --wheel "public-release-assets/${{ needs.build.outputs.wheel_name }}" \
+            --qualification-phase public-download \
+            --output-json artifacts/public-umf-admission-installed.json
       - name: Configure bounded Ubuntu apt access for the public theme suite
         working-directory: ui
         run: |
@@ -696,6 +768,8 @@ jobs:
               "public-extension-host-fresh-dependencies.json",
               "tests/downstream/evidence/linux/qualification-linux.json",
           ]
+          if "${{ needs.check.outputs.umf_admission_required }}" == "true":
+              outputs.append("public-umf-admission-installed.json")
           records = []
           for name in outputs:
               path = Path("artifacts") / name if not name.startswith("tests/") else Path(name)

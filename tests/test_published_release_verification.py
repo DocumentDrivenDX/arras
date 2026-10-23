@@ -17,8 +17,8 @@ assert SPEC is not None and SPEC.loader is not None
 provenance = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(provenance)
 
-TAG = "v1.2.3"
-VERSION = "1.2.3"
+TAG = "v0.5.1"
+VERSION = "0.5.1"
 RUN_ID = "98765"
 SOURCE_SHA = "1" * 40
 DRIVER_SHA = "2" * 40
@@ -147,6 +147,22 @@ def test_original_publication_requires_matching_run_and_successful_release_gates
     truncated_jobs = {"total_count": 20, "jobs": jobs["jobs"]}
     with pytest.raises(provenance.ProvenanceError, match="not complete"):
         provenance.validate_run(run, truncated_jobs, workflow, **kwargs)
+
+
+def test_060_recovery_requires_the_version_specific_umf_admission_job() -> None:
+    _, jobs, _ = run_metadata()
+    with pytest.raises(provenance.ProvenanceError, match="missing required"):
+        provenance._validate_required_jobs(jobs, "0.6.0")
+    jobs["jobs"].append(
+        {
+            "name": "Fresh installed UMF admission proof on exact wheel",
+            "conclusion": "success",
+            "steps": [],
+        }
+    )
+    jobs["total_count"] += 1
+    provenance._validate_required_jobs(jobs, "0.6.0")
+    provenance._validate_required_jobs(jobs, "0.5.1")
 
 
 def test_original_driver_receipt_binds_tag_source_driver_and_run() -> None:
