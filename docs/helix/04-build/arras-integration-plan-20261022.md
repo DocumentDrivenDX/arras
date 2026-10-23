@@ -148,29 +148,32 @@ integration cut and must remain explicit in capabilities and completion reports.
 
 ## Current priorities — cross-session review 2026-10-22
 
-**P0 is the scoped Arras release; P1 is official UMF adoption; P2 is the Ashlar
-reader/integration lane.** Earlier default/UI/native/installed receipts remain
-historical checkpoints. The current 0.5.1 frozen 598 wheel and 460 npm have reviewed
-installed SDK, example and ordinary full packed themed UI evidence. Historical
-capture approvals remain bound to the unchanged reviewed baselines. Public Truss
-0.0.48/Weft 0.4.51 adoption is committed and passes all 199 source native tests on
-Linux. Mac installed-native, final source/sdist parity and actual safe evidence
-assembly also pass; final review/source CI and public delivery remain open. The eight extensibility seams do not establish full official UMF or
-an Ashlar adapter; release notes name the supported legacy semantic profiles.
+**P0 is closed for the scoped Arras 0.5.1 generic distribution release. P1 is
+remaining official UMF adoption; P2 is the separately governed reader/integration
+lane.** The immutable source is `8b786bb7629a6425e5a2b3b528378f0d92f0b847`.
+[Publication run `39879533273`](https://github.com/DocumentDrivenDX/arras/actions/runs/39879533273)
+passed source/native/build/SDK/installed-native/UI/assembly and published all
+sixteen assets. Its postpublication shell failure remains in history. The reviewed
+read-only [verification run `39883764998`](https://github.com/DocumentDrivenDX/arras/actions/runs/39883764998)
+then passed all three jobs: original-anchor checks, fixed reusable installed
+consumer, and full anonymous asset/distribution/doctor/example/theme qualification.
+The [final Sol review](evidence/arras-0.5.1-public-verification-review-20261023.json)
+binds actual receipts and preserves the separate runtime/platform limits.
 
-| Release-critical owner | Current state / dependency | Smallest closing gate |
+| Release-critical owner | Completed P0 evidence | Retained boundary |
 | --- | --- | --- |
-| P0-1 — release Sol/main Luna, coordinated in `01a16384-78eb-7b30-82e1-c1f1feacc383` | Typed per-host telemetry is implemented and Sol-reviewed across effective ADR-019 config, direct/MCP/ASGI/devhost and worker boundaries. The exact 0.5.1 598 wheel passes all 20 installed doctor cases, eight SDK phases and three false-pass controls, with independent identity review. | Repeat the unchanged verifier on exact-tag/public-download artifacts; preserve separate SDK/native runtime cohorts. |
-| P0-2 — packaged example/doctor Luna under the release owner | Public config/launcher, module/seed/graph composition and four fresh installed example tests pass on 0.5.1 598; all 72 applicable memory corpus cases pass, seven replica-only cases are inapplicable. | Repeat installed consumer/doctor checks against tagged and publicly downloaded bytes. |
-| P0-3 — UI testkit Sol/shared-suite Luna | Public Node testkit and browser host carry all 17 canonical specs and 83 verified resources. The current full packed themed ordinary comparison passes 272/272; historical capture approvals are retained; all 67 individually reviewed baselines remain unchanged, four route comparisons and four negative controls pass. | Exact-tag Linux nonvisual suite and fresh public-download repetition; keep Darwin visual evidence distinct. |
-| P0-4 — Weft/Truss owner `01a16023-fabd-7fa3-9abf-44d42e7fd673`, then Arras adoption lane `01a163ae-137a-7e13-9220-4f23c2e43bbf` | Public Truss 0.0.48/Weft 0.4.51 identities, Arras pins/lock/index, platform cohort templates and reported limits agree. Current hosted Linux passes 199 native tests; historical Mac 199-test source evidence is retained by explicit equivalence. The fresh exact-0.5.1 Darwin installed verifier passes with seven selected distribution payloads checked and corpus64passes/eight exact declared limits/seven inapplicable cases, independently reviewed. | Exact-tag Linux native gates and public delivery. Preserve 64 native corpus passes/eight expected limits/seven replica-only inapplicable cases separately from memory evidence. |
-| P0-5 — final release owner, after P0-1–4 | Generic design/docs and actual-shape release evidence checker are Sol-approved; final source/artifact convergence and publication remain open. GitHub assets are mandatory; registry access remains unavailable and explicitly deferrable. | Final source/sdist-rebuilt-wheel parity, actual safe bundle assembly and Sol review, final source CI, authorized merge/tag and exact-tag release gates; publish GitHub assets, then qualify fresh public downloads. Record registry deferral without claiming delivery. |
+| P0-1 — release Sol/main Luna | Public 17d wheel doctor 20/eight SDK phases/three false-pass controls pass; host-scoped naming/config/MCP/HTTP/worker attribution reviewed | Separate Mac SDK and native cohorts; no global provider or service identity |
+| P0-2 — example/doctor Luna | Downloaded-wheel fresh example 4 and memory 72 pass; seven replica-only cases inapplicable; fixed reusable consumer passes | Explicit module/seed/graph only; official semantic admission remains P1 |
+| P0-3 — UI Sol/Luna | Downloaded Linux 205 nonvisual cases, four route comparisons and four negative controls pass; separate Mac 272 and unchanged 75 reviewed baseline hashes retained through payload bridge | No Linux visual or Mac 17d execution claim |
+| P0-4 — native ownership lane | Publication Linux source 199 and installed native 64/eight declared limits/seven replica-only inapplicable pass on public Truss 0.0.48/Weft 0.4.51; seven distributions bound | Mac installed proof remains separate; no managed deployment or system-link audit |
+| P0-5 — release owner | GitHub16 assets/SUMS/aggregate and fresh anonymous consumers independently reviewed; all selected EX delivery gates close | Registry uploads deferred under human instruction; original failed postpublication run not relabelled |
 
-The immediate tranche is final review/source CI and exact-tag/public delivery,
-following successful Mac native and final source/sdist parity qualification. The shared Mac slot is
-coordinated explicitly with the dependency owners; no competing build/browser or
-native campaign runs during the selected native timing window. Official UMF
-admission/projection remains the separately owned P1 workstream after release.
+The delivered wheel/npm/sdist identities are recorded in the design note and
+public aggregate. Mac 598/460 component receipts retain original bytes and are
+linked by an independently reviewed container/payload equivalence bridge.
+The release is available at [v0.5.1](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.5.1).
+P0 closure changes no package, tag, asset or semantic support claim. Remaining
+A2–A7 and P1/P2 contracts, native capabilities and deployments stay open below.
 
 | After the scoped release | Owner/dependency | Bounded next acceptance |
 | --- | --- | --- |
@@ -292,33 +295,22 @@ Arras's dependency pins are unchanged.
 
 ## Extensibility Queue
 
-EX-01–EX-08 are accepted work from the coordinated source review. EX-01 now has
-scoped local distribution-boundary evidence below; EX-06, EX-04's forwarding phase and EX-03's root-export phase now have scoped local
-implementation/review evidence recorded below. Other uncompleted phases are not
-implemented capabilities. The [design](../02-design/downstream-extensibility.md)
-owns the proposed seams and source findings. Arras owns their contracts and
-implementation, with Sol planning/review and Luna implementation when a bounded
-tranche is selected. Exact public interfaces and test scenarios enter their
-governing contracts before code changes; the design's example layout is not a
-verified consumer.
+EX-01–EX-08 are closed for the recorded 0.5.1 generic release subset. The
+[design note](../02-design/downstream-extensibility.md) records current state,
+seams, remaining boundaries and future costs. Luna implemented and Sol reviewed
+these changes; actual public artifacts and fresh consumers establish delivery.
+Earlier local checkpoints below remain historical and are not relabelled.
 
-The selected EX-06 credential/grants repair, EX-04 schema-hook forwarding and
-EX-03 packed root-export fixes completed in that order with local evidence below.
-Their larger policy, assets and split phases remain separately gated. Establish
-EX-01's manifest before expanding public config,
-exports or compatibility claims; the broad sequence then follows EX-02,
-EX-03 assets, EX-05/EX-07 and EX-08.
-
-| Slice / priority | Bounded scope and governing boundary | Depends on | Acceptance before a support claim |
+| Slice / priority | Delivered boundary | Actual acceptance | Remaining scope |
 | --- | --- | --- | --- |
-| EX-01 distribution/public manifests; implemented/reviewed locally | Extend existing public-API and import manifests to Python exports, CONTRACT-001–011 mappings, packed npm exports, typed config/CLI/env names, CSS tokens and telemetry. Specify artifact semver/deprecation separately from contract/vocabulary versions; retain immutable package pins/digests. | Existing API/boundary checks; A1/A7 only for claims about the official-UMF/native cohort | A generic overlay clean-installs exact Python/npm artifacts and checks public imports/exports. Publish a declared/source-tested/installed-qualified matrix with Python/platform/subset limits; tag/source metadata alone does not qualify publication. |
-| EX-02 typed naming/env policy; after manifests | Reuse immutable `Brand` in the existing typed configuration boundary. Define presentation names, optional MCP tool prefix and opt-in environment aliases; retain canonical imports, wire codes, classes, tokens and instrumentation IDs. Separate presentation from credentials/handles. | EX-01; ADR-019, CONTRACT-005/007/008 and affected public config contract | Runtime UI/MCP/process presentation changes without rebuilding or changing protocol identity. Test startup name/prefix/collision bounds, wrapper imports, alias precedence and conflicting token/token-file refusal; configuration values import without environment I/O. No second Brand model. |
-| EX-03 UI/provider packaging; root exports implemented/reviewed locally, assets deferred | Expose the advertised `DesignSystemProvider` and required public types through deliberate packed root exports. Later define a versioned frontend asset manifest separating frontend build/release from Python static hosting: host-built widget replacement versus prebuilt same-origin CSS/font/favicon/appearance assets. | Existing ADR-027/029 and UI contract; EX-01 before broader public split/assets | Actual packed public imports, root-hook render/defaults, shared chunk and one host React peer have scoped evidence below. Fresh registry installation/publication remains separate. Later assets/theme gates cover all replacement-widget accessibility props, contrast, host-owned appearance, scoped styles and separate platform visual baselines. |
-| EX-04 operator/policy; forwarding implemented/reviewed, policy deferred | Forward the existing standalone schema surface's `authorize_schema` callback through composed UI hosting, preserving backend grants. Define a shared typed write-policy port only after ADR-005's workload, entitlement rule and governed-write prerequisites are met. Policy concepts are not callable signatures yet. | Existing schema-hook contract for forwarding; ADR-005 prerequisites plus amended contracts before the larger policy/audit phase | Composed/standalone forwarding and refusal gates have the scoped evidence below. Any later policy port covers direct Python, HTTP, MCP and administrative mutations, current principal and validate/apply revocation races; durable annotations bind to provider write/audit. Define transactional/version binding or refuse commit-time authority claims. Write hooks alone do not enforce derived-source read entitlement. |
-| EX-05 explicit modules/content; after foundation | Document public resource loading, default-content exclusion and trusted host registration. Keep discovery explicit and host-selected; no import-by-string or document-driven execution. Separate source validity, execution profiles and renderer support; version new shared view terms upstream. | EX-01; A1–A3 for official UMF admission/projection, CONTRACT-002/010 | A generic custom module/resource loads without bundled defaults or private fixtures. Original bytes/unknown meaning are preserved and affected unsupported operations refuse. Host-specific screens/content remain host-owned; no new entrypoint registry is required initially. |
-| EX-06 persistent backend credentials/grants; implemented/reviewed locally | Repair `LocalTruss.person()` reuse of persistent roles. Use an explicit shared host-owned stable credential source; ordinary attachment must not rotate another host's password, clear expiry or revoke independent memberships. Stale/inconsistent credentials refuse clearly; rotation/grant changes need an explicit coordinated operation. | CONTRACT-005/local lifecycle contract and focused tests first; no branding, official-UMF or upcoming release dependency | Local macOS/PostgreSQL 18.6/Truss 0.0.45 native, focused, reviewed CLI-correction and full-default-suite gates below pass for the selected repair. Preserve per-person credentials and distinguish host-created versus unrelated roles. No service-identity shortcut or silent grant reset. Broader adapter factory/conformance publication remains in EX-01/07. |
-| EX-07 public adapters/conformance/CI; after declared surfaces | Support explicit backend factories and existing adapter protocols/public corpus through documented pinned jobs or a versioned reusable workflow. Package only reusable runners/resources; native/browser fixtures must be usable without copying repository tests. | EX-01/05; EX-03 for themed UI jobs; EX-06 for persistent-host safety; A7 for native integration claims | A generic external overlay runs clean-install/import/config/corpus jobs without private registries or copied tests, plus explicitly selected native/theme jobs. Public-repository checks reject private dependencies/sensitive fixtures/forbidden consumer imports using generic rules. Review and generalize legacy host-specific docs and test fixtures; preserve original downstream intake in its owning source, and do not embed customer names in an upstream deny-list. Preserve independent module, adapter and UI boundary controls; do not infer a reusable workflow exists. |
-| EX-08 compatibility/offline doctor; after manifests | Document compatibility and changes per Python/contract/config/env/Brand/theme/UMF/backend seam. Add an offline doctor using public manifests/schemas with actionable pin/config/name/theme/module-profile diagnostics; native probes remain explicit separate operations. | EX-01 and the selected EX-02–EX-07 manifests/contracts | Compatible overlay passes; breaking export/config/token/profile cases diagnose without secrets, registration, network access or mutation. Static checks make no rendered-accessibility or native-execution claim; equal source versions/contract integers alone do not prove compatibility. |
+| EX-01 distribution/public manifest — closed | Deliberate Python/UI/config/env/CSS/telemetry catalog, contract mapping, semver/deprecation policy, wheel-carried npm and source archive | Actual sixteen GitHub assets, source/sdist parity, fixed reusable consumer and full anonymous comparison pass | PyPI/npm deferred; additional platform matrices need actual evidence |
+| EX-02 naming/env — closed | Typed Brand/DistributionConfig, thin public launchers, runtime presentation, explicit aliases and scoped telemetry | Public-wheel doctor 20/eight SDK phases/three false-pass controls pass; canonical defaults and identity-conflict refusal retained | Canonical imports/wire/CSS/signal identities stay stable |
+| EX-03 theme/UI packaging — closed | Six replacement slots including Mark, runtime CSS/font/favicon assets, public testkit and one React peer | Downloaded Linux 205 plus routes/controls pass; separate Mac 272 and unchanged 75 reviewed baseline hashes with payload bridge | Mac visuals remain platform-scoped; no private theme dependencies upstream |
+| EX-04 operator/policy — closed generic subset | Configured operator/role/schema/Operate callbacks, composed schema forwarding, PolicyBackend/refusal and optional annotation protocol | Source/cross-surface controls and public catalog/consumer checks pass; annotation transaction proof is synthetic | Native annotations unsupported; sensitive-state workload/entitlement/write-owner prerequisites remain mandatory |
+| EX-05 modules/content — closed | Host-selected module bytes, seeds/graph/resources and trusted handlers without automatic demo loading | Fresh downloaded example 4 and applicable memory 72 pass, seven replica-only cases inapplicable; no copied upstream tests | Closed view vocabulary extends upstream; official admission/projection and broader semantics remain A2–A7 |
+| EX-06 credentials/backend — closed selected subset | Stable person credentials and explicit host factories/connections/role ownership | Selected Truss 0.0.48/Weft 0.4.51 Linux source 199/native corpus 64 with eight declared limits/seven inapplicable; retained multi-host/restart/grant evidence | Production custody, managed hosts and additional adapters separately qualified |
+| EX-07 public conformance/CI — closed | Packaged Python corpus/native harness, Node/browser testkit, fixed reusable workflow and generic public-content gate | New same-run reusable installed consumer and full anonymous bundle/SDK/example/theme checks pass; independent safe-bundle review | Optional downstream native/theme jobs prove only explicit targets; HELIX authority links remain upstream |
+| EX-08 upgrades/doctor — closed | Per-seam release notes, exact pin policies and bounded offline doctor | Positive/breaking/no-I/O public-wheel checks pass without ambient credential access or registration/mutation | Static diagnostics do not qualify runtime semantics or managed deployment |
 
 Apply boundary cleanup alongside each selected EX/A slice, not as a wholesale
 rewrite. Use the design's responsibility map to separate admission from
@@ -1280,7 +1272,7 @@ exceptions, with all 75 reviewed baseline hashes unchanged.
 The [final archive review](evidence/arras-0.5.1-final-archive-review-20261022.json)
 qualifies sdist `e8c8636d43a1392fa5f30c2b1adf86cff9e1c0e999be88008a8aa1f13994864d`
 and receipt `8a64e1a7ed81fc225c2ea9132d56d269f6114d3516ee8da9d1ea90bf64896721`.
-Source and rebuilt wheels remain byte-identical to 598/npm460. The finalized
+Source and rebuilt wheels remain byte-identical to 598/npm 460. The finalized
 CHANGELOG, current UI evidence, release scripts and tests match the sealed archive.
 HELIX docs are excluded from the sdist; later documentation reconciliation does
 not replace the sealed archive. Both installed consumers pass and temporary
@@ -1408,6 +1400,26 @@ Independent safe reviews of the actual publication are retained as
 [public bundle](evidence/arras-0.5.1-published-bundle-review-20261023.json) and
 [Mac payload bridge](evidence/arras-0.5.1-binary-bridge-peer-review-20261023.json).
 
+Final public verification run `39883764998` completed successfully on driver
+`4bcccd4be9c437eb9957d74134a84b4421322c65`. The result receipt SHA-256 is
+`c02767057805896c24acfa98ed5bd5f0fc1d8aa4b89adcd1a56d02893a742023`;
+all five linked receipt hashes match. It binds original publication run
+`39879533273`, driver `c02bca2b5417227f8f28d72171be0f7378c9b0bf`, tag object
+`11b690b3795518315fa643379acf0f94383f135e`, source 8b, SUMS 43c41 and aggregate a848.
+Actual anonymous comparison, distribution parity, doctor 20/eight phases/three
+controls, fresh example 4/memory 72 and Linux 205/four route/four negative controls
+pass. All three jobs and the final tag-recheck/result step pass. Visual execution
+is explicitly excluded on Linux. Independent Sol review is retained in
+[the safe final record](evidence/arras-0.5.1-public-verification-review-20261023.json).
+Only HELIX closeout prose/evidence changes follow; immutable public assets and
+original failed-run receipts remain unchanged. Real PyPI/npm upload is deferred.
+
+The final HELIX-only closeout passes 23 documentation/public-content tests and
+the generic content/whitespace gates. Sol approves all five updated documents and
+three retained safe verification JSON records; the closure remains limited to the
+recorded generic release subset. No package/runtime/testkit/asset or tag changes
+are part of this documentation follow-up.
+
 ## Validation Plan
 
 - A0: focused `tests/test_umf.py` and `tests/test_core.py`; existing module/host
@@ -1469,10 +1481,10 @@ gates above are reviewable. It does not establish integration completion.
   conformance on their named native cohort. Unsupported cases remain explicit.
 - [x] The claimed legacy memory mutation subset refuses affected unsupported
   declarations explicitly; broader official facet/rule execution remains open.
-- [ ] Current Arras request snapshots are reconciled with HF-01–HF-07 dispositions;
+- [x] Current Arras request snapshots are reconciled with HF-01–HF-07 dispositions;
   no stale ask or candidate result is counted as release delivery.
-- [ ] Canonical contracts/test scenarios, evidence and Sol review agree with the
+- [x] Canonical contracts/test scenarios, evidence and Sol review agree with the
   delivered subset. Downstream application migration, Ashlar feed and actual Lakebase qualification
-  remain outside the scoped P0 release. P0 publication closes only on actual
-  exact-tag and fresh public-download evidence; remaining A2–A7 semantic work
+  remain outside the scoped P0 release. P0 delivery is closed against actual
+  publication and supplemental fresh public-download evidence; remaining A2–A7 semantic work
   stays separately open.

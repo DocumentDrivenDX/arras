@@ -32,15 +32,25 @@ checks before publication and fresh public-download qualification afterward.
 
 ## Qualification state
 
-The 0.5.1 wheel has fresh installed SDK, example, memory/native corpus and ordinary
-themed-browser qualification, plus independent source/sdist parity and Sol review.
-The immutable `v0.5.0` tag's
-[workflow](https://github.com/DocumentDrivenDX/arras/actions/runs/39869369841)
-failed before artifact creation or publication: its fuller dependency environment
-exposed a stale CLI-refusal assertion. This patch corrects the assertion and
-aligns regular Python CI with that environment. The production refusal remains intact.
-Exact-tag GitHub publication and fresh anonymous-download consumers are separate
-mandatory delivery gates, recorded by the release workflow and checklist.
+[Arras v0.5.1](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.5.1)
+is published with all sixteen assets (fifteen covered by SHA256SUMS). All eight generic downstream
+seams are delivered for the named subset. Publication run `39879533273` passed all
+prepublication gates; a later shell orchestration failure left its public
+consumer checks incomplete. The reviewed read-only
+[verification run `39883764998`](https://github.com/DocumentDrivenDX/arras/actions/runs/39883764998)
+then passed the fixed reusable consumer and full anonymous public-download
+checks, including distribution parity, doctor 20/eight SDK phases/three controls,
+fresh example 4/memory 72 and all 205 Linux nonvisual themed cases and controls.
+The [final independent review](../04-build/evidence/arras-0.5.1-public-verification-review-20261023.json)
+binds both runs and exact published artifacts. Original receipts and the
+prepublication aggregate remain unchanged; Mac component/visual evidence is
+separate and linked by reviewed payload equivalence.
+
+The immutable v0.5.0 tag failed before publication on a stale assertion. The
+initial v0.5.1 tag run failed before publication on UI build ordering. Both are
+preserved failure history, not replaced release results. This documentation
+closeout postdates the tagged package and its original GitHub notes; no artifact
+or tag has been rewritten.
 
 ## Highlights
 

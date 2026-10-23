@@ -44,35 +44,43 @@ subset is implemented; `partial` means material qualification or delivery remain
 relative scope. A bound interface, an implemented interface, a qualified cohort
 and a published artifact are separate facts.
 
-Distribution, typed naming, runtime assets, policy and external-consumer work now
-have binding interfaces in [CONTRACT-005](contracts/CONTRACT-005-embedding-and-lifecycle.md).
-The policy source has scoped Sol review; optional annotation atomicity uses a
-synthetic transaction and does not establish native annotation durability. The current 0.5.1 component wheel is
-`59827644e2e423980afed1047f75c7130dc5d8c542778df4b62a9e2244cdc24c`, carrying npm
-`460e1b1037d4965d17af8b3e689c364c22b51a09cc9d3d64c8ddf0296e34c943`.
-Its fresh qualification passes 20 installed doctor cases, eight SDK phases and
-three false-pass controls, four installed example tests and 72 applicable memory
-corpus cases (seven replica-only cases inapplicable). The ordinary themed run
-passes all 272 cases with no failures/skips, all four routes compared and four
-negative controls successful. All 67 canonical and eight narrow reviewed baseline
-image hashes remain unchanged. The earlier 0.5.0 capture and visual reviews remain
-historical approval evidence; they are not relabelled as a new capture. Fresh
-0.5.1 installed-native qualification also passes its selected corpus/payload gates.
-Exact-tag and public-download delivery remain pending.
+Arras 0.5.1 is [published on GitHub](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.5.1)
+with all sixteen assets (fifteen covered by SHA256SUMS). The eight EX seams below are **exists —
+qualified and delivered for the recorded subset**. Publication run
+[`39879533273`](https://github.com/DocumentDrivenDX/arras/actions/runs/39879533273)
+passed all prepublication gates and created the immutable assets; its later
+consumer orchestration failed. Reviewed verification-only run
+[`39883764998`](https://github.com/DocumentDrivenDX/arras/actions/runs/39883764998)
+then passed the fixed reusable installed consumer and complete anonymous
+public-download qualification. These are separate runs; original receipts and
+`not_run_at_assembly` remain unchanged. See the
+[final independent review](../04-build/evidence/arras-0.5.1-public-verification-review-20261023.json).
 
-The [build plan](../04-build/arras-integration-plan-20261022.md) records exact
-receipts, source reviews, failed candidates and remaining final-archive and
-public-delivery gates. Current Linux source and fresh 0.5.1 Darwin installed-native qualification pass
-for the selected public tuple. Historical Mac source qualification is retained by
-the reviewed source-equivalence attestation; exact-tag Linux execution remains separate. The
-[naming inventory](naming-surfaces.md) distinguishes stable identity from host
-presentation. The [release checklist](../05-deploy/deployment-checklist.md)
-requires exact-tag GitHub assets and fresh public-download consumers. Earlier
-[source](../04-build/evidence/arras-source-gate-expanded-20261022.json) and
-[distribution](../04-build/evidence/arras-distribution-20261022.json) checkpoints
-retain their original Python/platform and old native-pin scope; they do not
-qualify this frozen artifact. Real PyPI/npm uploads are explicitly deferred if
-existing access is unavailable; GitHub delivery remains mandatory.
+The delivered wheel is
+`17d50dedeaf9d4f7d27e0eb30cb16539bfa75de3a138dc9351284c2e2f390d4b`, carrying npm
+`76fc29a5a24747ef26d0e04263f1f8924034244b1169a41fb865e02274485e1f`;
+the source archive is
+`541aa91ae970ac16644679614d74b858f1a46e303b6429e0c10804c24bc0dd45`.
+Public SUMS digest is
+`43c41e44c3634724f0bccd0b92ee882f0771138044b5abbbde097890c839503c`;
+aggregate digest is
+`a84811a71b0180de8e3f2c225732c9c47410476d0389c229ef92090bf6314d7c`.
+Actual downloaded bytes pass distribution parity, 20 doctor/SDK cases with eight
+phases and three false-pass controls, four fresh example tests and 72 applicable
+memory corpus cases, and all 205 Linux nonvisual themed UI cases and controls.
+
+The separate Mac component wheel `59827644e2e423980afed1047f75c7130dc5d8c542778df4b62a9e2244cdc24c`
+and npm `460e1b1037d4965d17af8b3e689c364c22b51a09cc9d3d64c8ddf0296e34c943`
+retain their original receipts: 272 ordinary themed cases, unchanged 67 canonical
+and eight narrow reviewed baselines, and the named installed SDK/native cohorts.
+The [reviewed payload bridge](../04-build/evidence/arras-0.5.1-binary-bridge-peer-review-20261023.json)
+proves identical decompressed npm payloads; compressed container bytes differ.
+This is not Mac execution of the delivered Linux-built wheel. Native annotations,
+official UMF adoption and managed deployments retain their explicit limits below.
+PyPI/npm uploads are deferred under the human instruction; GitHub assets are the
+delivery route. The [build plan](../04-build/arras-integration-plan-20261022.md)
+retains failed attempts and all scoped evidence; the
+[naming inventory](naming-surfaces.md) keeps canonical identity separate from host presentation.
 
 Governing sources: [Architecture](architecture.md), [embedding CONTRACT-005](contracts/CONTRACT-005-embedding-and-lifecycle.md),
 [typed configuration ADR-019](adr/ADR-019-the-mcp-process-reads-one-typed-configuration.md),
@@ -81,45 +89,45 @@ Governing sources: [Architecture](architecture.md), [embedding CONTRACT-005](con
 and [design system ADR-029](adr/ADR-029-the-ui-draws-through-a-pluggable-design-system-seam-with-a-built-in-default.md).
 Exact new interfaces belong in the affected contracts before implementation.
 
-## Coverage and remaining specification work
+## Coverage and remaining boundaries
 
-| Concern | Queue / governing specification | Implemented or bound subset | Remaining acceptance gap |
+| Concern | Queue / governing specification | Delivered seam and acceptance | Remaining boundary |
 | --- | --- | --- | --- |
-| Distribution | EX-01; CONTRACT-005/public catalog | Reviewed catalog including launch-only imports, asset loader/result and lazy native harness; artifact/dependency parity and exact carried npm bytes | Final component/archive cohort passes; mandatory exact-tag gates, GitHub assets and downloaded consumers; registry delivery separately qualified/deferred |
-| Naming | EX-02; ADR-018/019, CONTRACT-005/007/008 | Reviewed Brand/tool/env/human launchers and implemented scoped TelemetryNames/TelemetryContext/effective-config provider factory; 150 focused source tests independently pass; packaged ADR-019 config and 20-case frozen-wheel installed consumer with eight SDK phases and three false-pass controls | Exact-tag and fresh-download repetition; native evidence remains separate |
-| Theming/UI split | EX-03; ADR-027/029, CONTRACT-005 | Public Node testkit/browser host, 17 shared specs and 83 resources; packed themed capture 272/272; all 67 canonical and eight narrow images reviewed | Ordinary full comparison passed; exact-tag and public-download delivery remain |
-| Operator/policy | EX-04; CONTRACT-005/007/009/010/011, ADR-005 | Existing callbacks, composed schema forwarding, PolicyBackend, safe PolicyRefused, optional annotation protocol with synthetic transaction proof | Final installed/cross-surface gates; native annotation support explicitly unavailable until qualified |
-| Modules/content | EX-05; CONTRACT-002/003/010, ADR-022 | Explicit custom resource example and no-default composition; final installed example four tests plus memory corpus 72/7 | Tag/download delivery; official-profile/native qualification remains separately scoped |
-| Backends/deployment | EX-06/07, A7; CONTRACT-004/005 | Host factories/connections, repaired stable credentials; reviewed packaged harness/verifier source with 17 offline controls | Exact-tag installed-native and public-delivery repetition; deployment-specific qualification remains host-owned |
-| Downstream CI | EX-07; TP-001/architecture | External Python/theme fixtures, generic public-content gate, reusable workflow, portable no-copy canonical testkit and actual packed themed capture | Ordinary full comparison passed; final integrated exact-tag/download jobs remain |
-| Upgrades | EX-08; CONTRACT-005/catalog | Reviewed offline doctor/report/CLI implementation and compatibility/deprecation policy | Frozen-wheel 20-case positive/breaking/no-I/O and launcher controls pass; finalize per-seam delivery record and repeat on public downloads |
+| Distribution | EX-01; CONTRACT-005/public catalog | Public catalog, wheel/sdist/npm parity, sixteen GitHub assets and complete anonymous installed-consumer proof | Registry delivery deferred; unrun platforms unqualified |
+| Naming | EX-02; ADR-018/019, CONTRACT-005/007/008 | Typed Brand/config, shim launchers, environment aliases and scoped telemetry; public-wheel doctor/SDK 20 cases/eight phases/three controls pass | Canonical import/wire/CSS/signal identities remain stable |
+| Theming/UI split | EX-03; ADR-027/029, CONTRACT-005 | Host-built six-slot theme and runtime assets; public 17-spec testkit; downloaded Linux 205 and separate Mac 272 with payload bridge | Visual baselines qualify Mac only; theme packages remain host-owned |
+| Operator/policy | EX-04; CONTRACT-005/007/009/010/011, ADR-005 | Callbacks, schema forwarding, PolicyBackend/refusal and optional annotation port delivered and reviewed | Annotation atomicity proof is synthetic; native annotations/source entitlement unqualified |
+| Modules/content | EX-05; CONTRACT-002/003/010, ADR-022 | Downloaded explicit module/seed/graph example passes four tests and memory 72/seven replica-only inapplicable cases | Official profiles and new view terms require separate upstream work |
+| Backends/deployment | EX-06/07, A7; CONTRACT-004/005 | Stable per-person credentials, host factories/connections and packaged conformance harness; Linux source 199/native corpus 64/eight limits/seven inapplicable | Deployment-specific qualification and production credential custody remain host-owned |
+| Downstream CI | EX-07; TP-001/architecture | Fixed reusable job and full anonymous consumer pass; no-copy Python/UI testkits and generic content gate delivered | Optional native/theme targets qualify only when explicitly run |
+| Upgrades | EX-08; CONTRACT-005/catalog | Offline doctor, compatibility/deprecation rules and per-seam release notes; positive/breaking/no-I/O public-wheel checks pass | Static checks cannot establish runtime capability or deployment compatibility |
 
-The contracts specify the new callable/value/asset/runner seams before code.
-Unfinished qualification is not an unbound API proposal. In-flight source is
-nevertheless unavailable to a pinned consumer until it is packed, delivered and
-verified from that exact artifact.
+All eight delivery rows close against the actual public cohort. Additional
+semantic/provider/deployment capabilities remain separate work, not implied by
+an implemented extension port.
 
 ## Compatibility and qualification matrix
 
 Version declarations define candidate compatibility; the evidence column limits
 what is actually qualified. `pgserver-pg18` 18.6.1 is the Python distribution
 version; it must not be presented as an observed PostgreSQL server patch version.
-The source suite separately asserts client libpq 18.6. The exact release bundle will bind its own wheel,
-platform and native cohort rather than merge these component runtimes.
+The source suite separately asserts client libpq 18.6. The exact release bundle binds its own wheel, platform and native cohort;
+component runtimes remain separate.
 
 | Component/cohort | Selected versions | Evidence and limit |
 | --- | --- | --- |
-| Arras Python/UI | `0.5.1`; Python requirement `>=3.11`, declared 3.11/3.12/3.13 | Current 598 wheel and 460 npm qualified as named below; declarations alone do not prove every interpreter/platform |
-| Native Linux x86_64 | Truss `0.0.48`, Weft `0.4.51`, `pgserver-pg18` `18.6.1`, CPython 3.11 | Actual source suite 199 passes; fresh installed/tagged native gates remain separate |
+| Arras Python/UI | `0.5.1`; Python requirement `>=3.11`, declared 3.11/3.12/3.13 | Delivered 17d wheel/76fc npm; separate Mac 598/460 payload-equivalent cohort. Declarations alone do not qualify every interpreter/platform |
+| Native Linux x86_64 | Truss `0.0.48`, Weft `0.4.51`, `pgserver-pg18` `18.6.1`, CPython 3.11 | Actual publication source 199 and installed corpus64/eight declared limits/seven replica-only inapplicable pass; seven native archive identities are bound |
 | Native macOS arm64 | Same public native tuple; CPython 3.11 | Historical source suite 199 passes, retained by reviewed native-source equivalence. Fresh exact-0.5.1 installed CLI corpus: 64 passes/eight declared limits/seven replica-only inapplicable, no failures/harness errors; seven selected distribution payloads verified. No system dynamic-link audit |
 | Native distribution floors | Linux x86_64 glibc `2.27`; macOS arm64 `14` | Static maximum dependency floors, not execution on those OS minima; exact seven-archive inputs live under `tests/downstream/native-cohorts/` |
 | Installed SDK macOS arm64 | Python `3.13.16`, OpenTelemetry API/SDK `1.45.1`, graphql-core `3.3.0` | Doctor 20 cases/eight phases/three controls; no native inference |
 | Fresh installed example macOS arm64 | Python `3.11.17`; example-extension-host `0.1.0` | Four tests; memory corpus 72 passes/seven replica-only cases inapplicable; no native inference |
 | UI macOS arm64 | Node `26.12.1`, React/ReactDOM `19.3.0`, TypeScript `6.0.3`, Vite `8.3.2`, Playwright `1.63.0`, axe `4.13.0`, Chromium `153.0.8010.12` | Historical capture approvals retained; current 0.5.1 ordinary comparison 272 passes, all 67 approved baselines unchanged |
-| UI Linux x86_64 | Node 24 and lock-pinned Playwright/Chromium | Nonvisual source/tagged installed suites are separate gates; visual project excluded |
+| Public SDK/example Linux x86_64 | Python `3.11.17`, OpenTelemetry API/SDK `1.45.1`, graphql-core `3.3.0` | Downloaded doctor 20/eight phases/three controls, fresh example 4 and memory 72/seven replica-only inapplicable pass |
+| UI Linux x86_64 | Node `24.21.0`, npm `11.19.0`, React `19.3.0`, TypeScript `6.0.3`, Vite `8.3.2`, Playwright `1.63.0`, axe `4.13.0`, Chromium `153.0.8010.12` | Actual downloaded packed consumer 205 nonvisual cases and controls pass; visual project explicitly skipped on Linux |
 | Document/view/rendering profiles | Selected legacy Arras document/action subset; `arras.view` `0.1.0`; schema-browser npm `2.0.0` | Original bytes retained and explicit profile refusal; official core `0.10.0` (`umf-v0.5.4`) has A1 source-validity evidence only; A2 admission/projection is separately gated |
 
-## 1. Distribution — partial
+## 1. Distribution — exists for the recorded 0.5.1 subset
 
 **Current state:** `src/arras/public-api.json` is the schema-versioned deliberate
 catalog for selected Python modules/symbols, CONTRACT-001–011 mappings, UI
@@ -145,30 +153,15 @@ increments the minor version; patches preserve it. Existing contract-specific
 deprecation grace remains. The wheel carries the exact scoped npm tarball, so a
 host can consume artifacts without requiring a registry upload.
 
-**Gap:** the final source archive and named component matrix have fresh artifact
-receipts and independent review. Public delivery remains. A tag alone proves source
-identity, not installability. GitHub Release wheel/sdist/npm/receipt/SHA256SUMS
-are required delivery; real PyPI/npm uploads are separately qualified or
-explicitly deferred if configured access is absent. Do not advertise an
-unavailable registry install or unrun platform.
+**Gap/cost:** scoped distribution delivery is complete. Public wheel, source archive,
+carried npm and all sixteen assets pass pinned digests, source/sdist parity and
+fresh anonymous consumers. Registry delivery is explicitly deferred. Future
+platform qualification or additional public surfaces need their own bounded work.
+The release checklist and CONTRACT-005 distinguish original single-run
+prepublication assembly from the reviewed, read-only supplemental verification;
+no evidence is relabelled or reassembled across those runs.
 
-**Gate/cost:** small remaining exact-tag/public-download delivery work. Exact-tag source/native/UI/downstream gates must precede
-publication; fresh public downloads must pass digests and installed consumers.
-CONTRACT-005 now binds separate build-input transport, a mandatory safe evidence
-assembler and a complete anonymous public-download job. The existing hosted
-reusable-consumer invocation remains required alongside that full-bundle job.
-Compare public sums/assets against the trusted current-run assembled stage and
-build wheel identity, then rerun existing artifact, doctor/SDK, fresh consumer
-and full themed UI tools on public bytes. Optional registry jobs wait for those
-results. The assembler has scoped source approval with ten tests; the workflow and public
-comparison helper have independent source approval with 30 focused tests, including
-executed malicious-download controls. The [workflow source review](../04-build/evidence/arras-release-workflow-source-review-20261022.json)
-records the frozen file identities. Assembly, tag/Linux gates and anonymous public
-download qualification still require actual execution; source approval is not a
-release result. The
-[release checklist](../05-deploy/deployment-checklist.md) owns that closure.
-
-## 2. Naming — partial
+## 2. Naming — exists for the recorded 0.5.1 subset
 
 **Current state:** `arras.branding.Brand` is the same class reexported by
 `arras.ui.Brand`. `arras.distribution.DistributionConfig` composes Brand,
@@ -189,8 +182,8 @@ development internals are not promoted.
 | `.arras-root`, component classes and eighteen `--arras-*` tokens | (a) Stable namespace | Host supplies values/widgets; renaming is a breaking upstream change |
 | Titles, wordmark, tagline, Mark and product-bearing UI text | (b) Host presentation | Shared Brand and escaped runtime injection; no page rebuild |
 | MCP server display name and exposed tool prefix | (b)/(c) Explicit typed presentation/alias | Canonical qualified actions/version meanings remain unchanged |
-| Telemetry Resource `service.name` | (b) Typed host-owned attribution | Source-reviewed TelemetryNames + explicit matching host provider Resource; 0.5.1 installed receiver proof passes; exact-tag/download repetition pending |
-| Event/attribute/log namespace prefixes | (b) Explicit host-scoped projection | Source-reviewed per-context output aliases after default-deny validation; 0.5.1 installed witnesses pass; canonical definitions/origin keys/defaults preserved; exact-tag/download repetition pending |
+| Telemetry Resource `service.name` | (b) Typed host-owned attribution | Source-reviewed TelemetryNames + explicit matching host provider Resource; 0.5.1 installed receiver proof passes; public-wheel repetition passes |
+| Event/attribute/log namespace prefixes | (b) Explicit host-scoped projection | Source-reviewed per-context output aliases after default-deny validation; 0.5.1 installed witnesses pass; canonical definitions/origin keys/defaults preserved; public-wheel repetition passes |
 | Tracer instrumentation scope | (a) Canonical library identity | `arras` scope unchanged; host provider owns service Resource and exporters |
 | Human error/help/banner product label | (b) Host presentation | Bootstrap Brand before config, effective Brand after load; printable/redacted; canonical invocation/dependency names remain truthful |
 | Downstream docs and package display metadata | (b) Consumer-owned | Upstream docs and actual npm/Python identities stay canonical |
@@ -232,7 +225,7 @@ not live server/native behavior or development argparse value redaction. The
 SDK receipt's conservative historical native-pin boilerplate establishes no
 native behavior; the public 48/51 native tuple has separate qualification.
 
-## 3. UI split and theming — partial
+## 3. UI split and theming — exists for the recorded 0.5.1 subset
 
 **Current state:** six widgets including Mark, eighteen role tokens, default
 light/dark appearance and packed public provider/types exist. The mountable page
@@ -291,7 +284,7 @@ That fixture target is not a general browser-support promise. Linux retains the
 205 nonvisual cases and skips the visual project. Canonical CSS identifiers,
 accessibility behavior and assertion thresholds remain unchanged.
 
-## 4. Operator and policy configuration — partial
+## 4. Operator and policy configuration — exists for the recorded 0.5.1 subset
 
 **Current state:** generic `operators_in_groups`, `authorize_operator`,
 `authorize_action` and composed `authorize_schema` remain host callbacks/config.
@@ -316,7 +309,8 @@ That is generic port qualification, not production durability or full backend
 conformance. Native Truss annotations remain unsupported until independently
 implemented and qualified.
 
-**Gap/cost:** small final exact-tag/public-download aggregate gates. Do not call
+**Gap/cost:** scoped generic policy delivery is complete; further native/provider
+annotation support requires separate implementation and qualification. Do not call
 unsupported annotation refusal proof actual native audit support. Import load IDs
 retain their existing provenance meaning. The generic callback introduces no
 sensitive derived workload. ADR-005 still requires the deployment's real written
@@ -324,7 +318,7 @@ workload, source-entitlement enforcement point and governed-write owner before
 actual sensitive derived state. Write hooks alone do not prove commit-time source
 authority or derived-source read entitlement; those deployment claims remain open.
 
-## 5. Modules and content — partial
+## 5. Modules and content — exists for the recorded 0.5.1 subset
 
 **Current state:** registration takes explicit document bytes, and trusted host
 calls bind handlers/resources. The [neutral Python extension host](../../../examples/extension_host/README.md)
@@ -342,8 +336,8 @@ unknown-meaning preservation and additional native semantics remain separately
 owned A1/A2 gates. Equal version strings are not conformance. Shared view terms
 need upstream vocabulary versioning; independent host screens remain host-owned.
 
-**Gate/cost:** small remaining exact-tag/public-download delivery; official
-semantic adoption is a separate medium/high-cost workstream. The fresh 0.5.1
+**Gate/cost:** explicit-content delivery is complete against downloaded artifacts;
+official semantic adoption remains a separate medium/high-cost workstream. The fresh 0.5.1
 [installed example proof](../04-build/arras-integration-plan-20261022.md)
 passed four tests including the public launcher, custom graph/seed console
 composition and all 72 applicable memory corpus cases, with seven replica-only
@@ -354,7 +348,7 @@ source-referencing PTH files. Earlier
 retain their older snapshot scope. Preserve explicit attribution, no-default demo
 loading, unsupported-profile refusal and consumer-owned resource provenance.
 
-## 6. Backends and deployment — partial
+## 6. Backends and deployment — exists for the recorded 0.5.1 subset
 
 **Current state:** `Arras.start(backends, ...)` accepts explicit host-built
 backends; process composition constructs known adapters rather than importing a
@@ -391,18 +385,17 @@ grant reset. Preserve reader/provider roles from `describe`, not Python method
 presence. Optional lifecycle/annotation capabilities are advertised only within
 their explicit qualified contracts.
 
-**Gap/cost:** small remaining exact-tag Linux installed-native and public-delivery
-gates. Retain two-host/restart/stale-credential/independent-grant tests. The local
+**Gap/cost:** selected Linux installed-native and public-delivery gates pass.
+Additional provider/deployment work has its own cost and acceptance. Retain two-host/restart/stale-credential/independent-grant tests. The local
 installed native receipt is distinct from source passes and static package checks.
 
-## 7. Downstream testing and CI — partial
+## 7. Downstream testing and CI — exists for the recorded 0.5.1 subset
 
 **Current state:** upstream source/native/UI pipelines, a reusable
 [downstream workflow](../../../.github/workflows/downstream.yml), explicit Python
 and theme fixtures, and a [generic public-content gate](../../../tools/check_public_content.py)
 with dependency/fixture provenance policy now have source. Named downstream prose/fixtures have been generalized under retained artifact
-identities; the gate does not embed customer names as a deny-list. The final
-cohort must rerun the content and provenance checks.
+identities; the gate does not embed customer names as a deny-list. The final cohort passed the content and provenance checks.
 Reviewed CI/release source uses the official HTTPS APT helper, checked effective
 network bounds, bounded browser setup and a real pinned Chromium launch/close;
 its source/fixture controls do not substitute for an actual Arras hosted run.
@@ -414,17 +407,18 @@ explicit native/theme profiles without copying repository tests. The packaged
 `arras-ui-qualify` CLI supports external themed URLs; its host-build probe contract
 and optional test peers are documented. The public `./testkit` and `./testkit/host` share the
 canonical suite and resources without copying tests; the actual 272-case themed
-capture and complete image review are described under Theming. The ordinary full comparison passed; tagged/downloaded consumers remain separate gates. The reusable workflow reports selected
+capture and complete image review are described under Theming. The ordinary Mac comparison and separate tagged/downloaded Linux consumers pass. The reusable workflow reports selected
 consumer test outcomes, not blanket native/rendered certification. The host owns
 its setup scripts and explicit test targets. Link HELIX authority and author
 local decisions rather than copying methodology or downstream source upstream.
 
-**Gate/cost:** small remaining exact-tag and public-download integrated jobs.
+**Gate/cost:** selected tag/public-download integrated jobs pass; new optional
+consumer targets require their own execution.
 The final generic content/provenance gate and component reviews pass. A mocked workflow, source-only runner, dependency reuse or
 unexecuted optional job cannot close the corresponding release claim. Verify the
 exact tagged cohort, retain outputs and make skip/unsupported states explicit.
 
-## 8. Upgrades — partial; public-delivery qualification pending
+## 8. Upgrades — exists for the recorded 0.5.1 subset
 
 **Current state:** version/deprecation rules and the deliberate catalog exist.
 The exact `arras.doctor` request/report/CLI contract is bound in CONTRACT-005.
@@ -448,8 +442,8 @@ Names-only environment checks make no credential identity claim. Legacy document
 checks are legacy subset/readability only; missing official or native-write proof
 is unsupported with no fallback.
 
-**Gate/cost:** small remaining exact-tag/public-download installed repetition and aggregate gates. Final release
-notes must record changes/action/deprecations per Python/contract/config/env/
+**Gate/cost:** public-wheel repetition passes. Release
+notes record changes/action/deprecations per Python/contract/config/env/
 Brand/theme/UMF/backend/runner seam. A static doctor cannot qualify rendered
 a11y, native semantics or compatibility merely from matching version integers.
 
@@ -488,19 +482,19 @@ delivered API inferred from this design.
 
 | Priority | Queue / work | Current disposition and acceptance |
 | --- | --- | --- |
-| 1 | EX-01 delivery | Rebuild final wheel/sdist/npm; mandatory exact-tag gates, GitHub bundle and fresh downloaded consumers; registry proof/defer explicit |
-| 2 | EX-02 naming/config | Scoped telemetry implementation/source review and packaged ADR-019 config exist; frozen-wheel 20-case/eight-phase SDK/config and public launcher proof passes; exact-tag/download repetition remains |
-| 3 | EX-03 theme/assets/public runner | Portable shared testkit and actual themed 272-case capture exist; all images reviewed; ordinary comparison passed; finish exact-tag/download gates |
-| 4 | EX-05/07 skeleton/content/CI | Fresh installed example/memory proof, theme fixtures, reusable jobs and generic source gates exist; final integrated tag/downloaded artifact/native gates remain |
-| 5 | EX-04 policy/audit | Source-reviewed generic wrapper/safe reasons/optional synthetic transaction capability; final installed gates; native annotations unsupported |
-| 6 | EX-08 upgrades/doctor | Source-reviewed implementation and frozen-wheel 20-case installed proof pass; finalize per-seam release record and public-download repetition |
-| Retained urgent subset | EX-06 host safety | Preserve native two-host/restart/expiry/grant regression; final exact cohort requalifies |
-| Parallel semantic dependency | A1/A2/A7 | Owning lane qualifies explicit UMF/profile and native cohort; no second interpreter or silent meaning loss |
+| Closed | EX-01 delivery | GitHub wheel/sdist/npm and exact sixteen-file bundle independently reviewed; anonymous consumers pass; registries deferred |
+| Closed | EX-02 naming/config | Public-wheel doctor/SDK/config/launcher controls pass; canonical identity remains stable |
+| Closed | EX-03 theme/assets/public runner | Downloaded Linux 205 and separate Mac 272/payload bridge pass; reviewed baselines unchanged |
+| Closed | EX-05/07 skeleton/content/CI | Actual fixed reusable job, fresh example/memory and anonymous full-bundle consumers pass |
+| Closed subset | EX-04 policy/audit | Generic callback/refusal/optional transaction port delivered; synthetic annotation proof only, native annotations unsupported |
+| Closed | EX-08 upgrades/doctor | Public-wheel positive/breaking/no-I/O checks pass; per-seam notes delivered |
+| Closed subset | EX-06 host safety | Credential/grant regression retained and selected Truss 0.0.48/Weft 0.4.51 native cohort qualified |
+| Separate next work | A1/A2/A7 | Official admission/projection/action and additional adapter/deployment capabilities remain separately governed |
 
 The canonical [EX queue](../04-build/arras-integration-plan-20261022.md#extensibility-queue)
 owns execution. [Release acceptance](../05-deploy/deployment-checklist.md) requires
 all selected rows, final source freeze and downloaded-artifact evidence. This
-note updates the implemented/bound/gap map; it is not publication approval.
+note records completed scoped delivery and preserves the unqualified boundaries.
 
 ## Minimal generic downstream proof target
 
@@ -525,7 +519,7 @@ example-distribution/
     dist/                        # compiled JS/declarations/assets
   ui/src/main.tsx                # bare UI + packed theme public imports
   runtime-theme.json             # generated v1 manifest from same packed theme
-  doctor-request.json            # EX08 request; frozen-wheel proof, delivery pending
+  doctor-request.json            # EX08 request; public-wheel proof
   tests/                         # own overlay assertions + packaged corpus/CLI
   .github/workflows/verify.yml   # pinned reusable jobs / explicit native/theme targets
   docs/helix/                    # local decisions and upstream authority links
@@ -535,10 +529,10 @@ The real [Python fixture](../../../examples/extension_host/README.md) demonstrat
 the explicit module/resource half; the [theme package](../../../tests/downstream/theme-package/package.json)
 and [browser fixture](../../../tests/downstream/README.md) demonstrate packed
 appearance and the two UI routes. Together they define the integrated external
-proof target; separate successes do not establish a single released cohort.
+proof target; the released 17d/76fc cohort now passes both public consumer routes.
 Runtime manifests are explicit UI arguments, not an invented TOML theme schema.
 The doctor entrypoint is implemented, source-reviewed and qualified against the
-current 0.5.1 wheel; exact-tag and public-download repetitions remain required.
+current 0.5.1 public wheel, including the fresh anonymous-download repetition.
 
 Acceptance pins exact wheel/npm/theme bytes, checks public shim imports, compiles
 theme/host against packed declarations with one React, qualifies actual internal
@@ -549,26 +543,19 @@ release downloads and record actual profile/tool/runtime/platform limits.
 
 ## Verified limits and unresolved facts
 
-- Earlier artifact/native receipts retain their exact snapshot limits. Fresh
-  0.5.1 component/archive receipts qualify their named cohorts; exact-tag and
-  public-download gates remain mandatory.
-- The release checklist records the owner's preflight and first-release intent.
-  Earlier web-reader cache misses were never evidence of HTTP 404 or registry
-  absence. This note does not independently recheck remote publication.
-- Human launchers, packed runner and doctor have source/candidate qualification;
-  final integrated skeleton/doctor/native compatibility and public delivery remain
-  tracked gaps, not finished merely because interfaces are bound or source files
-  exist.
-- Canonical CSS/import identities, signal definitions/origin keys and default
-  telemetry output stay stable. Required scoped attribute/event/log projections
-  and typed host Resource naming have frozen-wheel installed qualification;
-  exact-tag/public-download delivery remains pending; canonical
-  instrumentation policy is not a waiver of the downstream naming requirement.
-- Native policy annotations remain unsupported. Synthetic transaction evidence
-  is not production durability, native audit qualification or source entitlement.
-- Legacy document/read/action subset evidence is not general official-UMF
-  adoption or semantic execution. Other profile/native/managed deployment claims
-  remain explicitly owned and separately qualified.
-- No all-eight release completion is declared here. GitHub delivery, exact assets,
-  fresh downloaded consumers and the final per-seam support record remain the
-  release owner's evidence gate; optional registry deferral is named explicitly.
+- The scoped eight-seam release is delivered and independently reviewed. Original
+  publication and supplemental verification are separate, explicit runs; the
+  immutable aggregate still says `not_run_at_assembly`.
+- GitHub delivery is qualified. PyPI/npm publication remains deferred; no registry
+  install or unavailable account access is claimed.
+- Mac SDK/native/272-case visual evidence retains original component hashes.
+  The reviewed container/payload bridge does not claim Mac execution of 17d.
+  Linux 205 excludes the Mac-only visual project. Dependency floors and Python
+  classifiers do not establish execution on every supported-looking version.
+- Canonical CSS/import/signal identities stay stable; public-wheel scoped naming,
+  environment aliases, provider attribution and telemetry controls pass.
+- Native policy annotations remain unsupported. Synthetic transaction proof does
+  not establish production durability, native audit or source entitlement.
+- Legacy document/read/action evidence is not general official-UMF adoption.
+  Remaining A2–A7, managed deployment, replica convergence and additional storage
+  adapter work retain their own contracts, ownership and qualification gates.

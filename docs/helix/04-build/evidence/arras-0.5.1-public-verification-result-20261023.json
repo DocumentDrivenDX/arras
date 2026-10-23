@@ -1,0 +1,50 @@
+{
+  "original_publication": {
+    "driver_sha": "c02bca2b5417227f8f28d72171be0f7378c9b0bf",
+    "evidence_sha256": "a84811a71b0180de8e3f2c225732c9c47410476d0389c229ef92090bf6314d7c",
+    "run_attempt": "1",
+    "run_id": "39879533273",
+    "sums_sha256": "43c41e44c3634724f0bccd0b92ee882f0771138044b5abbbde097890c839503c",
+    "tag_object_sha": "11b690b3795518315fa643379acf0f94383f135e",
+    "workflow_ref": "DocumentDrivenDX/arras/.github/workflows/release.yml@refs/heads/main"
+  },
+  "published_wheel": {
+    "filename": "arras-0.5.1-py3-none-any.whl",
+    "sha256": "17d50dedeaf9d4f7d27e0eb30cb16539bfa75de3a138dc9351284c2e2f390d4b"
+  },
+  "purpose": "verification-only; no release assets were created or changed",
+  "receipts": [
+    {
+      "filename": "public-input-verification.json",
+      "sha256": "398467a2cd1347c125666f027dda556f060d3e36ff5df27d38616a1412d97ef2"
+    },
+    {
+      "filename": "public-distribution-verification.json",
+      "sha256": "027a7d05bda9c46c95f1f134b2fa3c4b2072c57e1deb02cd7fa57695351e696b"
+    },
+    {
+      "filename": "public-doctor-installed.json",
+      "sha256": "d0f80144a84bee71597a4704a7bff60899f976db7cb596265130e71a347a2fdb"
+    },
+    {
+      "filename": "public-extension-host-fresh-dependencies.json",
+      "sha256": "2d3840f742325ea2c6c0f19bafd6ba6ebcfcf81c7af0d4cddd96fdb887bb6a73"
+    },
+    {
+      "filename": "tests/downstream/evidence/linux/qualification-linux.json",
+      "sha256": "8f62d26fcbd15f9f817c339c846a4c68a60234b5cc3f67a1eddded962f832ae7"
+    }
+  ],
+  "release": {
+    "source_sha": "8b786bb7629a6425e5a2b3b528378f0d92f0b847",
+    "tag": "v0.5.1"
+  },
+  "schema_version": 1,
+  "status": "passed",
+  "verification": {
+    "driver_sha": "4bcccd4be9c437eb9957d74134a84b4421322c65",
+    "run_attempt": "1",
+    "run_id": "39883764998",
+    "workflow_ref": "DocumentDrivenDX/arras/.github/workflows/verify-published-release.yml@refs/heads/main"
+  }
+}
