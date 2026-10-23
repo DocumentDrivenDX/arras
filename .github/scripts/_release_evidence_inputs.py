@@ -37,6 +37,7 @@ def parse_arguments(argv: list[str] | None, description: str) -> argparse.Namesp
     parser.add_argument("--native-index", required=True, type=Path)
     parser.add_argument("--ui-receipt", required=True, type=Path)
     parser.add_argument("--consumer-receipt", required=True, type=Path)
+    parser.add_argument("--umf-admission-receipt", type=Path)
     parser.add_argument("--expected-version", required=True)
     parser.add_argument("--expected-wheel", required=True)
     parser.add_argument("--expected-wheel-sha256", required=True)

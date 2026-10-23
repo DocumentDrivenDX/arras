@@ -9,8 +9,10 @@ from typing import Any, cast
 
 if __package__:
     from . import _release_evidence_inputs as _inputs
+    from . import _umf_admission_receipt as _umf_receipt
 else:
     import _release_evidence_inputs as _inputs
+    import _umf_admission_receipt as _umf_receipt
 
 _fail = _inputs.fail
 _object = _inputs.object_value
@@ -456,9 +458,13 @@ def release_evidence_projection(
     sdist_name: str,
     sdist_sha: str,
     doctor_runtime: dict[str, str],
+    umf_admission: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    return {
-        "schema_version": 1,
+    requires_umf_admission = _umf_receipt.required_for_version(version)
+    if requires_umf_admission != (umf_admission is not None):
+        _fail("UMF admission projection presence does not match release version")
+    projection = {
+        "schema_version": 2 if requires_umf_admission else 1,
         "status": "passed",
         "version": version,
         "release_artifacts": {
@@ -489,3 +495,11 @@ def release_evidence_projection(
             },
         },
     }
+    if umf_admission is not None:
+        projection["umf_admission"] = {
+            "filename": "umf-admission-installed.json",
+            "sha256": component_hashes["umf-admission-installed.json"],
+            "qualification_phase": "release-build",
+            "status": "passed",
+        }
+    return projection

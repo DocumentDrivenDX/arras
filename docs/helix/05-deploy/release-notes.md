@@ -15,9 +15,36 @@ ddx:
       kind: informed_by
 ---
 
-# Arras 0.5.1 release notes
+# Arras release notes
 
-## Release scope and audience
+## 0.6.0 candidate — not yet released
+
+Arras 0.6.0 adds optional official source admission and bounded core-metadata
+projection. Install `arras[umf]` to use `arras.umf_admission`:
+`admit_document(document)` returns the immutable admission result, and
+`project_document(document)` performs fresh admission before returning a supported
+metadata projection or explicit projection issues. Legacy parsing stays the
+default. A host opts into `metadata_profile="umf-core-metadata/1"` on
+`Arras.start`; only the memory adapter qualifies this profile in the selected
+tranche. It allows schema registration/dry-run, description, document readback and
+authorized empty-graph reads. Writes refuse before effects, and the Truss adapter
+refuses this profile before acceptance. This is an admission and metadata profile,
+not value/constraint execution or canonical action support. See the [official
+admission and metadata contract](../02-design/contracts/CONTRACT-002-type-registry-and-placement.md#official-source-admission-and-core-metadata-profile)
+for input, profile and refusal details.
+
+The source and installed proof currently available belongs to an unreleased 0.5.1
+candidate wheel; it is historical and does not qualify 0.6.0. Release-preparation
+changes update Python/npm distribution versions and consumer defaults but add no
+runtime behavior beyond the merged A2 source. The candidate retains Truss 0.0.48,
+Weft 0.4.51 and UMF core 0.10.0 pins. Exact final-wheel and public-download UMF
+gates, schema-v2 17-asset assembly and all other mandatory checks remain pending.
+No publication is claimed. See the [integration plan](../04-build/arras-integration-plan-20261022.md#candidate-release-qualification)
+and [deployment checklist](deployment-checklist.md) for the release gates.
+
+## Historical release: 0.5.1
+
+### Release scope and audience
 
 Arras 0.5.1 supplies generic Python/UI interfaces for hosts that wrap or embed
 Arras. Host developers consume the wheel, source archive and exact scoped npm
@@ -30,7 +57,7 @@ the release instruction. GitHub assets are the supported
 delivery route. The [release checklist](deployment-checklist.md) requires exact-tag
 checks before publication and fresh public-download qualification afterward.
 
-## Qualification state
+### Qualification state
 
 [Arras v0.5.1](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.5.1)
 is published with all sixteen assets (fifteen covered by SHA256SUMS). All eight generic downstream
@@ -52,7 +79,7 @@ preserved failure history, not replaced release results. This documentation
 closeout postdates the tagged package and its original GitHub notes; no artifact
 or tag has been rewritten.
 
-## Highlights
+### Highlights
 
 Arras exposes a deliberate public API catalog and generic downstream seams for
 presentation, UI themes/assets, current-principal policy, explicit content and
@@ -64,7 +91,7 @@ Persistent development hosts retain per-person credentials. Starting another
 host no longer resets those passwords or unrelated grants. Composed UI hosting
 also forwards the host's schema-authorization callback.
 
-## Changes by seam
+### Changes by seam
 
 | Seam | Consumer-visible behavior |
 | --- | --- |
@@ -77,7 +104,7 @@ also forwards the host's schema-authorization callback.
 | Testing | The packaged corpus and public UI checker can be run without the upstream test tree. Reusable CI installs an exact digest-qualified wheel and the consumer's selected test targets. Generic import-origin and fixture-provenance gates protect the public source. Public Node-only `./testkit` and browser-only `./testkit/host` carry the shared 17-spec, 83-resource suite. The current installed ordinary themed comparison passes 272 cases, including 67 unchanged reviewed visual baselines; historical capture approvals remain separate; the Linux profile selects 205 nonvisual cases. |
 | Upgrade | The offline doctor checks installed identities, contracts/exports, config/naming, role-token names, manifests and declared document profiles. Reports distinguish incompatibility, malformed requests and unavailable proof. It does not read ambient credentials or contact hosts. |
 
-## Required actions and compatibility
+### Required actions and compatibility
 
 Pin exact artifacts and verify SHA256SUMS before installing. Use the catalogued
 public exports, keep your theme/content downstream, and run installed/native/UI
@@ -92,7 +119,7 @@ credentials. Previously created roles whose credentials were not retained requir
 explicit administrator recovery. Normal startup refuses that situation instead of
 silently changing passwords. This release does not migrate a live database.
 
-## Qualified scope and known limits
+### Qualified scope and known limits
 
 The [compatibility matrix](../02-design/downstream-extensibility.md#compatibility-and-qualification-matrix)
 separates actual component cohorts from version declarations. The selected native
@@ -125,7 +152,7 @@ entitlements still require the host's policy and qualified provider capabilities
 Static doctor checks do not establish rendered accessibility or native writes.
 Python classifiers and matching version strings do not qualify untested platforms.
 
-## Hold, rollback and support
+### Hold, rollback and support
 
 Hold an upgrade on any doctor incompatibility, checksum mismatch or failed
 consumer/native/theme gate. Retain the previous artifact pin and owned data until
@@ -135,7 +162,7 @@ versions and bounded diagnostic codes in the repository's issue tracker, without
 credentials or sensitive records. Native recovery follows the provider's own
 qualified procedures.
 
-## References
+### References
 
 - [Deployment checklist](deployment-checklist.md)
 - [Per-seam design and compatibility matrix](../02-design/downstream-extensibility.md)

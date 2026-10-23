@@ -36,6 +36,7 @@ def test_every_payload_job_pins_and_asserts_the_validated_target_commit() -> Non
     for name in (
         "truss",
         "build",
+        "umf-admission",
         "installed-native",
         "assemble-evidence",
         "ui-qualification",
@@ -86,3 +87,29 @@ def test_release_builds_ui_before_running_integration_and_keeps_current_run_gate
     assert "needs: [github-release, installed-downstream, downloaded-release]" in job_text(
         workflow, "publish-npm"
     )
+
+
+def test_umf_admission_is_required_before_assembly_and_repeated_from_public_wheel() -> None:
+    workflow = RELEASE.read_text()
+    proof = job_text(workflow, "umf-admission")
+    assert re.search(r"(?m)^    needs: \[check, build\]$", proof)
+    assert "Fresh installed UMF admission proof on exact wheel" in proof
+    assert "ref: ${{ needs.check.outputs.source_sha }}" in proof
+    assert "release-build-inputs/${{ needs.build.outputs.wheel_name }}" in proof
+    assert "--qualification-phase release-build" in proof
+    assembly = job_text(workflow, "assemble-evidence")
+    assert re.search(
+        r"(?m)^    needs: \[check, build, umf-admission, installed-native, ui-qualification\]$",
+        assembly,
+    )
+    assert "--umf-admission-receipt umf-admission/umf-admission-installed.json" in assembly
+    public = job_text(workflow, "downloaded-release")
+    assert "public-release-assets/${{ needs.build.outputs.wheel_name }}" in public
+    assert "--qualification-phase public-download" in public
+    assert 'outputs.append("public-umf-admission-installed.json")' in public
+    recovery = Path(__file__).parents[1] / ".github/workflows/verify-published-release.yml"
+    recovery_text = recovery.read_text()
+    anonymous = job_text(recovery_text, "anonymous-public-consumer")
+    assert "public-release-assets/${{ needs.trusted-publication.outputs.wheel_name }}" in anonymous
+    assert "--qualification-phase public-download" in anonymous
+    assert 'receipts.append("public-umf-admission-installed.json")' in anonymous

@@ -56,6 +56,7 @@ jobs:
       publication_workflow_ref: ${{ steps.verify.outputs.publication_workflow_ref }}
       publication_run_attempt: ${{ steps.verify.outputs.publication_run_attempt }}
       tag_object_sha: ${{ steps.verify.outputs.tag_object_sha }}
+      umf_admission_required: ${{ steps.verify.outputs.umf_admission_required }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -275,6 +276,13 @@ jobs:
             --output artifacts/public-distribution-verification.json \
             "public-release-assets/${{ needs.trusted-publication.outputs.wheel_name }}" \
             "public-release-assets/arras-${{ needs.trusted-publication.outputs.version }}.tar.gz"
+      - name: Repeat UMF admission proof from the anonymous public wheel
+        if: needs.trusted-publication.outputs.umf_admission_required == 'true'
+        run: |
+          uv run --no-project --python 3.11 python tools/verify_umf_admission.py \
+            --wheel "public-release-assets/${{ needs.trusted-publication.outputs.wheel_name }}" \
+            --qualification-phase public-download \
+            --output-json artifacts/public-umf-admission-installed.json
       - name: Run the installed doctor from the published wheel
         run: uv run --no-sync python tools/verify_doctor.py --wheel "public-release-assets/${{ needs.trusted-publication.outputs.wheel_name }}" --output-json artifacts/public-doctor-installed.json
       - name: Verify the fresh installed extension host
@@ -343,6 +351,7 @@ jobs:
           TARGET_TAG: ${{ needs.trusted-publication.outputs.release_tag }}
           TARGET_SOURCE_SHA: ${{ needs.trusted-publication.outputs.source_sha }}
           TARGET_TAG_OBJECT_SHA: ${{ needs.trusted-publication.outputs.tag_object_sha }}
+          UMF_ADMISSION_REQUIRED: ${{ needs.trusted-publication.outputs.umf_admission_required }}
         run: |
           set -euo pipefail
           cd verification-driver
@@ -361,6 +370,8 @@ jobs:
               "public-extension-host-fresh-dependencies.json",
               "tests/downstream/evidence/linux/qualification-linux.json",
           ]
+          if os.environ.get("UMF_ADMISSION_REQUIRED") == "true":
+              receipts.append("public-umf-admission-installed.json")
           records = []
           for name in receipts:
               path = Path(name) if name.startswith("tests/") else Path("artifacts") / name

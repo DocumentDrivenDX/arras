@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "expected_packages": {
-    "arras": "0.5.1",
-    "@documentdrivendx/arras-ui": "0.5.1"
+    "arras": "0.6.0",
+    "@documentdrivendx/arras-ui": "0.6.0"
   },
   "expected_contracts": {
-    "CONTRACT-004": 5,
-    "CONTRACT-005": 2,
+    "CONTRACT-004": 6,
+    "CONTRACT-005": 3,
     "CONTRACT-009": 2
   },
   "required_python_exports": {
