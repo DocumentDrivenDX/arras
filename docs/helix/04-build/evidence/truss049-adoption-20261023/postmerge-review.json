@@ -1,0 +1,107 @@
+{
+  "capture_limits": [
+    "Independent activity was source/JSON/hash/AST inspection only; no SDK, provider, PostgreSQL, browser or build execution.",
+    "This note adds no native campaign and no evidence for a new release, tag, asset, arbitrary platform or Ashlar integration.",
+    "The published0.6.0 release and its48/51 artifacts remain unchanged."
+  ],
+  "date": "2026-10-23",
+  "findings": [],
+  "implementation_agent_reported_checks": {
+    "configured_strict_pyright": {
+      "errors": 0,
+      "result": "passed"
+    },
+    "evidence_method": "Implementation-agent and coordinator terminal reports. The independent reviewer did not rerun these commands.",
+    "focused_source_checks": {
+      "deselected": 11,
+      "passed": 157,
+      "result": "passed"
+    },
+    "initial_full_non_native": {
+      "errors": 11,
+      "failed": 1,
+      "native_deselected": 201,
+      "passed": 3122,
+      "reported_cause": "Localhost bind sandbox permission refusal in test_devhost_server.py.",
+      "result": "failed"
+    },
+    "offline_lock_check": "passed",
+    "offline_private_environment_sync": "passed",
+    "permitted_affected_file_retry": {
+      "passed": 13,
+      "result": "passed",
+      "seconds": 1.55,
+      "target": "tests/test_devhost_server.py"
+    },
+    "permitted_full_non_native_retry": {
+      "native_deselected": 201,
+      "passed": 3134,
+      "result": "passed",
+      "seconds": 65.14
+    },
+    "ruff_check": "passed",
+    "ruff_format": "passed"
+  },
+  "independent_source_review": [
+    "Project metadata is 0.6.0; optional Truss and local-test dependency pins select public0.0.49 while Weft remains0.4.51.",
+    "Compared with released main, uv.lock changes only the Arras dependency metadata and Truss-toolkit package blocks; package membership and other dependency blocks are unchanged.",
+    "Public API catalog changes are limited to the two Truss constructor/factory callable entries for the keyword-only tolerated_grantees tuple.",
+    "Both platform cohort templates preserve corpus and all other selected wheels; only the Truss wheel identity and corresponding index digest change.",
+    "A2 official engine, projection, host registration, memory profile and contract-version implementation files are unchanged from released main.",
+    "Fresh-install-only exact tuple forwarding, bounded typed grant-refusal mapping and prior transaction/failure precedence retain the reviewed semantic scope.",
+    "Historical source and local qualification records remain byte-exact; their original source commits and editable0.5.1 runtime are not retargeted to the merged0.6.0 checkout."
+  ],
+  "managed_acceptance": "not_run",
+  "merge_parents": {
+    "adoption": "ae787e54ac7c49268c2b369f3a47d167cff1e18e",
+    "released_main": "8542d477c411c96a553ea84572b86c95c59d7cf2"
+  },
+  "new_installed_native_acceptance": "not_run",
+  "remaining_gates": [
+    "Draft PR hosted checks on its actual head.",
+    "Fresh installed Truss49 candidate/cohort proof before any claim of installed distribution qualification.",
+    "Actual separately authorized managed-service, ordinary human OAuth and MP-01 through MP-06 evidence; currently not_run."
+  ],
+  "retained_historical_evidence": {
+    "local_qualification": {
+      "adapter_cases": 199,
+      "arras_editable_version": "0.5.1",
+      "local_transaction_mode_cases": 2,
+      "qualification": "Original local source scope only; no merged-head native rerun or fresh installed proof is inferred.",
+      "sha256": "1d0fa1211bbf45bbe8673de58603fb0ff24b319f4be970849dd3109a6ffa7253",
+      "source_commit": "40ed2481507f11a61ed81260fbfffbfc8ff91eba"
+    },
+    "source_review": {
+      "reported_pure_controls": 52,
+      "sha256": "4bbd4567a19ee2950ec3799852f88e2272b06abf1d02a3e80e680732ab4842ab",
+      "source_base_commit": "89b241bc75cf5f6180a997b9a98d657bd36d7e58"
+    }
+  },
+  "reviewed_file_sha256": {
+    "docs/helix/02-design/contracts/CONTRACT-004-backend-contract.md": "84af61c95ec593898c6daaad0d7947646fb11cb12d1d11857ccc1003787fb0a8",
+    "docs/helix/02-design/contracts/CONTRACT-005-embedding-and-lifecycle.md": "0f7c3072b2dbd25bf34da4e822559549dff1ce5580f50d286a2a3eee155ff311",
+    "docs/helix/04-build/arras-integration-plan-20261022.md": "1dff9f591c25daedd8590099500a205a956e89e55e80fc1799e6c5d5bde6ac83",
+    "pyproject.toml": "76f566c654aa05c953f6e50fb2160734a62eb3f1eaff44bf5100290a5555ee69",
+    "src/arras/adapters/truss/lifecycle.py": "1cd4d6eca9c33ddc2863d9a8674f0b2ac1a2decd1d31d38ca66e062bad2d4609",
+    "src/arras/public-api.json": "ebd314c34af9830a2d64bd7968ef78b8fe2eef85ccb00cc6c479afa0d9a5be32",
+    "tests/test_truss_lifecycle.py": "e6a26f49cddcbab490c52f00e47d81149a05184e5473ac766f9b77a9c3206b92",
+    "uv.lock": "9c3c9ddf579356d65f82d743e91056e489f7e725997bf2e57e73ab4072da4d3b"
+  },
+  "reviewed_merge_commit": "1ec68cb857fdf96b1fc89b264bb4ef6c1ed2f3fe",
+  "schema": "arras.truss049-postmerge-source-review.v1",
+  "status": "draft_pr_source_review_passed",
+  "working_tree_delta": {
+    "format_ast_unchanged": true,
+    "format_only_files": [
+      "src/arras/adapters/truss/lifecycle.py",
+      "tests/test_truss_lifecycle.py"
+    ],
+    "frontmatter_unchanged": true,
+    "governed_status_only_files": [
+      "docs/helix/02-design/contracts/CONTRACT-004-backend-contract.md",
+      "docs/helix/02-design/contracts/CONTRACT-005-embedding-and-lifecycle.md",
+      "docs/helix/04-build/arras-integration-plan-20261022.md"
+    ],
+    "qualification": "These exact post-merge formatting/status bytes were reviewed before their separate commit; they are not represented as bytes already contained in the merge commit."
+  }
+}

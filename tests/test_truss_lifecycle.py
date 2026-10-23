@@ -84,9 +84,7 @@ class Script:
             )
         )
 
-    def install_in_transaction(
-        self, tx: Any, *, tolerated_grantees: tuple[str, ...] = ()
-    ) -> Any:
+    def install_in_transaction(self, tx: Any, *, tolerated_grantees: tuple[str, ...] = ()) -> Any:
         self.calls.append("install")
         self.install_tolerated_grantees = tolerated_grantees
         if self.install_answer is not None:
@@ -1006,7 +1004,9 @@ def test_other_typed_migration_refusals_keep_the_missing_createrole_priority() -
         {"role_name": "\ud800", "object_class": "relation", "phase": "pre_ownership"},
     ],
 )
-def test_malformed_third_party_grant_context_is_generic_and_does_not_leak(context: dict[str, Any]) -> None:
+def test_malformed_third_party_grant_context_is_generic_and_does_not_leak(
+    context: dict[str, Any],
+) -> None:
     rig = Rig(Typed())
     rig.script.install_answer = ok(InstallRefused("third_party_grant", **context))
     with pytest.raises(Unavailable) as caught:

@@ -1360,7 +1360,7 @@ The embedding host supplies a current person credential for each new connection 
 
 ## Later public 0.0.49 managed-host handoff
 
-This later-tranche amendment leaves the independent frozen release and its
+This later-tranche amendment leaves the published 0.6.0 release and its
 receipts unchanged. The host may supply `tolerated_grantees=()` through the
 explicit Truss factory/backend constructor (CONTRACT-004). Construction performs
 no connection, environment lookup or SDK import; fresh install alone forwards

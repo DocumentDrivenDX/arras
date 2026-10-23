@@ -403,7 +403,7 @@ The adapter operations are the ones the client interactions need once reads are 
 ## Later public 0.0.49 adoption — separate unqualified tranche
 
 This amendment governs the later adoption branch only. It does not change the
-independent frozen release's 0.0.48/0.4.51 cohort or its historical evidence.
+published 0.6.0 release's 0.0.48/0.4.51 cohort or its historical evidence.
 Public Truss 0.0.49 has native digest
 `288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4`;
 its shared `0.74-candidate` release label alone does not identify those bytes.

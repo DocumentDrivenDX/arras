@@ -73,7 +73,9 @@ def _third_party_grant_refusal(backend: str, refusal: Any) -> Unavailable:
         object_class = getattr(refusal, "object_class", None)
         phase = getattr(refusal, "phase", None)
     except Exception:
-        return Unavailable(backend, "migration_failed", "truss third_party_grant context unavailable")
+        return Unavailable(
+            backend, "migration_failed", "truss third_party_grant context unavailable"
+        )
     if (
         type(role) is not str
         or not role
@@ -83,16 +85,18 @@ def _third_party_grant_refusal(backend: str, refusal: Any) -> Unavailable:
         or type(phase) is not str
         or phase not in _TOLERATED_PHASES
     ):
-        return Unavailable(backend, "migration_failed", "truss third_party_grant context unavailable")
+        return Unavailable(
+            backend, "migration_failed", "truss third_party_grant context unavailable"
+        )
     try:
         if len(role.encode("utf-8", errors="strict")) > _ROLE_BYTES:
             raise ValueError
     except (UnicodeEncodeError, ValueError):
-        return Unavailable(backend, "migration_failed", "truss third_party_grant context unavailable")
+        return Unavailable(
+            backend, "migration_failed", "truss third_party_grant context unavailable"
+        )
     quoted_role = json.dumps(role, ensure_ascii=True, separators=(",", ":"))
-    detail = (
-        f"truss third_party_grant role={quoted_role} object_class={object_class} phase={phase}"
-    )
+    detail = f"truss third_party_grant role={quoted_role} object_class={object_class} phase={phase}"
     return Unavailable(backend, "migration_failed", detail)
 
 

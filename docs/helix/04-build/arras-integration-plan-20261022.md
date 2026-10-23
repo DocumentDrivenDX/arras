@@ -1652,11 +1652,15 @@ gates above are reviewable. It does not establish integration completion.
 
 ## Later public Truss 0.0.49 adoption — isolated work
 
-The isolated adoption branch starts from `df923164840cb225a278d760ba911c106fa3c080`;
-package metadata remains 0.5.1. The independent 0.6.0 release retains its
-Truss 0.0.48/Weft 0.4.51 cohort. No merge or version/tag/publication follows
-from this plan; integration requires the explicit release-owner handoff.
-Runtime campaigns require separately coordinated resource slots.
+The isolated adoption branch began at `df923164840cb225a278d760ba911c106fa3c080`
+with package metadata 0.5.1. After the release-owner handoff and PR 8 merge,
+it merged released main `8542d477c411c96a553ea84572b86c95c59d7cf2`; current
+package metadata is 0.6.0. The published 0.6.0 release retains its original
+Truss 0.0.48/Weft 0.4.51 cohort. Earlier adoption receipts remain bound to their
+captured 0.5.1 sources; the merge does not retarget them or qualify a new wheel.
+Merged-head checks and installed-artifact qualification remain separate gates.
+No new version/tag/publication follows from this plan. Runtime campaigns require
+separately coordinated resource slots.
 
 | Owner | Bounded deliverable | Gate and retained boundary |
 | --- | --- | --- |
@@ -1673,7 +1677,8 @@ Weft stays 0.4.51, source `557153731e9f5d0583193a1189a07c6ed485d3d3`.
 The Truss/public49 and managed-target owner
 `01a16383-183c-7680-9518-f69ff40383e5` retains the immutable public49 proof and
 Lakebase custody. The independent A2/0.6.0 release owner
-`01a16023-fabd-7fa3-9abf-44d42e7fd673` controls that separate release handoff.
+`01a16023-fabd-7fa3-9abf-44d42e7fd673` provided the integration handoff after
+the published release and PR 8 merge.
 The published49 proof labels actual Lakebase `not_run`. The separate
 [source review](evidence/truss049-adoption-20261023/source-review.json) binds
 the harness and reported 52 pure controls. The
