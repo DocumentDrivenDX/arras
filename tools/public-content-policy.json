@@ -96,7 +96,9 @@
       {"path":"tests/vectors/inputs.json","provenance":"authored-test-vector","source":"tests/test_inputs_vectors.py","sha256":"5a461fafac10a7f030d51c5469d944b15507fb2e9560bb15b23dac7ca8b030a8"},
       {"path":"tests/vectors/template.json","provenance":"authored-test-vector","source":"tests/test_template_vectors.py","sha256":"de94910397420b903b15889e2fa2a56e7380e6e7edd327d992e15e0080c58aa3"},
       {"path":"ui/src/test/layout.vectors.json","provenance":"authored-ui-test-vector","source":"ui/src/test/layout.test.ts","sha256":"ddbc25b0afe031b085238f1d1cd83c50d7be938b19099ce6aeec2064716f3f96"},
-      {"path":"ui/src/test/scheme.vectors.json","provenance":"authored-ui-test-vector","source":"ui/src/test/umf-browser.test.ts","sha256":"bb4be74b9fd4a10811bd6f735bdce21ae4d9c907854a58ade52db10630d84eae"}
+      {"path":"ui/src/test/scheme.vectors.json","provenance":"authored-ui-test-vector","source":"ui/src/test/umf-browser.test.ts","sha256":"bb4be74b9fd4a10811bd6f735bdce21ae4d9c907854a58ade52db10630d84eae"},
+      {"path":"examples/lakebase_qualification/target.example.json","provenance":"inert-managed-service-qualification-example","source":"examples/lakebase_qualification/README.md","sha256":"d1ed5340bc5a2a57281c4a37037de57f02bcb37f1c24997db1546d1649fa6ffe"},
+      {"path":"examples/lakebase_qualification/authorization.example.json","provenance":"inert-managed-service-qualification-example","source":"examples/lakebase_qualification/README.md","sha256":"82844247c03ba29619c9de9a632232868f53d97f33db3064b30568e45c7f47a8"}
     ]
   }
 }

@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "provider": "lakebase",
+  "auth_profile": "native-password",
+  "target_id": "REPLACE_WITH_OWNER_APPROVED_OPAQUE_TARGET_ID",
+  "provider_resource_id": "REPLACE_WITH_OWNER_CAPTURED_PROVIDER_RESOURCE_ID",
+  "endpoint": {
+    "host": "REPLACE_WITH_OWNER_CAPTURED_HOST",
+    "port": 5432,
+    "database": "REPLACE_WITH_DEDICATED_DATABASE",
+    "sslmode": "verify-full"
+  },
+  "expected": {
+    "postgres_version_num": "180006",
+    "truss_version": "0.0.49",
+    "truss_wheel_sha256": "REPLACE_WITH_VERIFIED_TRUSS_WHEEL_SHA256",
+    "native_manifest_sha256": "288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4",
+    "migration_manifest_sha256": "96addcdb95523f478d8f50b0b47198e47a860680c7400dd359711930e837e535",
+    "weft_version": "0.4.51"
+  },
+  "resources": {
+    "database": "REPLACE_WITH_DEDICATED_DATABASE",
+    "installation_schema": "truss",
+    "ordinary_role_names": [
+      "REPLACE_WITH_REGISTRAR_LOGIN",
+      "REPLACE_WITH_WRITER_LOGIN",
+      "REPLACE_WITH_READER_LOGIN",
+      "REPLACE_WITH_DENIED_LOGIN"
+    ],
+    "tolerated_grantees": [],
+    "generated_installation_role_count": 2,
+    "module_access": {
+      "document_id": "arras-lakebase-qualification-v1",
+      "source_sha256": "0d9c4bd6c390803483937200812e838d45734e0e0ab7925374d88aceb767f16f",
+      "reader_role": "REPLACE_WITH_OWNED_MODULE_READER_ROLE",
+      "writer_role": "REPLACE_WITH_OWNED_MODULE_WRITER_ROLE",
+      "auditor_role": "REPLACE_WITH_OWNED_MODULE_AUDITOR_ROLE"
+    }
+  },
+  "requested_cases": [
+    "LB-ADMISSION",
+    "LB-INSTALL",
+    "LB-PERSON",
+    "LB-CUSTODY",
+    "LB-SETTLEMENT",
+    "LB-ACL",
+    "MP-01",
+    "MP-02",
+    "MP-03",
+    "MP-04",
+    "MP-05",
+    "MP-06"
+  ]
+}
