@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT OR Apache-2.0
-"""Selected SDK 0.49 feed revision, history, reservation, and source carriers."""
+"""Selected SDK 0.50 feed revision, history, reservation, and source carriers."""
 
 from __future__ import annotations
 

@@ -1927,3 +1927,48 @@ open: the local selected-policy diagnostic reached the supported installer
 deadline, and explicit operator authorization for the reviewed disposable
 colocated runner and temporary subnet is pending. No new infrastructure has
 been created. Merge, tag, release-build and public-download gates remain open.
+
+## Current public Truss 0.0.50 adoption continuation — 2026-10-24
+
+The active 0.6.1 candidate now selects public Truss 0.0.50, source
+`a687d0a226dad5745cbd909377bf99c7c1cddc66`, wheel SHA-256
+`7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00`.
+The Arras source-binding record is
+`docs/helix/04-build/evidence/truss050-adoption-20261024/extension-source-binding.json`
+(SHA-256 `7ce3846a77f705fa5d1b6cabca98cbf46dec4497a53ab652dd239e4035ee2329`).
+The source-only Truss 0.0.50 dependency review has SHA-256
+`841579af03e375d1bafa1e6a19dc483d9d5ab096fe9a75fd36d834dfb48ee894` and found
+no newly introduced extension dependency. Direct archive comparison found 50
+native SQL runtime files and five JSON resources byte-identical to the prior
+pinned inventory. The separate Truss v0.0.50 exact-tag workflow
+[passed](https://github.com/DocumentDrivenDX/truss/actions/runs/40068606364)
+its Linux release gates, including 107 migration tests, 62 HF cases and 174
+managed-grant tests. Its selected small functional workload also passed; this is
+not a general performance result or Arras managed acceptance. The native
+manifest is unchanged
+(`288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4`), while
+the active migration manifest is separately versioned
+(`4c6baf0282e3d0b5492f070c9c07d89ff0c9a819e748f3820f60b11c1f51c7aa`) and
+preserves the public 0.0.49 migration manifest
+(`96addcdb95523f478d8f50b0b47198e47a860680c7400dd359711930e837e535`). This is
+public artifact/source binding only. It does not create a new database
+observation or transfer the earlier 0.0.49 installed-native or managed receipts.
+
+The current gates remain open and bind to the exact eventual Arras wheel:
+
+- Complete fresh-installed macOS arm64 / CPython 3.11.9 qualification: all 72
+  applicable cases, including the 64 expected passes and eight unchanged
+  declared limits, plus independent cleanup.
+- Complete actual Lakebase qualification for all twelve required cases and
+  independently confirmed owned-resource cleanup, using the already-provisioned
+  reusable ordinary actor setup. No new VM or repeated administrator
+  provisioning is part of this continuation.
+- Final source, artifact, and hosted release gates after both receipts bind to
+  the same canonical wheel bytes.
+
+The old 0.0.49 sections above remain historical. The current source pin changes
+neither the published 0.6.0 cohort nor the earlier receipts, and it does not
+qualify managed service behavior. The runtime layout/native manifest, UMF
+catalog/application schema, and Truss migration manifest remain distinct
+versioned boundaries; no migration edge or schema transition is inferred from
+the shared native manifest.

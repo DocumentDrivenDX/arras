@@ -793,3 +793,31 @@ receipts. The final tagged build and public-download wheel must have that same
 SHA-256. Any byte change, including packaging or metadata, requires both full
 campaigns rebound and rerun. Payload correspondence, earlier CI, a partial run
 or an isolated successful case cannot substitute for either complete campaign.
+
+## Current Truss 0.0.50 adoption gates — 2026-10-24
+
+The active 0.6.1 source pins public Truss 0.0.50 wheel
+`7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00`, source
+`a687d0a226dad5745cbd909377bf99c7c1cddc66`. The source-binding record at
+`docs/helix/04-build/evidence/truss050-adoption-20261024/extension-source-binding.json`
+records public archive/source correspondence and the reviewed carry-forward
+basis for the extension requirement; it is not an installed or database test.
+Its native manifest is unchanged, and its distinct migration manifest preserves
+the former 0.0.49 manifest. Existing 0.0.49 tests and receipts remain scoped to
+their original wheel and target.
+
+Before merge/tag, the exact final Arras wheel still requires both complete gates:
+
+- Fresh-installed macOS arm64 / CPython 3.11.9 (the selected hosted workflow
+  tuple): all 72 applicable corpus cases,
+  with 64 passes, eight unchanged declared limits, no failures, and independent
+  cleanup.
+- Actual Lakebase: all twelve required cases, their authorized person/provider
+  identity and lifecycle controls, and independent owned-resource cleanup.
+  Reuse the already-provisioned ordinary actors; no VM or repeated administrator
+  provisioning is required.
+
+Both receipts must bind to identical canonical Arras wheel bytes. Historical
+0.0.49 receipts, source-local tests, source binding, and partial schedules do
+not satisfy either current gate. The public artifact source comparison does not
+imply a new target database observation or native execution result.

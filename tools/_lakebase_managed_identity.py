@@ -15,9 +15,9 @@ from _lakebase_managed_common import digest as _digest
 
 _MP06_RUNTIME_MANIFEST_SHA256 = "288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4"
 _MP06_SOURCE_INVENTORY_SHA256 = "efba54c9ceb99137e11b7a2a95ebbb232dcde119f0cac63ecf19edafd7125b75"
-_MP06_REQUIREMENTS_SHA256 = "5de5efb68e9340cf3dc69d879618b8e8e953afae52385e70161c610b58e1d4de"
-_MP06_WHEEL_SHA256 = "7ea14b2787f02cbeec9ad99d835adbcc30c684fd5be8e0765a1d8198b50e7182"
-_MP06_MIGRATION_MANIFEST_SHA256 = "96addcdb95523f478d8f50b0b47198e47a860680c7400dd359711930e837e535"
+_MP06_REQUIREMENTS_SHA256 = "841579af03e375d1bafa1e6a19dc483d9d5ab096fe9a75fd36d834dfb48ee894"
+_MP06_WHEEL_SHA256 = "7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00"
+_MP06_MIGRATION_MANIFEST_SHA256 = "4c6baf0282e3d0b5492f070c9c07d89ff0c9a819e748f3820f60b11c1f51c7aa"
 _MP06_REQUIRED_EXTENSIONS = frozenset({("plpgsql", "1.0")})
 _MP06_ROUTINE_LANGUAGES = frozenset({("plpgsql", "plpgsql", "1.0", 341), ("sql", None, None, 32)})
 _MP06_EXTENSION_MEMBERS = frozenset(
@@ -180,7 +180,7 @@ def _extension_contract(
     if any(
         expected_package.get(key) != value
         for key, value in (
-            ("truss_version", "0.0.49"),
+            ("truss_version", "0.0.50"),
             ("truss_wheel_sha256", _MP06_WHEEL_SHA256),
             ("native_manifest_sha256", _MP06_RUNTIME_MANIFEST_SHA256),
             ("migration_manifest_sha256", _MP06_MIGRATION_MANIFEST_SHA256),

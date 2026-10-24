@@ -65,14 +65,19 @@ if access cannot be found. Do not advertise an unavailable registry install.
 | Downloaded release | Download the public release assets into a new directory, verify digests and repeat installed consumer/skeleton/doctor checks. A local build alone does not pass this gate. |
 | Official UMF qualification (0.6.0+) | The exact final wheel passes the installed admission/metadata gate with pinned official UMF 0.10.0: all 139 ordered reference and separate fresh-empty production Registry comparisons, six base and ten extra-enabled controls, zero skips, and verified cleanup. Repeat against the exact public-download wheel in a fresh environment; retain distinct receipts. The 0.5.1 candidate receipt is historical and cannot close this gate. |
 | Public assembly (0.6.0+) | Use release-evidence schema v2: include the mandatory safe UMF receipt projection as asset 17, bind it to the exact wheel, and repeat UMF qualification after public download. Keep v1/sixteen-asset evidence for historical releases unchanged. |
-| Truss 0.0.49 adoption / PR 9 | Before merge or tagging, retain and independently review the original fresh-installed exact-cohort proof and full actual Lakebase receipt: LB-ADMISSION, LB-INSTALL, LB-PERSON, LB-CUSTODY, LB-SETTLEMENT, LB-ACL and MP-01–06 all pass, with independent owned-cleanup confirmation. Bind the managed receipt to the executed harness/fixture hashes, actual installed Truss archive/manifests and exact final Arras wheel, which must also pass the complete fresh-installed macOS campaign. Require the tagged-build and public wheel SHA-256 to match both original campaign bindings; any byte change requires both campaigns rebound and rerun. Document exact source correspondence to the release artifact; source-local checks, bootstrap evidence, partial schedules and earlier candidate artifacts cannot close this gate. |
+| Truss 0.0.50 adoption / PR 9 | Before merge or tagging, retain and independently review the fresh-installed exact-cohort proof and full actual Lakebase receipt: LB-ADMISSION, LB-INSTALL, LB-PERSON, LB-CUSTODY, LB-SETTLEMENT, LB-ACL and MP-01–06 all pass, with independent owned-cleanup confirmation. Bind the managed receipt to the executed harness/fixture hashes, actual installed Truss archive/manifests and exact final Arras wheel, which must also pass the complete fresh-installed macOS campaign. Require the tagged-build and public wheel SHA-256 to match both original campaign bindings; any byte change requires both campaigns rebound and rerun. Document exact source correspondence to the release artifact; source-local checks, bootstrap evidence, partial schedules and earlier candidate artifacts cannot close this gate. |
 
 ## PR 9 / 0.6.1 execution
 
-- [x] The exact `c31b56e5...` 0.6.1 wheel passes the complete fresh-installed
+- [x] Historical candidate `c31b56e5...` passed the complete fresh-installed
   macOS native campaign (64 passed, eight unchanged limits, no failures),
-  independent cleanup, installed doctor and CI-installed official UMF checks;
-  the integration plan records the original receipt and cohort digests.
+  independent cleanup, installed doctor and CI-installed official UMF checks.
+  This Truss 0.0.49-bound result is retained historically and does not qualify
+  the current Truss 0.0.50 selection.
+- [ ] The current exact Truss 0.0.50 source/wheel binding is recorded, then the
+  new canonical Arras wheel passes the complete fresh-installed macOS campaign
+  and all twelve actual Lakebase cases with independent cleanup. Rebind both
+  receipts to that exact wheel; no earlier 0.0.49 or candidate result transfers.
 - [ ] Release-built artifacts match that exact wheel and complete their own
   distribution, native, doctor, official UMF and downstream UI release gates.
 - [ ] All twelve actual Lakebase cases and independent owned cleanup pass; the

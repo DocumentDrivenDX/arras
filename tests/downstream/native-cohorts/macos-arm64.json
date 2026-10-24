@@ -49,15 +49,15 @@
     "version": 13
   },
   "find_links": {
-    "sha256": "8daadb5c16ce5e5418ca1d423b759bc8b3fd76068f0ee5ed59ee5a1bd523d4bd"
+    "sha256": "a04f0e579585e30cc8a33830290ff66695bbe8fab264a3367ea0709152b8a40e"
   },
   "native_wheels": [
     {
       "distribution": "truss-toolkit",
-      "filename": "truss_toolkit-0.0.49-py3-none-any.whl",
-      "sha256": "7ea14b2787f02cbeec9ad99d835adbcc30c684fd5be8e0765a1d8198b50e7182",
-      "url": "https://github.com/DocumentDrivenDX/truss/releases/download/v0.0.49/truss_toolkit-0.0.49-py3-none-any.whl",
-      "version": "0.0.49"
+      "filename": "truss_toolkit-0.0.50-py3-none-any.whl",
+      "sha256": "7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00",
+      "url": "https://github.com/DocumentDrivenDX/truss/releases/download/v0.0.50/truss_toolkit-0.0.50-py3-none-any.whl",
+      "version": "0.0.50"
     },
     {
       "distribution": "weft-sql",

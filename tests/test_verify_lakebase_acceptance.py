@@ -542,7 +542,7 @@ def _operation_result_with_partial_success(inputs: Any) -> dict[str, Any]:
         "cases": cases,
         "observed": {
             "artifacts": {
-                "truss_version": "0.0.49",
+                "truss_version": "0.0.50",
                 "truss_wheel_sha256": None,
                 "native_manifest_sha256": None,
                 "migration_manifest_sha256": None,
@@ -615,7 +615,7 @@ def test_projection_failure_preserves_partial_execution_and_cleanup_facts(
         "installer": {"role_sha256": "b" * 64},
         "role_facts": {},
         "provenance": {},
-        "toolkit": "0.0.49",
+        "toolkit": "0.0.50",
         "weft": "0.4.51",
         "truss_status": type("Status", (), {"available": False})(),
         "operation_result": operation_result,

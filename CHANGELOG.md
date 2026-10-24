@@ -2,11 +2,18 @@
 
 ## 0.6.1 — release candidate
 
-Adopts exact public Truss 0.0.49 while keeping Weft 0.4.51 and official UMF
+Adopts exact public Truss 0.0.50 while keeping Weft 0.4.51 and official UMF
 core 0.10.0 fixed. Hosts may explicitly supply an immutable `tolerated_grantees`
 tuple for fresh Truss installation; reconnect preserves stored policy. Typed
 third-party grant refusals retain bounded diagnostics and the original rollback,
 uncertainty and quarantine behavior.
+
+The Truss native runtime manifest remains `truss-catalog-runtime/0.74-candidate`
+with SHA-256 `288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4`.
+The active migration manifest is versioned separately and retains the prior
+0.0.49 manifest. The 0.0.50 public source binding does not transfer earlier
+installed-native or Lakebase receipts; both complete 0.6.1 campaigns remain
+required for the exact final Arras wheel.
 
 Adds separately authorized Lakebase qualification with original identity,
 transaction, feed, recovery and provider observations. Source/local checks and

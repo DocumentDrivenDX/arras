@@ -19,11 +19,39 @@ ddx:
 
 ## 0.6.1 candidate
 
-This patch selects public Truss 0.0.49 and preserves Weft 0.4.51 and official UMF
+This patch selects public Truss 0.0.50 and preserves Weft 0.4.51 and official UMF
 core 0.10.0. Fresh installation accepts an explicit immutable
 `tolerated_grantees` tuple; reconnect verifies stored policy without widening it.
 The existing metadata-only profile, runtime support boundaries and historical
 0.6.0 release artifacts remain unchanged.
+
+The public Truss 0.0.50 wheel is pinned by SHA-256
+`7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00`, from
+source `a687d0a226dad5745cbd909377bf99c7c1cddc66`. Its native runtime manifest
+remains `truss-catalog-runtime/0.74-candidate` with SHA-256
+`288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4`; migration
+manifest `4c6baf0282e3d0b5492f070c9c07d89ff0c9a819e748f3820f60b11c1f51c7aa`
+retains the prior public 0.0.49 manifest unchanged. The additive
+[source-binding record](../04-build/evidence/truss050-adoption-20261024/extension-source-binding.json)
+documents wheel/source correspondence and references the source-only Truss 0.0.50
+dependency review. That review found no newly introduced extension dependency;
+the archive comparison matched 50 native SQL files and five JSON resources. The
+source-binding record is not a PostgreSQL observation or managed acceptance;
+it reports Lakebase acceptance as `not_run` and is distinct from the exact-tag
+Truss release result. Truss v0.0.50 tag run
+[`40068606364`](https://github.com/DocumentDrivenDX/truss/actions/runs/40068606364)
+passed its Linux release gates, including 107 migration tests, 62 HF cases and
+174 managed-grant tests. Its selected small functional workload also passed; it
+does not establish a general performance result or Arras Lakebase acceptance.
+
+The active 0.6.1 gates therefore remain open: qualify the exact final Arras wheel
+in the complete fresh-installed macOS campaign on the selected CPython 3.11.9
+environment (72 applicable cases: 64 passes
+and eight unchanged declared limits) and the complete twelve-case Lakebase
+campaign with independent owned-resource cleanup. The already-provisioned
+ordinary actor setup is reusable; no new VM or repeated administrator
+provisioning is part of this continuation. Prior 0.0.49 receipts remain
+historical and do not satisfy either 0.0.50-bound gate.
 
 PR 9 is under qualification. Its earlier candidate with 0.6.0 package metadata
 passed fresh installed native conformance (64 cases and eight unchanged declared

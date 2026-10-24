@@ -53,7 +53,7 @@ def _inputs(*, allowed_operations: tuple[str, ...] = (), scope: str = "baseline"
         },
         target={
             "expected": {
-                "truss_version": "0.0.49",
+                "truss_version": "0.0.50",
                 "truss_wheel_sha256": "a" * 64,
                 "native_manifest_sha256": "b" * 64,
                 "migration_manifest_sha256": "c" * 64,
@@ -303,7 +303,7 @@ def test_full_managed_keeps_every_managed_case_explicitly_blocked(
         operations,
         "_artifact_facts",
         lambda: {
-            "truss_version": "0.0.49",
+            "truss_version": "0.0.50",
             "truss_wheel_sha256": None,
             "native_manifest_sha256": None,
             "migration_manifest_sha256": None,
@@ -345,7 +345,7 @@ def test_full_managed_keeps_every_managed_case_explicitly_blocked(
         "MP-06",
     ]
     assert all(row["status"] == "blocked" for row in result["cases"])
-    assert result["observed"]["artifacts"]["truss_version"] == "0.0.49"
+    assert result["observed"]["artifacts"]["truss_version"] == "0.0.50"
     assert result["observed"]["artifacts"]["truss_wheel_sha256"] is None
 
 
@@ -356,7 +356,7 @@ def test_contrary_native_artifact_evidence_blocks_before_opening_database(
         operations,
         "_artifact_facts",
         lambda: {
-            "truss_version": "0.0.49",
+            "truss_version": "0.0.50",
             "truss_wheel_sha256": None,
             "native_manifest_sha256": "0" * 64,
             "migration_manifest_sha256": "c" * 64,
@@ -398,7 +398,7 @@ def test_artifact_digest_is_not_fabricated_from_malformed_direct_url(
     monkeypatch: pytest.MonkeyPatch, value: object
 ) -> None:
     class Distribution:
-        version = "0.0.49"
+        version = "0.0.50"
 
         def read_text(self, name: str) -> str | None:
             assert name == "direct_url.json"
@@ -426,7 +426,7 @@ def test_artifact_digest_is_not_fabricated_from_malformed_direct_url(
 
     monkeypatch.setattr(importlib.resources, "files", files)
     facts = native._artifact_facts()
-    assert facts["truss_version"] == "0.0.49"
+    assert facts["truss_version"] == "0.0.50"
     assert facts["truss_wheel_sha256"] is None
     assert facts["native_manifest_sha256"] is not None
     assert facts["migration_manifest_sha256"] is not None
