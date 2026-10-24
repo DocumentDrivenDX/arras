@@ -32,6 +32,7 @@ from _lakebase_managed_common import (
 )
 from _lakebase_managed_native import _observer_snapshot
 from _lakebase_managed_public import _insert_probe, _public_host, _query_probe
+from _lakebase_person import _safe_state_facts
 
 
 def _person_membership_summary(baseline_observed: Any) -> dict[str, Any]:
@@ -50,8 +51,17 @@ def _person_membership_summary(baseline_observed: Any) -> dict[str, Any]:
         "restoration_verified",
     }:
         raise _Blocked("person_membership_observation_invalid")
-    if type(state) is not dict or set(state) != {"before_sha256", "after_sha256", "unchanged"}:
+    if type(state) is not dict or set(state) != {
+        "before_sha256",
+        "after_sha256",
+        "unchanged",
+        "sequence_allocations",
+    }:
         raise _Blocked("person_state_observation_invalid")
+    try:
+        state = _safe_state_facts(state)
+    except ValueError as exc:
+        raise _Blocked("person_state_observation_invalid") from exc
     for key in (
         "revoke_operation_sha256",
         "restore_operation_sha256",

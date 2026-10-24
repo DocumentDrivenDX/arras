@@ -8,7 +8,7 @@ import json
 import os
 import sqlite3
 import sys
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
@@ -39,6 +39,7 @@ assert LIFECYCLE_SPEC is not None and LIFECYCLE_SPEC.loader is not None
 lifecycle = importlib.util.module_from_spec(LIFECYCLE_SPEC)
 sys.modules[LIFECYCLE_SPEC.name] = lifecycle
 LIFECYCLE_SPEC.loader.exec_module(lifecycle)
+access = importlib.import_module("_lakebase_managed_access")
 
 
 @pytest.fixture(scope="module")
@@ -1870,6 +1871,75 @@ def test_safe_projection_rejects_raw_inventory_or_unrecognized_person_facts() ->
     with pytest.raises(ValueError, match="unexpected field set"):
         managed.safe_managed_observations({"LB-CUSTODY": facts})
     assert managed.safe_managed_observations({}) == {}
+
+
+def _person_membership_observation() -> dict[str, Any]:
+    return {
+        "person": {
+            "schema_version": 1,
+            "membership_control": {
+                "revoke_operation_sha256": "c622eff995323b75ed5956a44f9fef8fae89327389ae1171d5cce449fd315702",
+                "restore_operation_sha256": "9b9f706c59c8db4ed7dff28b0a28410d98bf6a2e3e3ea6a4e20363eef9805173",
+                "revoked_membership_sha256": "f065f5350029b67d9b994c356d3696f43a065e2d0727c3ede978282b53c37010",
+                "restored_membership_sha256": "f065f5350029b67d9b994c356d3696f43a065e2d0727c3ede978282b53c37010",
+                "fresh_connection_denied": True,
+                "existing_session_denied": True,
+                "restoration_verified": True,
+            },
+            "state": {
+                "before_sha256": "d871f3efe5fe82bbe89be56c50a2abc28d5e0990a3eed3c86973ae54a15ad39a",
+                "after_sha256": "d871f3efe5fe82bbe89be56c50a2abc28d5e0990a3eed3c86973ae54a15ad39a",
+                "unchanged": True,
+                "sequence_allocations": {
+                    "comparison_count": 4,
+                    "sha256": "46d68ca1ccbaaebe9a21c2679359a7da0228ba8ba6812e81c4411c61e73c21e2",
+                },
+            },
+        }
+    }
+
+
+def test_person_membership_summary_preserves_validated_sequence_state() -> None:
+    summary = access._person_membership_summary(_person_membership_observation())
+    assert summary == {
+        "person_lifecycle_facts_available": True,
+        "person_membership_lifecycle_verified": True,
+        "person_revoke_operation_sha256": "c622eff995323b75ed5956a44f9fef8fae89327389ae1171d5cce449fd315702",
+        "person_restore_operation_sha256": "9b9f706c59c8db4ed7dff28b0a28410d98bf6a2e3e3ea6a4e20363eef9805173",
+        "person_memberships_sha256": "f065f5350029b67d9b994c356d3696f43a065e2d0727c3ede978282b53c37010",
+        "person_state_sha256": "d871f3efe5fe82bbe89be56c50a2abc28d5e0990a3eed3c86973ae54a15ad39a",
+    }
+
+
+_PERSON_STATE_MUTATIONS: tuple[Callable[[dict[str, Any]], object], ...] = (
+    lambda state: state.pop("sequence_allocations"),
+    lambda state: state["sequence_allocations"].update(comparison_count=True),
+    lambda state: state["sequence_allocations"].update(comparison_count=3),
+    lambda state: state["sequence_allocations"].update(sha256="x"),
+    lambda state: state.update(sequence_allocations={"comparison_count": 4}),
+    lambda state: state.update(unchanged=1),
+)
+
+
+@pytest.mark.parametrize("mutate", _PERSON_STATE_MUTATIONS)
+def test_person_membership_summary_rejects_invalid_sequence_state(
+    mutate: Callable[[dict[str, Any]], object],
+) -> None:
+    observation = _person_membership_observation()
+    mutate(observation["person"]["state"])
+    with pytest.raises(access._Blocked, match="person_state_observation_invalid"):
+        access._person_membership_summary(observation)
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    (("unchanged", False), ("after_sha256", "b" * 64)),
+)
+def test_person_membership_summary_fails_changed_durable_state(field: str, value: object) -> None:
+    observation = _person_membership_observation()
+    observation["person"]["state"][field] = value
+    with pytest.raises(access._Failed, match="person_membership_lifecycle_postcondition_failed"):
+        access._person_membership_summary(observation)
 
 
 @pytest.mark.truss
