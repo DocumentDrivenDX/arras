@@ -1,0 +1,17 @@
+{
+  "acceptance_passed": false,
+  "all_observed_processes_absent": true,
+  "audit_sha256": "d19a0eda7b74e7ac46925970b2f7d34dbf62951e67205780714116754bdf59a3",
+  "checked_at": "2026-10-24T16:51:58.020208+00:00",
+  "custody_returned": false,
+  "derivative": true,
+  "independent_audit_status": "passed",
+  "numeric_groups_checked": 1547,
+  "observed_process_count": 3,
+  "permission_denials": 0,
+  "process_identifiers_omitted": true,
+  "schema": "arras.a937-final-campaign-process-custody/1",
+  "source_receipt_retained_privately": true,
+  "source_receipt_sha256": "77660dd5dcbd71cdd8fc14aee1109b50d557ff4998055289b08f81d7cca737af",
+  "status": "passed"
+}

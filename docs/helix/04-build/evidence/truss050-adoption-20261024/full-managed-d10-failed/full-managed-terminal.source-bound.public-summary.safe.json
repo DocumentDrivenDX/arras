@@ -1,0 +1,29 @@
+{
+  "artifact_bindings_unchanged_after": true,
+  "bound_manifest_sha256": "25ed7ffe58f8f9f0cf87ead0d14f5b6360937741e9ac2b08f6a0e5afaca55324",
+  "dispatch_go_sha256": "5c3af2d2baeaf3666821178fead9fedde9600362f28d6193f58945790a39aa2b",
+  "entry_sha256": "ae115450a3917bffa4885edd69af20e57dcd92f1d24c7aade67da18c363171bc",
+  "exit_code": 1,
+  "final_acceptance": "not_accepted_pending_independent_audit",
+  "inner_gate": "failed",
+  "inner_receipt_sha256": "39a6fe041c221c44920e85d301a746f184d9e59345a232328b1f0ea0387db133",
+  "inner_receipt_valid": true,
+  "inner_status": "failed",
+  "installed_observation_before_after_equal": true,
+  "late_completion": false,
+  "limits": {
+    "cleanup_grace_seconds": 180,
+    "installer_operation_timeout_ms": 60000,
+    "installer_statement_timeout_ms": 60000,
+    "maximum_window_seconds": 14400,
+    "no_vm": true,
+    "provider_operation_timeout_seconds": 180
+  },
+  "schema": "arras.public50-D10-outer-terminal-public-summary/1",
+  "source_commit": "a937d74a516f8108af8e4a9c5bb1a2b5c4981434",
+  "source_freeze_sha256": "a0c2544724bfaa9f7c6c42029f5f0104ac7a1e3c5e82b41a07d1aac904aebe9e",
+  "source_receipt_sha256": "67ee367a2f04d48d8b7a630e37f8436dbccad1f229f2e4f0b4580f01b0fde4d9",
+  "source_tree": "4aeaa446a2579cce8315be627cd7bd18d32e736a",
+  "status": "full_managed_failed_or_blocked_audit_required",
+  "window_sha256": "b3d1f167fc8dc86fa890a91b33058f1eed9f04a9ebb0168214d4cffea3d9a051"
+}

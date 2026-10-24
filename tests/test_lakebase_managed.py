@@ -1733,11 +1733,13 @@ def test_ended_session_requires_no_rows_and_broken_connection() -> None:
 
 
 def test_restart_projection_requires_populated_complete_feed_drain() -> None:
+    feed_module = importlib.import_module("_lakebase_managed_feed")
     feed = {
         "consumer_id_sha256": "a" * 64,
         "feed_page_sha256": "b" * 64,
         "feed_page_count": 2,
         "transaction_page_count": 1,
+        "feed_payload_bytes": 128,
         "empty_interval_drained": True,
         "unacknowledged_replay_equal": True,
         "destination_receipt_sha256": "c" * 64,
@@ -1750,6 +1752,142 @@ def test_restart_projection_requires_populated_complete_feed_drain() -> None:
     contradicted["transaction_page_count"] = 0
     with pytest.raises(ValueError, match="restart feed postcondition"):
         managed._validate_restart_feed(contradicted)
+    for invalid in (True, 0, -1, feed_module._MAX_TOTAL_FEED_BYTES + 1):
+        contradicted = dict(feed)
+        contradicted["feed_payload_bytes"] = invalid
+        with pytest.raises(ValueError, match="restart feed postcondition"):
+            managed._validate_restart_feed(contradicted)
+
+
+def test_feed_delivery_payload_count_matches_restart_projection(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    feed_module = importlib.import_module("_lakebase_managed_feed")
+    operations = importlib.import_module("_lakebase_operations")
+    payload_bytes = 321
+    expected_digest = operations.HARNESS_MODULE_SHA256
+
+    def register_consumer(*_args: Any) -> None:
+        return None
+
+    def schema_binding(_sources: Any) -> dict[str, Any]:
+        return {"document_sha256": expected_digest}
+
+    def drained_pages(**_kwargs: Any) -> dict[str, Any]:
+        return {
+            "deliveries": [{}, {}],
+            "page_sha256": "b" * 64,
+            "receipt_sha256": "c" * 64,
+            "payload_bytes": payload_bytes,
+            "transaction_page_count": 1,
+            "empty_interval_drained": True,
+        }
+
+    def open_destination(*_args: Any) -> None:
+        return None
+
+    monkeypatch.setattr(feed_module, "_register_consumer", register_consumer)
+    monkeypatch.setattr(
+        feed_module,
+        "_load_probe_schema_binding",
+        schema_binding,
+    )
+    monkeypatch.setattr(
+        feed_module,
+        "_drain_feed_pages",
+        drained_pages,
+    )
+    facts = feed_module._feed_delivery(
+        controls={"open_feed_destination": open_destination},
+        sources={
+            "installer_connection_source": lambda: None,
+            "person_connection_source": lambda: None,
+        },
+        principals={"reader": object()},
+        module_access={
+            "reader_role": "reader_role",
+            "document_id": managed._DOCUMENT_ID,
+            "source_sha256": operations.HARNESS_MODULE_SHA256,
+        },
+        consumer_id="mp01-contract",
+    )
+    assert facts["feed_payload_bytes"] == payload_bytes
+    managed._validate_restart_feed(facts)
+
+
+def test_run_managed_rejects_one_invalid_case_without_erasing_other_cases(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    invalid_feed = {
+        "consumer_id_sha256": "a" * 64,
+        "feed_page_sha256": "b" * 64,
+        "feed_page_count": 2,
+        "transaction_page_count": 1,
+        "empty_interval_drained": True,
+        "unacknowledged_replay_equal": True,
+        "destination_receipt_sha256": "c" * 64,
+        "source_ack_reconciled": "matched",
+        "destination_reopened_equal": True,
+        "destination_replay_equal": True,
+    }
+    mp01_facts = {
+        "operation_sha256": "d" * 64,
+        "generation_before_sha256": "e" * 64,
+        "generation_after_sha256": "f" * 64,
+        "backend_pid_changed": True,
+        "public_object_count": 2,
+        "native_inventory_sha256": "1" * 64,
+        "feed": invalid_feed,
+    }
+    mp03_facts = {
+        "ordinary_role_count": 4,
+        "direct_membership_count": 0,
+        "effective_membership_count": 0,
+        "elevated_membership_count": 0,
+        "truss_table_privilege_count": 4,
+        "allowed_query_row_count": 1,
+        "allowed_query_succeeded": True,
+        "ordinary_attributes_safe": True,
+        "denied_catalog_refused": True,
+        "snapshot_sha256": "2" * 64,
+    }
+    facts_by_case = {"MP-01": mp01_facts, "MP-03": mp03_facts}
+
+    def execute_case(case: str, *_args: Any) -> dict[str, Any]:
+        return facts_by_case[case]
+
+    monkeypatch.setattr(
+        managed,
+        "_execute_case",
+        execute_case,
+    )
+
+    class Fixture:
+        @staticmethod
+        def managed_controls() -> dict[str, Any]:
+            return {"interface_version": 1}
+
+    result = managed.run_managed(
+        inputs=SimpleNamespace(
+            required_cases=("MP-01", "MP-03"),
+            authorization={
+                "allowed_cases": ["MP-01", "MP-03"],
+                "allowed_operations": ["read", "apply", "feed", "refresh", "restart", "install"],
+            },
+        ),
+        fixture_module=Fixture,
+        sources={},
+        backend=object(),
+        principals={},
+        installed=object(),
+        baseline_observed={},
+    )
+    assert result["cases"] == [
+        {"case": "MP-01", "status": "failed", "code": "managed_observation_unverified"},
+        {"case": "MP-03", "status": "passed", "code": "managed_postconditions_verified"},
+    ]
+    assert "MP-01" not in result["observed"]
+    assert result["observed"]["MP-03"] == mp03_facts
 
 
 def test_feed_page_decoder_refuses_unknown_native_envelope() -> None:

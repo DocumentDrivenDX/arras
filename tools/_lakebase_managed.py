@@ -33,6 +33,7 @@ from _lakebase_managed_common import (
     is_authorized as _is_authorized,
 )
 from _lakebase_managed_feed_cases import _run_mp04
+from _lakebase_managed_feed_codec import _MAX_TOTAL_FEED_BYTES
 from _lakebase_managed_identity import (
     _MP06_REQUIREMENTS_SHA256,
     _MP06_RUNTIME_MANIFEST_SHA256,
@@ -351,6 +352,7 @@ def _validate_restart_feed(feed: Any) -> None:
         "feed_page_sha256",
         "feed_page_count",
         "transaction_page_count",
+        "feed_payload_bytes",
         "empty_interval_drained",
         "unacknowledged_replay_equal",
         "destination_receipt_sha256",
@@ -367,6 +369,8 @@ def _validate_restart_feed(feed: Any) -> None:
         or feed["feed_page_count"] < 2
         or type(feed["transaction_page_count"]) is not int
         or feed["transaction_page_count"] < 1
+        or type(feed["feed_payload_bytes"]) is not int
+        or not 1 <= feed["feed_payload_bytes"] <= _MAX_TOTAL_FEED_BYTES
         or feed["feed_page_count"] != feed["transaction_page_count"] + 1
         or feed["empty_interval_drained"] is not True
         or feed["unacknowledged_replay_equal"] is not True
@@ -560,7 +564,12 @@ def run_managed(
                 principals,
                 baseline_observed,
             )
-            observed[case] = facts
+            try:
+                safe_facts = _safe_facts(case, facts)
+            except (TypeError, ValueError):
+                rows.append(_row(case, "failed", "managed_observation_unverified"))
+                continue
+            observed[case] = safe_facts
             rows.append(_row(case, "passed", "managed_postconditions_verified"))
         except _Blocked as blocked:
             rows.append(_row(case, "blocked", blocked.code))

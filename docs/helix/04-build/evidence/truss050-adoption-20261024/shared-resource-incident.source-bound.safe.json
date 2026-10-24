@@ -1,0 +1,26 @@
+{
+  "actual_process_start_end_and_family": "unknown_not_captured",
+  "causal_attribution_to_campaign_result_or_latency": false,
+  "filesystem_log_birth_utc": "2026-10-24T16:49:26.226863+00:00",
+  "filesystem_log_last_write_utc": "2026-10-24T16:49:29.819035+00:00",
+  "global_docker_cache_unchanged_proven": false,
+  "global_or_original_process_family_absence_proven": false,
+  "ignored_cache_unchanged_claim": false,
+  "performance_or_complete_global_isolation_claim": false,
+  "reported_during_campaign": "D9",
+  "reported_observed_commands": [
+    "test preparation",
+    "product build",
+    "PostgreSQL prerequisite build",
+    "Docker postgres:17.9 pull refused by credential lookup"
+  ],
+  "schema": "arras.shared-resource-incident-closed-projection/1",
+  "scoped_process_check_matching_count": 0,
+  "source_original_retained_privately": true,
+  "source_receipt_sha256": "0e50e77bab2ccd70be1aa6e792cf4882796bb53a5e9013bf8daaffc0c803d16d",
+  "source_tracked_and_untracked_clean_when_checked": true,
+  "subsequent_runtime_and_builds_held": true,
+  "terminal_exit_code": 1,
+  "timestamps_are_filesystem_observations_only": true,
+  "unowned_cleanup_or_kills_performed": false
+}

@@ -1,0 +1,101 @@
+{
+  "acceptance_passed": false,
+  "artifact_bindings_unchanged": true,
+  "cases": [
+    {
+      "case": "LB-ADMISSION",
+      "code": "identity_tls_server_match",
+      "status": "passed"
+    },
+    {
+      "case": "LB-INSTALL",
+      "code": "typed_strict_refusal_then_selected_install",
+      "status": "passed"
+    },
+    {
+      "case": "LB-PERSON",
+      "code": "human_identity_lifecycle_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-CUSTODY",
+      "code": "managed_schedule_result_unavailable",
+      "status": "failed"
+    },
+    {
+      "case": "LB-SETTLEMENT",
+      "code": "managed_schedule_result_unavailable",
+      "status": "failed"
+    },
+    {
+      "case": "LB-ACL",
+      "code": "managed_schedule_result_unavailable",
+      "status": "failed"
+    },
+    {
+      "case": "MP-01",
+      "code": "managed_schedule_result_unavailable",
+      "status": "failed"
+    },
+    {
+      "case": "MP-02",
+      "code": "managed_schedule_result_unavailable",
+      "status": "failed"
+    },
+    {
+      "case": "MP-03",
+      "code": "managed_schedule_result_unavailable",
+      "status": "failed"
+    },
+    {
+      "case": "MP-04",
+      "code": "managed_schedule_result_unavailable",
+      "status": "failed"
+    },
+    {
+      "case": "MP-05",
+      "code": "managed_schedule_result_unavailable",
+      "status": "failed"
+    },
+    {
+      "case": "MP-06",
+      "code": "managed_schedule_result_unavailable",
+      "status": "failed"
+    }
+  ],
+  "counts": {
+    "blocked": 0,
+    "failed": 9,
+    "passed": 3
+  },
+  "custody_returned": true,
+  "custody_status": "passed",
+  "diagnostic_limit": "Existing reviewed diagnostic exposes no managed exception or fault event for managed_schedule_result_unavailable. Cause not inferred.",
+  "elapsed_seconds": 983.617550166,
+  "independent_audit_elapsed_seconds": 12.071467624977231,
+  "independent_audit_status": "passed",
+  "installed_source_before_after_equal": true,
+  "no_active_exec_sessions": true,
+  "no_vm": true,
+  "original_cleanup": {
+    "independent_absence": {
+      "generated_roles_absent": true,
+      "truss_schema_absent": true
+    },
+    "removed_resource_counts": {
+      "role": 4,
+      "schema": 1
+    },
+    "status": "passed"
+  },
+  "qualification_note": "The nine failed statuses share managed_schedule_result_unavailable; this does not establish nine independently failed operations or a cause.",
+  "schema": "arras.public50-D10-campaign-result-public-summary/1",
+  "source_commit": "a937d74a516f8108af8e4a9c5bb1a2b5c4981434",
+  "source_receipt_sha256": "bf379ae2c54a95f636337311c03c0395b214be519fb1f4cd1ca9f9e892fabee5",
+  "source_tree": "4aeaa446a2579cce8315be627cd7bd18d32e736a",
+  "sql_operation_timeout_ms": 60000,
+  "status": "FAILED_NOT_ACCEPTED_CLEANUP_INDEPENDENTLY_VERIFIED",
+  "truss_version": "0.0.50",
+  "wall_start": "2026-10-24T17:44:30Z",
+  "wall_terminal": "2026-10-24T18:00:53Z"
+}

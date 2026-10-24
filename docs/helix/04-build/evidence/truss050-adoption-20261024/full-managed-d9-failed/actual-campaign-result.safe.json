@@ -1,0 +1,172 @@
+{
+  "acceptance_passed": false,
+  "artifact_bindings_unchanged": true,
+  "cases": [
+    {
+      "case": "LB-ADMISSION",
+      "code": "identity_tls_server_match",
+      "status": "passed"
+    },
+    {
+      "case": "LB-INSTALL",
+      "code": "typed_strict_refusal_then_selected_install",
+      "status": "passed"
+    },
+    {
+      "case": "LB-PERSON",
+      "code": "human_identity_lifecycle_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-CUSTODY",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-SETTLEMENT",
+      "code": "genuine_transport_interruption_not_observed",
+      "status": "failed"
+    },
+    {
+      "case": "LB-ACL",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-01",
+      "code": "compute_restart_control_failed",
+      "status": "failed"
+    },
+    {
+      "case": "MP-02",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-03",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-04",
+      "code": "managed_operation_failed",
+      "status": "failed"
+    },
+    {
+      "case": "MP-05",
+      "code": "genuine_transport_interruption_not_observed",
+      "status": "failed"
+    },
+    {
+      "case": "MP-06",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    }
+  ],
+  "counts": {
+    "blocked": 0,
+    "failed": 4,
+    "passed": 8
+  },
+  "custody_returned": true,
+  "custody_status": "passed",
+  "elapsed_seconds": 812.491652916,
+  "independent_audit_elapsed_seconds": 11.266561000025831,
+  "independent_audit_status": "passed",
+  "installed_source_before_after_equal": true,
+  "late_completion": false,
+  "next": "Release owner reviews four actual remaining failures using retained diagnostics/provider response archives; source or fixture fixes need fresh freeze/bindings and a new reviewed one-shot campaign. Original D9 failures remain immutable.",
+  "no_active_exec_sessions": true,
+  "no_vm": true,
+  "original_cleanup": {
+    "independent_absence": {
+      "generated_roles_absent": true,
+      "truss_schema_absent": true
+    },
+    "resources": [
+      {
+        "name_or_opaque_id": "f84f002b2bed908f227145cf7a04cca0d8ca76053f2b348ba281b92171d04dcf",
+        "removed": true,
+        "resource_kind": "schema"
+      },
+      {
+        "name_or_opaque_id": "b55e5749b4463256b172a864d0557735ce2606c3228b1368fb2f114d06dbb21f",
+        "removed": true,
+        "resource_kind": "role"
+      },
+      {
+        "name_or_opaque_id": "ecebc426a6fc794eea00dff5bb6760592b2fe3e58d6898307686650c428b07ce",
+        "removed": true,
+        "resource_kind": "role"
+      },
+      {
+        "name_or_opaque_id": "3e7d737ac85ce1e58d6d9ac6489d34a0821d81b65bb9a81625dad7c5154902c7",
+        "removed": true,
+        "resource_kind": "role"
+      },
+      {
+        "name_or_opaque_id": "ec8be1a05338ff758313a562c26ab7625c5a112bde808c3c6bc3384c70ad1c04",
+        "removed": true,
+        "resource_kind": "role"
+      }
+    ],
+    "status": "passed"
+  },
+  "receipts": [
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T163319Z-f64cd43a-4f09-4e99-8cc0-9d20dcf9b6a1/full-managed-terminal.safe.json",
+      "sha256": "3d3cef959550d7b14730f69fa654d1985df49b68f1af9b7bd407b56c61e9e756"
+    },
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T163319Z-f64cd43a-4f09-4e99-8cc0-9d20dcf9b6a1/full-managed-terminal.safe.verifier.json",
+      "sha256": "992b337617ff9652589177758b6a186876cfe3920b4e4d5be1cb525bd2f08836"
+    },
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T163319Z-f64cd43a-4f09-4e99-8cc0-9d20dcf9b6a1/full-diagnostics.safe.json",
+      "sha256": "e2ef5649ae4c31a91d4d0bad4880ebabae13d6180466a6e55d677f65d37f5fdb"
+    },
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T163319Z-f64cd43a-4f09-4e99-8cc0-9d20dcf9b6a1/independent-audit.safe.json",
+      "sha256": "d19a0eda7b74e7ac46925970b2f7d34dbf62951e67205780714116754bdf59a3"
+    },
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T163319Z-f64cd43a-4f09-4e99-8cc0-9d20dcf9b6a1/terminal-process-custody.safe.json",
+      "sha256": "77660dd5dcbd71cdd8fc14aee1109b50d557ff4998055289b08f81d7cca737af"
+    },
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T163319Z-f64cd43a-4f09-4e99-8cc0-9d20dcf9b6a1/parent-launch-process.safe.json",
+      "sha256": "e951d88fba3c5195777af969bf6515fe2a1fdba0353c869e17f3649f9ba078eb"
+    },
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T163319Z-f64cd43a-4f09-4e99-8cc0-9d20dcf9b6a1/audit-supervisor-launch.safe.json",
+      "sha256": "824da2e9818b2770a57d2aafb2f7f0a43a6afcd920727d39563b695a3f7c857f"
+    },
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T163319Z-f64cd43a-4f09-4e99-8cc0-9d20dcf9b6a1/operational-go-consumed.safe.json",
+      "sha256": "53ad220e42dce00c128e3f184a5571d313df0ffaa8d9c4e1d7b1d0b7f976f951"
+    },
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/a937-independent-audit-once-5d2aff41-202f-461f-adea-569bcce172c0/terminal.safe.json",
+      "sha256": "34ecb8da4ef929a9b1333512055c71a6746eb0a5767177483b97ca3918c91abd"
+    },
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T163319Z-f64cd43a-4f09-4e99-8cc0-9d20dcf9b6a1/audited-custody-handback.safe.json",
+      "sha256": "3866db5bd4136b69506bb4bcee75e5c0e1e2bfddb4e89f5cc3f3aa73c5e853f3"
+    }
+  ],
+  "recorded_at": "2026-10-24T16:52:29.553883+00:00",
+  "resource_incident": {
+    "no_causal_attribution": true,
+    "no_performance_isolation_claim": true,
+    "status": "reported_awaiting_verified_overlap_facts",
+    "unintended_local_build_reported_by_coordinator": true
+  },
+  "schema": "arras.public50-D9-actual-campaign-result/1",
+  "source_commit": "a937d74a516f8108af8e4a9c5bb1a2b5c4981434",
+  "source_tree": "4aeaa446a2579cce8315be627cd7bd18d32e736a",
+  "sql_operation_timeout_ms": 60000,
+  "status": "FAILED_NOT_ACCEPTED_CLEANUP_INDEPENDENTLY_VERIFIED",
+  "truss_version": "0.0.50",
+  "wall_start": "2026-10-24T16:37:16Z",
+  "wall_terminal": "2026-10-24T16:50:49Z"
+}

@@ -2076,3 +2076,71 @@ parsing. Native postmaster generation change remains mandatory for restart.
 The earlier failure receipts did not capture enough private phase facts to
 attribute every downstream failure to one cause. Offline controls and recovery
 do not replace a fresh complete twelve-case WAN campaign.
+
+
+### Managed schedule projection repair — 2026-10-24
+
+CI run `40111502711` passed all five jobs at source
+`a937d74a516f8108af8e4a9c5bb1a2b5c4981434`. Its exact canonical Arras 0.6.1
+wheel remained `259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`.
+The [fresh installed Mac records](evidence/truss050-adoption-20261024/fresh-macos-a937/)
+retain 64 passes, eight unchanged declared limits, no failures, exact installed
+payload correspondence and successful cleanup. These records do not claim a
+system dynamic-link audit or execution of forced process-group cleanup.
+
+The [D9 WAN records](evidence/truss050-adoption-20261024/full-managed-d9-failed/)
+retain the original 8 passed, 4 failed, 0 blocked result. Original cleanup, the
+fresh independent audit and process custody passed. The separate archive
+admission check found a source/config precondition refusal, but the original
+private exception was not captured; that refusal is not asserted as the
+historical cause. A separate [shared-resource incident record](evidence/truss050-adoption-20261024/shared-resource-incident.source-bound.safe.json)
+retains an unrelated session's reported test-preparation/build and failed Docker
+pull during D9's reserved window. Exact process start/end and family were not
+captured; the retained filesystem timestamps and scoped absence check do not
+prove complete global isolation. Subsequent runtime/build activity was held.
+No campaign failure or latency is attributed to this incident, and no performance
+comparison is claimed. Subsequent private fixture controls use the actual installed
+Truss 0.0.50 SDK and native typed request bytes. The current twelve-case schedule
+uses COMMIT interruption; separate fake ACK controls do not establish native SDK
+ACK admission or service behavior.
+
+The [D10 WAN records](evidence/truss050-adoption-20261024/full-managed-d10-failed/)
+retain the original 3 passed, 9 failed, 0 blocked result from 17:44:30 to
+18:00:53 UTC (983.617550166 seconds). Admission, installation and person lifecycle
+passed. All nine managed case rows report `managed_schedule_result_unavailable`;
+this does not establish nine independent operation failures. The diagnostic
+captured no underlying schedule exception and no matching validated settlement
+event group; it does not prove the raw event stream was empty. Original cleanup,
+the fresh native/provider audit and process custody passed. The audit retained
+all 33 baseline roles and 18 memberships, no new roles, all sixteen ordinary
+platform-closure checks false, exact endpoint configuration, and unchanged
+source. Both campaigns ran from the Mac across the WAN with the original limits
+and no temporary VM. Neither campaign is accepted.
+
+Source inspection found a deterministic producer/projector mismatch: the real
+feed producer emits `feed_payload_bytes`, but the restart evidence projector's
+exact field set omitted it. A successful MP-01 return was therefore incompatible
+with that projector, and a projection refusal could discard the entire managed
+schedule. This is compatible with D10's result, not a proven historical cause.
+The repair retains that field as a strict integer from 1 through the producer's
+32 MiB aggregate bound. Each case now passes its closed observation validator
+before a pass is recorded; malformed facts fail that case under a fixed safe
+code while preserving independent case outcomes. Final receipt validation stays
+mandatory. The actual producer-to-projector and case-isolation controls passed;
+the managed suite passed 73 tests with one native case deselected, and full Ruff,
+format and Pyright checks passed. The [source review](evidence/truss050-adoption-20261024/managed-feed-projection-repair-review.safe.json)
+is distinct from service acceptance.
+
+The [reusable identity foundation](evidence/truss050-adoption-20261024/reusable-identity-foundation-closed-summary-20261024.safe.json)
+records historical one-time privileged provisioning separately from disposable
+schema/role cleanup. Existing ordinary identities and private secure references
+are reusable; their observed credential lifetime was 90 days. The user or a
+designated workspace credential administrator must own renewal and secure-reference
+updates before expiry; no ongoing agent rotation automation or perpetual
+admin-free lifecycle is claimed. Each campaign must freshly validate identity,
+expiry, authorization and target bindings.
+
+The complete twelve-case WAN gate remains open after this source correction.
+A fresh campaign, independent cleanup/audit and exact artifact/source bindings
+are required before merge or tagging. The release wheel guard remains unchanged
+until both installed and managed gates pass against the same canonical bytes.
