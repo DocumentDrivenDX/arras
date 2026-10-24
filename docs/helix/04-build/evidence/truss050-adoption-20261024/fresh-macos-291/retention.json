@@ -1,0 +1,29 @@
+{
+  "applicable": 72,
+  "archive_sha256": "70eb9b1936693ad847d9968a8e3dde060ea501df63cf5f074ae152d870f99549",
+  "artifact": 12561101383,
+  "canonical_arras_wheel_sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+  "ci_job": 120875036839,
+  "ci_run": 40094776682,
+  "files": {
+    "canonical-macos-291-sol-review-supplement.safe.json": "9ec1e2ac8bab6de37e5314cc92c1a28c043459ed0058e11e876cc07973560940",
+    "canonical-macos-291-sol-review.safe.json": "9a632f5e6993b430f3fd467a1a97a0255f7d4ca83e537e59b6e3eb2d958b25a2",
+    "native-macos-cleanup-observation.json": "39e050cfe62877dfc1cb39b7275a99d46cc2d6dce7f98a828512cca3ddf11964",
+    "native-macos-cohort-binding.json": "a06b005c5103be3869817c28e71baade552f3cdcb2686b6231ff39f77ccbc02d",
+    "native-macos-cohort.bound.json": "6de88e06c7b387f037175c16acd2a995ac6d7b5e6373f7cd716b82041a2cbd9d",
+    "native-macos-consumer-provenance.json": "ad5f1ec1cf2bda5a73345b0ed570aa026fa5e443f51e4fdccece3adebbf29c59",
+    "native-macos-verification.json": "d011f0c275e277841eca3dee9d80836a0ac509f426b573350942c8f447d7e5e4"
+  },
+  "passed": 64,
+  "private_inputs_omitted": [
+    "target/auth configurations",
+    "credentials and secure references",
+    "fixture actor identities",
+    "raw stdout/stderr and fixture state"
+  ],
+  "schema": "arras.acceptance-evidence-retention-stage/1",
+  "source_commit": "291cd2fb6c7de0212c2156fdbcbaf713a31547ed",
+  "source_tree": "f63f192a08ac93a40a6fae0e902c2b0f93106ebe",
+  "status": "MAC_INSTALLED_GATE_PASSED_NO_WAN_OR_PUBLIC_CREDIT",
+  "unchanged_declared_limits": 8
+}

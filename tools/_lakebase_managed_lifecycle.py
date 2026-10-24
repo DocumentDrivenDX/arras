@@ -6,7 +6,7 @@ from __future__ import annotations
 import hashlib
 import json
 import uuid
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from contextlib import contextmanager
 from typing import Any
 
@@ -159,12 +159,16 @@ def _require_receipt_journal_binding(inventory: Any, receipt: Mapping[str, Any])
         raise _Failed("original_request_journal_binding_missing")
 
 
-def _adopt_readonly_handle(connection: Any) -> tuple[Any, Any, Any]:
+def _adopt_readonly_handle(
+    connection: Any, *, on_readonly_begin: Callable[[Any], None] | None = None
+) -> tuple[Any, Any, Any]:
     from truss import CatalogRuntimeConfiguration, Ok, adopt_psycopg_host, create_reference_assembly
 
     if int(connection.info.transaction_status) != 0:
         raise _Blocked("connection_not_idle")
     connection.execute("BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY")
+    if on_readonly_begin is not None:
+        on_readonly_begin(connection)
     host = adopt_psycopg_host(connection, statement_timeout_ms=10_000, operation_timeout_ms=30_000)
     transaction = host.adopt_transaction(access_mode="read_only")
     assembly = create_reference_assembly(CatalogRuntimeConfiguration(), host)
@@ -209,11 +213,52 @@ def _connection_is_broken(connection: Any) -> bool:
 
 
 def _backend_pid(connection: Any, code: str) -> int:
-    """Read psycopg's existing backend PID without starting a transaction with SQL."""
+    """Read psycopg's client PID for the independent restart-observation path."""
     pid = getattr(connection.info, "backend_pid", None)
     if type(pid) is not int or pid <= 0:
         raise _Blocked(code)
     return pid
+
+
+def _readonly_server_backend_pid(connection: Any, expected_user: str) -> int:
+    """Read and bind PostgreSQL's PID inside the active read-only transaction."""
+    if type(expected_user) is not str or not expected_user:
+        raise _Blocked("backend_pid_identity_unavailable")
+    try:
+        row = connection.execute(
+            "SELECT pg_catalog.pg_backend_pid(), current_user, session_user, "
+            "pg_catalog.current_setting('transaction_read_only')"
+        ).fetchone()
+        status = int(connection.info.transaction_status)
+    except Exception:
+        raise _Blocked("backend_pid_unavailable") from None
+    if (
+        type(row) is not tuple
+        or len(row) != 4
+        or type(row[0]) is not int
+        or row[0] <= 0
+        or row[0] > 2_147_483_647
+        or row[1] != expected_user
+        or row[2] != expected_user
+        or row[3] != "on"
+        or status != 2
+    ):
+        raise _Blocked("backend_pid_identity_mismatch")
+    return row[0]
+
+
+class _ReadonlyBackendPidCapture:
+    def __init__(self, expected_user: Any) -> None:
+        self.expected_user = expected_user
+        self.pid: int | None = None
+
+    def __call__(self, connection: Any) -> None:
+        self.pid = _readonly_server_backend_pid(connection, self.expected_user)
+
+    def required(self) -> int:
+        if self.pid is None:
+            raise _Blocked("backend_pid_unavailable")
+        return self.pid
 
 
 def _end_session(inputs: Any, connection: Any, terminate: Any, pid: int) -> str:
@@ -270,9 +315,12 @@ def _run_session_lease(
     if principal is None:
         raise _Blocked("reader_principal_unavailable")
     with source(principal) as connection:
-        pid = _backend_pid(connection, "backend_pid_unavailable")
-        host, transaction, assembly = _adopt_readonly_handle(connection)
+        capture_pid = _ReadonlyBackendPidCapture(getattr(principal, "user", None))
+        host, transaction, assembly = _adopt_readonly_handle(
+            connection, on_readonly_begin=capture_pid
+        )
         try:
+            pid = capture_pid.required()
             termination_hash = _end_session(inputs, connection, terminate, pid)
             stale = assembly.query_in_transaction(
                 transaction,

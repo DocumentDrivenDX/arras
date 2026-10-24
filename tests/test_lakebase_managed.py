@@ -659,6 +659,217 @@ def test_backend_pid_probe_does_not_turn_idle_connection_into_a_transaction() ->
     assert connection.info.transaction_status == 0
 
 
+class _Mp02PidConnection:
+    def __init__(self, row: tuple[Any, ...], client_pid: int) -> None:
+        self.info = SimpleNamespace(transaction_status=0, backend_pid=client_pid)
+        self.row = row
+        self.statements: list[str] = []
+
+    def execute(self, statement: str) -> Any:
+        self.statements.append(statement)
+        if statement == "BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY":
+            assert self.info.transaction_status == 0
+            self.info.transaction_status = 2
+            return SimpleNamespace(fetchone=lambda: None)
+        assert statement == (
+            "SELECT pg_catalog.pg_backend_pid(), current_user, session_user, "
+            "pg_catalog.current_setting('transaction_read_only')"
+        )
+        assert self.info.transaction_status == 2
+        return SimpleNamespace(fetchone=lambda: self.row)
+
+
+class _Mp02PidOk:
+    def __init__(self, value: Any) -> None:
+        self.value = value
+
+
+class _Mp02PidError:
+    def __init__(self) -> None:
+        self.error = SimpleNamespace(code="invalid_transaction")
+
+
+class QueryRows:
+    pass
+
+
+class _Mp02PidAssembly:
+    def __init__(self, replacement: bool) -> None:
+        self.replacement = replacement
+        self.calls = 0
+
+    def query_in_transaction(self, *_args: Any, **_kwargs: Any) -> Any:
+        self.calls += 1
+        if not self.replacement or self.calls == 1:
+            return _Mp02PidError()
+        return _Mp02PidOk(QueryRows())
+
+
+class _Mp02PidHost:
+    def __init__(self, assembly: _Mp02PidAssembly) -> None:
+        self.assembly = assembly
+        self.detached = False
+
+    def adopt_transaction(self, *, access_mode: str) -> _Mp02PidOk:
+        assert access_mode == "read_only"
+        return _Mp02PidOk(object())
+
+    def detach(self) -> None:
+        self.detached = True
+
+
+def _mp02_pid_truss_stub(hosts: list[_Mp02PidHost]) -> Any:
+    stub = type(sys)("truss")
+    stub.CatalogRuntimeConfiguration = type("CatalogRuntimeConfiguration", (), {})
+    stub.Ok = _Mp02PidOk
+    stub.Error = _Mp02PidError
+
+    def adopt(connection: Any, **_kwargs: Any) -> _Mp02PidHost:
+        assert connection.info.transaction_status == 2
+        host = _Mp02PidHost(_Mp02PidAssembly(replacement=bool(hosts)))
+        hosts.append(host)
+        return host
+
+    def create_reference_assembly(_config: Any, host: _Mp02PidHost) -> _Mp02PidOk:
+        return _Mp02PidOk(host.assembly)
+
+    stub.adopt_psycopg_host = adopt
+    stub.create_reference_assembly = create_reference_assembly
+    return stub
+
+
+def _mp02_noop_allowed(*_args: Any) -> None:
+    return None
+
+
+def _mp02_noop_terminate(**_kwargs: Any) -> None:
+    return None
+
+
+def _mp02_connection_is_broken(_connection: Any) -> bool:
+    return True
+
+
+def _mp02_query_probe(_backend: Any, _principal: Any) -> list[int]:
+    return [1, 2]
+
+
+def test_mp02_server_pid_is_bound_to_readonly_reader_session(monkeypatch: Any) -> None:
+    connections = [
+        _Mp02PidConnection((2677, "reader_role", "reader_role", "on"), 9000),
+        _Mp02PidConnection((2688, "reader_role", "reader_role", "on"), 9001),
+    ]
+    hosts: list[_Mp02PidHost] = []
+    terminated: list[int] = []
+    source_calls = 0
+
+    @contextmanager
+    def source(_principal: Any) -> Any:
+        nonlocal source_calls
+        connection = connections[source_calls]
+        source_calls += 1
+        try:
+            yield connection
+        finally:
+            if connection.info.transaction_status == 2:
+                connection.info.transaction_status = 0
+
+    def reject_client_pid(*_args: Any) -> int:
+        raise AssertionError("MP-02 used client PID")
+
+    monkeypatch.setitem(sys.modules, "truss", _mp02_pid_truss_stub(hosts))
+
+    def end_session(_inputs: Any, _connection: Any, _terminate: Any, pid: int) -> str:
+        terminated.append(pid)
+        return "a" * 64
+
+    monkeypatch.setattr(lifecycle, "_allowed", _mp02_noop_allowed)
+    monkeypatch.setattr(lifecycle, "_backend_pid", reject_client_pid)
+    monkeypatch.setattr(lifecycle, "_end_session", end_session)
+    monkeypatch.setattr(lifecycle, "_connection_is_broken", _mp02_connection_is_broken)
+    monkeypatch.setattr(lifecycle, "_query_probe", _mp02_query_probe)
+    result = lifecycle._run_session_lease(
+        SimpleNamespace(),
+        {"terminate_session": _mp02_noop_terminate},
+        {"person_connection_source": source},
+        {"reader": SimpleNamespace(user="reader_role", token="opaque")},
+        object(),
+    )
+    assert terminated == [2677]
+    assert result["ended_backend_pid"] == 2677
+    assert connections[0].info.backend_pid == 9000
+    assert connections[0].statements[:2] == [
+        "BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY",
+        "SELECT pg_catalog.pg_backend_pid(), current_user, session_user, "
+        "pg_catalog.current_setting('transaction_read_only')",
+    ]
+    assert all(host.detached for host in hosts)
+
+
+def test_mp02_invalid_session_binding_rolls_back_before_host_or_termination(
+    monkeypatch: Any,
+) -> None:
+    connection = _Mp02PidConnection((2677, "other_role", "reader_role", "on"), 9000)
+    hosts: list[_Mp02PidHost] = []
+    terminated: list[int] = []
+
+    @contextmanager
+    def source(_principal: Any) -> Any:
+        try:
+            yield connection
+        finally:
+            if connection.info.transaction_status == 2:
+                connection.info.transaction_status = 0
+
+    monkeypatch.setitem(sys.modules, "truss", _mp02_pid_truss_stub(hosts))
+
+    def unexpected_termination(*_args: Any) -> str:
+        terminated.append(1)
+        return "a" * 64
+
+    monkeypatch.setattr(lifecycle, "_allowed", _mp02_noop_allowed)
+    monkeypatch.setattr(lifecycle, "_end_session", unexpected_termination)
+    with pytest.raises(managed._Blocked, match="backend_pid_identity_mismatch"):
+        lifecycle._run_session_lease(
+            SimpleNamespace(),
+            {"terminate_session": _mp02_noop_terminate},
+            {"person_connection_source": source},
+            {"reader": SimpleNamespace(user="reader_role", token="opaque")},
+            object(),
+        )
+    assert connection.info.transaction_status == 0
+    assert hosts == []
+    assert terminated == []
+
+
+@pytest.mark.parametrize(
+    "row,status,user",
+    [
+        ((True, "reader_role", "reader_role", "on"), 2, "reader_role"),
+        ((0, "reader_role", "reader_role", "on"), 2, "reader_role"),
+        ((-1, "reader_role", "reader_role", "on"), 2, "reader_role"),
+        ((2_147_483_648, "reader_role", "reader_role", "on"), 2, "reader_role"),
+        (("2677", "reader_role", "reader_role", "on"), 2, "reader_role"),
+        ((2677, "other_role", "reader_role", "on"), 2, "reader_role"),
+        ((2677, "reader_role", "other_role", "on"), 2, "reader_role"),
+        ((2677, "reader_role", "reader_role", "off"), 2, "reader_role"),
+        ((2677, "reader_role", "reader_role", "on"), 0, "reader_role"),
+        ((2677, "reader_role", "reader_role", "on"), 2, ""),
+    ],
+)
+def test_mp02_server_pid_rejects_unbound_facts(
+    row: tuple[Any, ...], status: int, user: str
+) -> None:
+    class Connection:
+        info = SimpleNamespace(transaction_status=status)
+
+        def execute(self, _statement: str) -> Any:
+            return SimpleNamespace(fetchone=lambda: row)
+
+    with pytest.raises(managed._Blocked):
+        lifecycle._readonly_server_backend_pid(Connection(), user)
+
+
 def test_fault_connection_is_bound_to_authorized_tls_actor() -> None:
     class Connection:
         def __init__(self, actor: str) -> None:

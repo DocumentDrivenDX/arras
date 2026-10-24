@@ -1954,7 +1954,8 @@ preserves the public 0.0.49 migration manifest
 public artifact/source binding only. It does not create a new database
 observation or transfer the earlier 0.0.49 installed-native or managed receipts.
 
-The current gates remain open and bind to the exact eventual Arras wheel:
+The adoption gates below bind to the exact eventual Arras wheel. Their current
+execution status is recorded in the checkpoint that follows:
 
 - Complete fresh-installed macOS arm64 / CPython 3.11.9 qualification: all 72
   applicable cases, including the 64 expected passes and eight unchanged
@@ -1972,3 +1973,21 @@ qualify managed service behavior. The runtime layout/native manifest, UMF
 catalog/application schema, and Truss migration manifest remain distinct
 versioned boundaries; no migration edge or schema transition is inferred from
 the shared native manifest.
+
+### MP-02 source correction checkpoint — 2026-10-24
+
+The exact Arras 0.6.1 wheel SHA-256
+`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18` completed the fresh-installed macOS arm64 / CPython 3.11.9 campaign in CI run `40094776682`: 64 applicable cases passed and eight unchanged declared limits were retained. Independent cleanup and review are retained with the [Mac verification](evidence/truss050-adoption-20261024/fresh-macos-291/native-macos-verification.json), [cleanup observation](evidence/truss050-adoption-20261024/fresh-macos-291/native-macos-cleanup-observation.json), and [review records](evidence/truss050-adoption-20261024/fresh-macos-291/); the [independent retention review](evidence/truss050-adoption-20261024/retention-stage-291-review.safe.json) confirms the staged files match their originals. The Mac gate for these wheel bytes is complete; this does not qualify the managed-service campaign.
+
+The bounded MP-02 connection diagnostic remains a failure with no acceptance
+credit. The installer connection's driver PID was `1008999823`, while SQL in
+that same read-only transaction reported `2677`. The reader probe ran before
+the fixture's installer source populated actor OIDs; its generic error does
+not establish that this ordering caused the recorded failure. The original
+[diagnostic and process-custody receipts](evidence/truss050-adoption-20261024/mp02-readonly-diagnostic/)
+preserve these limits. MP-02 now reads and validates the server PID after
+`BEGIN READ ONLY`, before adopting that same transaction, while retaining
+actor, TLS, target-session, and stale-handle checks. Focused offline controls
+pass; actual service qualification of this correction remains open.
+
+The complete twelve-case Lakebase campaign and independent cleanup remain open and must bind to the same canonical wheel. The MP-02 diagnostic is not a substitute for that campaign. No release or managed-support claim follows from the source patch or diagnostic.
