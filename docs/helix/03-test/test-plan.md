@@ -725,6 +725,17 @@ closed projections enter receipts. Real transport interruption and independent
 reconciliation are required for uncertain outcomes, without fabricated exceptions
 or assertions that a client-side fault proves server COMMIT arrival.
 
+The person schedule preserves the administrative/person boundary in
+[CONTRACT-005](../02-design/contracts/CONTRACT-005-embedding-and-lifecycle.md)
+and [CONTRACT-001](../02-design/contracts/CONTRACT-001-ontology-interface.md).
+When registration has already been observed, the named administrative registrar's
+`document()` call must return `Refused(no_access)` at the Arras boundary. The
+ordinary reader must independently retrieve the registered document. A successful
+administrative read fails the registrar-authority check; an unavailable or
+unexpected result cannot count as the required refusal. A real in-memory Arras
+host supplies the focused regression, while actual Lakebase retains the complete
+registration, reader, writer, credential, membership and cleanup schedule.
+
 For the exact selected Truss 0.0.49 CreateProbe validation schedule, successful
 dry-run rollback preserves every durable graph/history/receipt/feed/recovery row
 while PostgreSQL's nontransactional allocators may advance. Inventory and compare

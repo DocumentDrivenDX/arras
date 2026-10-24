@@ -673,7 +673,7 @@ def _person_public_api_checks(context: Mapping[str, Any]) -> tuple[Any, Any, Any
     )
     registrar = host.session(principals["registrar"])
     if context["baseline_observed"]["operations"]["registration"] == "passed":
-        registrar.document("lakebase_qualification")
+        _assert_administrator_document_refused(registrar, "lakebase_qualification")
     elif registrar.registry().register(HARNESS_MODULE_DOCUMENT).module != "lakebase_qualification":
         raise PersonFailure("registrar_authority_mismatch")
     reader = host.session(principals["reader"])
@@ -720,6 +720,23 @@ def _person_public_api_checks(context: Mapping[str, Any]) -> tuple[Any, Any, Any
     ):
         raise PersonFailure("person_state_changed")
     return host, writer, reader, (native_before["sha256"], public_before)
+
+
+def _assert_administrator_document_refused(registrar: Any, module: str) -> None:
+    """Keep the named administrative principal out of the data-reading path."""
+    try:
+        registrar.document(module)
+    except Refused as error:
+        if (
+            error.backend == "arras"
+            and error.operation == "document"
+            and error.reason == "no_access"
+        ):
+            return
+        raise PersonFailure("registrar_authority_mismatch") from None
+    except Invalid:
+        raise PersonFailure("registrar_authority_mismatch") from None
+    raise PersonFailure("registrar_authority_mismatch")
 
 
 def _person_refusal_controls(host: Any, writer: Any, denied_principal: Principal) -> None:

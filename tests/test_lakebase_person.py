@@ -16,7 +16,9 @@ from typing import Any
 
 import pytest
 
-from arras.types import Principal
+from arras import Arras, Invalid, Principal, Refused, Unavailable
+from arras.fakes import FakeAccess, MemoryStore
+from arras.model import Placement
 
 
 def _load_tool() -> Any:
@@ -323,6 +325,125 @@ def test_person_runner_refuses_before_any_fixture_or_connection_call(
     )
     assert result["cases"] == [{"case": "LB-PERSON", "status": "blocked", "code": expected}]
     assert result["observed"] is None
+
+
+def test_named_administrator_is_refused_document_while_reader_can_read() -> None:
+    access = FakeAccess()
+    administrator = access.grant(
+        "registrar",
+        "lakebase_qualification",
+        "read",
+        "write",
+        "schema",
+    )
+    assert administrator.admin is False
+    reader = access.grant("reader", "lakebase_qualification", "read")
+    backend = MemoryStore(access, "truss")
+    host = Arras.start(
+        {"truss": backend},
+        admin=administrator,
+        default_placement=Placement("truss"),
+    )
+    host.session(administrator).registry().register(person_tool.HARNESS_MODULE_DOCUMENT)
+
+    person_tool._assert_administrator_document_refused(
+        host.session(administrator), "lakebase_qualification"
+    )
+    document = host.session(reader).document("lakebase_qualification")
+    assert document.module == "lakebase_qualification"
+    assert document.text == person_tool.HARNESS_MODULE_DOCUMENT.decode("utf-8")
+
+
+def test_already_registered_person_path_asserts_admin_refusal_before_reader_read(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from arras.core import Ontology
+
+    access = FakeAccess()
+    registrar = access.grant("registrar", "lakebase_qualification", "read", "write", "schema")
+    reader = access.grant("reader", "lakebase_qualification", "read")
+    backend = MemoryStore(access, "truss")
+    host = Arras.start(
+        {"truss": backend},
+        admin=registrar,
+        default_placement=Placement("truss"),
+    )
+    host.session(registrar).registry().register(person_tool.HARNESS_MODULE_DOCUMENT)
+    read_document = Ontology.document
+    refusal_assertions: list[str] = []
+    reader_documents: list[Any] = []
+
+    def checked_document(session: Any, module: str) -> object:
+        result = read_document(session, module)
+        if session.principal.user == registrar.user:
+            raise AssertionError("named administrator unexpectedly read the document")
+        if session.principal.user == reader.user:
+            reader_documents.append(result)
+            raise StopAfterReaderRead
+        return result
+
+    original_assertion = person_tool._assert_administrator_document_refused
+
+    def record_assertion(session: Any, module: str) -> None:
+        refusal_assertions.append(module)
+        original_assertion(session, module)
+
+    class StopAfterReaderRead(Exception):
+        pass
+
+    monkeypatch.setattr(Ontology, "document", checked_document)
+    monkeypatch.setattr(person_tool, "_assert_administrator_document_refused", record_assertion)
+    context = {
+        "backend": backend,
+        "baseline_observed": {"operations": {"registration": "passed"}},
+        "principals": {"registrar": registrar, "reader": reader},
+    }
+    with pytest.raises(StopAfterReaderRead):
+        person_tool._person_public_api_checks(context)
+    assert refusal_assertions == ["lakebase_qualification"]
+    assert len(reader_documents) == 1
+    assert reader_documents[0].text == person_tool.HARNESS_MODULE_DOCUMENT.decode("utf-8")
+
+
+@pytest.mark.parametrize(
+    "refusal",
+    [
+        Refused("truss", "document", "no_access"),
+        Refused("arras", "query", "no_access"),
+        Refused("arras", "document", "token_expired"),
+        Invalid([]),
+    ],
+)
+def test_administrator_document_assertion_rejects_wrong_refusal_shapes(refusal: Exception) -> None:
+    class Registrar:
+        def document(self, _module: str) -> object:
+            raise refusal
+
+    with pytest.raises(person_tool.PersonFailure, match="registrar_authority_mismatch"):
+        person_tool._assert_administrator_document_refused(Registrar(), "lakebase_qualification")
+
+
+def test_administrator_document_assertion_rejects_success_and_propagates_unavailable() -> None:
+    class AllowedRegistrar:
+        def document(self, _module: str) -> object:
+            return object()
+
+    with pytest.raises(person_tool.PersonFailure, match="registrar_authority_mismatch"):
+        person_tool._assert_administrator_document_refused(
+            AllowedRegistrar(), "lakebase_qualification"
+        )
+
+    unavailable = Unavailable("truss", "unreachable")
+
+    class UnavailableRegistrar:
+        def document(self, _module: str) -> object:
+            raise unavailable
+
+    with pytest.raises(Unavailable) as caught:
+        person_tool._assert_administrator_document_refused(
+            UnavailableRegistrar(), "lakebase_qualification"
+        )
+    assert caught.value is unavailable
 
 
 def test_verified_writer_refresh_updates_only_the_private_shared_principal_context() -> None:
