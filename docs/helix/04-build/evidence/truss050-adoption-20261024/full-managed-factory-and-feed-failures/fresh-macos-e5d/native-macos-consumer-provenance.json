@@ -1,0 +1,54 @@
+{
+  "artifact": {
+    "id": "12562081358",
+    "name": "arras-installed-candidate-artifacts",
+    "server_digest": "sha256:144795c8563d775fd2a5fc4d7f1230286b1e06717943b70fda7b488a1c9e6097"
+  },
+  "artifact_layout": [
+    "artifacts/candidate-wheel-provenance.json",
+    "artifacts/umf-admission-installed.json",
+    "dist/arras-0.6.1-py3-none-any.whl",
+    "dist/arras-0.6.1.tar.gz"
+  ],
+  "cohort_template_sha256": "724a5d033e4b34a20340bf35264729068b972428278bf5c51c96f410e99e3841",
+  "consumer_head": "7a2a2a68af8fa612d069aebab7a33bc74e8da325",
+  "event": "pull_request",
+  "find_links_sha256": "a04f0e579585e30cc8a33830290ff66695bbe8fab264a3367ea0709152b8a40e",
+  "host": {
+    "machine": "arm64",
+    "macos_product_version": "15.7.9",
+    "python": "3.11.9",
+    "python_executable": "/Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11",
+    "python_implementation": "CPython",
+    "release": "24.6.0",
+    "runner_image_os": "macos15",
+    "runner_image_version": "20260907.0337.1",
+    "system": "Darwin"
+  },
+  "job": "native-macos",
+  "producer": {
+    "event": "pull_request",
+    "run_attempt": "1",
+    "run_id": "40098437810"
+  },
+  "pull_request_head_sha": "e5d8100fc544837b4cf14cc89e4465f468cc9f98",
+  "run_attempt": "1",
+  "run_id": "40098437810",
+  "schema": "arras.ci-native-consumer/1",
+  "source_sha": "7a2a2a68af8fa612d069aebab7a33bc74e8da325",
+  "source_tree_sha": "ee431af6283ba14035a1c83a83bd4f5b5a2784b2",
+  "tool_sha256": {
+    ".github/scripts/bind_native_cohort.py": "196131b81aa71e4eee5c10dc873904fa8cf99cd073c1d45f84df6d936810282b",
+    ".github/scripts/observe_native_cleanup.py": "03a0d1d186fb73b8920a61ac5a17728ee483c97d999b7242b1a0849a3f421c3c",
+    "tools/_native_artifacts.py": "f84acaffabe1c46feb25a6e15239e10f99cd6069e8f1587d0a0b6dfa903a2446",
+    "tools/_native_install.py": "a2da9ebf018e601a55eaf7d3a2db3f10fd2a1b2d3efa49a0023daba56c6a8b8a",
+    "tools/_native_payload.py": "8b4460ace382cd7948c673a54e7580bfd8c05381d486c5bd85a1f3801452a27b",
+    "tools/_native_process.py": "7b1ca592b3b30cc300b9f6ba6363f0c7a7bf5d3e4803d760b23e0bbaad22d922",
+    "tools/verify_native.py": "409d172e4118f8ec10afe26e97eac3384f29f8c3db27afee368ed28ea57c79ee"
+  },
+  "wheel": {
+    "name": "arras-0.6.1-py3-none-any.whl",
+    "sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+    "version": "0.6.1"
+  }
+}

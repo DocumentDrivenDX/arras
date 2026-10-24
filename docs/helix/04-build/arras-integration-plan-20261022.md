@@ -1991,3 +1991,46 @@ actor, TLS, target-session, and stale-handle checks. Focused offline controls
 pass; actual service qualification of this correction remains open.
 
 The complete twelve-case Lakebase campaign and independent cleanup remain open and must bind to the same canonical wheel. The MP-02 diagnostic is not a substitute for that campaign. No release or managed-support claim follows from the source patch or diagnostic.
+
+### Instrumented WAN campaign and corrective harness checks — 2026-10-24
+
+CI run `40098437810` passed all five jobs at source
+`e5d8100fc544837b4cf14cc89e4465f468cc9f98`. Its fresh installed Mac campaign
+again recorded 64 passes and eight unchanged declared limits for the exact
+`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`
+wheel. The retained Mac verification and independent review accompany the
+[campaign evidence](evidence/truss050-adoption-20261024/full-managed-factory-and-feed-failures/).
+
+The actual Mac-to-Lakebase WAN campaign ran from 14:03:56 to 14:15:47 UTC
+(711.369 seconds) with the original twelve-case inventory and limits. Seven
+cases passed: admission, installation, person lifecycle, custody, ACL, MP-03,
+and MP-06. Settlement, MP-01, MP-04, and MP-05 failed; MP-02 was blocked during
+transaction or assembly adoption. The original owned cleanup, fresh independent
+native/provider audit, and both actual process-group absence checks passed.
+The audit preserved the 33-role and 18-membership baseline; all sixteen
+ordinary-principal platform-closure checks remained false. This campaign is
+not accepted.
+The [retention manifest](evidence/truss050-adoption-20261024/full-managed-factory-and-feed-failures/retention.json)
+binds the original receipts and their exact hashes. No temporary VM was used.
+
+The diagnostic observer located both MP-01 and MP-04 failures at the private
+destination's `apply_page` boundary. Source comparison found that this fixture
+expected bare property strings while the selected decoder preserves typed
+string cells. The correction requires the exact typed cell and retains the
+canonical properties, page, and receipt without extracting or stringifying it.
+No private exception message was captured. The settlement observer found no
+matching validated event group; it did not establish that the raw stream was
+empty or that the interruption worker lost a timing race.
+
+The settlement and MP-05 harness now instantiate the fixture's returned
+connection factory with the exact principal before entering its context. The
+prior function-as-context-manager call could fail before the fault was armed.
+MP-02 now establishes a local 10,000 ms statement timeout before transaction
+adoption, meeting the pinned SDK's finite-caller-timeout precondition while
+preserving the existing budget. The previous receipt did not record the actual
+timeout or distinguish the two adoption outcomes, so its cause remains
+unproven. New fixed failure codes distinguish transaction adoption from assembly
+construction, and failure cleanup detaches and rolls back. These corrections
+retain the original identity, genuine-interruption, request, generation, order,
+and stale-handle assertions. Source controls do not close the required fresh
+twelve-case WAN campaign or its independent cleanup gate.

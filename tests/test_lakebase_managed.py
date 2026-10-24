@@ -664,6 +664,7 @@ class _Mp02PidConnection:
         self.info = SimpleNamespace(transaction_status=0, backend_pid=client_pid)
         self.row = row
         self.statements: list[str] = []
+        self.rollbacks = 0
 
     def execute(self, statement: str) -> Any:
         self.statements.append(statement)
@@ -671,12 +672,19 @@ class _Mp02PidConnection:
             assert self.info.transaction_status == 0
             self.info.transaction_status = 2
             return SimpleNamespace(fetchone=lambda: None)
+        if statement == "SET LOCAL statement_timeout = '10000ms'":
+            assert self.info.transaction_status == 2
+            return SimpleNamespace(fetchone=lambda: None)
         assert statement == (
             "SELECT pg_catalog.pg_backend_pid(), current_user, session_user, "
             "pg_catalog.current_setting('transaction_read_only')"
         )
         assert self.info.transaction_status == 2
         return SimpleNamespace(fetchone=lambda: self.row)
+
+    def rollback(self) -> None:
+        self.rollbacks += 1
+        self.info.transaction_status = 0
 
 
 class _Mp02PidOk:
@@ -706,31 +714,45 @@ class _Mp02PidAssembly:
 
 
 class _Mp02PidHost:
-    def __init__(self, assembly: _Mp02PidAssembly) -> None:
+    def __init__(self, assembly: _Mp02PidAssembly, *, transaction_ok: bool = True) -> None:
         self.assembly = assembly
+        self.transaction_ok = transaction_ok
         self.detached = False
 
-    def adopt_transaction(self, *, access_mode: str) -> _Mp02PidOk:
+    def adopt_transaction(self, *, access_mode: str) -> _Mp02PidOk | _Mp02PidError:
         assert access_mode == "read_only"
+        if not self.transaction_ok:
+            return _Mp02PidError()
         return _Mp02PidOk(object())
 
     def detach(self) -> None:
         self.detached = True
 
 
-def _mp02_pid_truss_stub(hosts: list[_Mp02PidHost]) -> Any:
+def _mp02_pid_truss_stub(
+    hosts: list[_Mp02PidHost], *, transaction_ok: bool = True, assembly_ok: bool = True
+) -> Any:
     stub = type(sys)("truss")
     stub.CatalogRuntimeConfiguration = type("CatalogRuntimeConfiguration", (), {})
     stub.Ok = _Mp02PidOk
     stub.Error = _Mp02PidError
 
-    def adopt(connection: Any, **_kwargs: Any) -> _Mp02PidHost:
+    def adopt(connection: Any, **kwargs: Any) -> _Mp02PidHost:
         assert connection.info.transaction_status == 2
-        host = _Mp02PidHost(_Mp02PidAssembly(replacement=bool(hosts)))
+        assert connection.statements[:2] == [
+            "BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY",
+            "SET LOCAL statement_timeout = '10000ms'",
+        ]
+        assert kwargs == {"statement_timeout_ms": 10_000, "operation_timeout_ms": 30_000}
+        host = _Mp02PidHost(
+            _Mp02PidAssembly(replacement=bool(hosts)), transaction_ok=transaction_ok
+        )
         hosts.append(host)
         return host
 
-    def create_reference_assembly(_config: Any, host: _Mp02PidHost) -> _Mp02PidOk:
+    def create_reference_assembly(_config: Any, host: _Mp02PidHost) -> _Mp02PidOk | _Mp02PidError:
+        if not assembly_ok:
+            return _Mp02PidError()
         return _Mp02PidOk(host.assembly)
 
     stub.adopt_psycopg_host = adopt
@@ -798,12 +820,47 @@ def test_mp02_server_pid_is_bound_to_readonly_reader_session(monkeypatch: Any) -
     assert terminated == [2677]
     assert result["ended_backend_pid"] == 2677
     assert connections[0].info.backend_pid == 9000
-    assert connections[0].statements[:2] == [
+    assert connections[0].statements[:3] == [
         "BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY",
+        "SET LOCAL statement_timeout = '10000ms'",
         "SELECT pg_catalog.pg_backend_pid(), current_user, session_user, "
         "pg_catalog.current_setting('transaction_read_only')",
     ]
     assert all(host.detached for host in hosts)
+
+
+@pytest.mark.parametrize("failure_stage", ["transaction", "assembly", "precondition"])
+def test_mp02_adoption_failures_are_staged_and_cleaned_up(
+    monkeypatch: Any, failure_stage: str
+) -> None:
+    connection = _Mp02PidConnection((2677, "reader_role", "reader_role", "on"), 9000)
+    hosts: list[_Mp02PidHost] = []
+    if failure_stage == "transaction":
+        stub = _mp02_pid_truss_stub(hosts, transaction_ok=False)
+        expected = "transaction_adoption_failed"
+    elif failure_stage == "assembly":
+        stub = _mp02_pid_truss_stub(hosts, assembly_ok=False)
+        expected = "assembly_construction_failed"
+    else:
+        stub = _mp02_pid_truss_stub(hosts)
+        original_execute = connection.execute
+
+        def fail_precondition(statement: str) -> Any:
+            if statement == "SET LOCAL statement_timeout = '10000ms'":
+                raise RuntimeError("private diagnostic text")
+            return original_execute(statement)
+
+        connection.execute = fail_precondition
+        expected = "transaction_adoption_failed"
+    monkeypatch.setitem(sys.modules, "truss", stub)
+
+    with pytest.raises(managed._Blocked, match=expected):
+        lifecycle._adopt_readonly_handle(connection)
+    assert connection.info.transaction_status == 0
+    assert connection.rollbacks == 1
+    assert all(host.detached for host in hosts)
+    if failure_stage == "precondition":
+        assert hosts == []
 
 
 def test_mp02_invalid_session_binding_rolls_back_before_host_or_termination(
@@ -915,6 +972,183 @@ def test_fault_connection_is_bound_to_authorized_tls_actor() -> None:
     wrong_tls.info.get_parameters = lambda: {"sslmode": "require", "sslrootcert": "/tmp/root.pem"}
     with pytest.raises(managed._Failed, match="endpoint_or_tls_mismatch"):
         lifecycle._verify_fault_connection(wrong_tls, target, principal)
+
+
+def test_faulting_backend_binds_factory_to_exact_principal(monkeypatch: Any) -> None:
+    from contextlib import contextmanager
+
+    principal = SimpleNamespace(user="writer_role", token="opaque")
+    connection = SimpleNamespace(
+        info=SimpleNamespace(
+            host="db.example.test",
+            port=5432,
+            dbname="arras_test",
+            get_parameters=lambda: {
+                "sslmode": "verify-full",
+                "sslrootcert": "/tmp/root.pem",
+            },
+            transaction_status=0,
+        ),
+        pgconn=SimpleNamespace(ssl_in_use=True),
+    )
+
+    def execute(statement: str) -> Any:
+        assert "pg_stat_ssl" in statement
+        connection.info.transaction_status = 2
+        return SimpleNamespace(
+            fetchone=lambda: (
+                principal.user,
+                principal.user,
+                "none",
+                "arras_test",
+                "1234",
+                True,
+            )
+        )
+
+    connection.execute = execute
+    connection.rollback = lambda: setattr(connection.info, "transaction_status", 0)
+    factory_calls: list[dict[str, Any]] = []
+    source_calls: list[Any] = []
+
+    def fixture_callback(**kwargs: Any) -> Callable[[Any], Any]:
+        factory_calls.append(kwargs)
+
+        def source_factory(actual_principal: Any) -> Any:
+            source_calls.append(actual_principal)
+            if actual_principal is not principal:
+                raise managed._Blocked("fixture_principal_mismatch")
+
+            @contextmanager
+            def source() -> Any:
+                yield connection
+
+            return source()
+
+        return source_factory
+
+    backend = object()
+    constructed: dict[str, Any] = {}
+
+    class ModuleAccess:
+        def __init__(self, **kwargs: Any) -> None:
+            self.kwargs = kwargs
+
+    def create_backend(
+        _name: str,
+        person_source: Any,
+        installer_source: Any,
+        **kwargs: Any,
+    ) -> Any:
+        constructed.update(
+            source=person_source,
+            installer_source=installer_source,
+            kwargs=kwargs,
+        )
+        return backend
+
+    truss_adapter = cast(
+        Any, SimpleNamespace(ModuleAccess=ModuleAccess, create_backend=create_backend)
+    )
+    monkeypatch.setitem(sys.modules, "arras.adapters.truss", truss_adapter)
+
+    inputs = SimpleNamespace(
+        target={
+            "endpoint": {
+                "host": "db.example.test",
+                "port": 5432,
+                "database": "arras_test",
+            },
+            "resources": {
+                "module_access": {
+                    "document_id": "arras-test",
+                    "reader_role": "reader_role",
+                    "writer_role": "writer_role",
+                },
+                "tolerated_grantees": [],
+            },
+        }
+    )
+    observed_actor: dict[str, str] = {}
+    result = lifecycle._faulting_backend(
+        inputs,
+        {"fault_person_connection_source": fixture_callback},
+        {"installer_connection_source": "installer-source"},
+        {"writer": principal},
+        "cut_transport_during_commit",
+        request_sha256="a" * 64,
+        observed_actor=observed_actor,
+    )
+
+    assert result is backend
+    assert constructed["installer_source"] == "installer-source"
+    with constructed["source"](principal) as yielded:
+        assert yielded is connection
+    assert len(factory_calls) == 1
+    callback_args = factory_calls[0]
+    assert callback_args == {
+        "actor_label": "writer",
+        "fault_mode": "cut_transport_during_commit",
+        "request_sha256": "a" * 64,
+        "publication_sha256": None,
+        "page_sha256": None,
+    }
+    assert source_calls == [principal]
+    assert observed_actor == {"actor": "writer_role", "actor_oid": "1234"}
+    assert connection.info.transaction_status == 0
+    wrong_principal = SimpleNamespace(user=principal.user, token="other")
+    with pytest.raises(managed._Blocked, match="fixture_principal_mismatch"):
+        with constructed["source"](wrong_principal):
+            pytest.fail("the fixture must refuse a different principal object")
+    assert source_calls == [principal, wrong_principal]
+
+
+def test_faulting_backend_refuses_nonfactory_control_result(monkeypatch: Any) -> None:
+    principal = SimpleNamespace(user="writer_role", token="opaque")
+    captured: dict[str, Any] = {}
+
+    class ModuleAccess:
+        def __init__(self, **_kwargs: Any) -> None:
+            pass
+
+    def create_backend(_name: str, person_source: Any, *_args: Any, **_kwargs: Any) -> Any:
+        captured["source"] = person_source
+        return object()
+
+    truss_adapter = cast(
+        Any, SimpleNamespace(ModuleAccess=ModuleAccess, create_backend=create_backend)
+    )
+    monkeypatch.setitem(sys.modules, "arras.adapters.truss", truss_adapter)
+    inputs = SimpleNamespace(
+        target={
+            "resources": {
+                "module_access": {
+                    "document_id": "arras-test",
+                    "reader_role": "reader_role",
+                    "writer_role": "writer_role",
+                },
+                "tolerated_grantees": [],
+            }
+        }
+    )
+    callback_calls: list[dict[str, Any]] = []
+
+    def malformed_callback(**kwargs: Any) -> object:
+        callback_calls.append(kwargs)
+        return object()
+
+    lifecycle._faulting_backend(
+        inputs,
+        {"fault_person_connection_source": malformed_callback},
+        {},
+        {"writer": principal},
+        "cut_transport_during_commit",
+    )
+    with pytest.raises(managed._Blocked, match="genuine_transport_fault_control_unavailable"):
+        with captured["source"](principal):
+            pytest.fail("a non-callable fault source must fail before connecting")
+    assert len(callback_calls) == 1
+    assert callback_calls[0]["actor_label"] == "writer"
 
 
 def test_original_request_receipt_binds_namespace_and_writer_context() -> None:

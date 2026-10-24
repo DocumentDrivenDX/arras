@@ -159,6 +159,18 @@ def _require_receipt_journal_binding(inventory: Any, receipt: Mapping[str, Any])
         raise _Failed("original_request_journal_binding_missing")
 
 
+def _cleanup_readonly_adoption(connection: Any, host: Any | None = None) -> None:
+    if host is not None:
+        try:
+            host.detach()
+        except Exception:
+            pass
+    try:
+        connection.rollback()
+    except Exception:
+        pass
+
+
 def _adopt_readonly_handle(
     connection: Any, *, on_readonly_begin: Callable[[Any], None] | None = None
 ) -> tuple[Any, Any, Any]:
@@ -166,15 +178,34 @@ def _adopt_readonly_handle(
 
     if int(connection.info.transaction_status) != 0:
         raise _Blocked("connection_not_idle")
-    connection.execute("BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY")
+    try:
+        connection.execute("BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY")
+        connection.execute("SET LOCAL statement_timeout = '10000ms'")
+    except Exception:
+        _cleanup_readonly_adoption(connection)
+        raise _Blocked("transaction_adoption_failed") from None
     if on_readonly_begin is not None:
         on_readonly_begin(connection)
-    host = adopt_psycopg_host(connection, statement_timeout_ms=10_000, operation_timeout_ms=30_000)
-    transaction = host.adopt_transaction(access_mode="read_only")
-    assembly = create_reference_assembly(CatalogRuntimeConfiguration(), host)
-    if not isinstance(transaction, Ok) or not isinstance(assembly, Ok):
-        host.detach()
-        raise _Blocked("transaction_or_assembly_adoption_failed")
+    host: Any | None = None
+    try:
+        host = adopt_psycopg_host(
+            connection, statement_timeout_ms=10_000, operation_timeout_ms=30_000
+        )
+        transaction = host.adopt_transaction(access_mode="read_only")
+    except Exception:
+        _cleanup_readonly_adoption(connection, host)
+        raise _Blocked("transaction_adoption_failed") from None
+    if not isinstance(transaction, Ok):
+        _cleanup_readonly_adoption(connection, host)
+        raise _Blocked("transaction_adoption_failed")
+    try:
+        assembly = create_reference_assembly(CatalogRuntimeConfiguration(), host)
+    except Exception:
+        _cleanup_readonly_adoption(connection, host)
+        raise _Blocked("assembly_construction_failed") from None
+    if not isinstance(assembly, Ok):
+        _cleanup_readonly_adoption(connection, host)
+        raise _Blocked("assembly_construction_failed")
     return host, transaction.value, assembly.value
 
 
@@ -596,13 +627,20 @@ def _faulting_backend(
         label = labels.get(principal.user)
         if label is None:
             raise _Blocked("fault_actor_not_authorized")
-        source_context = callback(
+        source_factory = callback(
             actor_label=label,
             fault_mode=mode,
             request_sha256=request_sha256,
             publication_sha256=publication_sha256,
             page_sha256=page_sha256,
         )
+        if not callable(source_factory):
+            raise _Blocked("genuine_transport_fault_control_unavailable")
+        source_context: Any = source_factory(principal)
+        if not callable(getattr(source_context, "__enter__", None)) or not callable(
+            getattr(source_context, "__exit__", None)
+        ):
+            raise _Blocked("genuine_transport_fault_control_unavailable")
         with source_context as connection:
             actor_oid = _verify_fault_connection(connection, inputs.target, principal)
             if observed_actor is not None and label == "writer":
