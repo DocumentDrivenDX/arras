@@ -3,11 +3,13 @@
 
 from __future__ import annotations
 
+import email
 import importlib.util
 import io
 import json
 import re
 import tarfile
+import tomllib
 from pathlib import Path
 from typing import Any
 
@@ -146,3 +148,79 @@ def test_metadata_gate_rejects_python_floor_and_optional_dependency_drift() -> N
     stale_optional_dependency["requires_dist"] = dependencies
     with pytest.raises(SystemExit, match="requires-dist"):
         verifier.verify_metadata_headers(stale_optional_dependency, expected, "fixture")
+
+
+def test_optional_direct_url_metadata_preserves_urls_and_conjoins_existing_markers() -> None:
+    project = tomllib.loads((verifier.ROOT / "pyproject.toml").read_text())["project"]
+    source_requirements = project["optional-dependencies"]["umf"]
+    expected = verifier.expected_project_metadata()
+    normalized = [
+        requirement
+        for requirement in expected["requires_dist"]
+        if requirement.startswith("umf-core @ ")
+    ]
+
+    assert len(normalized) == len(source_requirements) == 2
+    for source, actual in zip(source_requirements, normalized, strict=True):
+        source_body, separator, source_marker = source.partition(";")
+        assert separator
+        source_url = source_body.split("@", 1)[1].strip()
+        assert actual.startswith(f"umf-core @ {source_url};")
+        assert f"({source_marker.strip()}) and extra == 'umf'" in actual
+
+    # These marker lines follow Hatch's observed METADATA/PKG-INFO serialization independently of
+    # the expected-metadata helper; the source URL/hash bodies remain byte-exact.
+    artifact_markers = (
+        "sys_platform == 'linux' and platform_machine == 'x86_64'",
+        "sys_platform == 'darwin' and platform_machine == 'arm64'",
+    )
+    artifact_requirements = [
+        *[item for item in expected["requires_dist"] if not item.startswith("umf-core @ ")],
+        *[
+            f"{source.partition(';')[0].strip()}; ({marker}) and extra == 'umf'"
+            for source, marker in zip(source_requirements, artifact_markers, strict=True)
+        ],
+    ]
+    message = email.message_from_string(
+        "Requires-Python: "
+        + project["requires-python"]
+        + "\n"
+        + "".join(f"Provides-Extra: {extra}\n" for extra in project["optional-dependencies"])
+        + "".join(f"Requires-Dist: {item}\n" for item in artifact_requirements)
+        + "\n"
+    )
+    fields = verifier.message_metadata_fields(message)
+    verifier.verify_metadata_headers(fields, expected, "Hatch metadata fixture")
+
+
+def test_optional_direct_url_metadata_rejects_platform_extra_and_artifact_drift() -> None:
+    expected = verifier.expected_project_metadata()
+    source_requirements = [
+        value for value in expected["requires_dist"] if value.startswith("umf-core @ ")
+    ]
+    assert len(source_requirements) == 2
+    linux, macos = source_requirements
+    digest_marker = "#sha256="
+    digest_start = linux.index(digest_marker) + len(digest_marker)
+    digest_changed = (
+        linux[:digest_start]
+        + ("0" if linux[digest_start] != "0" else "1")
+        + linux[digest_start + 1 :]
+    )
+    mutations = [
+        linux.replace("sys_platform == 'linux'", "sys_platform == 'darwin'", 1),
+        linux.replace("platform_machine == 'x86_64'", "platform_machine == 'aarch64'", 1),
+        linux.replace(" and extra == 'umf'", "", 1),
+        linux.replace(" and platform_machine == 'x86_64'", " or platform_machine == 'x86_64'", 1),
+        linux.replace("umf_core-", "umf_Core-", 1),
+        digest_changed,
+        macos.replace("sys_platform == 'darwin'", "sys_platform == 'Darwin'", 1),
+    ]
+    for changed in mutations:
+        fields = dict(expected)
+        requirements = list(expected["requires_dist"])
+        index = requirements.index(linux if changed != mutations[-1] else macos)
+        requirements[index] = changed
+        fields["requires_dist"] = requirements
+        with pytest.raises(SystemExit, match="requires-dist"):
+            verifier.verify_metadata_headers(fields, expected, "wheel/sdist mutation")
