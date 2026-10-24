@@ -705,7 +705,7 @@ def _person_public_api_checks(context: Mapping[str, Any]) -> tuple[Any, Any, Any
         raise PersonFailure("writer_operation_refused")
     rows = reader.query(
         "lakebase_qualification",
-        "SELECT p.code, p.value FROM lakebase_qualification.Probe p WHERE p.code = $code LIMIT 1",
+        "SELECT p.code, p.value FROM lakebase_qualification.Probe p WHERE p.code = :code LIMIT 1",
         params={"code": draft["code"]},
     ).rows
     if rows != ({"code": draft["code"], "value": draft["value"]},):
