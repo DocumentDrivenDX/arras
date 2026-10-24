@@ -71,6 +71,7 @@
       "tests/vectors",
       "tests/fixtures/umf-core-reference",
       "tests/fixtures/umf-core-metadata",
+      "tests/fixtures/umf-actions-binding",
       "ui/src/test"
     ],
     "entries": [
@@ -91,6 +92,10 @@
       {"path":"tests/fixtures/umf-core-reference/current-conformance.json","provenance":"upstream-official-umf-core-conformance-corpus","source":"https://github.com/DocumentDrivenDX/umf/blob/umf-v0.5.4/fixtures/metamodel/current-conformance.json","license":"MIT OR Apache-2.0 (upstream notices preserved in tests/fixtures/umf-core-reference)","sha256":"bb008a98b8448050748e65f867e7863475ccad9501a5b9229ae9e6d336691544"},
       {"path":"tests/fixtures/umf-core-metadata/primary-string-record.json","provenance":"derived-official-upstream-fixture","source":"tests/fixtures/umf-core-reference/current-conformance.json#keys/primary-and-alternate","license":"MIT OR Apache-2.0 (upstream notices preserved in tests/fixtures/umf-core-reference)","sha256":"da883657baefe7b7a4ab8654f78e7d84ef1e281eea7bc7cee48f8662007cd687"},
       {"path":"tests/fixtures/umf-core-metadata/provenance.json","provenance":"fixture-provenance-record","source":"tests/fixtures/umf-core-metadata/primary-string-record.json","sha256":"61490f3404789d010cb5ac3fc07f125a355e0cea952ab0a9378c69087d72cdb2"},
+      {"path":"tests/fixtures/umf-actions-binding/README.md","provenance":"upstream-candidate-neutral-fixture-readme","source":"https://github.com/DocumentDrivenDX/umf","license":"MIT OR Apache-2.0","sha256":"d3750084d682794cb2ae721ca1f4c73a543b5ef68375f13e753450a6b5ad0a95"},
+      {"path":"tests/fixtures/umf-actions-binding/PROVENANCE.md","provenance":"candidate-fixture-provenance-record","source":"https://github.com/DocumentDrivenDX/umf/tree/42cc635653972689d9443cbc06442df47eca92ca/fixtures/actions-binding","license":"MIT OR Apache-2.0","sha256":"dd4d4c7f194ad4ff79681dd77bf8df22a1caf903e21975543764bd1b37fb8b0d"},
+      {"path":"tests/fixtures/umf-actions-binding/source.json","provenance":"upstream-candidate-neutral-action-fixture","source":"tests/fixtures/umf-actions-binding/README.md","license":"MIT OR Apache-2.0","sha256":"5b79b3dba5ebc52ac9452f85a75411dab5edaa34154adda76f872a53c21d0818"},
+      {"path":"tests/fixtures/umf-actions-binding/vectors.json","provenance":"upstream-candidate-neutral-action-vectors","source":"tests/fixtures/umf-actions-binding/README.md","license":"MIT OR Apache-2.0","sha256":"c811eefac81c4f5ff3a7aa60cbe7f7657f7599040cd0869b2616c450931a950e"},
       {"path":"tests/vectors/brand.json","provenance":"authored-test-vector","source":"tests/test_ui.py","sha256":"011675fd71c12bf7812d36a34b355b225dedf30e5b016c4863e8570df6a6c254"},
       {"path":"tests/vectors/graphfile.json","provenance":"authored-test-vector","source":"tests/test_graphfile.py","sha256":"e8e06d9d01dce42a338cabd418374c8a228605c3ac31bf6bc3825811aabf5d43"},
       {"path":"tests/vectors/inputs.json","provenance":"authored-test-vector","source":"tests/test_inputs_vectors.py","sha256":"5a461fafac10a7f030d51c5469d944b15507fb2e9560bb15b23dac7ca8b030a8"},

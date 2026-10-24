@@ -21,7 +21,8 @@ from arras.model import (
 from arras.types import Revision
 
 _ENGINE_DISTRIBUTION = "umf-core"
-_ENGINE_VERSION = "0.10.0"
+_ENGINE_VERSIONS = frozenset({"0.10.0", "0.10.1"})
+_BASELINE_ENGINE_VERSION = "0.10.0"
 _PROFILE = "umf-core-empty-registry/1"
 _METADATA_PROFILE = "umf-core-metadata/1"
 _MAX_SOURCE_BYTES = 16 * 1024 * 1024
@@ -67,10 +68,10 @@ class AdmissionReport:
             raise TypeError("source must be immutable bytes")
         if self.source_sha256 != hashlib.sha256(self.source).hexdigest():
             raise ValueError("source_sha256 does not match source")
-        if (self.engine_distribution, self.engine_version, self.validation_profile) != (
-            _ENGINE_DISTRIBUTION,
-            _ENGINE_VERSION,
-            _PROFILE,
+        if (
+            self.engine_distribution != _ENGINE_DISTRIBUTION
+            or self.engine_version not in _ENGINE_VERSIONS
+            or self.validation_profile != _PROFILE
         ):
             raise ValueError("admission engine identity is not recognized")
         if type(self.diagnostics) is not tuple or any(
@@ -182,12 +183,18 @@ def admit_document(document: bytes | str) -> AdmissionReport:
     except ModuleNotFoundError as error:
         if error.name != "umf":
             raise
-        raise Unsupported("official UMF admission", ["install the arras[umf] extra"]) from None
+        raise Unsupported(
+            "official UMF admission",
+            [
+                "install arras[umf] on a qualified CPython platform",
+                "the UMF extra has no wheel outside Linux x86_64 and macOS arm64",
+            ],
+        ) from None
 
-    if result.distribution != _ENGINE_DISTRIBUTION or result.version != _ENGINE_VERSION:
+    if result.distribution != _ENGINE_DISTRIBUTION or result.version not in _ENGINE_VERSIONS:
         raise RuntimeError("the loaded UMF engine does not match the selected released profile")
     if isinstance(result, ReaderRefusal):
-        return _not_run(source, "source_profile")
+        return _not_run(source, "source_profile", engine_version=result.version)
     diagnostics = tuple(
         UmfDiagnostic("umf", item.code, item.path, item.message, item.severity)
         for item in result.diagnostics
@@ -256,7 +263,18 @@ def project_document(document: bytes | str) -> ProjectionReport:
     return ProjectionReport(admission, _METADATA_PROFILE, True, (), module)
 
 
-def _not_run(source: bytes, code: Literal["source_profile", "source_limit"]) -> AdmissionReport:
+def _not_run(
+    source: bytes,
+    code: Literal["source_profile", "source_limit"],
+    *,
+    engine_version: str = _BASELINE_ENGINE_VERSION,
+) -> AdmissionReport:
+    """Report no official result; the default version is only the baseline profile identity.
+
+    Source-boundary refusals happen before loading the optional SDK. Their report version is
+    therefore not an observation of an installed runtime. Reader refusals may carry the exact
+    version observed by the already loaded engine.
+    """
     diagnostic = UmfDiagnostic(
         "arras-source",
         code,
@@ -268,7 +286,7 @@ def _not_run(source: bytes, code: Literal["source_profile", "source_limit"]) -> 
         source,
         hashlib.sha256(source).hexdigest(),
         _ENGINE_DISTRIBUTION,
-        _ENGINE_VERSION,
+        engine_version,
         _PROFILE,
         "not_run",
         None,

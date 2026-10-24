@@ -533,12 +533,32 @@ def make_build_bundle(root: Path) -> tuple[Path, str, str, bytes]:
     return bundle, wheel_sha, npm_sha, npm_resources
 
 
-def test_assemble_links_exact_assets_and_regenerates_complete_sums(tmp_path: Path) -> None:
-    inputs = make_inputs(tmp_path)
-    raw_receipts = {
-        name: (inputs["build_bundle"] / name).read_bytes()
+def _raw_receipt_bytes(bundle: Path) -> dict[str, bytes]:
+    return {
+        name: (bundle / name).read_bytes()
         for name in ("doctor-installed.json", "distribution-verification.json")
     }
+
+
+def _assert_raw_receipts_preserved(
+    inputs: dict[str, Any], aggregate: dict[str, Any], raw_receipts: dict[str, bytes]
+) -> None:
+    bundle = inputs["build_bundle"]
+    assert (bundle / "doctor-installed.json").read_bytes() == raw_receipts["doctor-installed.json"]
+    assert (bundle / "distribution-verification.json").read_bytes() == raw_receipts[
+        "distribution-verification.json"
+    ]
+    assert aggregate["source_evidence_sha256"]["doctor-installed.json"] == sha(
+        raw_receipts["doctor-installed.json"]
+    )
+    assert aggregate["source_evidence_sha256"]["distribution-verification.json"] == sha(
+        raw_receipts["distribution-verification.json"]
+    )
+
+
+def test_assemble_links_exact_assets_and_regenerates_complete_sums(tmp_path: Path) -> None:
+    inputs = make_inputs(tmp_path)
+    raw_receipts = _raw_receipt_bytes(inputs["build_bundle"])
     aggregate = assembler.assemble(
         **{
             key: value
@@ -574,6 +594,7 @@ def test_assemble_links_exact_assets_and_regenerates_complete_sums(tmp_path: Pat
         "SHA256SUMS",
     }
     assert {path.name for path in output.iterdir()} == expected
+    assert aggregate["schema_version"] == 1
     assert aggregate["gates"]["public_download"]["status"] == "not_run_at_assembly"
     assert aggregate["release_artifacts"]["sdist"]["filename"] == f"arras-{VERSION}.tar.gz"
     assert aggregate["qualification_scope"]["doctor_runtime"] == {
@@ -586,14 +607,7 @@ def test_assemble_links_exact_assets_and_regenerates_complete_sums(tmp_path: Pat
         assert (output / name).read_bytes() == (inputs["build_bundle"] / name).read_bytes()
     raw_doctor = raw_receipts["doctor-installed.json"]
     raw_distribution = raw_receipts["distribution-verification.json"]
-    assert (inputs["build_bundle"] / "doctor-installed.json").read_bytes() == raw_doctor
-    assert (
-        inputs["build_bundle"] / "distribution-verification.json"
-    ).read_bytes() == raw_distribution
-    assert aggregate["source_evidence_sha256"]["doctor-installed.json"] == sha(raw_doctor)
-    assert aggregate["source_evidence_sha256"]["distribution-verification.json"] == sha(
-        raw_distribution
-    )
+    _assert_raw_receipts_preserved(inputs, aggregate, raw_receipts)
     doctor_public = json.loads((output / "doctor-installed.json").read_bytes())
     distribution_public = json.loads((output / "distribution-verification.json").read_bytes())
     assert doctor_public["schema"] == "arras.ui.doctor-public-qualification.v1"
@@ -675,6 +689,123 @@ def test_assemble_links_exact_assets_and_regenerates_complete_sums(tmp_path: Pat
                 }
             }
         )
+
+
+def test_action_component_selects_schema_three_and_exact_binding() -> None:
+    action_sha = sha(b"canonical action projection")
+    projection = assembler._public.release_evidence_projection(
+        version=VERSION,
+        wheel_name=WHEEL_NAME,
+        wheel_sha="a" * 64,
+        npm_name=f"documentdrivendx-arras-ui-{VERSION}.tgz",
+        npm_sha="b" * 64,
+        source_hashes={},
+        native={"runtime": {}, "corpus": {"version": 1, "limits": {}}},
+        ui={},
+        consumer={},
+        component_hashes={"umf-actions-installed.json": action_sha},
+        sdist_name=f"arras-{VERSION}.tar.gz",
+        sdist_sha="c" * 64,
+        doctor_runtime={},
+        umf_actions={"schema": "arras.umf-actions-public-qualification/1"},
+        umf_actions_required=True,
+    )
+    assert projection["schema_version"] == 3
+    assert projection["umf_actions"] == {
+        "filename": "umf-actions-installed.json",
+        "sha256": action_sha,
+        "qualification_phase": "release-build",
+        "status": "passed",
+    }
+    with pytest.raises(assembler.AssemblyError, match="actions projection presence"):
+        assembler._public.release_evidence_projection(
+            version=VERSION,
+            wheel_name=WHEEL_NAME,
+            wheel_sha="a" * 64,
+            npm_name=f"documentdrivendx-arras-ui-{VERSION}.tgz",
+            npm_sha="b" * 64,
+            source_hashes={},
+            native={"runtime": {}, "corpus": {"version": 1, "limits": {}}},
+            ui={},
+            consumer={},
+            component_hashes={},
+            sdist_name=f"arras-{VERSION}.tar.gz",
+            sdist_sha="c" * 64,
+            doctor_runtime={},
+            umf_actions_required=True,
+        )
+
+
+def test_action_receipt_is_bound_into_assembled_asset_and_sums(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    inputs = make_inputs(tmp_path)
+    receipt_path = tmp_path / "action-receipt.json"
+    raw_receipt = b'{"fixture":"raw private receipt"}\n'
+    receipt_path.write_bytes(raw_receipt)
+    inputs["umf_actions_receipt_path"] = receipt_path
+    inputs["output_dir"] = tmp_path / "action-release"
+    projection = {
+        "schema": "arras.umf-actions-public-qualification/1",
+        "status": "passed",
+        "qualification_phase": "release-build",
+    }
+
+    def action_required(_wheel_path: Path, _wheel_sha: str) -> bool:
+        return True
+
+    def validate_action_receipt(value: object, **_identity: object) -> dict[str, Any]:
+        assert value == {"fixture": "raw private receipt"}
+        return projection
+
+    monkeypatch.setattr(assembler, "_action_capability_required", action_required)
+    monkeypatch.setattr(assembler._actions_receipt, "validate_receipt", validate_action_receipt)
+    aggregate = assembler.assemble(
+        **{
+            key: value
+            for key, value in inputs.items()
+            if key.endswith("path")
+            or key
+            in {
+                "build_bundle",
+                "expected_version",
+                "expected_wheel",
+                "expected_wheel_sha256",
+                "output_dir",
+            }
+        }
+    )
+    output = inputs["output_dir"]
+    projection_raw = (output / "umf-actions-installed.json").read_bytes()
+    sums = (output / "SHA256SUMS").read_text(encoding="ascii")
+    assert json.loads(projection_raw) == projection
+    assert aggregate["schema_version"] == 3
+    assert aggregate["source_evidence_sha256"]["umf-actions-receipt.json"] == sha(raw_receipt)
+    assert aggregate["published_components"]["umf-actions-installed.json"] == sha(projection_raw)
+    assert f"{sha(projection_raw)}  umf-actions-installed.json" in sums
+    assert len(sums.splitlines()) == 16
+
+    missing_output = tmp_path / "missing-action-release"
+    with pytest.raises(assembler.AssemblyError, match="presence does not match"):
+        assembler.assemble(
+            **{
+                key: value
+                for key, value in inputs.items()
+                if key != "umf_actions_receipt_path"
+                and (
+                    key.endswith("path")
+                    or key
+                    in {
+                        "build_bundle",
+                        "expected_version",
+                        "expected_wheel",
+                        "expected_wheel_sha256",
+                    }
+                )
+            },
+            output_dir=missing_output,
+        )
+    assert not missing_output.exists()
 
 
 def test_native_receipt_rejects_wrong_identity_failure_and_duplicate_ids(tmp_path: Path) -> None:

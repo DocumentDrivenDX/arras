@@ -1,0 +1,146 @@
+{
+  "umf": "0.10.0",
+  "id": "actions-binding-neutral-fixture",
+  "vocabularies": {
+    "umf.actions": {
+      "version": "0.1.0"
+    }
+  },
+  "modules": [
+    {
+      "id": "catalog",
+      "namespace": "urn:umf:fixture:catalog",
+      "elements": [
+        {
+          "id": "item_id",
+          "kind": "field",
+          "scalarType": "string",
+          "cardinality": "one",
+          "nullability": "required",
+          "extensions": {}
+        },
+        {
+          "id": "label",
+          "kind": "field",
+          "scalarType": "string",
+          "cardinality": "one",
+          "nullability": "required",
+          "allowedValues": [
+            { "string": "ready" },
+            { "string": "held" },
+            { "string": "abcdefgh" },
+            { "string": "𐐷" }
+          ],
+          "facets": {
+            "length": {
+              "min": 1,
+              "max": 8,
+              "unit": "unicode-scalar"
+            }
+          },
+          "extensions": {}
+        },
+        {
+          "id": "item",
+          "kind": "record",
+          "members": [
+            { "module": "catalog", "element": "item_id" },
+            { "module": "catalog", "element": "label" }
+          ],
+          "keys": [
+            {
+              "id": "item-key",
+              "name": "item key",
+              "primary": true,
+              "fields": [
+                { "module": "catalog", "element": "item_id" }
+              ]
+            }
+          ],
+          "extensions": {}
+        }
+      ],
+      "extensions": {
+        "umf.actions": {
+          "actions": [
+            {
+              "id": "set_label",
+              "name": "Set label",
+              "description": "Set one existing item's constrained label.",
+              "parameters": [
+                {
+                  "id": "item",
+                  "kind": "entity",
+                  "target": {
+                    "module": "catalog",
+                    "element": "item",
+                    "key": "item-key"
+                  },
+                  "required": true
+                },
+                {
+                  "id": "label_value",
+                  "kind": "value",
+                  "field": { "module": "catalog", "element": "label" },
+                  "required": true
+                }
+              ],
+              "outputs": [],
+              "preconditions": [],
+              "postconditions": [],
+              "failures": [],
+              "reads": [],
+              "writes": [
+                {
+                  "id": "write_item",
+                  "record": { "module": "catalog", "element": "item" },
+                  "selector": {
+                    "language": "umf.actions.keys",
+                    "version": "1",
+                    "expression": "{\"entity\":\"item\"}",
+                    "references": [{ "parameter": "item" }]
+                  },
+                  "maxEntities": 1,
+                  "fields": [{ "module": "catalog", "element": "label" }],
+                  "relationships": [],
+                  "create": false,
+                  "delete": false
+                }
+              ],
+              "binding": {
+                "kind": "recipe",
+                "profile": { "id": "graph-write", "version": "1" },
+                "effects": [
+                  {
+                    "id": "set-label",
+                    "kind": "set",
+                    "entity": { "parameter": "item" },
+                    "values": [
+                      {
+                        "field": { "module": "catalog", "element": "label" },
+                        "value": { "parameter": "label_value" }
+                      }
+                    ]
+                  }
+                ]
+              },
+              "authorization": {
+                "kind": "policy",
+                "profile": { "id": "arras.module-write", "version": "1" },
+                "resources": ["write_item"]
+              },
+              "attribution": { "subject": "person-required" },
+              "atomicity": "single-store",
+              "idempotency": "caller-key-optional",
+              "result": {
+                "identities": "created-and-changed",
+                "version": "store-opaque",
+                "receipt": "read-at-least"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

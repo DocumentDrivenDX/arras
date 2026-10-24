@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: MIT OR Apache-2.0
 """In-memory backends for a host's own tests (CONTRACT-005).
 
-A host embeds Arras over Truss and Ashlar, neither of which a unit test can reach. `InMemory`
-stands in for both: an authority and a replica that follow the backend contract, so a host's
-tests exercise the same interface, refusals, freshness and outages it meets in production.
+A host embeds Arras over Truss and Ashlar, neither of which a unit test can reach. The default
+`InMemory` pair exercises legacy backend behavior. An explicit `arras-umf-set/1` opt-in creates a
+single authority for the candidate action subset; it does not expose a replica.
 
     world = InMemory()
     world.register(module_document)                 # as the administrator
@@ -26,6 +26,7 @@ from importlib import resources
 from typing import Literal
 
 from arras.core import Arras
+from arras.errors import Unsupported
 from arras.fakes import FakeAccess, MemoryReplica, MemoryStore
 from arras.model import Placement
 from arras.results import ImportResult, RegistryResult
@@ -46,11 +47,21 @@ def example_module() -> str:
 class InMemory:
     """An in-memory store (reader and provider) and replica, the people they know, and a `Arras` over them."""
 
-    def __init__(self, *, store: str = "memory", replica: str = "memory_replica") -> None:
-        """`store` and `replica` are the names the host gives the backends; every module is
-        placed on the first with the second as its replica."""
+    def __init__(
+        self,
+        *,
+        store: str = "memory",
+        replica: str = "memory_replica",
+        action_profile: Literal["arras-umf-set/1"] | None = None,
+    ) -> None:
+        """Create a legacy authority/replica pair or explicitly opted-in single authority."""
+        if action_profile is not None and (
+            type(action_profile) is not str or action_profile != "arras-umf-set/1"
+        ):
+            raise ValueError("unsupported in-memory action profile")
+        self._action_profile: Literal["arras-umf-set/1"] | None = action_profile
         self._access = FakeAccess()
-        self._store = MemoryStore(self._access, store)
+        self._store = MemoryStore(self._access, store, action_profile=action_profile)
         self._replica = MemoryReplica(self._store, self._access, replica)
         self.admin: Principal = self._access.grant(
             "admin", "*", "read", "write", "schema", admin=True
@@ -62,6 +73,8 @@ class InMemory:
     @property
     def backends(self) -> Mapping[str, MemoryStore | MemoryReplica]:
         """The backends by name, for `Arras.start` when a test needs its own instance."""
+        if self._action_profile == "arras-umf-set/1":
+            return {self._store.name: self._store}
         return {self._store.name: self._store, self._replica.name: self._replica}
 
     def start(
@@ -74,11 +87,20 @@ class InMemory:
         missing does. `expected` defaults to every backend, so an absent one is `not_configured`."""
         held = self.backends
         chosen = {n: b for n, b in held.items() if backends is None or n in backends}
+        default_expected = (
+            (self._store.name,) if self._action_profile == "arras-umf-set/1" else tuple(held)
+        )
+        default_placement = (
+            Placement(self._store.name)
+            if self._action_profile == "arras-umf-set/1"
+            else Placement(self._store.name, (self._replica.name,))
+        )
         return Arras.start(
             chosen,
-            expected=tuple(held) if expected is None else tuple(expected),
+            expected=default_expected if expected is None else tuple(expected),
             admin=self.admin,
-            default_placement=Placement(self._store.name, (self._replica.name,)),
+            default_placement=default_placement,
+            metadata_profile=self._action_profile or "legacy-arras/1",
         )
 
     # -- people
@@ -113,7 +135,9 @@ class InMemory:
     # -- the replica and outages
 
     def sync(self) -> None:
-        """Bring the replica up to the authority's current position."""
+        """Bring the legacy replica up to its authority's current position."""
+        if self._action_profile == "arras-umf-set/1":
+            raise Unsupported("sync", ["the selected action profile is store-only"])
         self._replica.feed()
 
     def set_available(self, backend: str, up: bool) -> None:

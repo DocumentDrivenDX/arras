@@ -61,12 +61,28 @@ def normalize_requirement(value: str) -> str:
     extra_part = (
         "[" + ",".join(sorted(x.strip().lower() for x in extras.split(","))) + "]" if extras else ""
     )
-    specifiers = sorted(part.strip().lower() for part in match.group(3).split(",") if part.strip())
-    normalized = name + extra_part + ",".join(specifiers)
+    tail = match.group(3).strip()
+    if tail.startswith("@"):
+        # A direct-reference URL is an opaque, case-sensitive artifact identity. Normalize only
+        # the separator around `@`; preserve the URL, filename, and digest bytes exactly.
+        normalized = name + extra_part + " @ " + tail[1:].strip()
+    else:
+        specifiers = sorted(part.strip().lower() for part in tail.split(",") if part.strip())
+        normalized = name + extra_part + ",".join(specifiers)
     if separator:
-        normalized_marker = re.sub(r"\s+", " ", marker.strip().replace('"', "'")).lower()
+        # PEP 508 marker operators and whitespace/quote style are normalized, while quoted
+        # platform values remain case-sensitive source data.
+        normalized_marker = re.sub(r"\s+", " ", marker.strip().replace('"', "'"))
         normalized += ";" + normalized_marker
     return normalized
+
+
+def requirement_with_extra(requirement: str, extra: str) -> str:
+    """Add an extra condition without discarding a requirement's existing marker."""
+    body, separator, marker = requirement.partition(";")
+    if separator:
+        return f"{body.strip()}; ({marker.strip()}) and extra == '{extra}'"
+    return f"{body.strip()}; extra == '{extra}'"
 
 
 def metadata_signature(fields: dict[str, Any]) -> dict[str, Any]:
@@ -104,7 +120,7 @@ def expected_project_metadata() -> dict[str, Any]:
     }
     for extra, dependencies in project.get("optional-dependencies", {}).items():
         fields["requires_dist"].extend(
-            f"{requirement}; extra == '{extra}'" for requirement in dependencies
+            requirement_with_extra(requirement, extra) for requirement in dependencies
         )
     return metadata_signature(fields)
 

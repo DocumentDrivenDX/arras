@@ -14,8 +14,10 @@ from pathlib import Path
 from typing import NoReturn
 
 if __package__:
+    from . import _umf_actions_receipt as _actions_receipt
     from . import _umf_admission_receipt as _umf_receipt
 else:
+    import _umf_actions_receipt as _actions_receipt
     import _umf_admission_receipt as _umf_receipt
 
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
@@ -38,6 +40,7 @@ _PUBLISHED_COMPONENTS = {
     "ui-qualification.json",
 }
 _UMF_COMPONENT = "umf-admission-installed.json"
+_UMF_ACTIONS_COMPONENT = "umf-actions-installed.json"
 
 
 class AssetError(ValueError):
@@ -48,7 +51,7 @@ def _fail(message: str) -> NoReturn:
     raise AssetError(message)
 
 
-def _expected_names(version: str, wheel: str) -> set[str]:
+def _expected_names(version: str, wheel: str, *, actions_required: bool = False) -> set[str]:
     names = {
         wheel,
         f"arras-{version}.tar.gz",
@@ -68,6 +71,8 @@ def _expected_names(version: str, wheel: str) -> set[str]:
     }
     if _umf_receipt.required_for_version(version):
         names.add(_UMF_COMPONENT)
+    if actions_required:
+        names.add(_UMF_ACTIONS_COMPONENT)
     return names
 
 
@@ -179,12 +184,59 @@ def _validate_umf_component(
         _fail("trusted aggregate does not bind the exact UMF admission receipt")
 
 
+def _validate_actions_component(
+    directory: Path,
+    *,
+    version: str,
+    wheel: str,
+    wheel_sha256: str,
+    entry_sha256: str,
+    aggregate: dict[str, object],
+) -> None:
+    proof_path = directory / _UMF_ACTIONS_COMPONENT
+    try:
+        proof = _actions_receipt.strict_json_loads(proof_path.read_text(encoding="utf-8"))
+        _actions_receipt.validate_public_projection(
+            proof,
+            version=version,
+            wheel_name=wheel,
+            wheel_sha256=wheel_sha256,
+            phase="release-build",
+            wheel_path=directory / wheel,
+            repository=Path(__file__).resolve().parents[2],
+        )
+    except _actions_receipt.ActionReceiptError as exc:
+        _fail(f"trusted UMF actions receipt is invalid: {exc}")
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        _fail(f"trusted UMF actions receipt is invalid: {type(exc).__name__}")
+    binding = aggregate.get("umf_actions")
+    if (
+        not isinstance(binding, dict)
+        or set(binding) != {"filename", "sha256", "qualification_phase", "status"}
+        or binding
+        != {
+            "filename": _UMF_ACTIONS_COMPONENT,
+            "sha256": entry_sha256,
+            "qualification_phase": "release-build",
+            "status": "passed",
+        }
+        or hashlib.sha256(proof_path.read_bytes()).hexdigest() != entry_sha256
+    ):
+        _fail("trusted aggregate does not bind the exact UMF actions receipt")
+
+
 def _validate_components(
-    aggregate: dict[str, object], entries: dict[str, str], *, version: str
+    aggregate: dict[str, object],
+    entries: dict[str, str],
+    *,
+    version: str,
+    actions_required: bool,
 ) -> None:
     expected = _PUBLISHED_COMPONENTS | (
         {_UMF_COMPONENT} if _umf_receipt.required_for_version(version) else set()
     )
+    if actions_required:
+        expected.add(_UMF_ACTIONS_COMPONENT)
     components = aggregate.get("published_components")
     if not isinstance(components, dict) or set(components) != expected:
         _fail("trusted release aggregate has an invalid published-component inventory")
@@ -194,11 +246,22 @@ def _validate_components(
             _fail(f"trusted published-component digest differs from its emitted asset: {name}")
 
 
-def _validate_trusted(
+def _trusted_inventory(
     directory: Path, version: str, wheel: str, wheel_sha256: str
-) -> tuple[bytes, dict[str, str]]:
-    names = _expected_names(version, wheel)
-    inventory = _regular_inventory(directory, names | {"SHA256SUMS"})
+) -> tuple[bytes, dict[str, str], bool]:
+    optional_names = {_UMF_COMPONENT, _UMF_ACTIONS_COMPONENT}
+    inventory = _regular_inventory(
+        directory, _expected_names(version, wheel) | optional_names | {"SHA256SUMS"}
+    )
+    if wheel not in inventory:
+        _fail("trusted release wheel is missing")
+    try:
+        actions_required = _actions_receipt.required_for_wheel(
+            inventory[wheel], wheel_sha256=wheel_sha256
+        )
+    except _actions_receipt.ActionReceiptError as exc:
+        _fail(f"trusted release wheel action capability is invalid: {exc}")
+    names = _expected_names(version, wheel, actions_required=actions_required)
     if set(inventory) != names | {"SHA256SUMS"}:
         _fail("trusted assembled release inventory is incomplete")
     sums_raw, entries = _read_sums(inventory["SHA256SUMS"])
@@ -214,22 +277,29 @@ def _validate_trusted(
             _fail("release asset inventory exceeds its total size limit")
         if _digest(path) != expected:
             _fail(f"trusted release asset checksum failed: {name}")
+    return sums_raw, entries, actions_required
+
+
+def _read_trusted_aggregate(directory: Path) -> dict[str, object]:
     try:
         aggregate = _umf_receipt.strict_json_loads(
             (directory / "release-evidence.json").read_text(encoding="utf-8")
         )
     except (OSError, UnicodeDecodeError, ValueError) as exc:
         _fail(f"trusted release aggregate is invalid: {type(exc).__name__}")
-    expected_schema = 2 if _umf_receipt.required_for_version(version) else 1
-    if (
-        not isinstance(aggregate, dict)
-        or type(aggregate.get("schema_version")) is not int
-        or aggregate.get("schema_version") != expected_schema
-        or aggregate.get("status") != "passed"
-        or aggregate.get("version") != version
-    ):
-        _fail("trusted release aggregate has an unsupported schema, status or version")
+    if not isinstance(aggregate, dict):
+        _fail("trusted release aggregate is not an object")
+    return aggregate
 
+
+def _validate_release_artifacts(
+    aggregate: dict[str, object],
+    entries: dict[str, str],
+    *,
+    version: str,
+    wheel: str,
+    wheel_sha256: str,
+) -> None:
     artifacts = aggregate.get("release_artifacts")
     if not isinstance(artifacts, dict) or set(artifacts) != {"wheel", "sdist", "npm"}:
         _fail("trusted release aggregate has an invalid release-artifact inventory")
@@ -253,7 +323,17 @@ def _validate_trusted(
         ):
             _fail(f"trusted release aggregate differs from the verified {artifact} identity")
 
-    _validate_components(aggregate, entries, version=version)
+
+def _validate_optional_receipts(
+    directory: Path,
+    aggregate: dict[str, object],
+    entries: dict[str, str],
+    *,
+    version: str,
+    wheel: str,
+    wheel_sha256: str,
+    actions_required: bool,
+) -> None:
     if _umf_receipt.required_for_version(version):
         _validate_umf_component(
             directory,
@@ -265,6 +345,51 @@ def _validate_trusted(
         )
     elif "umf_admission" in aggregate:
         _fail("legacy release aggregate has an unsupported UMF admission component")
+    if actions_required:
+        _validate_actions_component(
+            directory,
+            version=version,
+            wheel=wheel,
+            wheel_sha256=wheel_sha256,
+            entry_sha256=entries[_UMF_ACTIONS_COMPONENT],
+            aggregate=aggregate,
+        )
+    elif "umf_actions" in aggregate:
+        _fail("release aggregate has an unsupported UMF actions component")
+
+
+def _validate_trusted(
+    directory: Path, version: str, wheel: str, wheel_sha256: str
+) -> tuple[bytes, dict[str, str]]:
+    sums_raw, entries, actions_required = _trusted_inventory(
+        directory, version, wheel, wheel_sha256
+    )
+    aggregate = _read_trusted_aggregate(directory)
+    expected_schema = (
+        3 if actions_required else 2 if _umf_receipt.required_for_version(version) else 1
+    )
+    if (
+        not isinstance(aggregate, dict)
+        or type(aggregate.get("schema_version")) is not int
+        or aggregate.get("schema_version") != expected_schema
+        or aggregate.get("status") != "passed"
+        or aggregate.get("version") != version
+    ):
+        _fail("trusted release aggregate has an unsupported schema, status or version")
+
+    _validate_release_artifacts(
+        aggregate, entries, version=version, wheel=wheel, wheel_sha256=wheel_sha256
+    )
+    _validate_components(aggregate, entries, version=version, actions_required=actions_required)
+    _validate_optional_receipts(
+        directory,
+        aggregate,
+        entries,
+        version=version,
+        wheel=wheel,
+        wheel_sha256=wheel_sha256,
+        actions_required=actions_required,
+    )
     return sums_raw, entries
 
 

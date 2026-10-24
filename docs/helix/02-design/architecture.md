@@ -211,7 +211,7 @@ reduced metadata projection, not a value validator or action interpreter.
 | Exact module / group | Responsibility and allowed edges | Forbidden edges |
 |---|---|---|
 | `umf_admission`, `_umf_projection` / `umf_admission` | Public immutable admission/projection results and explicit core-to-model projection; foundation, domain, own group and `umf_engine` | Core, backends, bindings, executable callbacks/codegen/native SDKs |
-| `_umf_engine` / `umf_engine` | Official JSON read/validation through a fresh internally owned empty Registry; standard library, lazy released official `umf` import and inert private result carriers only | Public admission module, core, backends, bindings and native SDKs |
+| `_umf_engine` / `umf_engine` | Official JSON read/validation through a fresh internally owned empty Registry and separately qualified candidate action-engine calls; standard library, safe errors and lazy official `umf` imports only | Public admission module, core, backends, bindings and direct non-UMF SDK imports |
 | `_catalogs` / core | Existing catalog collection and private result container; foundation, domain and contract | Core import/back-edge, fakes, adapters, bindings and UMF |
 
 Only the engine bridge imports the optional official SDK. Engine/projection
@@ -427,3 +427,73 @@ Recovery time and recovery point objectives are not recorded (see Open Questions
 - [ ] How does the embedding host hand a user's token, and its refresh, to a per-session stdio process, and does Ashlar accept it? Ask the host integration owners and the platform owner.
 - [ ] Should the interface wait for a replica to reach a receipt's token, or only report that it has not? Ask Erik LaBianca.
 - [ ] Is the library interface synchronous in v1 only, or does the host need an asynchronous one? Ask the host owner.
+
+## Planned A3/A4 action integration boundary
+
+The next bounded action cut connects an unchanged generated synchronous client
+to a real session/provider boundary; unused identity registries or wire-parser
+mini-libraries are not a delivery slice. Keep original source, owner/version
+custody, generated request and actual transaction outcomes in one integration
+trace. Preserve current person authority and the metadata-only profile.
+
+Arras owns source/request binding, placement and outcome translation. The selected
+official UMF API owns value/action meaning; the provider owns native authority and
+commit. Sole SDK loading remains isolated in the engine integration boundary.
+A new cohesive action bridge/transport module is preferred over growing the
+894-line `core.py`; the unchanged ceiling is 926 physical lines. The candidate
+uses `_action_transport` for session-wire routing, `_action_types` for immutable
+inert values, `_umf_actions` for the official-result adapter and `fakes_actions`
+for the qualified memory transaction. Sole SDK imports stay in `_umf_engine`;
+the transport and provider do not interpret recipes, constraints or key codecs.
+The provider deliberately repeats preparation/materialization from current
+stored source after authorization under its lock; a host-created ticket is not
+commit authority.
+
+The private adapter port is `runtime_available()`, `prepare(source)`,
+`materialize(prepared, raw_request)`, `admit_record(prepared, record)` and
+`validate_candidate(prepared, complete_values)`. It returns frozen
+`PreparedSetModule`, `AdmittedSet` and `AdmittedRecord` values with exact source,
+source digest/pin, original local and qualified identities, complete bindings,
+frame IDs and immutable exact STRING mappings. These types are internal facts,
+not public admission certificates or an injectable evaluator.
+
+| Candidate module / group | Allowed consumer/dependency boundary | Forbidden edges |
+| --- | --- | --- |
+| `_action_types` / domain | Immutable source/binding/STRING result facts; foundation and domain | Core, backend protocols, providers and SDKs |
+| `_action_transport` / core | Session/catalog routing and closed wire responses; foundation, domain, contract and core | Official SDK/engine/action bridge, fakes and bindings |
+| `_umf_actions` / `umf_actions` | Official result adaptation; foundation/domain, engine and its own group; exact shared admission edge for structural source admission | Core, backend protocols, providers, bindings and direct SDK imports |
+| `_umf_action_shapes` / `umf_actions` | Inert closed result-envelope validation, consumed only by `_umf_actions`; foundation and domain | Bridge back-edge, engine, providers and SDKs |
+| `fakes_actions` / doubles | Candidate memory custody; existing doubles dependencies and the exact private action-bridge edge | Direct official SDK/engine imports and native adapters |
+
+Only registration, memory description, registry/import and declared-action
+provider consumers may call `_umf_actions`; only that bridge and the existing
+public admission wrapper call `_umf_engine`. The engine's sole extra Arras edge
+is safe errors. The source checker enforces these named exceptions, detects
+cycles and rejects direct, lazy, aliased literal and type-only SDK bypasses.
+
+`raw_request` is the unchanged generated Apply or Validate envelope. The seed
+record retains the existing public `type`, `key`, `properties` import carrier;
+the bridge adapts it to the official complete Field-ID value map without
+coercing the key or evaluating values.
+
+Preparation may inertly index exact module/action/frame identities from the
+official snapshot and retained source to construct the official request. The
+host fixes its `arras.module-write/1` policy and inert evidence marker; incoming
+wire cannot configure either. The official engine must validate every pin and
+resource correspondence. The provider separately enforces current person access.
+No dot-splitting guesses or authored-value/recipe interpretation are permitted.
+
+The candidate memory profile uses a shared lock across registration, imports,
+actions and access grant/expiry APIs, with current checks before commit/replay.
+It allows one immutable source and refuses mixed legacy writes. Direct mutation
+of test scaffolding dictionaries is not a qualified concurrent access API.
+
+No separately maintained Python evaluator or private constraint/literal kernel
+is permitted. Do not adopt experimental `umf_access.native_actions` or Rust/V8
+candidates merely because source exists. The bounded public package/API, source
+and native requirements must first be selected and independently qualified.
+Until the candidate artifact is delivered, the released metadata extra/pin stays
+unchanged; missing action runtime produces an explicit unsupported operation and
+no advertised action capability. A separate exact candidate-wheel environment
+qualifies the connected implementation and reruns A2 admission regressions;
+source availability alone does not qualify it.

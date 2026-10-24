@@ -15,10 +15,14 @@ from typing import Any, cast
 if __package__:
     from . import _release_evidence_inputs as _inputs
     from . import _release_evidence_public as _public
+    from . import _release_evidence_ui as _ui
+    from . import _umf_actions_receipt as _actions_receipt
     from . import _umf_admission_receipt as _umf_receipt
 else:
     import _release_evidence_inputs as _inputs
     import _release_evidence_public as _public
+    import _release_evidence_ui as _ui
+    import _umf_actions_receipt as _actions_receipt
     import _umf_admission_receipt as _umf_receipt
 
 MAX_INDEX = _inputs.MAX_INDEX
@@ -83,6 +87,56 @@ def _read_umf_admission(
     return projection, digest
 
 
+def _read_umf_actions(
+    required: bool,
+    path: Path | None,
+    *,
+    wheel_path: Path,
+    wheel_name: str,
+    wheel_sha: str,
+    version: str,
+    selected_inputs: dict[str, tuple[Path, bytes, str]],
+) -> tuple[dict[str, Any] | None, str | None]:
+    if required != (path is not None):
+        _fail("UMF action receipt presence does not match the selected wheel capability")
+    if not required:
+        return None, None
+    raw = selected_inputs["UMF actions receipt"][1]
+    digest = selected_inputs["UMF actions receipt"][2]
+    try:
+        projection = _actions_receipt.validate_receipt(
+            _parse_json_object(raw, "UMF actions receipt"),
+            version=version,
+            wheel_name=wheel_name,
+            wheel_sha256=wheel_sha,
+            wheel_path=wheel_path,
+            phase="release-build",
+            repository=Path(__file__).resolve().parents[2],
+        )
+    except _actions_receipt.ActionReceiptError as error:
+        raise AssemblyError(f"UMF action receipt is invalid: {error}") from error
+    return projection, digest
+
+
+def _action_capability_required(wheel_path: Path, wheel_sha: str) -> bool:
+    try:
+        return _actions_receipt.required_for_wheel(wheel_path, wheel_sha256=wheel_sha)
+    except _actions_receipt.ActionReceiptError as error:
+        raise AssemblyError(f"release wheel action capability is not verified: {error}") from error
+
+
+def _action_component_hashes(projection: dict[str, Any] | None) -> dict[str, str]:
+    return (
+        {}
+        if projection is None
+        else {"umf-actions-installed.json": _sha(_inputs.canonical_json(projection))}
+    )
+
+
+def _action_projection(projection: dict[str, Any] | None) -> dict[str, dict[str, Any]]:
+    return {} if projection is None else {"umf-actions-installed.json": projection}
+
+
 def _source_evidence_hashes(
     digests: dict[str, str],
     *,
@@ -94,6 +148,7 @@ def _source_evidence_hashes(
     consumer_sha: str,
     ui_sidecars: dict[str, bytes],
     umf_admission_sha: str | None,
+    umf_actions_sha: str | None,
 ) -> dict[str, str]:
     source_hashes = {
         **digests,
@@ -109,6 +164,8 @@ def _source_evidence_hashes(
     }
     if umf_admission_sha is not None:
         source_hashes["umf-admission-receipt.json"] = umf_admission_sha
+    if umf_actions_sha is not None:
+        source_hashes["umf-actions-receipt.json"] = umf_actions_sha
     return source_hashes
 
 
@@ -546,229 +603,10 @@ def _consumer_corpus_projection(corpus: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _validate_ui(
-    value: dict[str, Any],
-    receipt_path: Path,
-    wheel_name: str,
-    wheel_sha: str,
-    npm_sha: str,
-    version: str,
-    npm_resources: bytes,
-) -> tuple[dict[str, Any], dict[str, bytes]]:
-    if value.get("schema") != "arras.ui.downstream-qualification.v1":
-        _fail("unsupported UI receipt schema")
-    suite = _object(value.get("acceptance_suite"), "ui.acceptance_suite")
-    if suite.get("schema") != "arras.ui.portable-acceptance.v1" or suite.get("status") != "passed":
-        _fail("UI receipt lacks a successful complete portable acceptance suite")
-    cohort = _object(value.get("cohort"), "ui.cohort")
-    wheel = _object(cohort.get("wheel"), "ui.cohort.wheel")
-    npm = _object(cohort.get("npm"), "ui.cohort.npm")
-    if (
-        wheel.get("file") != wheel_name
-        or wheel.get("version") != version
-        or wheel.get("sha256") != wheel_sha
-        or npm.get("file") != f"documentdrivendx-arras-ui-{version}.tgz"
-        or npm.get("version") != version
-        or npm.get("sha256") != npm_sha
-    ):
-        _fail("portable UI suite is not bound to the selected wheel/npm artifacts")
-    theme = _object(cohort.get("theme"), "ui.cohort.theme")
-    if theme.get("name") != "@arras-fixtures/neutral-theme" or theme.get("version") != "1.0.0":
-        _fail("UI receipt does not identify the reviewed neutral theme")
-    theme_sha = _digest(theme.get("sha256"), "UI theme SHA")
-    runner_sha = _digest(
-        _object(cohort.get("runner"), "ui.cohort.runner").get("sha256"), "UI runner SHA"
-    )
-    _validate_ui_suite_cohort(suite.get("cohort"), wheel_sha, npm_sha, theme_sha, runner_sha)
-    runtime = _object(value.get("runtime"), "UI runtime")
-    sidecars = _read_ui_sidecars(receipt_path, suite)
-    projects, inventory = _validate_ui_projects(suite, sidecars, runtime.get("platform"))
-    resources = _validate_ui_resources(
-        suite, sidecars, inventory, runtime.get("platform"), npm_resources
-    )
-    return {
-        "schema": "arras.ui.portable-acceptance.v1",
-        "status": "passed",
-        "themeId": _string(suite.get("themeId"), "UI theme ID"),
-        "projects": projects,
-        **resources,
-        "cohort": {
-            "wheelSha256": wheel_sha,
-            "npmSha256": npm_sha,
-            "themeSha256": theme_sha,
-            "runnerSha256": runner_sha,
-        },
-    }, sidecars
-
-
-def _validate_ui_projects(
-    suite: dict[str, Any], sidecars: dict[str, bytes], platform_name: object
-) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    resources, counts, expected_names = _prepare_ui_inventory(suite, sidecars, platform_name)
-    value = suite.get("projects")
-    if not isinstance(value, list) or not value:
-        _fail("portable UI suite omits independently counted projects")
-    rows = [_object(item, "UI project") for item in value]
-    if [row.get("name") for row in rows] != expected_names:
-        _fail("portable UI projects differ from the platform contract")
-    project_names: set[str] = set()
-    safe_projects: list[dict[str, Any]] = []
-    for raw in value:
-        row = _keys(
-            raw,
-            "UI project",
-            {"name", "expected", "discovered", "passed", "failed", "skipped"},
-        )
-        name = _string(row.get("name"), "UI project name")
-        if name in project_names:
-            _fail("portable UI project names must be unique")
-        project_names.add(name)
-        for field in ("expected", "discovered", "passed"):
-            if type(row.get(field)) is not int or row[field] <= 0:
-                _fail(f"UI project {name} has no positive {field} count")
-        if row["expected"] != row["discovered"] or row["passed"] != row["expected"]:
-            _fail(f"UI project {name} was not independently discovered and fully passed")
-        if row["expected"] != counts[name]:
-            _fail(f"UI project {name} differs from canonical source discovery")
-        if (
-            type(row.get("failed")) is not int
-            or type(row.get("skipped")) is not int
-            or row["failed"] != 0
-            or row["skipped"] != 0
-        ):
-            _fail(f"UI project {name} has failed or skipped cases")
-        safe_projects.append(
-            {
-                key: row[key]
-                for key in ("name", "expected", "discovered", "passed", "failed", "skipped")
-            }
-        )
-    return safe_projects, resources
-
-
-def _prepare_ui_inventory(
-    suite: dict[str, Any], sidecars: dict[str, bytes], platform_name: object
-) -> tuple[dict[str, Any], dict[str, Any], list[str]]:
-    inventory = _parse_json_object(
-        sidecars["acceptance-inventory-neutral-theme.json"], "UI canonical inventory"
-    )
-    inventory = _keys(inventory, "UI canonical inventory", {"schema", "specs", "expectedCounts"})
-    if inventory.get("schema") != "arras.ui.canonical-acceptance-inventory.v1":
-        _fail("unsupported UI canonical inventory schema")
-    resources = _parse_json_object(
-        sidecars["acceptance-resources-neutral-theme.json"], "UI acceptance resources"
-    )
-    if type(resources.get("version")) is not int or resources.get("version") != 1:
-        _fail("unsupported UI acceptance resources version")
-    if inventory.get("specs") != resources.get("specs") or inventory.get(
-        "expectedCounts"
-    ) != resources.get("expectedCounts"):
-        _fail("UI inventory differs from packaged acceptance resources")
-    specs = resources.get("specs")
-    if not isinstance(specs, list) or tuple(specs) != _inputs.CANONICAL_UI_SPECS:
-        _fail("UI acceptance resources must enumerate 17 canonical specs")
-    counts = _object(resources.get("expectedCounts"), "UI source expectedCounts")
-    if set(counts) != {"chromium", "schema-admin", "browser", "visual"}:
-        _fail("UI acceptance resources omit a canonical Playwright project")
-    if platform_name not in {"linux", "darwin"}:
-        _fail("UI portable qualification must run on Linux or Darwin")
-    canonical = _object(suite.get("canonical"), "UI canonical inventory")
-    if canonical.get("sourceExpectedCounts") != counts:
-        _fail("UI source-discovered counts differ from canonical resources")
-    expected_names = ["chromium", "schema-admin", "browser"]
-    if platform_name == "darwin":
-        expected_names.append("visual")
-    return resources, counts, expected_names
-
-
-def _validate_ui_resources(
-    suite: dict[str, Any],
-    sidecars: dict[str, bytes],
-    resources: dict[str, Any],
-    platform_name: object,
-    npm_resources: bytes,
-) -> dict[str, Any]:
-    canonical = _object(suite.get("canonical"), "UI canonical inventory")
-    specs = resources.get("specs")
-    if type(canonical.get("specCount")) is not int or canonical["specCount"] != len(specs):
-        _fail("UI canonical suite does not cover all 17 planned specifications")
-    expected_total = sum(row["expected"] for row in cast(list[dict[str, Any]], suite["projects"]))
-    if (
-        type(canonical.get("expectedTestCount")) is not int
-        or canonical["expectedTestCount"] != expected_total
-    ):
-        _fail("UI canonical suite expected test count differs from its project inventory")
-    if canonical.get("sourceExpectedCounts") != resources.get("expectedCounts"):
-        _fail("UI canonical suite source counts differ from npm acceptance resources")
-    if sidecars["acceptance-resources-neutral-theme.json"] != npm_resources:
-        _fail("UI acceptance resources bytes differ from selected npm archive")
-    summary = _inputs.validate_ui_playwright_summary(
-        _parse_json_object(
-            sidecars["playwright-summary-neutral-theme.json"], "UI Playwright summary"
-        )
-    )
-    if summary.get("platform") != platform_name or summary.get("projects") != suite.get("projects"):
-        _fail("UI Playwright summary differs from suite outcomes")
-    if (
-        type(summary.get("expectedTestCount")) is not int
-        or type(summary.get("unexpectedSkips")) is not int
-        or summary.get("unexpectedSkips") != 0
-        or summary.get("expectedTestCount") != canonical["expectedTestCount"]
-    ):
-        _fail("UI Playwright summary has unexpected skips or count drift")
-    visual = _object(suite.get("visual"), "UI visual result")
-    expected_visual = "compared" if platform_name == "darwin" else "skipped-non-Darwin"
-    if visual.get("status") != expected_visual:
-        _fail("UI visual comparison status is unsupported")
-    if platform_name == "darwin":
-        visual_project = next(row for row in suite["projects"] if row["name"] == "visual")
-        if (
-            set(visual) != {"status", "comparedScreenshots"}
-            or type(visual.get("comparedScreenshots")) is not int
-            or visual["comparedScreenshots"] <= 0
-            or visual.get("comparedScreenshots") != visual_project["passed"]
-        ):
-            _fail("UI visual screenshot count differs from the passing visual project")
-    elif set(visual) != {"status"}:
-        _fail("Linux UI run must explicitly skip visual comparison without extra fields")
-    negative = _object(suite.get("negativeControls"), "UI negative controls")
-    if set(negative) != {
-        "missingResource",
-        "tamperedResource",
-        "invalidOptions",
-        "controlledFailure",
-    } or any(
-        negative.get(key) != expected
-        for key, expected in {
-            "missingResource": "refused",
-            "tamperedResource": "refused",
-            "invalidOptions": "refused",
-            "controlledFailure": "exit-1",
-        }.items()
-    ):
-        _fail("UI negative controls are incomplete or did not pass")
-    return {
-        "canonical": {
-            "specCount": canonical["specCount"],
-            "expectedTestCount": canonical["expectedTestCount"],
-            "sourceExpectedCounts": canonical["sourceExpectedCounts"],
-        },
-        "playwright": {
-            "schema": summary["schema"],
-            "status": summary["status"],
-            "expectedTestCount": summary["expectedTestCount"],
-            "unexpectedSkips": summary["unexpectedSkips"],
-        },
-        "visual": {
-            "status": visual["status"],
-            **(
-                {"comparedScreenshots": visual["comparedScreenshots"]}
-                if platform_name == "darwin"
-                else {}
-            ),
-        },
-        "negativeControls": negative,
-    }
+_validate_ui = _ui.validate_ui
+_validate_ui_projects = _ui._validate_ui_projects
+_prepare_ui_inventory = _ui._prepare_ui_inventory
+_validate_ui_resources = _ui._validate_ui_resources
 
 
 def assemble(
@@ -781,6 +619,7 @@ def assemble(
     ui_path: Path,
     consumer_path: Path,
     umf_admission_receipt_path: Path | None = None,
+    umf_actions_receipt_path: Path | None = None,
     expected_version: str,
     expected_wheel: str,
     expected_wheel_sha256: str,
@@ -793,6 +632,7 @@ def assemble(
     selected, digests, distribution, doctor, npm_name, npm_resources, doctor_runtime = (
         _verify_build(build_bundle, version, expected_wheel, wheel_sha)
     )
+    action_required = _action_capability_required(selected[expected_wheel], wheel_sha)
     qualification_rows = [
         ("native receipt", native_receipt_path, MAX_JSON),
         ("binding receipt", binding_path, MAX_JSON),
@@ -800,9 +640,17 @@ def assemble(
         ("native index", index_path, MAX_INDEX),
         ("full UI receipt", ui_path, MAX_JSON),
         ("fresh consumer receipt", consumer_path, MAX_JSON),
+        *(
+            (("UMF admission receipt", umf_admission_receipt_path, MAX_JSON),)
+            if umf_admission_receipt_path is not None
+            else ()
+        ),
+        *(
+            (("UMF actions receipt", umf_actions_receipt_path, MAX_JSON),)
+            if umf_actions_receipt_path is not None
+            else ()
+        ),
     ]
-    if umf_admission_receipt_path is not None:
-        qualification_rows.append(("UMF admission receipt", umf_admission_receipt_path, MAX_JSON))
     selected_inputs = _read_qualification_inputs(tuple(qualification_rows))
     input_paths = [*selected.values(), (build_bundle / "SHA256SUMS").resolve(strict=True)] + [
         row[0] for row in selected_inputs.values()
@@ -831,6 +679,15 @@ def assemble(
         umf_admission_receipt_path,
         wheel_name=expected_wheel,
         wheel_sha=wheel_sha,
+        selected_inputs=selected_inputs,
+    )
+    umf_actions, umf_actions_sha = _read_umf_actions(
+        action_required,
+        umf_actions_receipt_path,
+        wheel_path=selected[expected_wheel],
+        wheel_name=expected_wheel,
+        wheel_sha=wheel_sha,
+        version=version,
         selected_inputs=selected_inputs,
     )
     _ = native_path, binding_source, cohort_source, index_source, consumer_source
@@ -875,6 +732,7 @@ def assemble(
         consumer_sha=consumer_sha,
         ui_sidecars=ui_sidecars,
         umf_admission_sha=umf_admission_sha,
+        umf_actions_sha=umf_actions_sha,
     )
     projections = {
         "native-qualification.json": native,
@@ -897,6 +755,7 @@ def assemble(
         component_hashes["umf-admission-installed.json"] = _sha(
             _inputs.canonical_json(umf_admission)
         )
+    component_hashes.update(_action_component_hashes(umf_actions))
     component_hashes.update({name: _sha(raw) for name, raw in ui_sidecars.items()})
     aggregate = _public.release_evidence_projection(
         version=version,
@@ -913,10 +772,13 @@ def assemble(
         sdist_sha=digests[f"arras-{version}.tar.gz"],
         doctor_runtime=doctor_runtime,
         umf_admission=umf_admission,
+        umf_actions=umf_actions,
+        umf_actions_required=action_required,
     )
     projections["release-evidence.json"] = aggregate
     if umf_admission is not None:
         projections["umf-admission-installed.json"] = umf_admission
+    projections.update(_action_projection(umf_actions))
     raw_files = {
         "native-cohort.json": cohort_raw,
         "native-find-links.html": index_raw,
@@ -957,6 +819,7 @@ def main(argv: list[str] | None = None) -> int:
             expected_wheel=args.expected_wheel,
             expected_wheel_sha256=args.expected_wheel_sha256,
             umf_admission_receipt_path=args.umf_admission_receipt,
+            umf_actions_receipt_path=args.umf_actions_receipt,
             output_dir=args.output_dir,
         )
     except (AssemblyError, OSError, tarfile.TarError, zipfile.BadZipFile) as exc:

@@ -12,8 +12,9 @@ from dataclasses import replace
 from typing import Any
 
 from arras import compat
-from arras.errors import Conflict, Invalid, Violation
+from arras.errors import Conflict, Invalid, Refused, Unsupported, Violation
 from arras.model import ModuleInfo
+from arras.registration import as_revision
 from arras.results import RegistrationCheck, RegistryResult
 from arras.types import Principal, Revision
 
@@ -27,6 +28,8 @@ class RegisterModules:
     documents: dict[str, bytes]
     catalog_revision: int
     origin_actor: dict[str, str]  # the person who registered each module's current revision
+    action_source_owners: dict[str, str]
+    _action_lock: Any
 
     def gate(self, principal: Principal, module: str | None, mode: Any, op: str) -> None:
         raise NotImplementedError  # `MemoryStore` supplies the real one
@@ -60,9 +63,93 @@ class RegisterModules:
             and json.loads(held) == json.loads(document)
         )
 
+    def _prepare_declared_source(self, document: bytes, module: ModuleInfo) -> None:
+        if type(document) is not bytes:
+            raise Invalid([Violation("document", "type", "exact registered source bytes required")])
+        if module.metadata_profile != "arras-umf-set/1":
+            raise Unsupported("declared action registration", ["arras-umf-set/1"])
+        try:
+            from arras._umf_actions import prepare
+        except ModuleNotFoundError as exc:
+            if exc.name == "arras._umf_actions":
+                raise Unsupported(
+                    "declared action source", ["install the optional engine"]
+                ) from None
+            raise
+        prepared = prepare(document)
+        if (
+            prepared.source != document
+            or prepared.module.name != module.name
+            or prepared.module.entity_types != module.entity_types
+            or prepared.module.relationships != module.relationships
+            or prepared.module.value_types != module.value_types
+            or prepared.module.actions != module.actions
+        ):
+            raise Unsupported("declared action source", ["the prepared module does not match"])
+        if prepared.module.metadata_profile != "arras-umf-set/1":
+            raise Unsupported("declared action source", ["arras-umf-set/1"])
+
+    def _validate_declared_source(
+        self, principal: Principal, document: bytes, module: ModuleInfo
+    ) -> RegistrationCheck:
+        old = self.modules.get(module.name)
+        owner = getattr(self, "action_source_owners", {}).get(module.name)
+        if old is not None and owner != principal.user:
+            raise Refused(self.name, "validate_register")
+        if old is not None and self.documents.get(module.name) != document:
+            raise Unsupported("declared action source", ["the first source is immutable"])
+        if any(name != module.name for name in self.modules):
+            raise Unsupported("declared action store", ["one canonical module is supported"])
+        self._prepare_declared_source(document, module)
+        return RegistrationCheck(
+            revision=old.revision if old is not None else None,
+            changed=old is None,
+            current=old,
+        )
+
+    def _register_declared_source(
+        self,
+        principal: Principal,
+        document: bytes,
+        module: ModuleInfo,
+        *,
+        expected_revision: Revision | None,
+    ) -> RegistryResult:
+        old = self.modules.get(module.name)
+        owner = getattr(self, "action_source_owners", {}).get(module.name)
+        if old is not None and owner != principal.user:
+            raise Refused(self.name, "register")
+        if expected_revision is not None:
+            expected = as_revision(expected_revision)
+            if old is None or old.revision != expected:
+                raise Conflict(
+                    "revision", f"{module.name} is at another revision than the caller's"
+                )
+        if old is not None:
+            if self.documents.get(module.name) != document:
+                raise Unsupported("declared action source", ["the first source is immutable"])
+            self._prepare_declared_source(document, module)
+            return RegistryResult(module.name, old.revision, False)
+        if self.modules:
+            raise Unsupported("declared action store", ["one canonical module is supported"])
+        self._prepare_declared_source(document, module)
+        self.catalog_revision += 1
+        stored = replace(module, revision=Revision({self.name: self.catalog_revision}))
+        self.modules[module.name] = stored
+        self.documents[module.name] = bytes(document)
+        self.origin_actor[module.name] = principal.user
+        self.action_source_owners[module.name] = principal.user
+        return RegistryResult(module.name, stored.revision, True, ("accepted",))
+
     def validate_register(
         self, principal: Principal, document: bytes, module: ModuleInfo, *, unknown_endpoint: str
     ) -> RegistrationCheck:
+        if getattr(self, "action_profile", None) == "arras-umf-set/1":
+            with self._action_lock:
+                self.gate(principal, module.name, "schema", "validate_register")
+                if unknown_endpoint not in ("reject", "provisional"):
+                    raise Invalid([Violation("unknown_endpoint", "value", "reject or provisional")])
+                return self._validate_declared_source(principal, document, module)
         self.gate(principal, module.name, "schema", "validate_register")
         old = self.modules.get(module.name)
         return RegistrationCheck(
@@ -81,6 +168,14 @@ class RegisterModules:
         unknown_endpoint: str,
         expected_revision: Revision | None = None,
     ) -> RegistryResult:
+        if getattr(self, "action_profile", None) == "arras-umf-set/1":
+            with self._action_lock:
+                self.gate(principal, module.name, "schema", "register")
+                if unknown_endpoint not in ("reject", "provisional"):
+                    raise Invalid([Violation("unknown_endpoint", "value", "reject or provisional")])
+                return self._register_declared_source(
+                    principal, document, module, expected_revision=expected_revision
+                )
         self.gate(principal, module.name, "schema", "register")
         old = self.modules.get(module.name)
         if bad := self._violations(module, unknown_endpoint):

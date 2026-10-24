@@ -399,3 +399,54 @@ describe() -> BackendInfo(name="memory_replica", roles=("reader",),
 ## Non-Normative Notes
 
 The adapter operations are the ones the client interactions need once reads are a single `query`. Because the stores behind the adapters may change, the contract is the stable part: the corpus is written first, then each adapter is built to pass it. Whether Arras should wait inside `query` for a replica to reach a token, or leave the wait to the caller, is open (CONTRACT-001).
+
+## Planned qualified action-provider boundary
+
+An action-capable provider MUST explicitly qualify the selected execution
+profile, exact source binding, value/constraint and action-plan meanings before
+the host dispatches it. Generic `provider` status, successful metadata admission
+or support for legacy `Plan` does not establish canonical action capability.
+The current memory metadata profile stays read-only; Truss's refusal of that
+profile stays in force. `BackendInfo.action_profiles` is a final optional tuple
+with legacy-compatible default `()`. Generic provider status or method presence
+does not qualify it.
+
+The selected provider owns current per-person authorization, registered source
+and revision, pre/post-state evaluation, atomic rollback and settlement.
+Mapping an official plan to existing operations is permitted only when the
+qualified owner API proves complete meaning preservation; unrepresented frames,
+constraints or postconditions MUST refuse before effects. A caller-built report,
+plan or claimed capability cannot supply native ownership or execution authority.
+
+The first integrated proof may qualify a bounded memory execution profile; it
+cannot qualify Truss, durable restart replay or managed deployment. Native
+acceptance requires its own exact installed cohort and real transaction proof.
+No backend-independent evaluator, new SQL compiler or Ashlar write path is
+introduced.
+
+The optional `DeclaredActionProvider.apply_declared_action(principal, module,
+request) -> Receipt | Validation` port receives the original request. It
+rederives official preparation and values from current stored bytes after the
+authorization gate under the shared registration/import/action lock; it never
+accepts a caller's prebuilt plan as authority. Current source/CAS, current
+grants, work-copy mutation and journal/receipt commit form one custody boundary.
+An unknown settlement remains unknown, with no automatic retry.
+
+Candidate receipt tokens are opaque issued identities bound to the store
+instance, module and exact registered source. Rows, receipt, token issuance and
+replay state publish atomically. `reached` authenticates the person, resolves an
+exact issued token and checks current read access to its module; a generic
+sequence prefix cannot prove source or issuer identity. Foreign or unknown
+tokens do not become fabricated successful/invalid local receipts. This is a
+same-process memory guarantee, with no replica or restart durability claim.
+
+`MemoryStore(..., *, action_profile="arras-umf-set/1")` is explicit opt-in;
+the default is `None`. Construction and default description do not load an
+optional action SDK. Only opted-in description may inspect runtime capability;
+missing or incompatible action runtime leaves both candidate action and metadata
+profile capabilities absent. A selected candidate call then raises
+`Unsupported` before backend acceptance or effects. Advertisement requires the
+selected official API/resource capability, not merely installed core0.10 or a
+module import. Descriptor qualification precedes registration without relying
+on an already registered module. Public support still requires actual semantic
+and provider evidence.

@@ -18,6 +18,8 @@ jobs:
   check:
     name: Lint, types and build
     runs-on: ubuntu-latest
+    outputs:
+      umf_actions_required: ${{ steps.umf-actions-requirement.outputs.required }}
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -50,6 +52,33 @@ jobs:
         with:
           name: arras-umf-admission-installed
           path: artifacts/umf-admission-installed.json
+          if-no-files-found: warn
+      - name: Derive generated-action requirement from the exact built wheel
+        id: umf-actions-requirement
+        run: |
+          set -euo pipefail
+          wheel="$(find dist -maxdepth 1 -type f -name 'arras-*.whl' -print -quit)"
+          test -n "$wheel"
+          required="$(uv run --no-sync python tools/verify_umf_actions.py --wheel "$wheel" --check-requirement)"
+          case "$required" in
+            true|false) printf 'required=%s\n' "$required" >> "$GITHUB_OUTPUT" ;;
+            *) printf '%s\n' 'could not verify generated-action requirement' >&2; exit 1 ;;
+          esac
+      - name: Verify installed generated-action capability from the exact wheel
+        if: steps.umf-actions-requirement.outputs.required == 'true'
+        run: |
+          mkdir -p artifacts
+          wheel="$(find dist -maxdepth 1 -type f -name 'arras-*.whl' -print -quit)"
+          test -n "$wheel"
+          uv run --no-sync python tools/verify_umf_actions.py \
+            --wheel "$wheel" \
+            --qualification-phase local-installed \
+            --output-json artifacts/umf-actions-installed.json
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.umf-actions-requirement.outputs.required == 'true'
+        with:
+          name: arras-umf-actions-installed
+          path: artifacts/umf-actions-installed.json
           if-no-files-found: warn
       - name: The wheel installs on a clean interpreter and carries the UI
         run: |
@@ -184,6 +213,7 @@ jobs:
 
   test:
     name: Tests on Python ${{ matrix.python }}
+    needs: check
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -221,10 +251,12 @@ jobs:
         run: uv run --no-sync pytest -q tests/test_umf_admission.py::test_official_current_conformance_vectors_and_empty_registry_admission
         env:
           ARRAS_REQUIRE_UMF: "1"
+          ARRAS_REQUIRE_UMF_ACTIONS: ${{ needs.check.outputs.umf_actions_required == 'true' && '1' || '0' }}
       - run: uv run --no-sync pytest -q
         env:
           ARRAS_REQUIRE_WEFT: "1"
           ARRAS_REQUIRE_UMF: "1"
+          ARRAS_REQUIRE_UMF_ACTIONS: ${{ needs.check.outputs.umf_actions_required == 'true' && '1' || '0' }}
 
   truss:
     name: Truss adapter on PostgreSQL 18.6

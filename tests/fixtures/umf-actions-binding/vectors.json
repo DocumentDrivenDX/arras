@@ -1,0 +1,664 @@
+{
+  "format": "umf.actions.single-set-fixture-vectors/1",
+  "source": {
+    "path": "source.json",
+    "bytes": 4351,
+    "sha256": "5b79b3dba5ebc52ac9452f85a75411dab5edaa34154adda76f872a53c21d0818"
+  },
+  "identity": {
+    "module": "catalog",
+    "record": "item",
+    "key": "item-key",
+    "keyField": "item_id",
+    "valueField": "label",
+    "action": "set_label",
+    "wireAction": "catalog.set_label",
+    "entityParameter": "item",
+    "valueParameter": "label_value",
+    "writeFrame": "write_item"
+  },
+  "model": {
+    "documentId": "actions-binding-neutral-fixture",
+    "revision": "sha256:5b79b3dba5ebc52ac9452f85a75411dab5edaa34154adda76f872a53c21d0818",
+    "umfVersion": "0.10.0",
+    "sha256": "5b79b3dba5ebc52ac9452f85a75411dab5edaa34154adda76f872a53c21d0818"
+  },
+  "actionPin": {
+    "identity": {
+      "module": "catalog",
+      "action": "set_label"
+    },
+    "documentSha256": "5b79b3dba5ebc52ac9452f85a75411dab5edaa34154adda76f872a53c21d0818",
+    "invocation": {
+      "id": "umf.actions.tx",
+      "version": "1"
+    }
+  },
+  "authorization": {
+    "profile": {
+      "id": "arras.module-write",
+      "version": "1"
+    },
+    "resources": [
+      "write_item"
+    ],
+    "evidence": [
+      "fixture://declaration-only"
+    ]
+  },
+  "keyTuple": {
+    "identity": {
+      "module": "catalog",
+      "element": "item",
+      "key": "item-key"
+    },
+    "components": [
+      {
+        "string": "item-1"
+      }
+    ],
+    "profile": "umf-key-tuple-v1",
+    "tupleHex": "554d464b310104066974656d2d31"
+  },
+  "logicalInputs": {
+    "item": {
+      "key": {
+        "module": "catalog",
+        "element": "item",
+        "key": "item-key"
+      },
+      "components": [
+        {
+          "string": "item-1"
+        }
+      ]
+    },
+    "label_value": {
+      "string": "ready"
+    }
+  },
+  "inputSha256": {
+    "profile": "umf.actions.generated-invocation/1",
+    "sha256": "46fa64b1cf0b2df2b72563b082a7567c492c82ebaa260b0478b1af04143dbdcb"
+  },
+  "generatedRequests": {
+    "apply": {
+      "contract": "umf.access/1",
+      "schema": "5b79b3dba5ebc52ac9452f85a75411dab5edaa34154adda76f872a53c21d0818",
+      "kind": "apply",
+      "action": "catalog.set_label",
+      "inputs": {
+        "item": {
+          "item_id": "item-1"
+        },
+        "label_value": "ready"
+      },
+      "idempotency_key": "fixture-key"
+    },
+    "validate": {
+      "contract": "umf.access/1",
+      "schema": "5b79b3dba5ebc52ac9452f85a75411dab5edaa34154adda76f872a53c21d0818",
+      "kind": "validate",
+      "action": "catalog.set_label",
+      "inputs": {
+        "item": {
+          "item_id": "item-1"
+        },
+        "label_value": "ready"
+      }
+    }
+  },
+  "stringBoundaryValues": {
+    "accepted": [
+      "ready",
+      "held",
+      "abcdefgh",
+      "𐐷"
+    ],
+    "rejected": [
+      "",
+      "pending",
+      "123456789"
+    ],
+    "lengthUnit": "unicode-scalar",
+    "normalizationDistinctExamples": {
+      "nfd": "é",
+      "nfc": "é",
+      "nfcOfNfd": "é",
+      "distinct": true
+    },
+    "note": "NFC and NFD strings remain distinct; no normalization is permitted."
+  },
+  "claims": {
+    "policyAssessment": "host-compatibility-only",
+    "executionVerified": false,
+    "nativeExecution": false,
+    "planModel": false
+  },
+  "oracle": {
+    "sourceInspection": {
+      "valid": true,
+      "complete": false,
+      "diagnostics": [
+        {
+          "code": "ACTION_UNCHECKED",
+          "path": "/modules/0/extensions/umf.actions/actions/0/authorization",
+          "message": "Authorization profile is an inert declaration requiring exact interpretation",
+          "severity": "warning"
+        }
+      ],
+      "obligations": [
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/parameters/0",
+          "path": "/modules/0/extensions/umf.actions/actions/0/parameters/0",
+          "kind": "key",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/elements/2",
+          "path": "/modules/0/elements/2",
+          "kind": "model",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/elements/0",
+          "path": "/modules/0/elements/0",
+          "kind": "model",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/elements/1",
+          "path": "/modules/0/elements/1",
+          "kind": "model",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/elements/2/keys/0",
+          "path": "/modules/0/elements/2/keys/0",
+          "kind": "key",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/parameters/1",
+          "path": "/modules/0/extensions/umf.actions/actions/0/parameters/1",
+          "kind": "value",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/writes/0",
+          "path": "/modules/0/extensions/umf.actions/actions/0/writes/0",
+          "kind": "frame",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/writes/0/selector",
+          "path": "/modules/0/extensions/umf.actions/actions/0/writes/0/selector",
+          "kind": "selector",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/authorization",
+          "path": "/modules/0/extensions/umf.actions/actions/0/authorization",
+          "kind": "authorization",
+          "status": "unchecked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/attribution",
+          "path": "/modules/0/extensions/umf.actions/actions/0/attribution",
+          "kind": "attribution",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/atomicity",
+          "path": "/modules/0/extensions/umf.actions/actions/0/atomicity",
+          "kind": "atomicity",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/idempotency",
+          "path": "/modules/0/extensions/umf.actions/actions/0/idempotency",
+          "kind": "idempotency",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/result",
+          "path": "/modules/0/extensions/umf.actions/actions/0/result",
+          "kind": "result",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/binding",
+          "path": "/modules/0/extensions/umf.actions/actions/0/binding",
+          "kind": "binding",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/binding/effects/0",
+          "path": "/modules/0/extensions/umf.actions/actions/0/binding/effects/0",
+          "kind": "effect",
+          "status": "checked"
+        }
+      ]
+    },
+    "admittedActionInputs": {
+      "item": {
+        "key": {
+          "module": "catalog",
+          "element": "item",
+          "key": "item-key"
+        },
+        "components": [
+          {
+            "string": "item-1"
+          }
+        ]
+      },
+      "label_value": {
+        "string": "ready"
+      }
+    },
+    "keyTuple": {
+      "profile": "umf-key-tuple-v1",
+      "identity": {
+        "module": "catalog",
+        "element": "item",
+        "key": "item-key"
+      },
+      "components": [
+        {
+          "string": "item-1"
+        }
+      ],
+      "tupleHex": "554d464b310104066974656d2d31"
+    },
+    "fieldValues": {
+      "item_id": {
+        "valid": true,
+        "complete": true,
+        "diagnostics": []
+      },
+      "label": {
+        "valid": true,
+        "complete": true,
+        "diagnostics": []
+      }
+    },
+    "recordValueCheck": {
+      "operation": "validate-core-record-values",
+      "version": "2.0.0",
+      "identity": {
+        "module": "catalog",
+        "element": "item"
+      },
+      "values": [
+        {
+          "field": {
+            "module": "catalog",
+            "element": "item_id"
+          },
+          "state": "present",
+          "value": {
+            "string": "item-1"
+          }
+        },
+        {
+          "field": {
+            "module": "catalog",
+            "element": "label"
+          },
+          "state": "present",
+          "value": {
+            "string": "ready"
+          }
+        }
+      ],
+      "documentValidation": {
+        "valid": true,
+        "complete": false,
+        "diagnostics": [
+          {
+            "code": "UNKNOWN_EXTENSION",
+            "path": "/vocabularies/umf.actions",
+            "message": "Exact extension version unavailable; content retained",
+            "severity": "warning"
+          }
+        ]
+      },
+      "validation": {
+        "valid": true,
+        "complete": false,
+        "diagnostics": [
+          {
+            "code": "UNKNOWN_EXTENSION",
+            "path": "/vocabularies/umf.actions",
+            "message": "Exact extension version unavailable; content retained",
+            "severity": "warning"
+          },
+          {
+            "code": "RECORD_KEY_CONTEXT_REQUIRED",
+            "path": "/identity",
+            "message": "Dataset key equality/uniqueness needs a separately qualified check",
+            "severity": "warning"
+          }
+        ]
+      },
+      "fields": [
+        {
+          "field": {
+            "module": "catalog",
+            "element": "item_id"
+          },
+          "state": "present",
+          "validation": {
+            "valid": true,
+            "complete": true,
+            "diagnostics": []
+          }
+        },
+        {
+          "field": {
+            "module": "catalog",
+            "element": "label"
+          },
+          "state": "present",
+          "validation": {
+            "valid": true,
+            "complete": true,
+            "diagnostics": []
+          }
+        }
+      ]
+    },
+    "inputDigest": {
+      "profile": "umf.actions.generated-invocation/1",
+      "sha256": "46fa64b1cf0b2df2b72563b082a7567c492c82ebaa260b0478b1af04143dbdcb",
+      "method": "SHA-256 over profile UTF-8, one LF byte, then compact sorted-key UTF-8 JSON of {model,action,inputs}; independently reproduced from the frozen vectors."
+    }
+  },
+  "expected": {
+    "prepared": {
+      "profile": "umf.actions.single-set-prepared/1",
+      "source": {
+        "mediaType": "application/json",
+        "sha256": "5b79b3dba5ebc52ac9452f85a75411dab5edaa34154adda76f872a53c21d0818"
+      },
+      "model": {
+        "documentId": "actions-binding-neutral-fixture",
+        "revision": "sha256:5b79b3dba5ebc52ac9452f85a75411dab5edaa34154adda76f872a53c21d0818",
+        "umfVersion": "0.10.0",
+        "sha256": "5b79b3dba5ebc52ac9452f85a75411dab5edaa34154adda76f872a53c21d0818"
+      },
+      "action": {
+        "identity": {
+          "module": "catalog",
+          "action": "set_label"
+        },
+        "documentSha256": "5b79b3dba5ebc52ac9452f85a75411dab5edaa34154adda76f872a53c21d0818",
+        "invocation": {
+          "id": "umf.actions.tx",
+          "version": "1"
+        }
+      },
+      "wireAction": "catalog.set_label",
+      "entityParameter": "item",
+      "target": {
+        "module": "catalog",
+        "element": "item",
+        "key": "item-key"
+      },
+      "keyFields": [
+        {
+          "module": "catalog",
+          "element": "item_id"
+        }
+      ],
+      "assignments": [
+        {
+          "input": "label_value",
+          "field": {
+            "module": "catalog",
+            "element": "label"
+          }
+        }
+      ],
+      "frames": [
+        {
+          "id": "write_item",
+          "access": "write",
+          "record": {
+            "module": "catalog",
+            "element": "item"
+          },
+          "entityParameter": "item",
+          "fields": [
+            {
+              "module": "catalog",
+              "element": "label"
+            }
+          ]
+        }
+      ],
+      "obligations": [
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/parameters/0",
+          "path": "/modules/0/extensions/umf.actions/actions/0/parameters/0",
+          "kind": "key",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/elements/2",
+          "path": "/modules/0/elements/2",
+          "kind": "model",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/elements/0",
+          "path": "/modules/0/elements/0",
+          "kind": "model",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/elements/1",
+          "path": "/modules/0/elements/1",
+          "kind": "model",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/elements/2/keys/0",
+          "path": "/modules/0/elements/2/keys/0",
+          "kind": "key",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/parameters/1",
+          "path": "/modules/0/extensions/umf.actions/actions/0/parameters/1",
+          "kind": "value",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/writes/0",
+          "path": "/modules/0/extensions/umf.actions/actions/0/writes/0",
+          "kind": "frame",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/writes/0/selector",
+          "path": "/modules/0/extensions/umf.actions/actions/0/writes/0/selector",
+          "kind": "selector",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/authorization",
+          "path": "/modules/0/extensions/umf.actions/actions/0/authorization",
+          "kind": "authorization",
+          "status": "unchecked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/attribution",
+          "path": "/modules/0/extensions/umf.actions/actions/0/attribution",
+          "kind": "attribution",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/atomicity",
+          "path": "/modules/0/extensions/umf.actions/actions/0/atomicity",
+          "kind": "atomicity",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/idempotency",
+          "path": "/modules/0/extensions/umf.actions/actions/0/idempotency",
+          "kind": "idempotency",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/result",
+          "path": "/modules/0/extensions/umf.actions/actions/0/result",
+          "kind": "result",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/binding",
+          "path": "/modules/0/extensions/umf.actions/actions/0/binding",
+          "kind": "binding",
+          "status": "checked"
+        },
+        {
+          "id": "/modules/0/extensions/umf.actions/actions/0/binding/effects/0",
+          "path": "/modules/0/extensions/umf.actions/actions/0/binding/effects/0",
+          "kind": "effect",
+          "status": "checked"
+        }
+      ],
+      "authorization": {
+        "obligation": "/modules/0/extensions/umf.actions/actions/0/authorization",
+        "profile": {
+          "id": "arras.module-write",
+          "version": "1"
+        },
+        "resources": [
+          "write_item"
+        ],
+        "status": "supported",
+        "evidence": [
+          "fixture://declaration-only"
+        ]
+      },
+      "requiredExecutorObligations": [
+        "/modules/0/extensions/umf.actions/actions/0/authorization",
+        "/modules/0/extensions/umf.actions/actions/0/attribution",
+        "/modules/0/extensions/umf.actions/actions/0/atomicity",
+        "/modules/0/extensions/umf.actions/actions/0/idempotency",
+        "/modules/0/extensions/umf.actions/actions/0/result"
+      ],
+      "executionVerified": false
+    },
+    "invocation": {
+      "profile": "umf.actions.single-set-invocation/1",
+      "inputs": {
+        "item": {
+          "key": {
+            "module": "catalog",
+            "element": "item",
+            "key": "item-key"
+          },
+          "components": [
+            {
+              "string": "item-1"
+            }
+          ]
+        },
+        "label_value": {
+          "string": "ready"
+        }
+      },
+      "entity": {
+        "parameter": "item",
+        "key": {
+          "module": "catalog",
+          "element": "item",
+          "key": "item-key"
+        },
+        "fields": [
+          {
+            "module": "catalog",
+            "element": "item_id"
+          }
+        ],
+        "components": [
+          {
+            "string": "item-1"
+          }
+        ],
+        "profile": "umf-key-tuple-v1",
+        "tupleHex": "554d464b310104066974656d2d31"
+      },
+      "assignments": [
+        {
+          "input": "label_value",
+          "field": {
+            "module": "catalog",
+            "element": "label"
+          },
+          "literal": {
+            "string": "ready"
+          },
+          "native": "ready"
+        }
+      ],
+      "inputSha256Profile": "umf.actions.generated-invocation/1",
+      "inputSha256": "46fa64b1cf0b2df2b72563b082a7567c492c82ebaa260b0478b1af04143dbdcb",
+      "executionVerified": false
+    },
+    "recordValues": {
+      "profile": "umf.actions.single-record-values/1",
+      "record": {
+        "module": "catalog",
+        "element": "item"
+      },
+      "values": [
+        {
+          "field": {
+            "module": "catalog",
+            "element": "item_id"
+          },
+          "literal": {
+            "string": "item-1"
+          },
+          "native": "item-1"
+        },
+        {
+          "field": {
+            "module": "catalog",
+            "element": "label"
+          },
+          "literal": {
+            "string": "ready"
+          },
+          "native": "ready"
+        }
+      ],
+      "entity": {
+        "key": {
+          "module": "catalog",
+          "element": "item",
+          "key": "item-key"
+        },
+        "fields": [
+          {
+            "module": "catalog",
+            "element": "item_id"
+          }
+        ],
+        "components": [
+          {
+            "string": "item-1"
+          }
+        ],
+        "profile": "umf-key-tuple-v1",
+        "tupleHex": "554d464b310104066974656d2d31"
+      },
+      "executionVerified": false
+    }
+  }
+}

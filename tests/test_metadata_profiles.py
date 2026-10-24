@@ -10,7 +10,7 @@ import pytest
 
 from arras import Invalid
 from arras.compat import check
-from arras.model import MetadataProfile, ModuleInfo, Placement
+from arras.model import ActionProfile, MetadataProfile, ModuleInfo, Placement
 from arras.results import BackendInfo
 from arras.types import Revision
 
@@ -24,14 +24,19 @@ class EmptyStats:
 
 
 def test_profile_types_and_defaulted_fields_preserve_positional_construction() -> None:
-    assert get_args(MetadataProfile) == ("legacy-arras/1", "umf-core-metadata/1")
+    assert get_args(MetadataProfile) == ("legacy-arras/1", "umf-core-metadata/1", "arras-umf-set/1")
+    assert get_args(ActionProfile) == ("arras-umf-set/1",)
     module = ModuleInfo("catalog", Placement("store"), Revision(), (), (), (), (), {})
     backend = BackendInfo("store", ("reader",), {}, None, True)
 
     assert module.metadata_profile == "legacy-arras/1"
     assert backend.metadata_profiles == ("legacy-arras/1",)
+    assert backend.action_profiles == ()
     assert [field.name for field in fields(ModuleInfo)][-1] == "metadata_profile"
-    assert [field.name for field in fields(BackendInfo)][-1] == "metadata_profiles"
+    assert [field.name for field in fields(BackendInfo)][-2:] == [
+        "metadata_profiles",
+        "action_profiles",
+    ]
     assert ModuleInfo.__annotations__["metadata_profile"] == "MetadataProfile"
 
 

@@ -654,3 +654,82 @@ The `truss` tests run against a fresh local PostgreSQL 18.6 per run, with Truss 
 - [ ] Which technology runs the conformance corpus, the benchmark harness and the Ashlar test double, and which CI tool runs them? Ask Erik LaBianca and the host integration owners.
 - [ ] Who authors the story test plans, and in what order? Ask Erik LaBianca.
 - [ ] How are the first request after suspend and Ashlar interactive reads budgeted? Ask the platform owner and the Ashlar project.
+
+## Planned A3/A4 one-action acceptance
+
+Use one exact source for registration, generation and execution: one module,
+required direct STRING key, one constrained scalar and one SET action with empty
+conditions/outputs/failures and no handler/relationship. Record source,
+fixture, package/API and generated-client digests plus provenance/notices.
+An unchanged generated client must drive the real host/provider boundary.
+Legacy invocation is a regression control, not canonical execution evidence.
+
+Required controls are: second owner and source/pin/digest mismatch; same-owner
+exact-byte registration replay; refusal of every source change, including
+reformatted equivalent content, upgrade and downgrade; stale opaque revision;
+valid and violating
+values against the official oracle; unknown action identity, malformed or
+unsupported wire kind/operation before provider dispatch; unknown rule/profile/frame;
+nonempty condition or failure declaration, handler, multiple effects or
+relationship; current denied
+or revoked person; successful advisory dry run with zero graph/journal/replay/
+position effects; real commit/readback; provider-fault rollback where a qualified
+failure mechanism is available, otherwise an explicit unqualified boundary;
+explicit caller same-request retry and changed-input conflict; and honest unknown
+settlement with no automatic write retry. Dry run exercises the selected host
+validation wire/callable from the selected source cohort, never an undocumented
+generated-transport kind. Nonempty pre/postconditions are unsupported controls
+for this first subset, not required execution features. Broader conditions, batch
+execution and durable unknown-settlement/recovery remain later qualifications or
+honest pre-dispatch refusals. No automatic retry is allowed after dispatch loss.
+Before-refusal assertions include a provider-not-called or actual unchanged-state
+witness appropriate to the existing authorization order. A report alone does not
+prove zero effects. Memory-only or same-process retry results remain so labelled.
+
+`fixtures/actions/tutorial-postcondition.json` is a candidate postcondition probe,
+not proof of a scalar constraint, natural violation or later-effect rollback.
+Its fields are unconstrained and its effect sets the declared successful value.
+Mutating its recipe to manufacture a failed postcondition cannot be called
+unchanged official evidence.
+The UMF owner must identify the first SET/constrained-value fixture and the
+available provider rollback witness/vectors, or clearly separate a
+provenance-bound derivative and its independent
+oracle. No fabricated callback verdicts, permissive production registries or
+optional-engine skips may close the required gate. Real native/installed tests
+remain separately authorized after the pure integration freezes.
+
+The `arras-umf-set/1` provider controls MUST also prove: default store and missing
+action runtime advertise no candidate capability; explicit opt-in qualifies
+before registration; direct legacy Plan/invoke/validate/batch routes refuse;
+current read plus write and exact policy/frame coverage are required before
+effects and replay; source replacement, token expiry and grant changes cannot
+race through check/commit; and registration/import/action CAS share one lock.
+Direct public administrative import must use official complete record/key/value
+admission, with exact source readback and a real subsequent generated SET.
+Use guarded records/callbacks or before/after state witnesses to prove refusal
+does not consume untrusted input or advance state/journal/replay/position.
+
+Typed-port doubles may test denial, source mismatch and transaction custody but
+cannot supply positive semantic qualification. Required whole-path positives use
+the actual checksum-verified official candidate wheel/resources, unchanged
+generated client and exact source/vector inventory. Base and released metadata
+extra must refuse the new route when action runtime is absent. Candidate tests
+must execute, with zero optional-engine skips, alongside the existing 139-vector
+A2 admission regressions. Keep candidate package identity separate from released
+core metadata support and from native/managed evidence.
+
+Prove generated SET followed by public `Ontology.query(at_least=receipt.token)`
+on the actual issuing store/source. Generated read/get transport is outside this
+apply/validate slice. Include foreign store, mismatched source, unknown
+token and current unreadable-person controls. Token issuance, receipt/replay
+and rows must either all appear or all remain unchanged after a failed commit;
+a legacy fake sequence prefix or a receipt-only assertion is insufficient.
+
+Exercise empty, Unicode and other out-of-carrier STRING keys as explicit native
+unsupported cases, while preserving the exact admitted key in the public import,
+read and action paths. Unicode scalar values remain subject to the official
+constraint oracle and the stated transport capacity. Extra stored properties
+must refuse without silently disappearing from a constructed candidate record.
+Known denial/conflict/unsupported/schema-mismatch responses must be consumed by
+the unchanged generated client as their fixed refusal codes, while a wrong-schema
+response, malformed post-commit receipt or lost result remains write uncertainty.

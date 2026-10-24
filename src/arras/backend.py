@@ -173,6 +173,24 @@ class Provider(Backend, Protocol):
         ...
 
 
+class DeclaredActionProvider(Provider, Protocol):
+    """A provider that re-admits official action requests against its current source."""
+
+    def apply_declared_action(
+        self,
+        principal: Principal,
+        module_name: str,
+        raw_request: Mapping[str, object],
+    ) -> Receipt | Validation:
+        """Recheck authority/source and apply a raw generated request atomically.
+
+        `Invalid`, `Refused`, `Conflict`, `PreconditionFailed` and `Unsupported` identify
+        a known no-effect refusal: they MUST be raised before the single atomic publish. Any
+        other exception, including one after publication, leaves the outcome unknown.
+        """
+        ...
+
+
 @runtime_checkable
 class Migrates(Protocol):
     """What a backend with a store to install adds (the Truss adapter): `Arras.migrate` calls it
