@@ -5,7 +5,7 @@ ddx:
   activity: test
   status: draft
   owner: Erik LaBianca
-  updated: 2026-10-22
+  updated: 2026-10-23
   authoring:
     home: repo
   links:
@@ -654,3 +654,181 @@ The `truss` tests run against a fresh local PostgreSQL 18.6 per run, with Truss 
 - [ ] Which technology runs the conformance corpus, the benchmark harness and the Ashlar test double, and which CI tool runs them? Ask Erik LaBianca and the host integration owners.
 - [ ] Who authors the story test plans, and in what order? Ask Erik LaBianca.
 - [ ] How are the first request after suspend and Ashlar interactive reads budgeted? Ask the platform owner and the Ashlar project.
+
+## Later 0.0.49 adoption and managed qualification gates
+
+The separate adoption branch first verifies exact public Truss 0.0.49 artifact
+identity and keeps Weft 0.4.51 fixed. Pure factory/lifecycle tests prove immutable
+tuple forwarding on fresh installation, strict empty defaults, no stored-policy
+update on reconnect, bounded named refusal, rollback and unchanged outer failure
+precedence. Base imports remain SDK/I/O-free; public signatures/catalog stay in
+parity. Historical 0.0.48 results and declared corpus limits are not relabelled
+as 0.0.49 qualification.
+
+The executable Lakebase harness uses only real public Arras/Truss operations and
+independent native observations after an explicit target/authorization/fixture
+handoff. Offline negative controls refuse absent or mismatched provider/resource
+scope, credentials, hashes, symlink/alias paths, malformed manifests and incomplete
+case membership before fixture/driver loading or connections. Synthetic controls
+qualify only these gates. Safe original case receipts preserve failures,
+uncertainty and cleanup separately; no credential, DSN or raw error prose is
+persisted.
+
+Required managed schedules follow Truss MP-01–06: populated durable state through
+restart; original ended-session/lease refusal; actual managed role/ACL behavior;
+complete feed/ACK independence; enforceable settings and uncertain outcomes;
+and required extension correspondence. TLS/person-token/credential-refresh,
+dry-run residue, caller work/savepoints and quarantine also require actual
+target evidence. Caller-owned cases use public Truss directly and are not
+advertised as Arras active-transaction support. Missing provider restart/refresh
+controls or observation privileges remain blocked/not_run; no zero-case, skipped
+or partial receipt can pass the full managed scope. Campaigns require separately
+coordinated resource slots. The [local qualification](../04-build/evidence/truss049-adoption-20261023/local-qualification.json)
+records source `40ed2481507f11a61ed81260fbfffbfc8ff91eba`: 199 local adapter
+cases and two local strict-probe transaction-mode cases passed. The latter
+characterize strict-install success and owned cleanup; they do not exercise a
+managed platform-grant refusal. Fresh installed qualification and actual
+Lakebase/MP-01–06 acceptance remain unrun in this tranche. Historical evidence
+and the eight declared corpus limits remain unchanged.
+
+### PR 9 execution and reusable identity setup
+
+The human selected completion of the fresh installed 0.0.49 and actual Lakebase
+gates before review, merge and publication. Source CI and local PostgreSQL
+evidence cannot replace either gate. The managed campaign must pass all twelve
+named cases and independently verified owned cleanup on the selected artifacts;
+blocked, skipped, interrupted or partial campaigns do not pass.
+
+Schema 2 permits an explicitly mixed authentication cohort. Its exact four-actor
+map and `human_actor: writer` are repeated in target and authorization. One real,
+ordinary human OAuth writer suffices for the human criterion; the other distinct
+ordinary actors may use their explicitly declared profiles. The installer remains
+separate. Original issuer/subject/resource facts, fresh SQL identity, real
+credential expiry and refresh, denied credentials and membership revocation are
+required. Service identities cannot supply human evidence.
+
+The human also requires avoiding repeated admin activation. One-time identity
+bootstrap may use the activated Databricks admin authority, with scope and custody
+recorded. Subsequent campaigns must reuse securely referenced identities and
+demonstrate credential renewal, owned role operations, provider controls and
+cleanup through delegated permissions without account/workspace admin activation.
+Do not claim this requirement complete from identity creation alone. Reusable
+identity custody and disposable database cleanup are separate. The ordinary human
+SQL role must hold no effective elevated role or owned schema/database authority;
+broader human control-plane rights and unrelated resources remain unchanged.
+
+Person and managed schedules run inside the original installation interval,
+before cleanup. Cancellation stops later effects and retains failure evidence;
+unverified person lifecycle or restoration prevents managed follow-up. All native
+inventory rows stay in memory, including generated runtime secrets; only reviewed
+closed projections enter receipts. Real transport interruption and independent
+reconciliation are required for uncertain outcomes, without fabricated exceptions
+or assertions that a client-side fault proves server COMMIT arrival.
+
+The person schedule preserves the administrative/person boundary in
+[CONTRACT-005](../02-design/contracts/CONTRACT-005-embedding-and-lifecycle.md)
+and [CONTRACT-001](../02-design/contracts/CONTRACT-001-ontology-interface.md).
+When registration has already been observed, the named administrative registrar's
+`document()` call must return `Refused(no_access)` at the Arras boundary. The
+ordinary reader must independently retrieve the registered document. A successful
+administrative read fails the registrar-authority check; an unavailable or
+unexpected result cannot count as the required refusal. A real in-memory Arras
+host supplies the focused regression, while actual Lakebase retains the complete
+registration, reader, writer, credential, membership and cleanup schedule.
+
+For the exact selected Truss 0.0.49 CreateProbe validation schedule, successful
+dry-run rollback preserves every durable graph/history/receipt/feed/recovery row
+while PostgreSQL's nontransactional allocators may advance. Inventory and compare
+all sequences; allow monotonic counter-only changes during that successful
+validation alone for `id_seq`, `key_storage_row_seq`, `journal_seq`,
+`runtime_object_transition_seq`, `request_receipt_row_seq` and
+`runtime_feed_reservation_seq`. Preserve sequence definitions and report the
+allocation-gap count/digest separately. Bind this narrow exception to the exact
+0.0.49 wheel/native manifest and reviewed `groups.sql`, `operations.sql`,
+`layout.sql` and `feed.sql` members. Unknown changes, decreasing counters or any
+durable-row change fail. Invalid/denied/revoked and restored-state controls retain
+exact sequence equality. This rule requires new source/behavior review for any
+future selected runtime; version labels alone cannot carry it forward.
+
+MP-06 uses the reviewed [exact-0.0.49 extension requirements](../04-build/evidence/truss049-adoption-20261023/extension-requirements.json)
+as an input, separately from actual target qualification. Source and local
+catalog closure require `plpgsql` 1.0 for this ordinary native profile; the
+provider's `databricks_auth` OAuth bootstrap prerequisite is observed separately.
+Inventory every required extension member and its actual ordinary-role privilege
+vector. Internal language handlers are not application entrypoints: do not grant
+them merely to satisfy an all-true predicate. Actual source-declared public
+operations and denials establish ordinary behavior. Missing correspondence or
+an unreviewed source inventory blocks the case.
+
+MP-04 qualifies a bounded semantic replica for the selected public 0.0.49
+CreateProbe schedule. Decode the exact `truss-native-feed/0.1` envelope and
+source-bound runtime/layout pins, including the JSON layout-profile object.
+Admit only the separately checked `truss-native-owned-create/0.1` and
+`truss-native-scalar-create/0.2` history carriers; unknown profiles refuse.
+Preserve complete journal, reservation, source, revision and prerequisite facts,
+ownership/definition/version pins, property IDs/values and safe watermark. Drain
+contiguous pages for the same consumer/source/registration through one genuine
+terminal empty interval within explicit page/byte bounds. Persist semantic rows,
+original bytes and both canonical body/page hashes atomically with a bound
+receipt; replay is idempotent and reopening preserves the complete snapshot.
+Compare the full replicated Probe multiset with an independently queried source
+using schema-ID/pin-bound property mapping and explicit nontruncation. Verify
+each page's original ACK/reconciliation through replay and restart. Saving opaque
+page bytes alone does not qualify replication or a broader adapter.
+
+Fresh installed managed consumers must expose the independently observed exact
+Truss archive digest and native/migration manifests before mutation. Use a
+content-hash-verified installation whose PEP 610 metadata retains the archive
+SHA-256, then compare installed payload members against the selected public
+wheel. A lockfile or expected digest alone cannot substitute for the observed
+archive evidence; an installer that omits it leaves admission blocked. Keep
+credential references outside these artifacts and capture failed attempts
+without rewriting them as later passes.
+
+
+The managed strict-empty-policy installation probe uses the same 60,000 ms
+statement and operation bounds as Arras's existing installer path, including its
+transaction-local statement timeout. Both are within the selected public Truss
+0.0.49 host's 1–60,000 ms range. Deadline cancellation remains blocked and its original failed attempt is
+retained; only the expected typed platform-grant refusal can qualify the probe.
+The empty policy, exact refusal context, prior caller work/settings, detach,
+rollback and complete native-state equality requirements remain mandatory.
+Other operation, transport-fault and performance bounds remain unchanged; this
+alignment does not waive any timing assertion or permit an unbounded installer.
+
+
+PR 9 requires both complete campaigns against the exact final installed Arras
+wheel bytes: actual Lakebase and fresh installed macOS. Retain the canonical
+release-builder wheel before running them and bind its SHA-256 to both original
+receipts. The final tagged build and public-download wheel must have that same
+SHA-256. Any byte change, including packaging or metadata, requires both full
+campaigns rebound and rerun. Payload correspondence, earlier CI, a partial run
+or an isolated successful case cannot substitute for either complete campaign.
+
+## Current Truss 0.0.50 adoption gates — 2026-10-24
+
+The active 0.6.1 source pins public Truss 0.0.50 wheel
+`7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00`, source
+`a687d0a226dad5745cbd909377bf99c7c1cddc66`. The source-binding record at
+`docs/helix/04-build/evidence/truss050-adoption-20261024/extension-source-binding.json`
+records public archive/source correspondence and the reviewed carry-forward
+basis for the extension requirement; it is not an installed or database test.
+Its native manifest is unchanged, and its distinct migration manifest preserves
+the former 0.0.49 manifest. Existing 0.0.49 tests and receipts remain scoped to
+their original wheel and target.
+
+Before merge/tag, the exact final Arras wheel still requires both complete gates:
+
+- Fresh-installed macOS arm64 / CPython 3.11.9 (the selected hosted workflow
+  tuple): all 72 applicable corpus cases,
+  with 64 passes, eight unchanged declared limits, no failures, and independent
+  cleanup.
+- Actual Lakebase: all twelve required cases, their authorized person/provider
+  identity and lifecycle controls, and independent owned-resource cleanup.
+  Reuse the already-provisioned ordinary actors; no VM or repeated administrator
+  provisioning is required.
+
+Both receipts must bind to identical canonical Arras wheel bytes. Historical
+0.0.49 receipts, source-local tests, source binding, and partial schedules do
+not satisfy either current gate. The public artifact source comparison does not
+imply a new target database observation or native execution result.

@@ -8,6 +8,8 @@ The tests that need the extra installed carry the `truss` marker and run with
 
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 import tomllib
 from importlib import metadata
@@ -47,6 +49,26 @@ def test_the_toolkit_and_weft_resolve_from_the_committed_find_links_page() -> No
     assert f"/truss/releases/download/v{TOOLKIT_VERSION}/" in page
     assert f"/weft/releases/download/v{WEFT_VERSION}/" in page
     assert len(re.findall(r"#sha256=[0-9a-f]{64}\"", page)) == 4 + 12  # plus pgserver-pg18
+
+
+def test_active_native_cohorts_bind_the_exact_public_truss_wheel() -> None:
+    expected = {
+        "version": "0.0.50",
+        "filename": "truss_toolkit-0.0.50-py3-none-any.whl",
+        "url": "https://github.com/DocumentDrivenDX/truss/releases/download/v0.0.50/truss_toolkit-0.0.50-py3-none-any.whl",
+        "sha256": "7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00",
+    }
+    for platform in ("linux-x86_64", "macos-arm64"):
+        cohort_path = ROOT / "tests/downstream/native-cohorts" / f"{platform}.json"
+        links_path = ROOT / "tests/downstream/native-cohorts" / f"{platform}.find-links.html"
+        cohort = json.loads(cohort_path.read_text())
+        truss_wheels = [
+            item for item in cohort["native_wheels"] if item["distribution"] == "truss-toolkit"
+        ]
+        assert truss_wheels == [{"distribution": "truss-toolkit", **expected}]
+        links = links_path.read_bytes()
+        assert hashlib.sha256(links).hexdigest() == cohort["find_links"]["sha256"]
+        assert f"{expected['url']}#sha256={expected['sha256']}".encode() in links
 
 
 def test_the_weft_pin_is_one_version_everywhere() -> None:
@@ -176,9 +198,9 @@ def test_every_toolkit_and_weft_file_in_the_lock_carries_a_hash() -> None:
     lock = tomllib.loads((ROOT / "uv.lock").read_text())
     expected = {
         "truss-toolkit": {
-            "version": "0.0.48",
+            "version": "0.0.50",
             "files": {
-                "truss_toolkit-0.0.48-py3-none-any.whl": "sha256:1aedf614ff3d3ff7a61bd4d91887ede650a7135d1239e8564c1c297c0ddc37c3",
+                "truss_toolkit-0.0.50-py3-none-any.whl": "sha256:7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00",
             },
         },
         "weft-sql": {
@@ -230,7 +252,7 @@ def test_a_missing_or_other_toolkit_names_the_extra(monkeypatch: pytest.MonkeyPa
     with pytest.raises(ImportError, match=r"arras\[truss\]"):
         require_toolkit()
     monkeypatch.setattr(metadata, "version", lambda name: "0.0.2")
-    with pytest.raises(ImportError, match="0.0.2 is installed but 0.0.48 is pinned"):
+    with pytest.raises(ImportError, match="0.0.2 is installed but 0.0.50 is pinned"):
         require_toolkit()
     monkeypatch.setattr(metadata, "version", lambda name: TOOLKIT_VERSION)
     assert require_toolkit() == TOOLKIT_VERSION
@@ -240,7 +262,7 @@ def test_a_missing_or_other_toolkit_names_the_extra(monkeypatch: pytest.MonkeyPa
 def test_the_installed_extra_is_the_pinned_tuple() -> None:
     import psycopg
 
-    assert require_toolkit() == "0.0.48"
+    assert require_toolkit() == "0.0.50"
     assert metadata.version("weft-sql") == WEFT_VERSION
     assert metadata.version("psycopg") == "3.3.6"
     assert psycopg.pq.version() == 180006  # libpq 18.6

@@ -185,8 +185,11 @@ Official Python core supplies model admission/preservation and explicit registri
 no portable core projection/action-plan API is integrated in Arras. The experimental
 official `umf_access.native_actions` host adapter does contain execution/admission
 machinery; its existence is not portable core API parity or qualified Arras use.
-Select and qualify the authoritative model/API or host-adapter boundary with its
-owner rather than copying an evaluator. Current compiler/browser parity work and
+Before the next execution slice, pin a released authoritative action/value
+extension API and its conformance vectors with the UMF owner. That boundary
+remains unresolved; private constraint/literal kernels are not a substitute.
+Qualify the selected model/API or host-adapter boundary rather than copying an
+evaluator. Current compiler/browser parity work and
 pending installed/sdist qualification do not themselves close Arras adoption.
 
 Ashlar already has scoped publication/query/feed work, including older UMF 0.8/
@@ -195,30 +198,34 @@ candidate. These do not qualify Arras or managed authorization. TD-006 proposes
 bounded incremental publication as a replacement for whole-history processing.
 The owner identifies `resolve_publication`/`read_singleton` with exact snapshot
 pins and mandatory policy owners, plus `AshlarTarget` scoped typed reads/pages,
-as usable surfaces. An installed Arras-compatible cohort is still unqualified;
-the current `.4-xxhash64` managed-page target also conflicts with an older
-`AshlarTarget` allowlist and must be reconciled. Opaque Truss feed cursors in
+as usable surfaces. An installed Arras-compatible cohort is still unqualified.
+Current `AshlarTarget` source explicitly maps the managed
+`0.2.0-managed-current-core-xxhash64-pages-candidate` target to
+`ashlar-delta/0.4-xxhash64` and `spark-xxhash64-typed-key/0.1`; the earlier
+allowlist conflict is no longer a source blocker. This source inspection does
+not qualify an installed Arras/Ashlar cohort. Opaque Truss feed cursors in
 publication progress are not a general `reached(receipt)` API; generic
 `minimumProgress`/`reached` remain contract-only. Source ACK never establishes
 destination visibility.
 Publication/receipt/freshness contract design can proceed now without a new seed,
 scale trial or cloud run. Separate seed/scale approvals do not block that design.
 
-Managed Truss 0.0.49/PR 30 is a separate lane awaiting the public Weft 0.4.51/
-Truss 0.0.48 base and its own final qualification. Its candidate/local stand-in
-passes are not public 0.0.49 or actual Lakebase evidence. Managed roles/ACL/TLS/
-token behavior remains unrun; no new public value/action/lowering API is implied.
-It is not a dependency of the bounded 0.0.48 local Arras release unless a managed
-service deployment is separately selected.
+Public Truss 0.0.49 and Weft 0.4.51 are available. The separate Arras adoption
+branch pins those exact artifacts; its [local qualification](evidence/truss049-adoption-20261023/local-qualification.json)
+records 199 adapter cases and two transaction-mode cases on editable source
+`40ed2481507f11a61ed81260fbfffbfc8ff91eba`. These local results do not qualify
+fresh installed artifacts or actual Lakebase behavior. Managed roles/ACL/TLS/
+token acceptance remains `not_run`; no new public value/action/lowering API is
+implied. This adoption leaves the earlier bounded 0.0.48 release evidence intact.
 
 “Subgraph” currently means a placed module; `Backend.query` refuses cross-module
 statements. Ashlar is a reader/replica, not a write provider. Arbitrary federation
 and cross-backend atomic writes are not promised. GraphQL/schema-admin servability
 coupling remains architecture debt; this release does not claim a decoupled pure
 kernel. Address it along affected later contract slices, not as a new P0 feature.
-The exact authoritative UMF execution boundary and refreshed public native
-artifacts remain unresolved; owner reports above are not independently rerun
-native evidence.
+The exact authoritative UMF execution boundary and Arras qualification of later
+native capabilities remain open. Public artifact availability alone does not
+close either integration obligation.
 
 ### A1 installed-release probe — completed locally 2026-10-22
 
@@ -1642,3 +1649,326 @@ gates above are reviewable. It does not establish integration completion.
   remain outside the scoped P0 release. P0 delivery is closed against actual
   publication and supplemental fresh public-download evidence; remaining A2–A7 semantic work
   stays separately open.
+
+## Later public Truss 0.0.49 adoption — isolated work
+
+The isolated adoption branch began at `df923164840cb225a278d760ba911c106fa3c080`
+with package metadata 0.5.1. After the release-owner handoff and PR 8 merge,
+it merged released main `8542d477c411c96a553ea84572b86c95c59d7cf2`; current
+package metadata is 0.6.0. The published 0.6.0 release retains its original
+Truss 0.0.48/Weft 0.4.51 cohort. Earlier adoption receipts remain bound to their
+captured 0.5.1 sources; the merge does not retarget them or qualify a new wheel.
+Merged-head checks and installed-artifact qualification remain separate gates.
+No new version/tag/publication follows from this plan. Runtime campaigns require
+separately coordinated resource slots.
+
+| Owner | Bounded deliverable | Gate and retained boundary |
+| --- | --- | --- |
+| Sol | CONTRACT-004/005 and TP-001 later-tranche amendments; source/evidence review | Preserve frontmatter/history; distinguish forwarding, local qualification and real managed acceptance |
+| Luna A | Exact public49 pin/lock/artifact references; factory/backend/lifecycle forwarding and safe named refusal; catalog/signature and pure controls | Empty strict default; no reconnect widening or ACL-policy interpreter; keep 926-line ceiling and error/transaction precedence |
+| Luna B | Explicit target/authority/fixture-bound executable Lakebase harness and pure gate controls | Actual public operations after admission; original redacted service evidence; no local fallback, inferred provider trust or fabricated MP pass |
+
+The selected public49 source is
+`dd13e95804abc30202d449a756240c6a684ab942`, wheel SHA-256
+`7ea14b2787f02cbeec9ad99d835adbcc30c684fd5be8e0765a1d8198b50e7182`.
+Native digest is `288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4`;
+migration digest is `96addcdb95523f478d8f50b0b47198e47a860680c7400dd359711930e837e535`.
+Weft stays 0.4.51, source `557153731e9f5d0583193a1189a07c6ed485d3d3`.
+The Truss/public49 and managed-target owner
+`01a16383-183c-7680-9518-f69ff40383e5` retains the immutable public49 proof and
+Lakebase custody. The independent A2/0.6.0 release owner
+`01a16023-fabd-7fa3-9abf-44d42e7fd673` provided the integration handoff after
+the published release and PR 8 merge.
+The published49 proof labels actual Lakebase `not_run`. The separate
+[source review](evidence/truss049-adoption-20261023/source-review.json) binds
+the harness and reported 52 pure controls. The
+[local qualification](evidence/truss049-adoption-20261023/local-qualification.json)
+binds the later source-native 199-case run and coordinator-observed two local
+transaction-mode passes. Its editable Arras 0.5.1, runtime, cleanup and artifact
+capture limits remain explicit; neither receipt is a managed-service result.
+
+The human authorized the managed-target owner to create a dedicated Lakebase
+with the Databricks CLI. That target is now provisioned; its read-only preflight
+observes PostgreSQL 18.6 (`180006`), psycopg 3.3.6/libpq `180006`, verified TLS
+with a maintained CA bundle, and no `truss` schema. No service mutation is implied
+by these observations. An ordinary OAuth identity remains blocked by workspace
+service-principal creation permission; the owner awaits the human identity
+handoff. Neither a native-password baseline nor a nonhuman OAuth actor may be
+reported as human-token acceptance. The secure source, exact authorized roles
+and operational controls still require handoff without private coordinates in
+these artifacts. MP-01–06 and actual consumer acceptance remain open until
+original service evidence and confirmed owned cleanup pass. Official UMF
+value/action and Ashlar work remain separate.
+
+### PR 9 release execution continuation — 2026-10-23
+
+The human requested completion of the installed 0.0.49 and actual Lakebase gates,
+review, merge and release. The release owner now exclusively owns the adoption
+checkout and publication lane; action/constraint work proceeds in a separate
+checkout. The original draft/source receipts remain historical. The required
+managed schedules now have separate implementation and Sol review lanes, with
+the target owner supplying only private factual provider/credential controls.
+The TP-001 execution amendment governs mixed identities, original service proof,
+pre-cleanup sequencing and reusable setup without repeated admin activation.
+
+The first fresh installed native attempt failed conformance validation and then
+exposed a failure-receipt path serialization defect. Its failed logs and capture
+limitation are retained privately; it is not a pass. The reviewed Path-only
+serialization fix and regression test are committed separately, and the same
+candidate wheel is being rerun. Exact wheel/sdist parity, packed imports, doctor
+controls and fresh official UMF qualification passed for that candidate. These
+results do not qualify a later version bump, final release wheel or Lakebase.
+Actual service execution and publication remain pending their original evidence.
+
+The rerun of that original candidate passed 64 native cases with eight unchanged
+declared limits and zero failed/harness-error cases. A subsequent 0.6.1 candidate
+exposed incomplete version updates: its example host still required 0.6.0, and
+the public API catalog and theme fixture retained the previous version. The
+failed installed-doctor and extension-consumer attempts are retained; the version
+references are corrected together before rebuilding and qualifying a new wheel.
+The earlier wheel identities are candidate evidence only.
+
+Databricks bootstrap is now complete for the dedicated target: separately
+authenticated ordinary OAuth actors include one human writer and three service
+principals, all without elevated database attributes or ownership. Reusable
+credential references remain in private Keychain custody. Bootstrap and identity
+smoke evidence qualify setup only; the actual twelve-case managed campaign and
+independently confirmed owned cleanup are still pending.
+
+The corrected 0.6.1 wheel has SHA-256
+`7608193d46257e2666b11fabad2696f35d976f9253b032600868729041c60e02`.
+Its twenty installed doctor controls, fresh extension consumer and official UMF
+gate pass. Independent installed payload comparison covers 172 Arras and 474
+Truss wheel members, with the observed public49 archive/native/migration hashes.
+The prior `90e613e2...` candidate's native campaign reached the 35-minute command
+deadline without a conformance report. Its original failed receipt has SHA-256
+`9da367940231af13a3e136686c644ccd9cd7824377da68aeeb2104618e8eb203`;
+the exact owned PostgreSQL process was independently identified and stopped, and
+zero owned PID files/processes remained. The private failed state and supplemental
+cleanup record are retained. The reviewed optional conformance deadline preserves
+the 2,100-second default, bounds explicit overrides to 1–7,200 seconds, records
+the selected deadline and changes no acceptance assertion or operation timeout.
+The corrected wheel still requires its own installed native proof.
+
+Source checkpoint `9377a902fbc1fd8ab457de0c093329875770fedf` passed Linux
+source/build, default Python and UI CI, while the native job passed 201 cases and
+failed the new managed API case. The selected49 history emitter preserves typed
+UMF string cells; the decoder incorrectly expected bare strings. The reviewed
+correction preserves the exact `{kind: "string", text: ...}` cell and extracts
+text only for the independent Probe comparison, with closed-shape refusal
+controls. The actual local public49 API test then passed in 59.59 seconds,
+retaining three original feed pages privately, and no qualification PostgreSQL
+process remained. The rebound pure runner suite passed 163 cases with the one
+explicit Truss-marked test deselected.
+
+The broad Mac default run recorded 3,209 passes, sandbox-denied loopback server
+cases and a 100 ms interpreter-start timing assertion. All thirteen server tests
+passed in the targeted permitted environment. The reviewed timeout-test fixture
+now uses isolated no-site Python startup while preserving its 100 ms deadline,
+production runner, stdout and process-reaping assertions; the isolated test and
+combined runner suite pass. Original failures remain retained. Final-source CI,
+corrected-wheel native qualification and actual Lakebase remain separate gates.
+
+
+Source `8e807dbfee8bd5d06877a723ea827ab46186a2e2` passed all four CI jobs
+in run `39992131372`. The actual Lakebase execution then stopped twice before
+SQL admission: the first attempt encountered an expired human CLI refresh token;
+ordinary same-profile SSO repaired that credential without renewed admin setup.
+The second attempt exposed a verifier defect that indexed the global `mixed`
+authentication profile instead of the actor-specific profile. All twelve cases
+remained `not_run`, cleanup was `not_attempted`, and the original failed receipt
+and equal before/after installed-artifact binding remain retained privately.
+
+The reviewed correction resolves credential provenance against each authorized
+actor label. Pure controls cover the actual human-writer/three-service-principal
+arrangement, the allowed native-reader variant, profile/subject/provider mismatch
+refusals before connection acquisition, and homogeneous schema1 behavior. The
+credential-source repair and verifier correction do not qualify managed cases.
+A new source/harness/entry freeze and independently rebound private fixture are
+required before a fresh actual campaign. Existing failed attempts stay intact.
+
+
+The third actual attempt passed credential-source admission, then stopped during
+service admission. The original failed installed-execution binding is retained;
+no installation, module mutation or provider restart occurred. Read-only diagnosis
+confirmed that the fixture and four public harness call sites referenced the
+nonexistent psycopg3 `ConnectionInfo.dsn_parameters` property. The selected driver
+is psycopg 3.3.6 and exposes `get_parameters()` instead. The corrected observers
+retain exact endpoint, verify-full TLS, root-certificate and native role checks;
+updated test doubles use the actual driver surface and transport refusals remain
+explicit. The private fixture has separate review and 48 passing offline controls.
+A subsequent actual read-only smoke observed all five authenticated connections,
+expected native identities and TLS facts, with Truss absent. This is admission
+readiness evidence only; all twelve managed acceptance cases still require a new
+full campaign with refreshed source, fixture and authorization bindings.
+
+
+Source `e7cddb7711e0fc565d8f117725230168c33e1976` passed all four CI jobs
+in run `39996494637`. The fourth managed attempt stopped before installation
+because fixture-owned preflight reads left the supplied connection in a
+transaction. The separately reviewed private correction settles those owned
+reads before handoff and enforces idle, non-autocommit connections. All 49
+combined private controls and the actual complete public read-only admission
+path then passed, including the exact not-installed backend status.
+
+The fifth actual attempt passed LB-ADMISSION but blocked at the strict-install
+probe. Its original receipt and equal before/after artifact binding are retained.
+A rollback-contained diagnostic observed successful host adoption and assembly
+construction, then an execution cancellation under the probe's 30-second bound;
+caller work and complete native state remained unchanged. The reviewed probe
+correction uses the existing adapter installer's 60-second statement/operation
+bounds within public49's supported maximum. Product defaults, other operation or
+fault budgets, refusal semantics and state-preservation assertions are unchanged.
+The failed 30-second attempt is not a managed pass.
+
+The corrected-wheel installed Mac conformance run completed with 63 passes,
+eight declared limits, zero failed cases and one harness error:
+`registry.validate-reports-without-applying`, fixture seed step 5, reported a
+timeout/cancellation. Its original failed receipt has SHA-256
+`26e445cecd6af4407a176333cd80a7ed0d0542a7c1a467cfbaaf1eb188036548`.
+Independent cleanup confirmed zero owned PostgreSQL/conformance processes and
+postmaster PID files. The verifier removed its temporary native environment after cleanup; the
+original receipt remains retained for reproduction from a fresh environment.
+The fresh-installed native gate remains open.
+
+
+The sixth actual attempt passed admission and the strict-empty-policy probe,
+including actual selected-role and caller/native containment checks, then stopped
+at selected-policy installation. Rollback-contained diagnostics identified a
+second exact platform role, `databricks_superuser`, through the public typed
+`third_party_grant` relation/pre-ownership result. The typed identity proof has
+SHA-256 `9b4aecbcbc91463860c88212ee746c5d13b193cd8dd9cc6b54d96adbb2c7353c`.
+An exhaustive owned scratch-object census covered schema, relation, sequence,
+routine, type and column ACLs, with no manual grants; the exact external set was
+four existing provider roles, with no unknown grantee. Its private proof has
+SHA-256 `a4748a0ecba5174a0c1d1213c0d60f16563693034641ebfb42309beef5b618f2`.
+Scratch objects were rolled back, native/bootstrap state was unchanged, and all
+sixteen ordinary-actor/platform-role membership, SET and USAGE closures were
+false. Independent review cleared only that explicit four-role target policy;
+this acknowledges existing provider raw access and grants no ordinary authority.
+Target/auth bindings were replaced explicitly; any additional role or identity
+or ACL drift remains blocked. The full managed gate remains open.
+
+The isolated seed case subsequently completed in 17.41 seconds, with its four
+record seed taking 0.40 seconds and no driver SQL error. This source-local
+diagnostic compared 104 Python/corpus members with the candidate wheel; it is
+not installed qualification. A post-report wrapper property error and its
+independent zero-process/PID cleanup supplement are retained separately.
+
+A later fresh-installed Mac retry of wheel `7608193d...` was intentionally
+cancelled after CI's Linux-built candidate was observed as different bytes
+(`5dc897a9a153fb004926dcbd69b3537f969875a2a4cc26f09d2de0cd25d7bfe8`).
+No partial corpus count is inferred. The original cancellation logs and receipt
+limitation remain retained, and independent cleanup confirmed zero owned native
+processes/PID files. Cancellation exposed missing parent interrupt reaping in
+the qualification helper, which is corrected separately. CI now retains its
+exact wheel/sdist alongside installed UMF evidence so canonical release-builder
+bytes can be selected before both full campaigns. README wording is made neutral
+before this final artifact freeze; no passed gate is transferred across a byte
+change. Final installed campaign and public-wheel identities must match exactly.
+
+The four-role rollback-only public49 timing diagnostic reached the unchanged
+60,000 ms operation limit. Its 1,272 delegated driver calls consumed 60.38
+seconds; client process CPU was 0.245 seconds over 61.71 seconds of scoped wall
+time. This supports sequential round-trip cost as the next investigation target,
+without separating wire time from server execution. Hooks were restored, caller
+and native state were unchanged, and Truss remained absent. The private timing
+proof has SHA-256
+`a1cd6f2c43877ee43a70ba51f12b20934be9e7f3a6f0ac665f9423dbb5971de8`;
+the independent fresh native-absence proof has SHA-256
+`77b0874e0cb122897142fe106aa5a51a5e884ba049e2ef73930f114da7892b7d`.
+No final Arras acceptance is asserted. A closer runner is being assessed before
+any provisioning, credential transport or new full campaign.
+
+CI run `40005187951` retained the wheel built at `91c6308a` with SHA-256
+`c31b56e53fa653ba090e08f2dcff1edb85849f56489b543b150108ae75eab57f`.
+Its build and installed UMF checks passed; the other CI jobs and both complete
+final-wheel campaigns remain pending. The release build must reproduce that
+exact filename and digest before verification or artifact upload. Updating a
+future release's admitted digest requires its own complete qualification. The
+guard's workflow-order and actual matching/changed/missing-byte controls passed
+with the native workflow shell controls (21 tests; retained log SHA-256
+`f8ccf0196fb70c0d2db8e62e87e98b0e147085c6876973ba6e32fd28525ddf46`).
+Workflow and documentation edits must still be followed by a CI
+rebuild comparison before this wheel is frozen for the campaigns.
+
+#### Canonical installed checkpoint, 2026-10-23
+
+CI run `40006406325` at source
+`e3e253c06129faa85ad18c1607880d318acd33d9` independently reproduced the exact
+`c31b56e53fa653ba090e08f2dcff1edb85849f56489b543b150108ae75eab57f` wheel.
+All four jobs passed, including 3,242 ordinary Python tests and 202 PostgreSQL
+adapter tests. The installed UMF receipt remained byte-identical to the first
+CI build. The exact-wheel fresh-installed doctor passed all 20 cases; its
+receipt has SHA-256
+`601a98926ed81cc3b3ed1baaa3c1fc8650e3635b16b0405ace11895d7c3fcc18`.
+
+The complete fresh-installed macOS arm64 / CPython 3.11.17 native campaign then
+completed all 72 applicable corpus-v13 cases: 64 passed and eight unchanged declared
+limits, with zero failed, harness-error or host-specific results. The original
+receipt has SHA-256
+`686417142143b507d2f7aa175a206a21ef1b807fe1b520d675c5dd18246e763e`;
+its bound cohort has SHA-256
+`32942570f4974c7f78aea9f2173f9c4d7f5d518baac03ce22cd3f639b400b5e1`.
+Independent review checked the unique complete case inventory, exact eight
+limits, all seven native archive identities, installed payloads and native-file
+hashes. The PostgreSQL archive's identical public bytes were retained from a
+separate verified cache after normal campaign cleanup removed the run's copy;
+that custody distinction is recorded and no campaign was retargeted or rerun.
+
+Independent process/filesystem closeout confirmed zero owned PostgreSQL or
+conformance processes, zero postmaster PID files and removal of the temporary
+environment, with the source and qualification-tool hashes unchanged. Its
+receipt has SHA-256
+`b9f578d0055d9d12e48a33ee3236586d29ac91ffef9e45fd6ce526ea0cf75b42`.
+Unrelated persistent PostgreSQL instances were left untouched. This closes the
+named final-wheel Mac campaign only. Full actual Lakebase acceptance remains
+open: the local selected-policy diagnostic reached the supported installer
+deadline, and explicit operator authorization for the reviewed disposable
+colocated runner and temporary subnet is pending. No new infrastructure has
+been created. Merge, tag, release-build and public-download gates remain open.
+
+## Current public Truss 0.0.50 adoption continuation — 2026-10-24
+
+The active 0.6.1 candidate now selects public Truss 0.0.50, source
+`a687d0a226dad5745cbd909377bf99c7c1cddc66`, wheel SHA-256
+`7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00`.
+The Arras source-binding record is
+`docs/helix/04-build/evidence/truss050-adoption-20261024/extension-source-binding.json`
+(SHA-256 `7ce3846a77f705fa5d1b6cabca98cbf46dec4497a53ab652dd239e4035ee2329`).
+The source-only Truss 0.0.50 dependency review has SHA-256
+`841579af03e375d1bafa1e6a19dc483d9d5ab096fe9a75fd36d834dfb48ee894` and found
+no newly introduced extension dependency. Direct archive comparison found 50
+native SQL runtime files and five JSON resources byte-identical to the prior
+pinned inventory. The separate Truss v0.0.50 exact-tag workflow
+[passed](https://github.com/DocumentDrivenDX/truss/actions/runs/40068606364)
+its Linux release gates, including 107 migration tests, 62 HF cases and 174
+managed-grant tests. Its selected small functional workload also passed; this is
+not a general performance result or Arras managed acceptance. The native
+manifest is unchanged
+(`288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4`), while
+the active migration manifest is separately versioned
+(`4c6baf0282e3d0b5492f070c9c07d89ff0c9a819e748f3820f60b11c1f51c7aa`) and
+preserves the public 0.0.49 migration manifest
+(`96addcdb95523f478d8f50b0b47198e47a860680c7400dd359711930e837e535`). This is
+public artifact/source binding only. It does not create a new database
+observation or transfer the earlier 0.0.49 installed-native or managed receipts.
+
+The current gates remain open and bind to the exact eventual Arras wheel:
+
+- Complete fresh-installed macOS arm64 / CPython 3.11.9 qualification: all 72
+  applicable cases, including the 64 expected passes and eight unchanged
+  declared limits, plus independent cleanup.
+- Complete actual Lakebase qualification for all twelve required cases and
+  independently confirmed owned-resource cleanup, using the already-provisioned
+  reusable ordinary actor setup. No new VM or repeated administrator
+  provisioning is part of this continuation.
+- Final source, artifact, and hosted release gates after both receipts bind to
+  the same canonical wheel bytes.
+
+The old 0.0.49 sections above remain historical. The current source pin changes
+neither the published 0.6.0 cohort nor the earlier receipts, and it does not
+qualify managed service behavior. The runtime layout/native manifest, UMF
+catalog/application schema, and Truss migration manifest remain distinct
+versioned boundaries; no migration edge or schema transition is inferred from
+the shared native manifest.

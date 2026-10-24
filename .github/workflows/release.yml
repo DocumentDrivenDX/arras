@@ -152,6 +152,9 @@ jobs:
       - run: npm ci && npm run build:wheel
         working-directory: ui
       - run: uv build --wheel && uv build --sdist
+      - name: Require the exact wheel selected for installed and managed qualification
+        run: |
+          echo 'c31b56e53fa653ba090e08f2dcff1edb85849f56489b543b150108ae75eab57f  dist/arras-0.6.1-py3-none-any.whl' | sha256sum --check --strict -
       - name: Verify exact source and sdist-rebuilt artifacts
         run: python tools/verify_distribution.py --output artifacts/distribution-verification.json dist/*.whl dist/*.tar.gz
       - name: Qualify the offline doctor from the installed release wheel

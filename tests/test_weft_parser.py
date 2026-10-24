@@ -19,6 +19,7 @@ tool description, the dev UI and the catalog example send while they run.
 
 from __future__ import annotations
 
+import ast
 import hashlib
 import importlib
 import importlib.util
@@ -364,6 +365,92 @@ def test_every_statement_is_read_by_weft_s_own_parser(monkeypatch: pytest.Monkey
         "Weft answered before or around the parse: the check's request needs updating"
     )
     assert unread == []
+
+
+def test_person_public_query_parameter_and_managed_negative_are_weft_checked(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Capture the person harness's actual public query, then parse it and the retained negative."""
+    import sys
+    from types import SimpleNamespace
+
+    compile_json = compile_or_skip("the person and managed-access statements were not checked")
+    person_path = ROOT / "tools" / "_lakebase_person.py"
+    spec = importlib.util.spec_from_file_location("person_query_parser_regression", person_path)
+    assert spec is not None and spec.loader is not None
+    person = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = person
+    sys.path.insert(0, str(ROOT / "tools"))
+    try:
+        spec.loader.exec_module(person)
+    finally:
+        sys.path.pop(0)
+
+    seen: list[tuple[str, dict[str, Any]]] = []
+    reader = SimpleNamespace(
+        document=lambda _module: None,
+        query=lambda _module, sql, *, params: (
+            seen.append((sql, dict(params)))
+            or SimpleNamespace(rows=({"code": params["code"], "value": "identity-control"},))
+        ),
+    )
+    writer = SimpleNamespace(
+        validate=lambda *_args: SimpleNamespace(ok=True, effects=(object(),)),
+        invoke=lambda *_args, **_kwargs: SimpleNamespace(created=1),
+    )
+    registrar = SimpleNamespace()
+    host = SimpleNamespace(
+        session=lambda principal: {
+            "registrar": registrar,
+            "reader": reader,
+            "writer": writer,
+        }[principal]
+    )
+    monkeypatch.setattr("arras.core.Arras.start", lambda *_args, **_kwargs: host)
+    monkeypatch.setattr(person, "_assert_administrator_document_refused", lambda *_args: None)
+    monkeypatch.setattr(person, "_native_snapshot", lambda _sources: {"sha256": "a" * 64})
+    monkeypatch.setattr(person, "_approved_validation_sequences", lambda _context: frozenset())
+    monkeypatch.setattr(person, "_record_snapshot_pair", lambda *_args, **_kwargs: True)
+    monkeypatch.setattr(person, "_public_state_sha256", lambda _reader: "b" * 64)
+    monkeypatch.setattr(person, "_person_refusal_controls", lambda *_args: None)
+    person._person_public_api_checks(
+        {
+            "backend": object(),
+            "baseline_observed": {"operations": {"registration": "passed"}},
+            "principals": {
+                "registrar": "registrar",
+                "reader": "reader",
+                "writer": "writer",
+                "denied": "denied",
+            },
+            "sources": {},
+        }
+    )
+    assert len(seen) == 1
+    sql, params = seen[0]
+    assert params.keys() == {"code"}
+    document = person.HARNESS_MODULE_DOCUMENT.decode("utf-8")
+    codes = _codes(compile_json(_request(sql, params, document, profile=None)))
+    assert classify(codes) == "read", sorted(codes)
+
+    # Preserve the old placeholder as a syntax control derived from the actual captured query.
+    old_placeholder_codes = _codes(
+        compile_json(_request(sql.replace(":code", "$code"), params, document, profile=None))
+    )
+    assert classify(old_placeholder_codes) == "unread", sorted(old_placeholder_codes)
+
+    access_path = ROOT / "tools" / "_lakebase_managed_access.py"
+    access_tree = ast.parse(access_path.read_text(encoding="utf-8"))
+    unqualified = [
+        node.value
+        for node in ast.walk(access_tree)
+        if isinstance(node, ast.Constant)
+        and isinstance(node.value, str)
+        and "p.unqualified_column" in node.value
+    ]
+    assert len(unqualified) == 1
+    access_codes = _codes(compile_json(_request(unqualified[0], {}, document, profile=None)))
+    assert classify(access_codes) == "unread", sorted(access_codes)
 
 
 def test_a_missing_parser_skips_visibly_or_fails_when_required(

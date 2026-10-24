@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "auth_profile": "native-password",
+  "authorized_module_access": {
+    "document_id": "arras-lakebase-qualification-v1",
+    "source_sha256": "0d9c4bd6c390803483937200812e838d45734e0e0ab7925374d88aceb767f16f",
+    "reader_role": "REPLACE_WITH_OWNED_MODULE_READER_ROLE",
+    "writer_role": "REPLACE_WITH_OWNED_MODULE_WRITER_ROLE",
+    "auditor_role": "REPLACE_WITH_OWNED_MODULE_AUDITOR_ROLE"
+  },
+  "target_sha256": "REPLACE_WITH_SHA256_OF_EXACT_TARGET_BYTES",
+  "fixture_sha256": "REPLACE_WITH_SHA256_OF_EXACT_OWNER_FIXTURE_BYTES",
+  "request_reference": "PENDING_EXPLICIT_OWNER_HANDOFF",
+  "authorized_resource_id": "REPLACE_WITH_OWNER_CAPTURED_PROVIDER_RESOURCE_ID",
+  "authorized_database": "REPLACE_WITH_DEDICATED_DATABASE",
+  "authorized_schema": "truss",
+  "authorized_ordinary_roles": [
+    "REPLACE_WITH_EXACT_ORDINARY_ROLE"
+  ],
+  "allow_generated_installation_roles": true,
+  "allowed_operations": [
+    "read",
+    "install",
+    "configure",
+    "apply",
+    "feed",
+    "refresh",
+    "restart",
+    "fault",
+    "cleanup"
+  ],
+  "allowed_cases": [
+    "LB-ADMISSION",
+    "LB-INSTALL",
+    "LB-PERSON",
+    "LB-CUSTODY",
+    "LB-SETTLEMENT",
+    "LB-ACL",
+    "MP-01",
+    "MP-02",
+    "MP-03",
+    "MP-04",
+    "MP-05",
+    "MP-06"
+  ]
+}

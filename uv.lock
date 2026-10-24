@@ -13,7 +13,7 @@ wheels = [
 
 [[package]]
 name = "arras"
-version = "0.6.0"
+version = "0.6.1"
 source = { editable = "." }
 dependencies = [
     { name = "graphql-core" },
@@ -50,7 +50,7 @@ truss-test = [
 requires-dist = [
     { name = "graphql-core", specifier = ">=3.3,<3.4" },
     { name = "opentelemetry-api", marker = "extra == 'otel'", specifier = ">=1.27,<2" },
-    { name = "truss-toolkit", extras = ["native", "query"], marker = "extra == 'truss'", specifier = "==0.0.48" },
+    { name = "truss-toolkit", extras = ["native", "query"], marker = "extra == 'truss'", specifier = "==0.0.50" },
     { name = "umf-core", marker = "extra == 'umf'", url = "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/umf_core-0.10.0-py3-none-any.whl" },
     { name = "uvicorn", marker = "extra == 'devhost'", specifier = ">=0.30" },
 ]
@@ -65,7 +65,7 @@ dev = [
     { name = "ruff", specifier = ">=0.6" },
     { name = "uvicorn", specifier = ">=0.30" },
 ]
-truss-test = [{ name = "truss-toolkit", extras = ["local"], specifier = "==0.0.48" }]
+truss-test = [{ name = "truss-toolkit", extras = ["local"], specifier = "==0.0.50" }]
 
 [[package]]
 name = "attrs"
@@ -845,7 +845,7 @@ wheels = [
 
 [[package]]
 name = "truss-toolkit"
-version = "0.0.48"
+version = "0.0.50"
 source = { registry = "tools/find-links/index.html" }
 dependencies = [
     { name = "jsonschema" },
@@ -853,7 +853,7 @@ dependencies = [
     { name = "referencing" },
 ]
 wheels = [
-    { url = "https://github.com/DocumentDrivenDX/truss/releases/download/v0.0.48/truss_toolkit-0.0.48-py3-none-any.whl", hash = "sha256:1aedf614ff3d3ff7a61bd4d91887ede650a7135d1239e8564c1c297c0ddc37c3" },
+    { url = "https://github.com/DocumentDrivenDX/truss/releases/download/v0.0.50/truss_toolkit-0.0.50-py3-none-any.whl", hash = "sha256:7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00" },
 ]
 
 [package.optional-dependencies]
