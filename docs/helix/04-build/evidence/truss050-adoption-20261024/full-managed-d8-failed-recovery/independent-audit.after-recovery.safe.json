@@ -1,0 +1,49 @@
+{
+  "acceptance_claim": false,
+  "bootstrap_sha256": "2fe06f5f00d2cd0d2736d4c2be804455d1c2793a80219238989ef4ecccc8701e",
+  "bound_manifest_sha256": "daa755e467584f0d384bebaf61e966d396c812525a3e5583dde7d47ebc352b4c",
+  "dispatch_go_sha256": "3eac2faca16575af39ede3aee219fa9661043364ddd98f11049de9c409b77367",
+  "elapsed_seconds": 16.646850583027117,
+  "fixture_sha256": "8e92cfc17a655003fcc0b596dd80c8d5526762a08ee336f1d4d2156362ad4ab4",
+  "installed_source_before_after_equal": true,
+  "native_checks": {
+    "all_four_ordinary_roles_present": true,
+    "all_native_memberships_match_bootstrap": true,
+    "all_native_role_attributes_match_bootstrap": true,
+    "exact_selected4_oid_binding": true,
+    "installer_identity_matches_bootstrap": true,
+    "ordinary_selected4_closures_false": true,
+    "owned_module_roles_absent": true,
+    "transaction_is_read_only": true,
+    "truss_schema_absent": true
+  },
+  "native_membership_count": 18,
+  "native_observation_sha256": "c5f985eb618639b193182bda7e2a421bf8064caf4c88b4d778f3a4519aa8c5b3",
+  "native_role_count": 33,
+  "new_native_role_count": 0,
+  "ordinary_selected4_closure_count": 16,
+  "parent_ledger_sha256": "ab4353513d2e45a341b8366faa4d5913da968ed8943c2dca28b0b266e18e4e01",
+  "parent_process": {
+    "pid": 17450,
+    "start_time_unix": 1792853208.969044
+  },
+  "parent_terminal_sha256": "f68e26642feab5674845b92a29608ff0510afc755084aef99afaa9b57052e8e6",
+  "process": {
+    "pid": 71011,
+    "start_time_unix": 1792858848.04979
+  },
+  "provider_checks": {
+    "exact_project_endpoint_database_provider_identity": true,
+    "owned_compute_bounds_unchanged": true,
+    "owned_endpoint_restored_enabled": true
+  },
+  "provider_config_observation_sha256": "beef032f2d456b28315e1374bfc5c8f191ed1aecb848ae841c7abf3851ce2cea",
+  "provider_observation_sha256": "e3ad8f8fd273b2fa0357a2e7688c36d837769a5ef0a7385f225f4c92b97718d3",
+  "read_only_native_transaction": true,
+  "restoration_mutations_performed": false,
+  "schema": "arras.public50-independent-owned-absence-audit/1",
+  "source_freeze_sha256": "dc861ed441a564761dbcf329483c773c11a7b2717541c5a7c2b069130256dac9",
+  "status": "passed",
+  "terminal_wall_unix": 1792858864.7349088,
+  "window_sha256": "3c2cdfa8dd3ab3b5eae3311daffef3852917bcfe9555ef19fc72be85973d63fd"
+}

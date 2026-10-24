@@ -643,20 +643,213 @@ def test_acl_accepts_login_only_and_rejects_either_path_to_elevated_role() -> No
         access._validate_acl_rows(no_login, memberships, [], ordinary, module_access)
 
 
-def test_backend_pid_probe_does_not_turn_idle_connection_into_a_transaction() -> None:
+def test_mp01_uses_native_server_pid_on_owned_idle_tls_connection() -> None:
+    endpoint = {"host": "db.example.test", "port": 5432, "database": "arras_test"}
+
     class Connection:
         def __init__(self) -> None:
-            self.info = SimpleNamespace(transaction_status=0, backend_pid=4321)
+            self.info = SimpleNamespace(
+                transaction_status=0,
+                backend_pid=9000,
+                user="installer_role",
+                host=endpoint["host"],
+                port=endpoint["port"],
+                dbname=endpoint["database"],
+                get_parameters=lambda: {"sslmode": "verify-full", "sslrootcert": "/tmp/root.pem"},
+            )
+            self.pgconn = SimpleNamespace(ssl_in_use=True)
+            self.autocommit = False
             self.statements: list[str] = []
 
-        def execute(self, statement: str) -> None:
+        def execute(self, statement: str) -> Any:
             self.statements.append(statement)
-            self.info.transaction_status = 2
+            if statement.startswith("BEGIN"):
+                assert self.info.transaction_status == 0
+                self.info.transaction_status = 2
+                return SimpleNamespace(fetchone=lambda: None)
+            if statement.startswith("SET LOCAL"):
+                assert self.info.transaction_status == 2
+                return SimpleNamespace(fetchone=lambda: None)
+            assert self.info.transaction_status == 2
+            return SimpleNamespace(
+                fetchone=lambda: (
+                    2677,
+                    "installer_role",
+                    "installer_role",
+                    "none",
+                    "on",
+                    "arras_test",
+                    True,
+                )
+            )
+
+        def rollback(self) -> None:
+            self.info.transaction_status = 0
 
     connection = Connection()
-    assert lifecycle._backend_pid(connection, "pid_unavailable") == 4321
-    assert connection.statements == []
+    assert (
+        lifecycle._owned_installer_server_pid(connection, {"endpoint": endpoint}, "pid_unavailable")
+        == 2677
+    )
+    assert connection.info.backend_pid == 9000
     assert connection.info.transaction_status == 0
+    assert connection.statements == [
+        "BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY",
+        "SET LOCAL statement_timeout = '10000ms'",
+        "SELECT pg_catalog.pg_backend_pid(), current_user, session_user, "
+        "pg_catalog.current_setting('role'), "
+        "pg_catalog.current_setting('transaction_read_only'), "
+        "pg_catalog.current_database(), (SELECT ssl FROM pg_catalog.pg_stat_ssl "
+        "WHERE pid=pg_catalog.pg_backend_pid())",
+    ]
+
+
+def test_mp01_pid_probe_preserves_fatal_error_when_rollback_also_fails() -> None:
+    endpoint = {"host": "db.example.test", "port": 5432, "database": "arras_test"}
+    fatal = KeyboardInterrupt("primary")
+
+    class Connection:
+        def __init__(self, *, fail_query: bool) -> None:
+            self.info = SimpleNamespace(
+                transaction_status=0,
+                user="installer_role",
+                host=endpoint["host"],
+                port=endpoint["port"],
+                dbname=endpoint["database"],
+                get_parameters=lambda: {"sslmode": "verify-full", "sslrootcert": "/tmp/root.pem"},
+            )
+            self.pgconn = SimpleNamespace(ssl_in_use=True)
+            self.autocommit = False
+            self.fail_query = fail_query
+            self.rollback_called = False
+
+        def execute(self, statement: str) -> Any:
+            if statement.startswith("BEGIN"):
+                self.info.transaction_status = 2
+                return SimpleNamespace(fetchone=lambda: None)
+            if statement.startswith("SET LOCAL"):
+                return SimpleNamespace(fetchone=lambda: None)
+            if self.fail_query:
+                raise fatal
+            return SimpleNamespace(
+                fetchone=lambda: (
+                    2677,
+                    "installer_role",
+                    "installer_role",
+                    "none",
+                    "on",
+                    "arras_test",
+                    True,
+                )
+            )
+
+        def rollback(self) -> None:
+            self.rollback_called = True
+            raise RuntimeError("secondary cleanup failure")
+
+    connection = Connection(fail_query=True)
+    with pytest.raises(KeyboardInterrupt) as caught:
+        lifecycle._owned_installer_server_pid(connection, {"endpoint": endpoint}, "pid_unavailable")
+    assert caught.value is fatal
+    assert connection.rollback_called
+
+
+def test_mp01_pid_probe_preserves_fatal_rollback_when_probe_error_is_ordinary() -> None:
+    endpoint = {"host": "db.example.test", "port": 5432, "database": "arras_test"}
+    fatal = KeyboardInterrupt("rollback cancellation")
+
+    class Connection:
+        def __init__(self) -> None:
+            self.info = SimpleNamespace(
+                transaction_status=0,
+                user="installer_role",
+                host=endpoint["host"],
+                port=endpoint["port"],
+                dbname=endpoint["database"],
+                get_parameters=lambda: {"sslmode": "verify-full", "sslrootcert": "/tmp/root.pem"},
+            )
+            self.pgconn = SimpleNamespace(ssl_in_use=True)
+            self.autocommit = False
+            self.rollback_called = False
+
+        def execute(self, statement: str) -> Any:
+            if statement.startswith("BEGIN"):
+                self.info.transaction_status = 2
+                return SimpleNamespace(fetchone=lambda: None)
+            if statement.startswith("SET LOCAL"):
+                return SimpleNamespace(fetchone=lambda: None)
+            raise RuntimeError("ordinary probe failure")
+
+        def rollback(self) -> None:
+            self.rollback_called = True
+            raise fatal
+
+    connection = Connection()
+    with pytest.raises(KeyboardInterrupt) as caught:
+        lifecycle._owned_installer_server_pid(connection, {"endpoint": endpoint}, "pid_unavailable")
+    assert caught.value is fatal
+    assert connection.rollback_called
+
+
+def test_mp01_pid_probe_blocks_when_rollback_fails_without_primary_error() -> None:
+    endpoint = {"host": "db.example.test", "port": 5432, "database": "arras_test"}
+
+    class Connection:
+        def __init__(self) -> None:
+            self.info = SimpleNamespace(
+                transaction_status=0,
+                user="installer_role",
+                host=endpoint["host"],
+                port=endpoint["port"],
+                dbname=endpoint["database"],
+                get_parameters=lambda: {"sslmode": "verify-full", "sslrootcert": "/tmp/root.pem"},
+            )
+            self.pgconn = SimpleNamespace(ssl_in_use=True)
+            self.autocommit = False
+
+        def execute(self, statement: str) -> Any:
+            if statement.startswith("BEGIN"):
+                self.info.transaction_status = 2
+                return SimpleNamespace(fetchone=lambda: None)
+            if statement.startswith("SET LOCAL"):
+                return SimpleNamespace(fetchone=lambda: None)
+            return SimpleNamespace(
+                fetchone=lambda: (
+                    2677,
+                    "installer_role",
+                    "installer_role",
+                    "none",
+                    "on",
+                    "arras_test",
+                    True,
+                )
+            )
+
+        def rollback(self) -> None:
+            raise RuntimeError("cleanup")
+
+    with pytest.raises(managed._Blocked, match="pid_unavailable"):
+        lifecycle._owned_installer_server_pid(
+            Connection(), {"endpoint": endpoint}, "pid_unavailable"
+        )
+
+
+@pytest.mark.parametrize(
+    "outcome,state,pid_absent,expected",
+    [
+        ("invalid_transaction", "closed", True, True),
+        ("invalid_transaction", "closed", False, False),
+        ("transaction_unusable", "unknown", True, True),
+        ("transaction_unusable", "unknown", False, False),
+        ("transaction_unusable", "usable", True, False),
+        ("QueryRows", "closed", True, False),
+        ("other_error", "closed", True, False),
+    ],
+)
+def test_mp02_stale_outcome_requires_independent_lease_and_pid_proof(
+    outcome: str, state: str, pid_absent: bool, expected: bool
+) -> None:
+    assert lifecycle._stale_lease_proof_is_valid(outcome, state, pid_absent) is expected
 
 
 class _Mp02PidConnection:
@@ -772,6 +965,14 @@ def _mp02_connection_is_broken(_connection: Any) -> bool:
     return True
 
 
+def _mp02_lease_state(_connection: Any) -> str:
+    return "unknown"
+
+
+def _mp02_native_pid_absent(_sources: Any, _target: Any, _pid: int) -> bool:
+    return True
+
+
 def _mp02_query_probe(_backend: Any, _principal: Any) -> list[int]:
     return [1, 2]
 
@@ -796,9 +997,6 @@ def test_mp02_server_pid_is_bound_to_readonly_reader_session(monkeypatch: Any) -
             if connection.info.transaction_status == 2:
                 connection.info.transaction_status = 0
 
-    def reject_client_pid(*_args: Any) -> int:
-        raise AssertionError("MP-02 used client PID")
-
     monkeypatch.setitem(sys.modules, "truss", _mp02_pid_truss_stub(hosts))
 
     def end_session(_inputs: Any, _connection: Any, _terminate: Any, pid: int) -> str:
@@ -806,12 +1004,15 @@ def test_mp02_server_pid_is_bound_to_readonly_reader_session(monkeypatch: Any) -
         return "a" * 64
 
     monkeypatch.setattr(lifecycle, "_allowed", _mp02_noop_allowed)
-    monkeypatch.setattr(lifecycle, "_backend_pid", reject_client_pid)
+    monkeypatch.setattr(lifecycle, "_connection_lease_state", _mp02_lease_state)
+    monkeypatch.setattr(lifecycle, "_native_server_pid_absent", _mp02_native_pid_absent)
     monkeypatch.setattr(lifecycle, "_end_session", end_session)
     monkeypatch.setattr(lifecycle, "_connection_is_broken", _mp02_connection_is_broken)
     monkeypatch.setattr(lifecycle, "_query_probe", _mp02_query_probe)
     result = lifecycle._run_session_lease(
-        SimpleNamespace(),
+        SimpleNamespace(
+            target={"endpoint": {"host": "db.example.test", "port": 5432, "database": "arras_test"}}
+        ),
         {"terminate_session": _mp02_noop_terminate},
         {"person_connection_source": source},
         {"reader": SimpleNamespace(user="reader_role", token="opaque")},
@@ -925,6 +1126,30 @@ def test_mp02_server_pid_rejects_unbound_facts(
 
     with pytest.raises(managed._Blocked):
         lifecycle._readonly_server_backend_pid(Connection(), user)
+
+
+def test_mp02_closed_safe_observation_requires_both_independent_proofs() -> None:
+    facts = {
+        "ended_backend_pid": 2677,
+        "termination_operation_sha256": "a" * 64,
+        "old_handle_refused": True,
+        "new_session_row_count": 0,
+        "old_handle_rebound": False,
+        "stale_query_outcome": "transaction_unusable",
+        "original_connection_state": "unknown",
+        "native_pid_absent": True,
+    }
+    assert managed._safe_facts("MP-02", facts)["native_pid_absent"] is True
+    for field, value in (
+        ("native_pid_absent", False),
+        ("native_pid_absent", 1),
+        ("original_connection_state", "usable"),
+        ("stale_query_outcome", "private_error_text"),
+    ):
+        invalid = dict(facts)
+        invalid[field] = value
+        with pytest.raises(ValueError, match="managed observation|ended-session"):
+            managed._safe_facts("MP-02", invalid)
 
 
 def test_fault_connection_is_bound_to_authorized_tls_actor() -> None:

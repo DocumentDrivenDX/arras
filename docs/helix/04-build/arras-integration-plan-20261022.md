@@ -2034,3 +2034,45 @@ construction, and failure cleanup detaches and rolls back. These corrections
 retain the original identity, genuine-interruption, request, generation, order,
 and stale-handle assertions. Source controls do not close the required fresh
 twelve-case WAN campaign or its independent cleanup gate.
+
+### Second instrumented WAN campaign and owned recovery — 2026-10-24
+
+CI run `40102957160` passed all five jobs at source
+`f37b308c8a2f4634ba94a74e9aade29d09e23b33`. The canonical wheel remained
+`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`.
+Its fresh installed Mac campaign again recorded 64 passes and eight unchanged
+declared limits, with independent cleanup and review. The
+[retained campaign records](evidence/truss050-adoption-20261024/full-managed-d8-failed-recovery/)
+keep those Mac results separate from the actual managed-service results.
+
+The actual Mac-to-Lakebase WAN campaign ran from 14:46:52 to 15:06:44 UTC
+(1192.488 seconds). Admission, installation, person lifecycle, custody, ACL,
+and MP-03 passed. Settlement, MP-02, MP-04, MP-05, and MP-06 failed; MP-01 was
+blocked before its restart callback while reading the backend PID. The original
+cleanup was blocked, and the first independent audit could not establish an
+installer connection. These failures remain immutable and confer no acceptance
+credit. No temporary VM was used.
+
+An independent provider inspection found the exact endpoint disabled in
+`IDLE`. One owned recovery enabled it, obtained a fresh read-only ownership and
+dependency census, and removed only the census-bound installation and four
+generated roles. Native cleanup committed in 5.707 seconds. The subsequent
+independent audit passed: all 33 original role records and 18 memberships
+matched the baseline, the owned schema and roles were absent, all sixteen
+ordinary-principal platform-closure checks remained false, endpoint identity
+and configuration were preserved, and source bindings were unchanged. A fresh
+process census found no remaining campaign workers or process groups; source
+and resource custody were explicitly returned. Recovery does not change the
+original campaign result.
+
+The reviewed corrections use a native SQL backend PID for MP-01 and require
+MP-02 to confirm termination, observe the old native PID absent, and prove the
+old client connection closed or unusable before accepting a no-row stale-query
+outcome. A replacement transaction still requires the exact foreign-handle
+refusal. Private fixture corrections bind fault evidence to the armed physical
+connection, recognize the provider's disabled `IDLE` state, wake an enabled
+idle endpoint with bounded SQL, and retain actual mutation responses before
+parsing. Native postmaster generation change remains mandatory for restart.
+The earlier failure receipts did not capture enough private phase facts to
+attribute every downstream failure to one cause. Offline controls and recovery
+do not replace a fresh complete twelve-case WAN campaign.

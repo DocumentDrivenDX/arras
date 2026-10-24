@@ -1,0 +1,152 @@
+{
+  "acceptance_passed": false,
+  "artifact_bindings_unchanged": true,
+  "cases": [
+    {
+      "case": "LB-ADMISSION",
+      "code": "identity_tls_server_match",
+      "status": "passed"
+    },
+    {
+      "case": "LB-INSTALL",
+      "code": "typed_strict_refusal_then_selected_install",
+      "status": "passed"
+    },
+    {
+      "case": "LB-PERSON",
+      "code": "human_identity_lifecycle_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-CUSTODY",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-SETTLEMENT",
+      "code": "transport_fault_request_binding_mismatch",
+      "status": "failed"
+    },
+    {
+      "case": "LB-ACL",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-01",
+      "code": "backend_pid_before_restart_unavailable",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-02",
+      "code": "ended_session_handle_still_usable",
+      "status": "failed"
+    },
+    {
+      "case": "MP-03",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-04",
+      "code": "managed_operation_failed",
+      "status": "failed"
+    },
+    {
+      "case": "MP-05",
+      "code": "managed_operation_failed",
+      "status": "failed"
+    },
+    {
+      "case": "MP-06",
+      "code": "managed_operation_failed",
+      "status": "failed"
+    }
+  ],
+  "counts": {
+    "blocked": 1,
+    "failed": 5,
+    "passed": 6
+  },
+  "custody_returned": true,
+  "elapsed_seconds": 1192.488224416,
+  "independent_audit_status": "passed",
+  "initial_independent_audit_closed_failure": "authorized installer connection failed",
+  "initial_independent_audit_status": "failed",
+  "late_completion": false,
+  "local_parent_and_initial_audit_groups_empty": true,
+  "native_provider_cleanup_verified": true,
+  "next": "Release owner fixes remaining campaign failures and supplies a fresh source freeze, exact bindings and reviewed one-shot activation window before any next full campaign.",
+  "no_active_exec_sessions": true,
+  "no_vm": true,
+  "original_cleanup": {
+    "independent_absence": {
+      "generated_roles_absent": null,
+      "truss_schema_absent": null
+    },
+    "resources": [],
+    "status": "blocked"
+  },
+  "owned_recovery": {
+    "all_native_roles_and_memberships_match_original_baseline": true,
+    "audit_elapsed_seconds": 16.646850583027117,
+    "native_elapsed_ms": 5707,
+    "provider_enable_elapsed_seconds": 6.278732,
+    "provider_mutation_scope": "owned_endpoint_disabled_false_only",
+    "source_and_compute_configuration_unchanged": true,
+    "status": "committed_and_independently_audited"
+  },
+  "provider_native_mutation_cleanup_owner": "operator thread 01a16383-183c-7680-9518-f69ff40383e5",
+  "readonly_inspection_execution_owner": "release-owner thread 01a16023-fabd-7fa3-9abf-44d42e7fd673",
+  "receipts": [
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-0b80451e-445a-4ac1-87b8-69dc5193fd44/full-managed-terminal.safe.json",
+      "sha256": "f68e26642feab5674845b92a29608ff0510afc755084aef99afaa9b57052e8e6"
+    },
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-0b80451e-445a-4ac1-87b8-69dc5193fd44/full-managed-terminal.safe.verifier.json",
+      "sha256": "d3895eb3f480f71ea06bb462ffc3e9101e66116ff7192af7b510021998aca75a"
+    },
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-0b80451e-445a-4ac1-87b8-69dc5193fd44/full-diagnostics.safe.json",
+      "sha256": "1553dfded25891bb461a171c03eb0abad3243dcb9ec98d06f95c6ebe1cb8c728"
+    },
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-0b80451e-445a-4ac1-87b8-69dc5193fd44/independent-audit.safe.json",
+      "sha256": "43e2e84dd7936c9d0a7e1e80b126aeb763ceb8e81c6e12e5553af31e9ead6b75"
+    },
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-0b80451e-445a-4ac1-87b8-69dc5193fd44/audit-failure-code.safe.json",
+      "sha256": "b988f791941fde56299a17d1e4db7c2c64612ec167eef5d3c94aca113593a3bf"
+    },
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-0b80451e-445a-4ac1-87b8-69dc5193fd44/pre-recovery-process-custody.safe.json",
+      "sha256": "28d2908f0790c954ff80d8d6b4f14c2b1d6f577e7cc54caaa17f231e5ac97479"
+    },
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/f37-native-cleanup-0e4f3ff2-2512-48c2-b94c-b32377d34239/cleanup.safe.json",
+      "sha256": "27cf403eddcf92d77b3b8ce32f055181022b1e329594698d3767df114a4e2dd2"
+    },
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-0b80451e-445a-4ac1-87b8-69dc5193fd44/independent-audit.after-recovery.safe.json",
+      "sha256": "95918d42f95c58ed449bf9509de6a80aad21e7a51170668c9e83cffdd17db0a9"
+    },
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-0b80451e-445a-4ac1-87b8-69dc5193fd44/terminal-process-custody.after-recovery.safe.json",
+      "sha256": "26820275db2107ca24c3df96eb69ee4b61477a74b1170a980857366eb0e2a74a"
+    },
+    {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-0b80451e-445a-4ac1-87b8-69dc5193fd44/audited-recovery-custody-handback.safe.json",
+      "sha256": "e714dbbfeefbf6117f7d0615d2f07d4788b3e80501a80ab225d48ed728882e8a"
+    }
+  ],
+  "recorded_at": "2026-10-24T16:22:03.856447+00:00",
+  "schema": "arras.public50-D8-actual-campaign-result/1",
+  "source_commit": "f37b308c8a2f4634ba94a74e9aade29d09e23b33",
+  "source_tree": "da1ee5d47b61d9c84b60293fe817ab7cb9046539",
+  "sql_operation_timeout_ms": 60000,
+  "status": "FAILED_NOT_ACCEPTED_OWNED_RECOVERY_INDEPENDENTLY_VERIFIED",
+  "truss_version": "0.0.50",
+  "wall_start": "2026-10-24T14:46:52Z",
+  "wall_terminal": "2026-10-24T15:06:44Z"
+}

@@ -144,6 +144,9 @@ _OBSERVATION_FIELDS: dict[str, frozenset[str]] = {
             "old_handle_refused",
             "new_session_row_count",
             "old_handle_rebound",
+            "stale_query_outcome",
+            "original_connection_state",
+            "native_pid_absent",
         }
     ),
     "MP-03": frozenset(
@@ -294,7 +297,7 @@ _BOOLEAN_FIELDS: dict[str, frozenset[str]] = {
         }
     ),
     "MP-01": frozenset({"backend_pid_changed"}),
-    "MP-02": frozenset({"old_handle_refused", "old_handle_rebound"}),
+    "MP-02": frozenset({"old_handle_refused", "old_handle_rebound", "native_pid_absent"}),
     "MP-03": frozenset(
         {"allowed_query_succeeded", "ordinary_attributes_safe", "denied_catalog_refused"}
     ),
@@ -423,7 +426,18 @@ def _validate_case_postconditions(
             raise ValueError("managed restart evidence is incomplete")
         _validate_restart_feed(safe["feed"])
     if case == "MP-02" and (
-        safe["old_handle_refused"] is not True or safe["old_handle_rebound"] is not False
+        safe["ended_backend_pid"] <= 0
+        or safe["old_handle_refused"] is not True
+        or safe["old_handle_rebound"] is not False
+        or safe["native_pid_absent"] is not True
+        or safe["original_connection_state"] not in {"closed", "unknown"}
+        or safe["stale_query_outcome"]
+        not in {
+            "invalid_transaction",
+            "transaction_unusable",
+            "QueryRefused",
+            "QueryUnavailable",
+        }
     ):
         raise ValueError("managed ended-session observation is invalid")
     if case == "MP-04" and (

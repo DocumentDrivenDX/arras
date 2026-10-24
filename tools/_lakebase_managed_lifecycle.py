@@ -229,8 +229,8 @@ def _ended_session_result_has_no_rows(result: Any) -> bool:
     return type(result.value).__name__ in {"QueryRefused", "QueryUnavailable"}
 
 
-def _connection_is_broken(connection: Any) -> bool:
-    """Require psycopg to independently report a closed or unknown connection."""
+def _connection_lease_state(connection: Any) -> str:
+    """Return only a closed, unknown, usable, or unverified original-client state."""
     try:
         connection.execute("SELECT pg_catalog.pg_backend_pid()").fetchone()
     except Exception:
@@ -238,17 +238,131 @@ def _connection_is_broken(connection: Any) -> bool:
             closed = int(connection.closed)
             status = int(connection.info.transaction_status)
         except (AttributeError, TypeError, ValueError):
-            return False
-        return closed != 0 or status == 4
-    return False
+            return "unverified"
+        if closed != 0:
+            return "closed"
+        if status == 4:
+            return "unknown"
+        return "unverified"
+    return "usable"
 
 
-def _backend_pid(connection: Any, code: str) -> int:
-    """Read psycopg's client PID for the independent restart-observation path."""
-    pid = getattr(connection.info, "backend_pid", None)
-    if type(pid) is not int or pid <= 0:
+def _connection_is_broken(connection: Any) -> bool:
+    """Compatibility predicate for the explicit closed/unknown lease observation."""
+    return _connection_lease_state(connection) in {"closed", "unknown"}
+
+
+def _installer_connection_identity(
+    connection: Any, target: Mapping[str, Any], code: str
+) -> tuple[Any, Mapping[str, Any], str]:
+    info = getattr(connection, "info", None)
+    endpoint = target.get("endpoint")
+    get_parameters = getattr(info, "get_parameters", None)
+    try:
+        parameters = get_parameters() if callable(get_parameters) else None
+        expected_user = getattr(info, "user", None)
+        idle = int(info.transaction_status) == 0
+    except Exception:
+        raise _Blocked(code) from None
+    valid = (
+        type(endpoint) is dict
+        and type(parameters) is dict
+        and type(expected_user) is str
+        and bool(expected_user)
+        and idle
+        and getattr(connection, "autocommit", None) is False
+        and getattr(info, "host", None) == endpoint.get("host")
+        and getattr(info, "port", None) == endpoint.get("port")
+        and getattr(info, "dbname", None) == endpoint.get("database")
+        and parameters.get("sslmode") == "verify-full"
+        and bool(parameters.get("sslrootcert"))
+        and getattr(getattr(connection, "pgconn", None), "ssl_in_use", False) is True
+    )
+    if not valid:
         raise _Blocked(code)
-    return pid
+    return info, endpoint, expected_user
+
+
+def _note_cleanup_failure(primary_error: BaseException, cleanup_error: BaseException) -> None:
+    try:
+        primary_error.add_note(
+            f"installer PID observation rollback failed: {type(cleanup_error).__name__}"
+        )
+    except Exception:
+        pass
+
+
+def _rollback_installer_pid_probe(
+    connection: Any, code: str, primary_error: BaseException | None
+) -> None:
+    try:
+        connection.rollback()
+    except BaseException as cleanup_error:
+        if primary_error is not None and not isinstance(primary_error, Exception):
+            _note_cleanup_failure(primary_error, cleanup_error)
+            return
+        if not isinstance(cleanup_error, Exception):
+            raise
+        if primary_error is not None:
+            _note_cleanup_failure(primary_error, cleanup_error)
+            return
+        raise _Blocked(code) from None
+
+
+def _installer_pid_result(
+    connection: Any,
+    endpoint: Mapping[str, Any],
+    expected_user: str,
+    row: Any,
+    status: int | None,
+    code: str,
+) -> int:
+    if (
+        type(row) not in {tuple, list}
+        or len(row) != 7
+        or type(row[0]) is not int
+        or row[0] <= 0
+        or row[0] > 2_147_483_647
+        or row[1] != expected_user
+        or row[2] != expected_user
+        or row[3] not in {"none", ""}
+        or row[4] != "on"
+        or row[5] != endpoint.get("database")
+        or row[6] is not True
+        or status != 2
+        or int(connection.info.transaction_status) != 0
+    ):
+        raise _Blocked(code)
+    return row[0]
+
+
+def _owned_installer_server_pid(connection: Any, target: Mapping[str, Any], code: str) -> int:
+    """Observe the native PID on a fresh TLS-verified installer connection, then restore IDLE."""
+    info, endpoint, expected_user = _installer_connection_identity(connection, target, code)
+    row: Any = None
+    status: int | None = None
+    primary_error: BaseException | None = None
+    try:
+        connection.execute("BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY")
+        connection.execute("SET LOCAL statement_timeout = '10000ms'")
+        row = connection.execute(
+            "SELECT pg_catalog.pg_backend_pid(), current_user, session_user, "
+            "pg_catalog.current_setting('role'), "
+            "pg_catalog.current_setting('transaction_read_only'), "
+            "pg_catalog.current_database(), "
+            "(SELECT ssl FROM pg_catalog.pg_stat_ssl "
+            "WHERE pid=pg_catalog.pg_backend_pid())"
+        ).fetchone()
+        status = int(info.transaction_status)
+    except Exception:
+        primary_error = _Blocked(code)
+        raise primary_error from None
+    except BaseException as exc:
+        primary_error = exc
+        raise
+    finally:
+        _rollback_installer_pid_probe(connection, code, primary_error)
+    return _installer_pid_result(connection, endpoint, expected_user, row, status, code)
 
 
 def _readonly_server_backend_pid(connection: Any, expected_user: str) -> int:
@@ -330,6 +444,58 @@ def _restart_facts(inputs: Any, callback: Any) -> tuple[str, str, str, str]:
     return operation, before, after, resource
 
 
+def _stale_lease_proof_is_valid(outcome: str, lease_state: str, native_pid_absent: bool) -> bool:
+    """Require independent dead-lease evidence; rows and unclassified errors never pass."""
+    independent_dead = lease_state in {"closed", "unknown"} and native_pid_absent is True
+    if outcome in {"invalid_transaction", "QueryRefused", "QueryUnavailable"}:
+        return independent_dead
+    return outcome == "transaction_unusable" and independent_dead
+
+
+def _native_server_pid_absent(
+    sources: Mapping[str, Any], target: Mapping[str, Any], pid: int
+) -> bool:
+    """Use an independent installer session to confirm the terminated PID is absent."""
+    source = sources.get("installer_connection_source")
+    if not callable(source):
+        raise _Blocked("installer_observer_unavailable")
+    try:
+        with source() as connection:
+            _owned_installer_server_pid(connection, target, "session_absence_observer_unavailable")
+            connection.execute("BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY")
+            connection.execute("SET LOCAL statement_timeout = '10000ms'")
+            row = connection.execute(
+                "SELECT NOT EXISTS (SELECT 1 FROM pg_catalog.pg_stat_activity "
+                "WHERE pid=%s AND datname=pg_catalog.current_database())",
+                (pid,),
+            ).fetchone()
+            valid = type(row) in {tuple, list} and len(row) == 1 and row[0] is True
+            connection.rollback()
+            if int(connection.info.transaction_status) != 0:
+                raise _Blocked("session_absence_observer_not_idle")
+            return valid
+    except _Blocked:
+        raise
+    except Exception:
+        raise _Blocked("session_absence_observer_unavailable") from None
+
+
+def _ended_session_outcome(result: Any) -> str:
+    """Project only closed outcome names; never serialize Truss messages or payloads."""
+    from truss import Error, Ok
+
+    if isinstance(result, Error):
+        code = getattr(result.error, "code", None)
+        if type(code) is str and code in {"invalid_transaction", "transaction_unusable"}:
+            return code
+        return "other_error"
+    if isinstance(result, Ok):
+        name = type(result.value).__name__
+        if name in {"QueryRows", "QueryRefused", "QueryUnavailable"}:
+            return name
+    return "other_result"
+
+
 def _run_session_lease(
     inputs: Any,
     controls: Mapping[str, Any],
@@ -361,8 +527,11 @@ def _run_session_lease(
                 maximum_scan_rows=1000,
                 maximum_bytes=262_144,
             )
-            if not _ended_session_result_has_no_rows(stale) or not _connection_is_broken(
-                connection
+            stale_outcome = _ended_session_outcome(stale)
+            original_lease_state = _connection_lease_state(connection)
+            native_pid_absent = _native_server_pid_absent(sources, inputs.target, pid)
+            if not _stale_lease_proof_is_valid(
+                stale_outcome, original_lease_state, native_pid_absent
             ):
                 raise _Failed("ended_session_handle_still_usable")
         finally:
@@ -409,6 +578,9 @@ def _run_session_lease(
         "old_handle_refused": True,
         "new_session_row_count": len(rows),
         "old_handle_rebound": False,
+        "stale_query_outcome": stale_outcome,
+        "original_connection_state": original_lease_state,
+        "native_pid_absent": native_pid_absent,
     }
 
 
@@ -453,7 +625,9 @@ def _run_restart(
         raise _Blocked("installer_observer_unavailable")
     old_connection_ended = False
     with installer_source() as connection:
-        pid_before = _backend_pid(connection, "backend_pid_before_restart_unavailable")
+        pid_before = _owned_installer_server_pid(
+            connection, inputs.target, "backend_pid_before_restart_unavailable"
+        )
         operation_hash, generation_before, generation_after, _resource_hash = _restart_facts(
             inputs, restart
         )
@@ -468,7 +642,9 @@ def _run_restart(
     if not expected.issubset({(row.get("code"), row.get("value")) for row in rows}):
         raise _Failed("public_objects_not_durable_after_restart")
     with installer_source() as connection:
-        pid_after = _backend_pid(connection, "backend_pid_after_restart_unavailable")
+        pid_after = _owned_installer_server_pid(
+            connection, inputs.target, "backend_pid_after_restart_unavailable"
+        )
         after = _native_inventory(connection)
     if pid_before == pid_after or after["sha256"] != populated["sha256"]:
         raise _Failed("managed_state_or_new_session_not_proven_after_restart")
