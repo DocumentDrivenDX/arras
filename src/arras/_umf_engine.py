@@ -178,7 +178,10 @@ def call_action_runtime(operation: str, request: dict[str, object]) -> dict[str,
     if runtime is None:
         raise Unsupported(
             "official UMF single-SET runtime",
-            ["install the separately qualified optional UMF action-runtime candidate"],
+            [
+                "install arras[umf] on a qualified CPython platform",
+                "the UMF extra has no wheel outside Linux x86_64 and macOS arm64",
+            ],
         )
     try:
         engine = _new_action_engine(runtime)

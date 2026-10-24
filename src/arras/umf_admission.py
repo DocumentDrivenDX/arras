@@ -183,7 +183,13 @@ def admit_document(document: bytes | str) -> AdmissionReport:
     except ModuleNotFoundError as error:
         if error.name != "umf":
             raise
-        raise Unsupported("official UMF admission", ["install the arras[umf] extra"]) from None
+        raise Unsupported(
+            "official UMF admission",
+            [
+                "install arras[umf] on a qualified CPython platform",
+                "the UMF extra has no wheel outside Linux x86_64 and macOS arm64",
+            ],
+        ) from None
 
     if result.distribution != _ENGINE_DISTRIBUTION or result.version not in _ENGINE_VERSIONS:
         raise RuntimeError("the loaded UMF engine does not match the selected released profile")

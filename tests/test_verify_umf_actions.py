@@ -325,10 +325,14 @@ def _synthetic_cohorts() -> tuple[_SDKCohort, _SDKCohort]:
 def _cohort_metadata(*cohorts: _SDKCohort) -> Message:
     metadata = Message()
     for row in cohorts:
-        metadata["Requires-Dist"] = (
-            f"umf-core @ {row.url}#sha256={row.sha256} ; extra == 'umf' and "
-            f'platform_machine == "{row.machine}" and sys_platform == "{row.platform}"'
-        )
+        if row.platform == "any":
+            marker = "extra == 'umf'"
+        else:
+            marker = (
+                f'(sys_platform == "{row.platform}" and '
+                f"platform_machine == \"{row.machine}\") and extra == 'umf'"
+            )
+        metadata["Requires-Dist"] = f"umf-core @ {row.url}#sha256={row.sha256} ; {marker}"
     return metadata
 
 
@@ -349,6 +353,20 @@ def test_selector_accepts_only_matching_registered_platform_cohort(
     assert selected.document_version == "0.10.0"
 
 
+def test_selector_keeps_existing_flat_three_atom_marker_grammar() -> None:
+    cohort = _synthetic_cohorts()[0]
+    metadata = Message()
+    metadata["Requires-Dist"] = (
+        f'umf-core @ {cohort.url}#sha256={cohort.sha256} ; extra == "umf" and '
+        f'sys_platform == "{cohort.platform}" and '
+        f'platform_machine == "{cohort.machine}"'
+    )
+    selected = _COHORTS.select_sdk_cohort(
+        metadata, platform="linux", machine="x86_64", registry=(cohort,)
+    )
+    assert selected == cohort
+
+
 def test_selector_keeps_historical_pure_record_closed() -> None:
     metadata = Message()
     metadata["Requires-Dist"] = (
@@ -359,6 +377,30 @@ def test_selector_keeps_historical_pure_record_closed() -> None:
     selected = _COHORTS.select_sdk_cohort(metadata, platform="darwin", machine="arm64")
     assert selected.cohort_id == "umf-core-0.10.0-py3-none-any"
     assert selected.distribution_version == selected.document_version == "0.10.0"
+
+
+def test_production_registry_selects_only_the_qualified_0101_cohorts() -> None:
+    assert len(_COHORTS.KNOWN_COHORTS) == 3
+    assert _COHORTS.KNOWN_COHORTS[0].supports_single_set is False
+    expected = (
+        ("linux", "x86_64", "umf-core-0.10.1-cp311-abi3-linux_x86_64"),
+        ("darwin", "arm64", "umf-core-0.10.1-cp311-abi3-macosx_11_0_arm64"),
+    )
+    for platform, machine, cohort_id in expected:
+        cohort = next(row for row in _COHORTS.KNOWN_COHORTS if row.cohort_id == cohort_id)
+        selected = _COHORTS.select_sdk_cohort(
+            _cohort_metadata(cohort), platform=platform, machine=machine
+        )
+        assert selected == cohort
+        assert selected.distribution_version == "0.10.1"
+        assert selected.document_version == "0.10.0"
+        assert selected.supports_single_set is True
+
+
+def test_production_registry_does_not_fall_back_on_unsupported_host() -> None:
+    metadata = _cohort_metadata(*_COHORTS.KNOWN_COHORTS[1:])
+    with pytest.raises(ValueError, match="host platform is unsupported"):
+        _COHORTS.select_sdk_cohort(metadata, platform="win32", machine="amd64")
 
 
 @pytest.mark.parametrize(
@@ -410,6 +452,22 @@ def test_selector_does_not_casefold_marker_values() -> None:
             machine="arm64",
             registry=_synthetic_cohorts(),
         )
+
+
+def test_selector_rejects_duplicate_or_broadened_hatch_extra_markers() -> None:
+    cohort = _synthetic_cohorts()[0]
+    for marker in (
+        '(sys_platform == "linux" and platform_machine == "x86_64") and extra == "umf" and extra == "umf"',
+        '(sys_platform == "linux" or platform_machine == "x86_64") and extra == "umf"',
+    ):
+        metadata = Message()
+        metadata["Requires-Dist"] = f"umf-core @ {cohort.url}#sha256={cohort.sha256} ; {marker}"
+        with pytest.raises(
+            ValueError, match="marker expression is not supported|platform marker is incomplete"
+        ):
+            _COHORTS.select_sdk_cohort(
+                metadata, platform="linux", machine="x86_64", registry=(cohort,)
+            )
 
 
 def test_selector_rejects_overlapping_declarations_and_unsupported_hosts() -> None:

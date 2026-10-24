@@ -55,7 +55,73 @@ KNOWN_COHORTS: tuple[SDKCohort, ...] = (
         "umf_core-0.10.0-py3-none-any.whl",
         "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9",
     ),
+    SDKCohort(
+        "umf-core-0.10.1-cp311-abi3-linux_x86_64",
+        "0.10.1",
+        "0.10.0",
+        "linux",
+        "x86_64",
+        "umf_core-0.10.1-cp311-abi3-linux_x86_64.whl",
+        "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.6/"
+        "umf_core-0.10.1-cp311-abi3-linux_x86_64.whl",
+        "3512e56730d1dab59d803b20301aea3ac8f6896b0dab452f767f4c3575b9ff4c",
+        supports_single_set=True,
+    ),
+    SDKCohort(
+        "umf-core-0.10.1-cp311-abi3-macosx_11_0_arm64",
+        "0.10.1",
+        "0.10.0",
+        "darwin",
+        "arm64",
+        "umf_core-0.10.1-cp311-abi3-macosx_11_0_arm64.whl",
+        "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.6/"
+        "umf_core-0.10.1-cp311-abi3-macosx_11_0_arm64.whl",
+        "49459bb2dbc37ac9b62b269e9664bac1483439c7d4c79f0b07855e9c8546c823",
+        supports_single_set=True,
+    ),
 )
+
+
+def _parse_marker_atoms(expression: str, expected: frozenset[str]) -> dict[str, str]:
+    atoms = re.split(r"\s+and\s+", expression, flags=re.IGNORECASE)
+    if len(atoms) != len(expected):
+        raise ValueError("UMF SDK platform marker is incomplete")
+    markers: dict[str, str] = {}
+    for atom in atoms:
+        atom_match = _ATOM.fullmatch(atom)
+        if atom_match is None:
+            raise ValueError("UMF SDK marker atom is not supported")
+        key, _quote, value = atom_match.groups()
+        if key not in expected or key in markers:
+            raise ValueError("UMF SDK marker is duplicated or unsupported")
+        markers[key] = value
+    if frozenset(markers) != expected:
+        raise ValueError("UMF SDK platform marker is incomplete")
+    return markers
+
+
+def _marker_scope(marker_text: str) -> tuple[str, str, bool]:
+    """Accept the prior flat form and Hatchling's exact grouped serialization."""
+    if marker_text in ("extra == 'umf'", 'extra == "umf"'):
+        return "any", "any", True
+    grouped = re.fullmatch(
+        r"""\(\s*(.*?)\s*\)\s+and\s+(extra\s*==\s*(['"])umf\3)""",
+        marker_text,
+    )
+    if grouped is not None:
+        extra_match = _ATOM.fullmatch(grouped.group(2))
+        if extra_match is None or extra_match.group(1) != "extra" or extra_match.group(3) != "umf":
+            raise ValueError("UMF SDK declaration is outside the public extra")
+        markers = _parse_marker_atoms(
+            grouped.group(1), frozenset({"sys_platform", "platform_machine"})
+        )
+    else:
+        markers = _parse_marker_atoms(
+            marker_text, frozenset({"extra", "sys_platform", "platform_machine"})
+        )
+        if markers["extra"] != "umf":
+            raise ValueError("UMF SDK declaration is outside the public extra")
+    return markers["sys_platform"], markers["platform_machine"], False
 
 
 def _declarations(metadata: email.message.Message) -> tuple[_Declaration, ...]:
@@ -89,25 +155,7 @@ def _declarations(metadata: email.message.Message) -> tuple[_Declaration, ...]:
         url_without_fragment = urllib.parse.urlunsplit(
             (parts.scheme, parts.netloc, parts.path, "", "")
         )
-        marker_atoms: dict[str, str] = {}
-        atoms = re.split(r"\s+and\s+", marker_text, flags=re.IGNORECASE)
-        if not atoms or len(atoms) > 3:
-            raise ValueError("UMF SDK marker expression is not supported")
-        for atom in atoms:
-            atom_match = _ATOM.fullmatch(atom)
-            if atom_match is None:
-                raise ValueError("UMF SDK marker atom is not supported")
-            key, _quote, value = atom_match.groups()
-            if key in marker_atoms:
-                raise ValueError("UMF SDK marker is duplicated")
-            marker_atoms[key] = value
-        if marker_atoms.get("extra") != "umf":
-            raise ValueError("UMF SDK declaration is outside the public extra")
-        universal = set(marker_atoms) == {"extra"}
-        if not universal and set(marker_atoms) != {"extra", "sys_platform", "platform_machine"}:
-            raise ValueError("UMF SDK platform marker is incomplete")
-        platform = "any" if universal else marker_atoms["sys_platform"]
-        machine = "any" if universal else marker_atoms["platform_machine"]
+        platform, machine, universal = _marker_scope(marker_text)
         if not universal and (platform not in _PLATFORMS or machine not in _MACHINES):
             raise ValueError("UMF SDK platform marker is unsupported")
         filename = PurePosixPath(parts.path).name
