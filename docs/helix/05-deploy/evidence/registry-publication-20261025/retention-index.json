@@ -10,7 +10,8 @@
   "tarball_sha256": "9c741538b1a32f21b37afcd39f10c24285a1728194a7073cbac9cda2d93e2285",
   "files": {
     "npm061-registry-byte-verification.json": "227f773ce0a11bc9238d1734c57aa77e4bb68992b0fec20e9550f8db817b9d58",
-    "npm061-clean-consumer-verification.json": "8c291cdd3ecae95d064774681e5bb3578ba76137721b778cd7726ab0a2d9692b"
+    "npm061-clean-consumer-verification.json": "8c291cdd3ecae95d064774681e5bb3578ba76137721b778cd7726ab0a2d9692b",
+    "trusted-publishers.safe.json": "b1dadf513766164745d93653f6fa1f48f6010ec077a05dd4ccd747e5a5cb2b47"
   },
   "limits": [
     "The byte-verification receipt precedes the separate passing clean-install receipt.",

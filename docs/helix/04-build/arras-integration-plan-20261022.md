@@ -2295,8 +2295,10 @@ The publisher workflow must verify the original successful release and complete
 public-download gates, use exact GitHub assets and OIDC, refuse conflicting
 registry versions, and verify registry bytes plus clean installs. Main-only
 GitHub environments `pypi` and `npm` are configured under explicit human
-approval; registry trusted-publisher grants and hosted publisher execution still
-require completion evidence. The PyPI base route is plain-index; UMF/Truss
+approval. Both exact trusted-publisher grants are configured and recorded in
+[the safe configuration receipt](../05-deploy/evidence/registry-publication-20261025/trusted-publishers.safe.json).
+The temporary npm CLI bootstrap login was revoked after verification. Hosted
+publisher execution still requires completion evidence. The PyPI base route is plain-index; UMF/Truss
 extras retain the qualified upstream wheelhouse route until their dependencies
 have separate registry publication. Python 0.6.2 is not yet published or
 qualified by the historical 0.6.1 receipt alone.
