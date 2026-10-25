@@ -18,6 +18,18 @@ jobs:
   check:
     name: Lint, types and build
     runs-on: ubuntu-latest
+    outputs:
+      source_sha: ${{ steps.candidate.outputs.source_sha }}
+      source_tree_sha: ${{ steps.candidate.outputs.source_tree_sha }}
+      pull_request_head_sha: ${{ steps.candidate.outputs.pull_request_head_sha }}
+      wheel_name: ${{ steps.candidate.outputs.wheel_name }}
+      wheel_version: ${{ steps.candidate.outputs.wheel_version }}
+      wheel_sha256: ${{ steps.candidate.outputs.wheel_sha256 }}
+      producer_run_id: ${{ steps.candidate.outputs.producer_run_id }}
+      producer_run_attempt: ${{ steps.candidate.outputs.producer_run_attempt }}
+      producer_event: ${{ steps.candidate.outputs.producer_event }}
+      candidate_artifact_id: ${{ steps.candidate_artifact.outputs.artifact-id }}
+      candidate_artifact_digest: ${{ steps.candidate_artifact.outputs.artifact-digest }}
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -45,6 +57,83 @@ jobs:
         run: |
           mkdir -p artifacts
           uv run --no-sync python tools/verify_umf_admission.py --wheel dist/arras-*.whl --output-json artifacts/umf-admission-installed.json
+      - name: Record exact candidate wheel provenance
+        id: candidate
+        env:
+          EXPECTED_SOURCE_SHA: ${{ github.sha }}
+          PULL_REQUEST_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PRODUCER_RUN_ID: ${{ github.run_id }}
+          PRODUCER_RUN_ATTEMPT: ${{ github.run_attempt }}
+          PRODUCER_EVENT: ${{ github.event_name }}
+        run: |
+          python - <<'PY'
+          import email
+          import hashlib
+          import json
+          import os
+          import re
+          import subprocess
+          import zipfile
+          from pathlib import Path
+
+          source_sha = os.environ["EXPECTED_SOURCE_SHA"]
+          actual_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          tree_sha = subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip()
+          pr_head_sha = os.environ["PULL_REQUEST_HEAD_SHA"]
+          if (
+              actual_sha != source_sha
+              or re.fullmatch(r"[0-9a-f]{40}", source_sha) is None
+              or re.fullmatch(r"[0-9a-f]{40}", tree_sha) is None
+              or (pr_head_sha and re.fullmatch(r"[0-9a-f]{40}", pr_head_sha) is None)
+          ):
+              raise SystemExit("candidate checkout does not match the producing source SHA")
+          if subprocess.run(["git", "diff", "--quiet"], check=False).returncode != 0 or subprocess.run(
+              ["git", "diff", "--cached", "--quiet"], check=False
+          ).returncode != 0:
+              raise SystemExit("candidate build changed tracked checkout content")
+          wheels = sorted(Path("dist").glob("arras-*.whl"))
+          if len(wheels) != 1 or wheels[0].is_symlink() or not wheels[0].is_file():
+              raise SystemExit("expected exactly one regular Arras wheel")
+          wheel = wheels[0]
+          with zipfile.ZipFile(wheel) as archive:
+              metadata_paths = [name for name in archive.namelist() if name.endswith(".dist-info/METADATA")]
+              if len(metadata_paths) != 1:
+                  raise SystemExit("candidate wheel must contain exactly one METADATA")
+              metadata = email.message_from_bytes(archive.read(metadata_paths[0]))
+          if metadata.get("Name", "").lower().replace("_", "-") != "arras":
+              raise SystemExit("candidate wheel metadata name is not Arras")
+          version = metadata.get("Version", "")
+          if not version or re.fullmatch(r"[A-Za-z0-9.!+_-]+", version) is None:
+              raise SystemExit("candidate wheel metadata version is invalid")
+          digest = hashlib.sha256(wheel.read_bytes()).hexdigest()
+          receipt = {
+              "schema": "arras.ci-candidate-wheel/1",
+              "source_sha": source_sha,
+              "checkout_head": actual_sha,
+              "source_tree_sha": tree_sha,
+              "pull_request_head_sha": pr_head_sha or None,
+              "run_id": os.environ["PRODUCER_RUN_ID"],
+              "run_attempt": os.environ["PRODUCER_RUN_ATTEMPT"],
+              "event": os.environ["PRODUCER_EVENT"],
+              "wheel": {"name": wheel.name, "version": version, "sha256": digest},
+          }
+          Path("artifacts/candidate-wheel-provenance.json").write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              for key, value in {
+                  "source_sha": source_sha,
+                  "source_tree_sha": tree_sha,
+                  "pull_request_head_sha": pr_head_sha,
+                  "wheel_name": wheel.name,
+                  "wheel_version": version,
+                  "wheel_sha256": digest,
+                  "producer_run_id": os.environ["PRODUCER_RUN_ID"],
+                  "producer_run_attempt": os.environ["PRODUCER_RUN_ATTEMPT"],
+                  "producer_event": os.environ["PRODUCER_EVENT"],
+              }.items():
+                  output.write(f"{key}={value}\n")
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -54,6 +143,268 @@ jobs:
       - name: The wheel installs on a clean interpreter and carries the UI
         run: |
           uv run --no-project --isolated --with dist/*.whl python -c "import importlib.util, arras, arras.ui, arras.adapters.truss; assert importlib.util.find_spec('truss') is None, 'the base wheel must not need Truss'; print(arras.CONTRACT_VERSIONS, arras.ui.npm_package().name); assert (arras.ui.STATIC / arras.ui.PAGE).is_file()"
+
+      - name: Retain exact installed candidate artifacts
+        uses: actions/upload-artifact@v4
+        id: candidate_artifact
+        with:
+          name: arras-installed-candidate-artifacts
+          path: |
+            dist/arras-*.whl
+            dist/arras-*.tar.gz
+            artifacts/umf-admission-installed.json
+            artifacts/candidate-wheel-provenance.json
+          if-no-files-found: error
+
+  native-macos:
+    name: Installed native adapter on macOS arm64
+    needs: [check]
+    runs-on: macos-15
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.check.outputs.source_sha }}
+      - name: Assert the exact producer source checkout
+        env:
+          EXPECTED_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
+          EXPECTED_SOURCE_TREE_SHA: ${{ needs.check.outputs.source_tree_sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$EXPECTED_SOURCE_TREE_SHA"
+          test "$GITHUB_SHA" = "$EXPECTED_SOURCE_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.9"
+          architecture: arm64
+      - name: Require the qualified macOS arm64 Python runtime
+        run: |
+          python - <<'PY'
+          import platform
+          import sys
+          mac_version = platform.mac_ver()[0]
+          if (
+              platform.system() != "Darwin"
+              or platform.machine() != "arm64"
+              or platform.python_implementation() != "CPython"
+              or sys.version_info[:3] != (3, 11, 9)
+              or not mac_version
+              or int(mac_version.split(".", 1)[0]) != 15
+          ):
+              raise SystemExit("native qualification requires macOS arm64 with CPython 3.11.9")
+          PY
+      - name: Initialize retained native qualification evidence
+        run: |
+          mkdir -p artifacts
+          printf '%s\n' '{"schema_version":1,"status":"not_started"}' > artifacts/native-macos-verification.json
+          : > artifacts/native-macos-verifier.stdout.log
+          : > artifacts/native-macos-verifier.stderr.log
+      - uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ needs.check.outputs.candidate_artifact_id }}
+          merge-multiple: true
+          path: candidate-artifacts
+      - name: Validate same-run candidate provenance and select the exact wheel
+        env:
+          SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
+          SOURCE_TREE_SHA: ${{ needs.check.outputs.source_tree_sha }}
+          PULL_REQUEST_HEAD_SHA: ${{ needs.check.outputs.pull_request_head_sha }}
+          WHEEL_NAME: ${{ needs.check.outputs.wheel_name }}
+          WHEEL_VERSION: ${{ needs.check.outputs.wheel_version }}
+          WHEEL_SHA256: ${{ needs.check.outputs.wheel_sha256 }}
+          PRODUCER_RUN_ID: ${{ needs.check.outputs.producer_run_id }}
+          PRODUCER_RUN_ATTEMPT: ${{ needs.check.outputs.producer_run_attempt }}
+          PRODUCER_EVENT: ${{ needs.check.outputs.producer_event }}
+          CANDIDATE_ARTIFACT_ID: ${{ needs.check.outputs.candidate_artifact_id }}
+          CANDIDATE_ARTIFACT_DIGEST: ${{ needs.check.outputs.candidate_artifact_digest }}
+        run: |
+          mkdir -p artifacts
+          python - <<'PY'
+          import email
+          import hashlib
+          import json
+          import os
+          import platform
+          import re
+          import subprocess
+          import sys
+          import zipfile
+          from pathlib import Path
+
+          source_sha = os.environ["SOURCE_SHA"]
+          if subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip() != source_sha:
+              raise SystemExit("consumer checkout differs from the candidate producer source")
+          tree_sha = subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip()
+          if tree_sha != os.environ["SOURCE_TREE_SHA"]:
+              raise SystemExit("consumer checkout tree differs from the candidate producer tree")
+          if subprocess.run(["git", "diff", "--quiet"], check=False).returncode != 0 or subprocess.run(
+              ["git", "diff", "--cached", "--quiet"], check=False
+          ).returncode != 0:
+              raise SystemExit("consumer checkout has tracked source modifications")
+          root = Path("candidate-artifacts")
+          if not root.is_dir() or root.is_symlink():
+              raise SystemExit("candidate artifact root is missing or unsafe")
+          expected = {
+              f"dist/{os.environ['WHEEL_NAME']}",
+              "artifacts/umf-admission-installed.json",
+              "artifacts/candidate-wheel-provenance.json",
+          }
+          wheels = list((root / "dist").glob("arras-*.whl"))
+          archives = list((root / "dist").glob("arras-*.tar.gz"))
+          if len(wheels) != 1 or len(archives) != 1 or not archives[0].name.startswith("arras-"):
+              raise SystemExit("candidate artifact must contain one Arras wheel and one sdist")
+          all_paths = list(root.rglob("*"))
+          if any(path.is_symlink() for path in all_paths):
+              raise SystemExit("candidate artifact must not contain symbolic links")
+          actual_files = {p.relative_to(root).as_posix() for p in all_paths if p.is_file()}
+          if actual_files != expected | {f"dist/{archives[0].name}"}:
+              raise SystemExit("candidate artifact contains missing or unexpected files")
+          wheel = wheels[0]
+          if wheel.name != os.environ["WHEEL_NAME"] or wheel.is_symlink():
+              raise SystemExit("candidate artifact wheel name differs from producer output")
+          provenance = json.loads((root / "artifacts/candidate-wheel-provenance.json").read_text(encoding="utf-8"))
+          expected_provenance = {
+              "schema": "arras.ci-candidate-wheel/1",
+              "source_sha": source_sha,
+              "checkout_head": source_sha,
+              "source_tree_sha": os.environ["SOURCE_TREE_SHA"],
+              "pull_request_head_sha": os.environ["PULL_REQUEST_HEAD_SHA"] or None,
+              "run_id": os.environ["PRODUCER_RUN_ID"],
+              "run_attempt": os.environ["PRODUCER_RUN_ATTEMPT"],
+              "event": os.environ["PRODUCER_EVENT"],
+              "wheel": {"name": wheel.name, "version": os.environ["WHEEL_VERSION"], "sha256": os.environ["WHEEL_SHA256"]},
+          }
+          if provenance != expected_provenance:
+              raise SystemExit("candidate provenance does not match this workflow run")
+          artifact_digest = os.environ["CANDIDATE_ARTIFACT_DIGEST"]
+          if (
+              not re.fullmatch(r"[0-9]+", os.environ["CANDIDATE_ARTIFACT_ID"])
+              or re.fullmatch(r"(?:sha256:)?[0-9a-f]{64}", artifact_digest) is None
+          ):
+              raise SystemExit("producer artifact identity or digest is malformed")
+          if (
+              os.environ["GITHUB_RUN_ID"] != os.environ["PRODUCER_RUN_ID"]
+              or os.environ["GITHUB_RUN_ATTEMPT"] != os.environ["PRODUCER_RUN_ATTEMPT"]
+              or os.environ["GITHUB_EVENT_NAME"] != os.environ["PRODUCER_EVENT"]
+          ):
+              raise SystemExit("candidate artifact belongs to another workflow run or attempt")
+          digest = hashlib.sha256(wheel.read_bytes()).hexdigest()
+          if digest != os.environ["WHEEL_SHA256"] or re.fullmatch(r"[0-9a-f]{64}", digest) is None:
+              raise SystemExit("downloaded candidate wheel differs from its producer digest")
+          with zipfile.ZipFile(wheel) as archive:
+              metadata_paths = [name for name in archive.namelist() if name.endswith(".dist-info/METADATA")]
+              if len(metadata_paths) != 1:
+                  raise SystemExit("candidate wheel must contain exactly one METADATA")
+              metadata = email.message_from_bytes(archive.read(metadata_paths[0]))
+          if metadata.get("Name", "").lower().replace("_", "-") != "arras" or metadata.get("Version") != os.environ["WHEEL_VERSION"]:
+              raise SystemExit("downloaded candidate wheel metadata differs from producer output")
+          consumer = {
+              "schema": "arras.ci-native-consumer/1",
+              "source_sha": source_sha,
+              "source_tree_sha": tree_sha,
+              "pull_request_head_sha": os.environ["PULL_REQUEST_HEAD_SHA"] or None,
+              "consumer_head": source_sha,
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "job": os.environ["GITHUB_JOB"],
+              "host": {
+                  "system": platform.system(),
+                  "release": platform.release(),
+                  "macos_product_version": platform.mac_ver()[0],
+                  "python_implementation": platform.python_implementation(),
+                  "machine": platform.machine(),
+                  "python": platform.python_version(),
+                  "python_executable": str(Path(sys.executable).resolve()),
+                  "runner_image_os": os.environ.get("ImageOS"),
+                  "runner_image_version": os.environ.get("ImageVersion"),
+              },
+              "artifact": {
+                  "name": "arras-installed-candidate-artifacts",
+                  "id": os.environ["CANDIDATE_ARTIFACT_ID"],
+                  "server_digest": artifact_digest if artifact_digest.startswith("sha256:") else f"sha256:{artifact_digest}",
+              },
+              "tool_sha256": {
+                  str(path): hashlib.sha256(path.read_bytes()).hexdigest()
+                  for path in [Path(".github/scripts/bind_native_cohort.py"), Path("tools/verify_native.py"), Path(".github/scripts/observe_native_cleanup.py"), *sorted(Path("tools").glob("_native_*.py"))]
+              },
+              "cohort_template_sha256": hashlib.sha256(Path("tests/downstream/native-cohorts/macos-arm64.json").read_bytes()).hexdigest(),
+              "find_links_sha256": hashlib.sha256(Path("tests/downstream/native-cohorts/macos-arm64.find-links.html").read_bytes()).hexdigest(),
+              "producer": {"run_id": provenance["run_id"], "run_attempt": provenance["run_attempt"], "event": provenance["event"]},
+              "wheel": provenance["wheel"],
+              "artifact_layout": sorted(actual_files),
+          }
+          Path("artifacts/native-macos-consumer-provenance.json").write_text(
+              json.dumps(consumer, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          PY
+      - name: Bind the exact candidate wheel to the reviewed macOS cohort
+        env:
+          WHEEL_NAME: ${{ needs.check.outputs.wheel_name }}
+          WHEEL_VERSION: ${{ needs.check.outputs.wheel_version }}
+          WHEEL_SHA256: ${{ needs.check.outputs.wheel_sha256 }}
+        run: |
+          python .github/scripts/bind_native_cohort.py \
+            --template tests/downstream/native-cohorts/macos-arm64.json \
+            --find-links tests/downstream/native-cohorts/macos-arm64.find-links.html \
+            --wheel "candidate-artifacts/dist/$WHEEL_NAME" \
+            --expected-version "$WHEEL_VERSION" \
+            --expected-sha256 "$WHEEL_SHA256" \
+            --output-json artifacts/native-macos-cohort.bound.json \
+            --receipt-json artifacts/native-macos-cohort-binding.json
+      - name: Run the complete installed-native verifier
+        env:
+          WHEEL_NAME: ${{ needs.check.outputs.wheel_name }}
+        run: |
+          set +e
+          python .github/scripts/observe_native_cleanup.py \
+            --output-json artifacts/native-macos-cleanup-observation.json \
+            --stdout artifacts/native-macos-verifier.stdout.log \
+            --stderr artifacts/native-macos-verifier.stderr.log \
+            -- python tools/verify_native.py \
+              --wheel "candidate-artifacts/dist/$WHEEL_NAME" \
+              --cohort artifacts/native-macos-cohort.bound.json \
+              --find-links tests/downstream/native-cohorts/macos-arm64.find-links.html \
+              --output-json artifacts/native-macos-verification.json \
+              --python "$(command -v python)"
+          status=$?
+          set -e
+          if [ "$status" -ne 0 ]; then
+            receipt_status="$(python -c 'import json; from pathlib import Path; print(json.loads(Path("artifacts/native-macos-verification.json").read_text()).get("status", "unknown"))' 2>/dev/null || printf unknown)"
+            if [ "$receipt_status" != "passed" ] && [ "$receipt_status" != "failed" ]; then
+              if ! python .github/scripts/ensure_native_receipt_failure.py \
+                --receipt artifacts/native-macos-verification.json \
+                --exit-code "$status"; then
+                printf '%s\n' 'native receipt normalization failed; see retained logs' >&2 || :
+              fi
+            fi
+          fi
+          exit "$status"
+      - name: Ensure native cleanup evidence exists
+        if: always()
+        run: |
+          if [ ! -s artifacts/native-macos-cleanup-observation.json ]; then
+            mkdir -p artifacts
+            printf '%s\n' '{"schema":"arras.native-independent-cleanup/3","status":"unknown","reason":"cleanup_observer_did_not_write_receipt"}' > artifacts/native-macos-cleanup-observation.json
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: installed-native-macos-arm64-qualification
+          path: |
+            tests/downstream/native-cohorts/macos-arm64.json
+            tests/downstream/native-cohorts/macos-arm64.find-links.html
+            candidate-artifacts/artifacts/candidate-wheel-provenance.json
+            artifacts/native-macos-consumer-provenance.json
+            artifacts/native-macos-cohort.bound.json
+            artifacts/native-macos-cohort-binding.json
+            artifacts/native-macos-verification.json
+            artifacts/native-macos-cleanup-observation.json
+            artifacts/native-macos-verifier.stdout.log
+            artifacts/native-macos-verifier.stderr.log
+          if-no-files-found: ignore
 
   ui:
     name: Operator Console UI

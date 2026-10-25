@@ -10,6 +10,7 @@ import os
 import subprocess
 import sys
 import sysconfig
+import time
 import types
 import zipfile
 from contextlib import redirect_stdout
@@ -31,6 +32,102 @@ finally:
 
 def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def test_conformance_timeout_is_strictly_bounded_before_input_effects(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    for invalid in (0, -1, 7201, True, 35.0, "2100"):
+        with pytest.raises(verify_native.VerificationError, match="conformance timeout"):
+            verify_native.validate_conformance_timeout(invalid)
+
+    def inputs_must_not_be_read(*_args: Any, **_kwargs: Any) -> Any:
+        raise AssertionError("input preparation ran before timeout validation")
+
+    monkeypatch.setattr(verify_native, "_prepare_inputs", inputs_must_not_be_read)
+    with pytest.raises(verify_native.VerificationError, match="conformance timeout"):
+        verify_native.verify(
+            Path("arras.whl"),
+            Path("cohort.json"),
+            Path("find-links.html"),
+            Path("receipt.json"),
+            conformance_timeout_seconds=7201,
+        )
+    assert verify_native.validate_conformance_timeout(1) == 1
+    assert verify_native.validate_conformance_timeout(7200) == 7200
+    assert verify_native._conformance_timeout_argument("2100") == 2100
+    for invalid in ("1.5", "1e2", "7201"):
+        with pytest.raises(verify_native.argparse.ArgumentTypeError):
+            verify_native._conformance_timeout_argument(invalid)
+
+
+def test_runner_keeps_default_for_setup_and_forwards_override_only_when_selected(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls: list[int] = []
+
+    def capture(
+        _args: list[str], *, cwd: Path, env: dict[str, str], timeout: int
+    ) -> subprocess.CompletedProcess[str]:
+        calls.append(timeout)
+        return subprocess.CompletedProcess([], 0, "", "")
+
+    monkeypatch.setattr(verify_native, "run_owned", capture)
+    verify_native._run(["setup"], cwd=tmp_path, env={})
+    verify_native._run(["conformance"], cwd=tmp_path, env={}, timeout=123)
+    assert calls == [verify_native.DEFAULT_CONFORMANCE_TIMEOUT_SECONDS, 123]
+
+
+def test_conformance_timeout_failure_retains_selected_deadline(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def timeout(*_args: Any, **_kwargs: Any) -> Any:
+        raise verify_native.ProcessTimeout("partial stdout", "partial stderr", [])
+
+    monkeypatch.setattr(verify_native, "run_owned", timeout)
+    with pytest.raises(verify_native.VerificationError) as captured:
+        verify_native._run(["conformance"], cwd=tmp_path, env={}, timeout=123)
+    assert captured.value.details["process"]["timed_out"] is True
+    assert captured.value.details["process"]["timeout_seconds"] == 123
+
+
+def test_conformance_receipt_records_selected_timeout_on_success(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    report = good_report()
+    monkeypatch.setattr(
+        verify_native,
+        "_run",
+        lambda *_args, **_kwargs: subprocess.CompletedProcess([], 0, json.dumps(report), ""),
+    )
+    context = {
+        "venv_python": tmp_path / "python",
+        "env": {},
+        "probe": {
+            "applicable_case_ids": ["case-one"],
+            "skipped_case_ids": ["skip-me"],
+            "corpus_version": 4,
+            "roles": ["reader", "provider"],
+            "limits": {},
+            "distributions": {},
+        },
+        "runtime": {"python": "3.11", "sys_platform": "darwin", "machine": "arm64"},
+        "downloaded": [],
+        "parity": {"actual_versions": {}, "native_inventory": {}, "payloads": {}},
+        "install_inventory": [],
+    }
+    receipt = verify_native._run_and_record(
+        tmp_path,
+        context,
+        {"corpus": {"roles": ["reader", "provider"], "version": 4, "limits": {}}},
+        conformance_timeout_seconds=123,
+    )
+    assert receipt["conformance_timeout_seconds"] == 123
+    assert receipt["cli"] == {
+        "command": "python -I -m arras.conformance --backend truss",
+        "exit_code": 0,
+        "timeout_seconds": 123,
+    }
 
 
 def cohort() -> dict[str, Any]:
@@ -451,6 +548,9 @@ def test_failed_cli_validation_retains_raw_report_and_streams(
     assert captured.value.details["cli"]["stdout"] == stdout
     assert captured.value.details["cli"]["stderr"] == "fixture stderr"
     assert captured.value.details["cli"]["exit_code"] == 1
+    assert captured.value.details["cli"]["timeout_seconds"] == (
+        verify_native.DEFAULT_CONFORMANCE_TIMEOUT_SECONDS
+    )
     assert captured.value.details["cli"]["report"] == report
 
 
@@ -483,15 +583,24 @@ def test_failed_receipt_keeps_input_hashes_and_cli_evidence(
         "wheel_paths": {},
         "install_inventory": [{"distribution": "truss-toolkit", "version": "1.0"}],
         "probe": {"corpus_version": 4, "roles": ["reader", "provider"]},
-        "parity": {"payloads": {"arras": {"a.py": "b"}}},
+        "parity": {
+            "payloads": {"arras": {"a.py": "b"}},
+            "roots": {"purelib": tmp_path / "venv" / "site-packages"},
+        },
     }
     monkeypatch.setattr(verify_native, "_provision_and_probe", lambda *_args: installed_context)
     monkeypatch.setattr(
         verify_native, "_validate_installed", lambda *_args: installed_context["parity"]
     )
-    cli_evidence = {"exit_code": 1, "stdout": "case report", "stderr": "details"}
+    cli_evidence = {
+        "exit_code": 1,
+        "stdout": "case report",
+        "stderr": "details",
+        "timeout_seconds": 123,
+    }
 
-    def failed_run(*_args: Any) -> dict[str, Any]:
+    def failed_run(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+        assert kwargs["conformance_timeout_seconds"] == 123
         raise verify_native.VerificationError("failed conformance", details={"cli": cli_evidence})
 
     monkeypatch.setattr(verify_native, "_run_and_record", failed_run)
@@ -506,18 +615,24 @@ def test_failed_receipt_keeps_input_hashes_and_cli_evidence(
                 str(links),
                 "--output-json",
                 str(output),
+                "--conformance-timeout-seconds",
+                "123",
             ]
         )
         == 1
     )
     saved = json.loads(output.read_text())
     assert saved["inputs"] == input_receipt
+    assert saved["conformance_timeout_seconds"] == 123
     assert saved["cli"] == cli_evidence
     assert saved["runtime"] == installed_context["runtime"]
     assert saved["native_wheels"] == installed_context["downloaded"]
     assert saved["pip_artifacts"] == installed_context["install_inventory"]
     assert saved["installed_probe"] == installed_context["probe"]
-    assert saved["installed_checks"] == installed_context["parity"]
+    assert saved["installed_checks"] == {
+        **installed_context["parity"],
+        "roots": {"purelib": str(tmp_path / "venv" / "site-packages")},
+    }
     assert saved["status"] == "failed"
 
 
@@ -633,10 +748,117 @@ def test_failed_validation_receipt_keeps_prevalidation_probe(
 def test_owned_process_timeout_interrupts_and_reaps_its_process_group(tmp_path: Path) -> None:
     with pytest.raises(verify_native.ProcessTimeout) as captured:
         verify_native.run_owned(
-            [sys.executable, "-c", "import time; print('started', flush=True); time.sleep(30)"],
+            [
+                sys.executable,
+                "-I",
+                "-S",
+                "-c",
+                "import time; print('started', flush=True); time.sleep(30)",
+            ],
             cwd=tmp_path,
             env=dict(os.environ),
             timeout=0.1,
         )
     assert "started" in captured.value.stdout
     assert not captured.value.leftovers
+
+
+def _owned_group_command(tmp_path: Path) -> tuple[list[str], Path]:
+    marker = tmp_path / "processes.txt"
+    ready = tmp_path / "grandchild-ready.txt"
+    child_code = (
+        "import signal, time; from pathlib import Path; "
+        "signal.signal(signal.SIGINT, signal.SIG_IGN); "
+        "signal.signal(signal.SIGTERM, signal.SIG_IGN); "
+        f"Path({str(ready)!r}).write_text('ready'); time.sleep(60)"
+    )
+    parent_code = (
+        "import os, subprocess, sys, time; from pathlib import Path\n"
+        f"child = subprocess.Popen([sys.executable, '-I', '-S', '-c', {child_code!r}], "
+        "stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)\n"
+        f"deadline = time.monotonic() + 5; ready = Path({str(ready)!r})\n"
+        "while not ready.exists() and time.monotonic() < deadline:\n"
+        "    time.sleep(0.01)\n"
+        "assert ready.exists()\n"
+        f"Path({str(marker)!r}).write_text(f'{{os.getpid()}} {{child.pid}}')\n"
+        "time.sleep(60)\n"
+    )
+    return [sys.executable, "-I", "-S", "-c", parent_code], marker
+
+
+def _install_owned_group_cancellation(
+    monkeypatch: pytest.MonkeyPatch, marker: Path
+) -> tuple[list[subprocess.Popen[str]], KeyboardInterrupt, KeyboardInterrupt, dict[str, bool]]:
+    processes: list[subprocess.Popen[str]] = []
+    original_init = subprocess.Popen.__init__
+    original_communicate = subprocess.Popen.communicate
+    cancellation = KeyboardInterrupt("test cancellation")
+    cleanup_cancellation = KeyboardInterrupt("second cleanup cancellation")
+    state = {"interrupted": False, "cleanup_interrupted": False}
+
+    def record_process(self: subprocess.Popen[str], *positional: Any, **keywords: Any) -> None:
+        original_init(self, *positional, **keywords)
+        processes.append(self)
+
+    def cancel_while_waiting(
+        self: subprocess.Popen[str], timeout: float | None = None
+    ) -> tuple[str, str]:
+        if processes and self is processes[0] and not state["interrupted"]:
+            deadline = time.monotonic() + 5
+            while not marker.exists() and time.monotonic() < deadline:
+                time.sleep(0.01)
+            assert marker.is_file(), "child processes did not start before cancellation"
+            state["interrupted"] = True
+            raise cancellation
+        if processes and self is processes[0] and not state["cleanup_interrupted"]:
+            state["cleanup_interrupted"] = True
+            raise cleanup_cancellation
+        return original_communicate(self, timeout=timeout)
+
+    monkeypatch.setattr(subprocess.Popen, "__init__", record_process)
+    monkeypatch.setattr(subprocess.Popen, "communicate", cancel_while_waiting)
+
+    return processes, cancellation, cleanup_cancellation, state
+
+
+def _pid_exists(pid: int) -> bool:
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
+def _assert_owned_group_reaped(process: subprocess.Popen[str], marker: Path) -> None:
+    assert process.returncode is not None
+    parent_pid, child_pid = (int(value) for value in marker.read_text().split())
+    assert parent_pid == process.pid
+    assert child_pid > 0
+    deadline = time.monotonic() + 5
+    while time.monotonic() < deadline:
+        if not _pid_exists(process.pid) and not _pid_exists(child_pid):
+            return
+        time.sleep(0.05)
+    pytest.fail("owned child or grandchild remained after cancellation cleanup")
+
+
+@pytest.mark.skipif(os.name == "nt", reason="process-group SIGINT semantics are POSIX-specific")
+def test_owned_process_cancellation_reaps_child_and_grandchild_and_preserves_interrupt(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    native_process = importlib.import_module("_native_process")
+    monkeypatch.setattr(native_process, "_INTERRUPT_GRACE_SECONDS", 0.15)
+    monkeypatch.setattr(native_process, "_TERM_GRACE_SECONDS", 0.15)
+    args, marker = _owned_group_command(tmp_path)
+    processes, cancellation, _cleanup_cancellation, state = _install_owned_group_cancellation(
+        monkeypatch, marker
+    )
+    with pytest.raises(KeyboardInterrupt, match="test cancellation") as captured:
+        verify_native.run_owned(args, cwd=tmp_path, env=dict(os.environ), timeout=60)
+
+    assert captured.value is cancellation
+    assert state == {"interrupted": True, "cleanup_interrupted": True}
+    assert len(processes) == 1
+    _assert_owned_group_reaped(processes[0], marker)

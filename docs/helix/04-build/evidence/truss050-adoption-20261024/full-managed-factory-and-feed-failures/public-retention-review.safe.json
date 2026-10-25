@@ -1,0 +1,80 @@
+{
+  "acceptance_passed": false,
+  "excluded_private_artifacts": [
+    "target and authorization JSON",
+    "actor/credential reference config",
+    "fixture source and state",
+    "raw stdout/stderr logs",
+    "Keychain and OAuth material"
+  ],
+  "files": [
+    {
+      "bytes": 2176,
+      "eligible_for_sanitized_public_retention": true,
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-f34519c3-27a5-40c9-88dc-1307864b030e/full-managed-terminal.safe.json",
+      "raw_private_identity_or_target_value_matches": 0,
+      "sha256": "74f14e339ddb9369e4fb7ebf04a41735ffc2ca107c733bb447a51e80e3112516"
+    },
+    {
+      "bytes": 19839,
+      "eligible_for_sanitized_public_retention": true,
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-f34519c3-27a5-40c9-88dc-1307864b030e/full-managed-terminal.safe.verifier.json",
+      "raw_private_identity_or_target_value_matches": 0,
+      "sha256": "2fa079a037dd7aa84f1bae8829cc7fa9453f9ad5d38174c211189030e383b6d5"
+    },
+    {
+      "bytes": 1936,
+      "eligible_for_sanitized_public_retention": true,
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-f34519c3-27a5-40c9-88dc-1307864b030e/full-diagnostics.safe.json",
+      "raw_private_identity_or_target_value_matches": 0,
+      "sha256": "ccbdd7142b4024d98c12f6925942627f342f3d79f58525ba6831c5db83feb09d"
+    },
+    {
+      "bytes": 2280,
+      "eligible_for_sanitized_public_retention": true,
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-f34519c3-27a5-40c9-88dc-1307864b030e/independent-audit.safe.json",
+      "raw_private_identity_or_target_value_matches": 0,
+      "sha256": "648a0acb544e2ebdde8d044878f55295fe07d87ea88f42b1d1236d9347c5a916"
+    },
+    {
+      "bytes": 1148,
+      "eligible_for_sanitized_public_retention": true,
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-f34519c3-27a5-40c9-88dc-1307864b030e/terminal-process-custody.safe.json",
+      "raw_private_identity_or_target_value_matches": 0,
+      "sha256": "3ced2a94a9529c5a5ea7ff35626928c6ea5226031909dc2c3d18b6a25673baf7"
+    },
+    {
+      "bytes": 159,
+      "eligible_for_sanitized_public_retention": true,
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-f34519c3-27a5-40c9-88dc-1307864b030e/parent-launch-process.safe.json",
+      "raw_private_identity_or_target_value_matches": 0,
+      "sha256": "01426ca8832cba8178836aeb3dad1a00608c5f1afe287381e5a2c2c3a06d33e4"
+    },
+    {
+      "bytes": 151,
+      "eligible_for_sanitized_public_retention": true,
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-f34519c3-27a5-40c9-88dc-1307864b030e/audit-launch-process.safe.json",
+      "raw_private_identity_or_target_value_matches": 0,
+      "sha256": "de3c5a0442f4ec0616d784244c17e02bd7d26533726eb25ba881ab38fca92d71"
+    },
+    {
+      "bytes": 410,
+      "eligible_for_sanitized_public_retention": true,
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-f34519c3-27a5-40c9-88dc-1307864b030e/operational-go-consumed.safe.json",
+      "raw_private_identity_or_target_value_matches": 0,
+      "sha256": "1f85af6a504ba100857b47067fc6a6d7c3b0adb353d1ed3f659a7be53dfd9c85"
+    },
+    {
+      "bytes": 1060,
+      "eligible_for_sanitized_public_retention": true,
+      "path": "/private/tmp/arras-public50-qualification-20261024/activation-state/consumed-cf47463b7150e2ebb2e7eea895c7bc06006cca58f6521b376ff9d52eadcc92d1.jsonl",
+      "raw_private_identity_or_target_value_matches": 0,
+      "sha256": "72f40e57fd5f170ae11a94b429f070f26c0839327d4b5e93981d6bf789b0f986"
+    }
+  ],
+  "publication_authorized_by_this_review": false,
+  "recorded_at": "2026-10-24T14:18:24.173767+00:00",
+  "schema": "arras.public50-D7-public-retention-review/1",
+  "scope": "fixed sanitized receipts/process custody/consumption only; exact raw input identity,target and secure reference values compared in-memory and never emitted",
+  "status": "CLEAR"
+}

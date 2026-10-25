@@ -1,0 +1,20 @@
+{
+  "artifactId": 12561101383,
+  "fullInstalledPayloadDistributionMemberCounts": {
+    "arras": 172,
+    "mini-racer": 18,
+    "pgserver-pg18": 1720,
+    "psutil": 15,
+    "psycopg-binary": 24,
+    "rpds-py": 8,
+    "truss-toolkit": 476,
+    "weft-sql": 8
+  },
+  "macosJobId": 120875036839,
+  "nativeWheelCount": 7,
+  "nativeWheelHashesMatchVerifierReportedVerifiedHashes": true,
+  "note": "This supplement adds the complete per-distribution installed payload counts and hosted job binding; it does not change the review status or claim WAN/public-repeat qualification.",
+  "schema": "arras.hosted-macos-independent-review-supplement/1",
+  "status": "clear",
+  "supplementsReviewSha256": "9a632f5e6993b430f3fd467a1a97a0255f7d4ca83e537e59b6e3eb2d958b25a2"
+}

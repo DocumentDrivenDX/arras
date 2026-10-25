@@ -1,0 +1,8 @@
+{
+  "closed_literal_code": "authorized installer connection failed",
+  "exception_type": "FixtureBlocked",
+  "live_effects_performed": false,
+  "raw_log_not_emitted": true,
+  "schema": "arras.closed-audit-exception-code-projection/1",
+  "source_fixture_sha256": "8e92cfc17a655003fcc0b596dd80c8d5526762a08ee336f1d4d2156362ad4ab4"
+}

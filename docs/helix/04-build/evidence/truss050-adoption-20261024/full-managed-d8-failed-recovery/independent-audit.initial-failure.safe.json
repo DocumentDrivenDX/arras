@@ -1,0 +1,27 @@
+{
+  "acceptance_claim": false,
+  "bootstrap_sha256": "2fe06f5f00d2cd0d2736d4c2be804455d1c2793a80219238989ef4ecccc8701e",
+  "bound_manifest_sha256": "daa755e467584f0d384bebaf61e966d396c812525a3e5583dde7d47ebc352b4c",
+  "dispatch_go_sha256": "3eac2faca16575af39ede3aee219fa9661043364ddd98f11049de9c409b77367",
+  "elapsed_seconds": 9.019991833018139,
+  "fixture_sha256": "8e92cfc17a655003fcc0b596dd80c8d5526762a08ee336f1d4d2156362ad4ab4",
+  "installed_source_before_after_equal": true,
+  "parent_ledger_sha256": "ab4353513d2e45a341b8366faa4d5913da968ed8943c2dca28b0b266e18e4e01",
+  "parent_process": {
+    "pid": 17450,
+    "start_time_unix": 1792853208.969044
+  },
+  "parent_terminal_sha256": "f68e26642feab5674845b92a29608ff0510afc755084aef99afaa9b57052e8e6",
+  "primary_exception_type": "FixtureBlocked",
+  "process": {
+    "pid": 30444,
+    "start_time_unix": 1792854428.370194
+  },
+  "read_only_native_transaction": true,
+  "restoration_mutations_performed": false,
+  "schema": "arras.public50-independent-owned-absence-audit/1",
+  "source_freeze_sha256": "dc861ed441a564761dbcf329483c773c11a7b2717541c5a7c2b069130256dac9",
+  "status": "failed",
+  "terminal_wall_unix": 1792854437.5559528,
+  "window_sha256": "3c2cdfa8dd3ab3b5eae3311daffef3852917bcfe9555ef19fc72be85973d63fd"
+}

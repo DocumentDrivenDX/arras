@@ -1,0 +1,99 @@
+{
+  "artifact": {
+    "api_artifact_id": 12564046010,
+    "api_digest": "sha256:2a539e3d734a0a5fffc9c51d06bc307d432a9dadd06b63c1fb4c5a5fa032dbb0",
+    "bytes": 142962,
+    "filename": "canonical-macos-f37-12564046010.zip",
+    "job_conclusion": "success",
+    "job_id": 120899106425,
+    "run_id": 40102957160,
+    "sha256": "2a539e3d734a0a5fffc9c51d06bc307d432a9dadd06b63c1fb4c5a5fa032dbb0"
+  },
+  "canonical_wheel": {
+    "bytes": 5155353,
+    "filename": "arras-0.6.1-py3-none-any.whl",
+    "identical_to_prior_e5d_candidate": true,
+    "installed_payload_count": 172,
+    "installed_payload_exact_match": true,
+    "member_count": 173,
+    "sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+    "version": "0.6.1"
+  },
+  "checks": {
+    "artifact_and_job_bind_run_head": true,
+    "artifact_api_zip_digest_matches": true,
+    "candidate_provenance_matches_ci_artifact": true,
+    "canonical_wheel_is_expected_and_prior_identical": true,
+    "cleanup_report_clear": true,
+    "cohort_and_binding_match_canonical": true,
+    "mac_installed_arras_payload_matches_exact_wheel": true,
+    "native_corpus_passes_within_fixed_limits": true,
+    "native_wheels_verified": true,
+    "producer_binds_candidate_and_pr_source": true
+  },
+  "macos": {
+    "all_native_wheel_hashes_verified": true,
+    "ambiguous_process_count": 0,
+    "cleanup_status": "passed",
+    "corpus_counts": {
+      "failed": 0,
+      "harness_error": 0,
+      "host_specific": 0,
+      "limit": 8,
+      "passed": 64
+    },
+    "native_wheel_count": 7,
+    "process_group_cleanup_complete": null,
+    "python": "3.11.9",
+    "remaining_owned_process_count": 0,
+    "remaining_temp_root_count": 0,
+    "runner": "macos15 arm64",
+    "system_dynamic_link_audit": "not performed"
+  },
+  "producer": {
+    "candidate_artifact_id": "12563736626",
+    "candidate_artifact_sha256": "a4e9c6a09b86c6bfbeccd08298f5249713de069cc88954fa25f9e23867f1452d",
+    "pull_request_head_sha": "f37b308c8a2f4634ba94a74e9aade29d09e23b33",
+    "source_sha": "dd94332b71ebee65c724ea30fd8b15577155b2a3",
+    "source_tree_sha": "da1ee5d47b61d9c84b60293fe817ab7cb9046539"
+  },
+  "schema": "arras.independent-native-macos-artifact-review/1",
+  "scope_limitations": [
+    "This verifies the fresh hosted Mac artifact against the public CI candidate and reports the workflow jobs. It makes no WAN acceptance claim.",
+    "System dynamic-link audit was not performed.",
+    "Cleanup process-group completion field is null; no claim is made for that field."
+  ],
+  "status": "clear_for_fresh_f37_macos_artifact_only",
+  "workflow_jobs": [
+    {
+      "conclusion": "success",
+      "id": 120898682966,
+      "name": "Operator Console UI",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 120898683158,
+      "name": "Lint, types and build",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 120898683211,
+      "name": "Truss adapter on PostgreSQL 18.6",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 120898683280,
+      "name": "Tests on Python 3.11",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 120899106425,
+      "name": "Installed native adapter on macOS arm64",
+      "status": "completed"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "acceptance_claim": false,
+  "baseline_sha256": "2fe06f5f00d2cd0d2736d4c2be804455d1c2793a80219238989ef4ecccc8701e",
+  "census_sha256": "e24f2fe8aa7114017f1f87deb7b730e95591abc151221fbae1554c5cc9a51ae2",
+  "derivative": true,
+  "elapsed_seconds": 13.993483208003454,
+  "endpoint_disabled_after_cleanup": false,
+  "endpoint_state_interpretation": "No after-cleanup provider GET is claimed by this receipt; the false value is an inferred worker field. Independent audit later observed the owned endpoint restored enabled.",
+  "fresh_independent_audit_required": true,
+  "native_commit_attempted": true,
+  "native_commit_returned": true,
+  "native_elapsed_ms": 5707,
+  "native_sql_statement_count": 92,
+  "omission_reason": "Internal catalog identifiers are excluded from repository evidence.",
+  "omitted_fields": [
+    "database_oid",
+    "schema_oid"
+  ],
+  "provider_mutations_performed": false,
+  "removed_generated_roles": 4,
+  "removed_schema": true,
+  "restored_global_default_acls": 2,
+  "revoked_actor_memberships": 5,
+  "schema": "arras.f37-native-owned-cleanup-public-summary/1",
+  "source_receipt_retained_privately": true,
+  "source_receipt_sha256": "27cf403eddcf92d77b3b8ce32f055181022b1e329594698d3767df114a4e2dd2",
+  "source_status": "native_cleanup_committed_pending_independent_audit",
+  "status": "native_cleanup_committed_pending_independent_audit"
+}

@@ -1,0 +1,40 @@
+{
+  "actual_exception": {
+    "call": "reader.query",
+    "class": "Unsupported",
+    "function": "_person_public_api_checks",
+    "line": 706,
+    "source": "_lakebase_person.py",
+    "sqlstate": null
+  },
+  "canonical_arras_wheel_sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+  "cases_blocked": 10,
+  "cases_passed": 2,
+  "cleanup": "Original five-resource cleanup, fresh independent native/provider audit and exact parent/audit process and process-group absence passed. No acceptance claim.",
+  "files": {
+    "actual-campaign-result.safe.json": "d75ad00a4f8be218a13dd914b68262f4e14cf044314b0bfb86101096107954de",
+    "audit-launch-process.safe.json": "3a99872f6d4d581cee452515ba48321b74ed85df24121233b98fcbffc93dc97e",
+    "full-managed-terminal.safe.json": "31103140ab778763d9ae124b48a1719429226f63931481da6bbdc86ae7bd35dc",
+    "full-managed-terminal.safe.verifier.json": "f7d4a6297b86ee4919a0dabcd68a8fc9ddb90e7a892b88410d57d7579ce53ac3",
+    "independent-audit.safe.json": "2810f346431ac56f8ce65e0df6d610dc9cf8913e321cee6ebcb4a8e323e11837",
+    "one-shot-ledger.jsonl": "3451da28d40f3c973f51589197a5db59f0e8060bb5738c42e84e50b8e30d6b33",
+    "parent-launch-process.safe.json": "5820a264a371ec5853c181500511670e357b6091a0a5dc065584ae0803726175",
+    "person-exception.safe.json": "a7f041bd7e261bff9d0a2fd4dfd0f27b8b86a5dc1d1a7203eab5ba5ba647fa59",
+    "terminal-process-custody.safe.json": "90cec538146c7369b93a9e6350f89fa248fd3704bf57343b79d05b5999785f7d"
+  },
+  "independent_public_retention_review_sha256": "649996d11d2f66696fe5f48f7d9d46de69a19a75718d63dc434afedd9f421420",
+  "private_inputs_omitted": [
+    "target configuration",
+    "authorization configuration",
+    "credential references",
+    "fixture with target identities",
+    "raw stdout/stderr"
+  ],
+  "required_correction": "Use the supported named parameter and include actual harness query paths in real-parser regression coverage. Preserve all original cases, permissions, budgets and cleanup.",
+  "schema": "arras.person-query-parameter-failure-retention/1",
+  "source_commit": "93a5020007d343629c40ff7ea62caf7a4313f68a",
+  "source_explanation": "The harness query uses $code. The pinned Weft 0.4.51 compiler independently returns parse-phase WFT-UNSUPPORTED for this operand; replacing only the placeholder with :code and retaining params reaches the backend stage. This is a harness dialect error; the trace alone does not establish its cause.",
+  "source_tree": "80f872b03c03ea720137553dac73a62353647327",
+  "status": "BLOCKED_NOT_ACCEPTED_INDEPENDENT_CLEANUP_PASSED",
+  "truss_version": "0.0.50"
+}

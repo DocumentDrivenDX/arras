@@ -1,0 +1,14 @@
+{
+  "acceptance_passed": false,
+  "audit_sha256": "95918d42f95c58ed449bf9509de6a80aad21e7a51170668c9e83cffdd17db0a9",
+  "checked_at": "2026-10-24T16:21:32.880685+00:00",
+  "custody_returned": false,
+  "derivative": true,
+  "independent_audit_status": "passed",
+  "numeric_groups_checked": 1542,
+  "permission_denials": 0,
+  "process_identifiers_omitted": true,
+  "schema": "arras.f37-final-recovery-process-custody/1",
+  "source_receipt_sha256": "26820275db2107ca24c3df96eb69ee4b61477a74b1170a980857366eb0e2a74a",
+  "status": "passed"
+}

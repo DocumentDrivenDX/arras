@@ -1,0 +1,13 @@
+{
+  "note": "Hashes bind retained private originals; private receipts are not copied.",
+  "schema": "arras.public50.baseline-retention-evidence.v1",
+  "source_receipts": {
+    "baseline-six-custody-handback.safe.json": "9a599e22bf4231577b9c061c9eed79f265b0617bddc224b2a40b3f296b43cbe7",
+    "baseline-six-diagnostics.safe.json": "59685d18c87001a887d54a1b36ce74a81c68d14a659ab3051d3a49e7b4ed6f7d",
+    "baseline-six-process-census.safe.json": "8da9a9a1fb1fb94540a35d151da75269c89eeee4ad7a345b8ad5d3a437505838",
+    "baseline-six-terminal.safe.json": "9eb38fbf68a1490976c7eb004ae724695f2b1a816fbb8d96f5df4528ac083b0d",
+    "baseline-six-terminal.safe.verifier.json": "f5e234ce5d53a8ea84fa9c45fa46543df8ecb530b5434b600b82b2fdffe5a95b",
+    "independent-baseline-six-audit.safe.json": "560f5c20b4e5680434156f6f23df385758c6d158c3f9c752385f5f4da3d01f4b",
+    "owned-fault-archives.safe.json": "28e9e0b8444127d05241f9c475918dfc971f715aca489034a1930bf8b50e37c8"
+  }
+}

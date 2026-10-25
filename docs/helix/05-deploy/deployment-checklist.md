@@ -13,6 +13,8 @@ ddx:
       kind: informed_by
     - id: CONTRACT-005
       kind: informed_by
+    - id: TP-001
+      kind: informed_by
 ---
 
 # Arras artifact release checklist
@@ -63,6 +65,62 @@ if access cannot be found. Do not advertise an unavailable registry install.
 | Downloaded release | Download the public release assets into a new directory, verify digests and repeat installed consumer/skeleton/doctor checks. A local build alone does not pass this gate. |
 | Official UMF qualification (0.6.0+) | The exact final wheel passes the installed admission/metadata gate with pinned official UMF 0.10.0: all 139 ordered reference and separate fresh-empty production Registry comparisons, six base and ten extra-enabled controls, zero skips, and verified cleanup. Repeat against the exact public-download wheel in a fresh environment; retain distinct receipts. The 0.5.1 candidate receipt is historical and cannot close this gate. |
 | Public assembly (0.6.0+) | Use release-evidence schema v2: include the mandatory safe UMF receipt projection as asset 17, bind it to the exact wheel, and repeat UMF qualification after public download. Keep v1/sixteen-asset evidence for historical releases unchanged. |
+| Truss 0.0.50 adoption / PR 9 | Before merge or tagging, retain and independently review the fresh-installed exact-cohort proof and full actual Lakebase receipt: LB-ADMISSION, LB-INSTALL, LB-PERSON, LB-CUSTODY, LB-SETTLEMENT, LB-ACL and MP-01–06 all pass, with independent owned-cleanup confirmation. Bind the managed receipt to the executed harness/fixture hashes, actual installed Truss archive/manifests and exact final Arras wheel, which must also pass the complete fresh-installed macOS campaign. Require the tagged-build and public wheel SHA-256 to match both original campaign bindings; any byte change requires both campaigns rebound and rerun. Document exact source correspondence to the release artifact; source-local checks, bootstrap evidence, partial schedules and earlier candidate artifacts cannot close this gate. |
+
+## PR 9 / 0.6.1 execution
+
+- [x] Historical candidate `c31b56e5...` passed the complete fresh-installed
+  macOS native campaign (64 passed, eight unchanged limits, no failures),
+  independent cleanup, installed doctor and CI-installed official UMF checks.
+  This Truss 0.0.49-bound result is retained historically and does not qualify
+  the current Truss 0.0.50 selection.
+- [x] The current public Truss 0.0.50 / Arras 0.6.1 binding is recorded at
+  source `20db67822b20c822ee91c6823a3fe73ebc3ae932`. Canonical Arras wheel
+  `259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`
+  passed the complete fresh-installed macOS arm64 / CPython 3.11.9 campaign in
+  CI run `40221099126`: 64 passes, eight unchanged declared limits, seven
+  replica-only cases inapplicable, and successful cleanup. The [current Mac
+  records](../04-build/evidence/truss050-adoption-20261024/fresh-macos-40221099126/)
+  retain exact installed-payload and source correspondence. The separate full
+  twelve-case managed campaign on the same wheel passed; final release acceptance
+  remains subject to review and exact-final-commit artifact gates.
+- [ ] Release-built artifacts match that exact wheel and complete their own
+  distribution, native, doctor, official UMF and downstream UI release gates.
+- [x] All twelve actual Lakebase cases and independent owned cleanup pass; the
+  original safe receipt, fixture/harness identities, review and support limits
+  are linked from the integration plan and release notes.
+- [x] Reusable ordinary identity setup and private credential-reference custody
+  are documented separately from disposable database cleanup, so routine future
+  campaigns use that setup without repeating admin provisioning.
+- [ ] Final source/control/service-evidence review and exact-commit CI pass;
+  PR 9 is merged and the version-matching immutable release workflow passes.
+- [ ] Public anonymous download and installed-consumer repeats pass on the
+  published bytes; registry delivery or the authorized deferral is recorded.
+
+The human authorized resumption of the owned-database recovery qualification
+on 2026-10-25. Controller preflight passed 6/6 checks and collector controls
+passed 8/8; these controls are not acceptance evidence. The initial post-resume
+2d baseline remains a 5 passed / 1 failed journal-binding diagnostic; preserve
+it as failed history. After the bounded partition-ancestry repair, a fresh
+baseline at source `20db67822b20c822ee91c6823a3fe73ebc3ae932` passed 6/6, with
+original cleanup, fresh independent audit (`560f5c20…`), process census
+(`8da9…`) and custody handback (`9a599e22…`) passing. These are supplied
+receipt prefixes, not full digests; full source-bound records are retained in
+[baseline-20db-passed-20261025](../04-build/evidence/truss050-adoption-20261024/baseline-20db-passed-20261025/).
+D11 remains 10 passed / 2 failed / 0 blocked; D12 remains a 5 passed / 1 failed
+baseline diagnostic / 0 blocked, with its managed gate not run. Original
+cleanup, independent audits and custody handbacks passed for both historical
+runs, whose [failed-run records](../04-build/evidence/truss050-adoption-20261024/full-managed-d11-failed/)
+and [baseline diagnostic records](../04-build/evidence/truss050-adoption-20261024/baseline-six-diagnostic/)
+remain historical failed evidence. The separate original full twelve-case
+campaign on the same exact wheel passed 12/12 with zero failures or blocked
+cases; original cleanup, independent audit, process census and custody handback
+passed. See [full-managed-20db-passed-20261025](../04-build/evidence/truss050-adoption-20261024/full-managed-20db-passed-20261025/).
+The supplemental scoped process census found all three known groups absent and
+no exact owned-script matches or inspection denials. The direct supervisor PGID
+was not captured and no forced-cleanup claim is made; see the retained
+[projection](../04-build/evidence/truss050-adoption-20261024/full-managed-20db-passed-20261025/root-process-census-supplement.public-projection.json).
+The [current Mac records](../04-build/evidence/truss050-adoption-20261024/fresh-macos-40221099126/) retain exact source/cohort/payload bindings. Gate execution passed; final review, exact-commit CI, release-built artifact, merge/tag and publication gates remain open.
 
 ## Rollout Stages
 

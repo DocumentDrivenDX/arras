@@ -1,0 +1,65 @@
+{
+  "artifact": {
+    "api_digest": "sha256:427969ce617798bd0f58283ecba023904854732911ecd2146a25c2c062f4c4a5",
+    "bytes": 143797,
+    "id": 12571065556,
+    "name": "installed-native-macos-arm64-qualification",
+    "retained_artifact_receipts": 8,
+    "sha256": "427969ce617798bd0f58283ecba023904854732911ecd2146a25c2c062f4c4a5",
+    "stdout_stderr_not_retained": true,
+    "zip_members": 10
+  },
+  "cleanup": {
+    "ambiguous_processes": 0,
+    "process_group_cleanup_complete": null,
+    "remaining_native_temp_roots": 0,
+    "remaining_processes": 0,
+    "status": "passed"
+  },
+  "consumer": {
+    "applicable_cases": 72,
+    "counts": {
+      "failed": 0,
+      "harness_error": 0,
+      "host_specific": 0,
+      "limit": 8,
+      "passed": 64
+    },
+    "limits_unchanged_count": 8,
+    "runtime": {
+      "machine": "arm64",
+      "python": "3.11",
+      "sys_platform": "darwin"
+    },
+    "skipped_cases": 7,
+    "source_head_sha": "2d1bc7e34af7499d5f4f582d4ee41e0d772920cc",
+    "source_sha": "adc11cf64459929d00ea44df6debdf0c9974815d",
+    "source_tree_sha": "396f50b8ddc10bc8d3e16a5baf7f81055e17efc4",
+    "status": "passed"
+  },
+  "native_dependencies": {
+    "all_downloaded_sha256_values_match_pins": true,
+    "dynamic_link_audit": "not performed",
+    "helper_hashes_equal_to_prior_a937_consumer": true,
+    "native_wheel_count": 7,
+    "pinned_truss_version": "0.0.50",
+    "pinned_weft_version": "0.4.51"
+  },
+  "qualification": "This confirms the fresh macOS consumer result for the exact canonical wheel and source tree. It does not establish Lakebase WAN acceptance.",
+  "review_scope": "Read-only review of actual GitHub-hosted macOS native consumer artifact for CI run 40119390075; no local native execution performed.",
+  "run": {
+    "all_five_required_jobs": "success",
+    "head_sha": "2d1bc7e34af7499d5f4f582d4ee41e0d772920cc",
+    "id": 40119390075,
+    "source_tree_sha": "396f50b8ddc10bc8d3e16a5baf7f81055e17efc4",
+    "synthetic_merge_sha": "adc11cf64459929d00ea44df6debdf0c9974815d"
+  },
+  "schema": "arras.native-macos-independent-review/1",
+  "wheel": {
+    "byte_equal_to_approved_canonical_candidate": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+    "installed_payload_count": 172,
+    "installed_payload_exact_match": true,
+    "sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+    "version": "0.6.1"
+  }
+}

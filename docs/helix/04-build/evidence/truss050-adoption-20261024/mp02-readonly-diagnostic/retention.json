@@ -1,0 +1,25 @@
+{
+  "acceptance_credit": false,
+  "canonical_arras_wheel_sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+  "cleanup": "Exact launch PID/start/PGID matched receipt before/after; fresh numeric census found PID absent/group empty with zero permission denials. No additional auth/SQL/provider calls.",
+  "confirmed": "Installer driver/PQ PID 1008999823 differs from same read-only transaction SQL PID 2677; rollback returned idle.",
+  "elapsed_seconds": 14.806,
+  "files": {
+    "diagnostic.safe.json": "3e7587ef91f170091568f4bb886760a479084a6c410b1ad8e89680b1c5c5b1a6",
+    "launch-process.safe.json": "fd9660cca603a2d9ab034f0e24ac83e0cf9624fba0e81c1098233112966a5ad6",
+    "terminal-process-custody.safe.json": "a43a4b9e72d72da39bb597e994d3e68f0e25fc3c4d622bcb3de669da823627c3"
+  },
+  "private_inputs_omitted": [
+    "target/auth configurations",
+    "credentials and secure references",
+    "fixture actor identities",
+    "raw stdout/stderr and fixture state"
+  ],
+  "reader": "Connection failed before PID facts; generic error category other/sqlstate null does not locate the actual exception.",
+  "replay_allowed": false,
+  "schema": "arras.acceptance-evidence-retention-stage/1",
+  "source_commit": "291cd2fb6c7de0212c2156fdbcbaf713a31547ed",
+  "source_review_inference": "The diagnostic invokes reader source before installer source populates required admitted actor OIDs. This ordering is defective but does not prove the recorded exception location.",
+  "source_tree": "f63f192a08ac93a40a6fae0e902c2b0f93106ebe",
+  "status": "DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT"
+}

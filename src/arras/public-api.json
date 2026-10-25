@@ -2,7 +2,7 @@
   "schema_version": 1,
   "distribution": {
     "name": "arras",
-    "version": "0.6.0",
+    "version": "0.6.1",
     "version_source": "pyproject.toml",
     "python_requires": ">=3.11",
     "declared_python": [
@@ -12,7 +12,7 @@
     ],
     "npm": {
       "name": "@documentdrivendx/arras-ui",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "version_source": "pyproject.toml",
       "exports": {
         ".": {
@@ -1199,6 +1199,75 @@
             "name": "telemetry_context",
             "kind": "KEYWORD_ONLY",
             "default": null
+          }
+        ]
+      },
+      "arras.adapters.truss.TrussBackend.__init__": {
+        "parameters": [
+          {
+            "name": "self",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "name",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "connections",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": null
+          },
+          {
+            "name": "wire",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": null
+          },
+          {
+            "name": "module_access",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": null
+          },
+          {
+            "name": "tolerated_grantees",
+            "kind": "KEYWORD_ONLY",
+            "default": "empty tuple"
+          }
+        ]
+      },
+      "arras.adapters.truss.create_backend": {
+        "parameters": [
+          {
+            "name": "name",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "source",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "installing",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": null
+          },
+          {
+            "name": "module_access",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "tolerated_grantees",
+            "kind": "KEYWORD_ONLY",
+            "default": "empty tuple"
+          },
+          {
+            "name": "statement_timeout_ms",
+            "kind": "KEYWORD_ONLY",
+            "default": 10000
+          },
+          {
+            "name": "operation_timeout_ms",
+            "kind": "KEYWORD_ONLY",
+            "default": 60000
           }
         ]
       },

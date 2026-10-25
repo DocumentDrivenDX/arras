@@ -1,0 +1,17 @@
+{
+  "acceptance_claim": false,
+  "genuine_commit_read_wait_cut_observed": true,
+  "interpretation": "The validated owned archive proves the V18 COMMIT/read-wait interruption path; it does not include target journal inventory. Historical relation details and journal xid-match remain unknown.",
+  "managed_operation_exceptions": [],
+  "owned_v18_archive_status": "complete",
+  "parent_exception_type": null,
+  "parent_return_code": 1,
+  "person_exception": null,
+  "postrun_private_journal_inventory_retained": false,
+  "schema": "arras.public50-baseline-diagnostics-public-summary/1",
+  "scope": "baseline",
+  "selected_settlement_code": "original_request_journal_binding_missing",
+  "source_receipt_sha256": "0ff69186a58caaf3e41cdc6aea171058513a44e407d4ee93688e52b56927d05a",
+  "status": "no_generic_person_exception_observed",
+  "trace_valid": true
+}

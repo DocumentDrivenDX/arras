@@ -1136,7 +1136,7 @@ def run_tail(ctx: dict[str, Any], wheel: Path, output: Path, cases: list[dict[st
         "limitations": [
             "Static catalog/manifests and legacy-Arras document parsing do not establish official UMF validity, rendered accessibility, backend registration, native semantics, or publication.",
             "This receipt qualifies only the recorded wheel and Python/platform cohort.",
-            "This temporary candidate retains the pre-release native pin; repeat qualification against the frozen release wheel.",
+            "Results do not transfer to another artifact or dependency cohort; repeat qualification when those inputs change.",
         ],
         "versions": {
             "uv": subprocess.run(

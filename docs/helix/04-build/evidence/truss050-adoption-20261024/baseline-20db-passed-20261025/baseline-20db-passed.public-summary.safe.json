@@ -1,0 +1,63 @@
+{
+  "acceptance_claim": false,
+  "archive_collection": {
+    "other_pid_archive_count": 0,
+    "raw_archives_remain_private": true,
+    "retained_archive_count": 3,
+    "status": "complete",
+    "target_operations_performed": false
+  },
+  "baseline": {
+    "case_counts": {
+      "blocked": 0,
+      "failed": 0,
+      "passed": 6
+    },
+    "no_generic_person_exception_observed": true,
+    "parent_return_code": 0,
+    "required_cases": [
+      "LB-ADMISSION",
+      "LB-INSTALL",
+      "LB-PERSON",
+      "LB-CUSTODY",
+      "LB-SETTLEMENT",
+      "LB-ACL"
+    ],
+    "status": "passed",
+    "trace_valid": true
+  },
+  "cleanup": {
+    "independent_absence_checks_passed": true,
+    "managed_gate": "not_run",
+    "removed_resources_count": 5,
+    "status": "passed"
+  },
+  "custody": {
+    "custody_returned": true,
+    "no_vm": true,
+    "source_freeze_unchanged": true,
+    "status": "OWNED_DIAGNOSTIC_CUSTODY_RETURNED_TO_ROOT"
+  },
+  "evidence_limit": "Baseline-only diagnostic; acceptance is not claimed. Raw archives and private receipts remain in the qualification directory.",
+  "independent_audit": {
+    "installed_source_before_after_equal": true,
+    "read_only_native_transaction": true,
+    "restoration_mutations_performed": false,
+    "status": "passed"
+  },
+  "process_census": {
+    "all_observed_processes_absent": true,
+    "process_group_absence_verified": true
+  },
+  "run": {
+    "dispatch_sha256": "4fdcb81d33c49befc197f49b0e7afbcf34377656f56b65fdf7fe11c08f86dcf8",
+    "manifest_sha256": "4b0fef8ce27604c47d323372143c415555fa7f91ea4342824343b249c576e74e",
+    "source_commit": "20db67822b20c822ee91c6823a3fe73ebc3ae932",
+    "source_freeze_sha256": "5175295232a36ead6379337665ac7ca8675f1272ea1c01aaa72102898cbd4edc",
+    "source_tree": "5ef9170c03e0f9575649757850fe15e03ce94c7c",
+    "stage": "baseline_six_diagnostic",
+    "window_sha256": "3a9defd4adb46582a08599560190ac0712658043ae3925f8838730cf7af4d94a"
+  },
+  "schema": "arras.public50.baseline-retention-summary.v1",
+  "scope": "baseline-six diagnostic only"
+}

@@ -1,0 +1,16 @@
+{
+  "acceptance_passed": false,
+  "custody_returned": true,
+  "independent_audit_status": "passed",
+  "no_active_exec_sessions": true,
+  "no_vm": true,
+  "original_campaign_counts": {
+    "blocked": 0,
+    "failed": 9,
+    "passed": 3
+  },
+  "schema": "arras.public50-D10-audited-custody-handback-public-summary/1",
+  "source_and_owned_target_freeze_released_for_owner_fixes": true,
+  "source_receipt_sha256": "afef5898628b28a6fe39915eb00aee50898725dd0d75fc7c1e927724bc7305ea",
+  "status": "OWNED_SOURCE_AND_TARGET_CUSTODY_RETURNED"
+}

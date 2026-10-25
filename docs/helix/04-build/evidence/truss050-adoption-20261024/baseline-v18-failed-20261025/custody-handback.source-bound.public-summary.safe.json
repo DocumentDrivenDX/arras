@@ -1,0 +1,21 @@
+{
+  "acceptance_claim": false,
+  "archive_collection_status": "complete",
+  "custody_returned": true,
+  "independent_audit_status": "passed",
+  "no_active_exec_sessions": true,
+  "no_vm": true,
+  "original_case_counts": {
+    "blocked": 0,
+    "failed": 1,
+    "passed": 5
+  },
+  "raw_archives_remain_private": true,
+  "schema": "arras.public50-baseline-custody-handback-public-summary/1",
+  "scope": "baseline",
+  "source_and_owned_target_freeze_released_for_owner_fixes": false,
+  "source_freeze_unchanged": true,
+  "source_receipt_sha256": "b58926e88db20bb0f3bdf5c81b2d75761f580f25f9b40b26e3a14b56f11cc981",
+  "stage": "baseline_six_diagnostic",
+  "status": "OWNED_DIAGNOSTIC_CUSTODY_RETURNED_TO_ROOT"
+}

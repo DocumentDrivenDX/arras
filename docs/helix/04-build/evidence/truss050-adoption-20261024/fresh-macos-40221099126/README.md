@@ -1,0 +1,7 @@
+# Retained macOS native qualification evidence — run 40221099126
+
+This public folder retains sanitized Mac summaries and the GitHub-hosted artifact API identity. The original ZIP and process-bearing verifier/cleanup files remain in a separate private retention location; they were not copied into this public evidence tree. Their commitments remain in the private retention receipt. Runner-local paths and process identifiers are excluded from this public export. No signed download URL, verifier stdout/stderr, or provider credentials were retained.
+
+The artifact binds to source `2a90d619de3e2c2bebc2ceecf1db28c392b17ea6`, tree `5ef9170c03e0f9575649757850fe15e03ce94c7c`, PR head `20db67822b20c822ee91c6823a3fe73ebc3ae932`, and wheel SHA-256 `259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`. The Mac verifier reports 64 pass, 8 declared limits, 0 failures, 0 harness errors, 0 host-specific cases; 7 replica cases were skipped. It verified seven native wheel hashes and exact parity for 172 installed Arras payload files. Cleanup reported zero remaining owned processes, roots, or ambiguous identities; group-specific cleanup completion remains null.
+
+This is Mac evidence only, not WAN acceptance. The originating CI run's five jobs, including PostgreSQL, subsequently completed successfully; the final full-12 managed result is separately retained in `../full-managed-20db-passed-20261025/`.

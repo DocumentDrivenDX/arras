@@ -1,0 +1,285 @@
+{
+  "extension_requirement": {
+    "basis": "The reviewed source-only public 0.0.50 dependency record found no newly introduced extension dependency and carries forward the narrowly reviewed plpgsql requirement. Its SHA-256 is 841579af03e375d1bafa1e6a19dc483d9d5ab096fe9a75fd36d834dfb48ee894. The original PostgreSQL catalog observation remains the separate historical 0.0.49 observation; the future Arras MP-06 run must independently inspect the actual target.",
+    "historical_observation_scope": "Truss 0.0.49 local PostgreSQL 18.6 only; preserved as captured.",
+    "historical_requirements_path": "../truss049-adoption-20261023/extension-requirements.json",
+    "historical_requirements_sha256": "bedc8af0112668d1d3c4365488337610b4fb97a6e78c33b487e304449def7fc3",
+    "required_extensions": [
+      {
+        "name": "plpgsql",
+        "version": "1.0"
+      }
+    ],
+    "public_0_0_50_source_review_sha256": "841579af03e375d1bafa1e6a19dc483d9d5ab096fe9a75fd36d834dfb48ee894"
+  },
+  "lakebase_acceptance": "not_run",
+  "limitations": [
+    "No Arras 0.6.1 wheel or source candidate has been built or installed in this activity.",
+    "No PostgreSQL, Lakebase, provider identity, credential lifecycle, or managed acceptance operation was performed.",
+    "The public Truss 0.0.50 release capsule itself labels Lakebase acceptance not_run."
+  ],
+  "runtime": {
+    "layout_profile": {
+      "identity": "truss-layout",
+      "sha256": "cf417e0af5d37dd61fa5f39f818d2e7282a29e6c6c6ab7fc0b26dcdde99e7dec",
+      "version": "1.0"
+    },
+    "migration_manifest_sha256": "4c6baf0282e3d0b5492f070c9c07d89ff0c9a819e748f3820f60b11c1f51c7aa",
+    "native_manifest_sha256": "288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4",
+    "postgres_version_num": "180006",
+    "release_id": "truss-catalog-runtime/0.74-candidate",
+    "retained_public_0_0_49_migration_manifest_sha256": "96addcdb95523f478d8f50b0b47198e47a860680c7400dd359711930e837e535",
+    "runtime_source_inventory": [
+      [
+        "audit-reader-accumulation.sql",
+        "bf8589a448d4a9293fad861b8d3e479449b042160cead8ce384e2edae088caca"
+      ],
+      [
+        "barrier.sql",
+        "659c4d9dfe8c4cf33b40e2249d3668b1c283e1815f719a47990387d81423d80e"
+      ],
+      [
+        "capability-profiles.json",
+        "b93cd0a1136551e1f8c307ece409163209951fb83842b5e787672b373f410c53"
+      ],
+      [
+        "catalog-key-backfill-storage.sql",
+        "0126ae1db5cad9619f398d41bd4167706f896dee312591dcccf031bf9136490c"
+      ],
+      [
+        "catalog-key-backfill.sql",
+        "5894dfb700829a717142de0eba066310b8cc815b04851f35f665d9aa73e127b0"
+      ],
+      [
+        "catalog-rebind-storage.sql",
+        "9b827d0ab7a9fc210ea3f1d7e65d459cdc0953707400cc070cd9f63b586a4d1e"
+      ],
+      [
+        "catalog-rebind.sql",
+        "0d7aabd6c9eb48ddd9bd908b6786dac2c9e130d0736fe811cdc3f7ae2eabbeff"
+      ],
+      [
+        "containers.sql",
+        "b0a93427d28b412109613ad7cb709f613ead16eb6fe3d3e5ef2f5907c7345dd8"
+      ],
+      [
+        "definition-source.sql",
+        "0aa6d163a5c3322a269786defb22ebd70badd0f1ac74cd41a6c8c7813d36fdd0"
+      ],
+      [
+        "entity-load.sql",
+        "6100f2ce3783fd06f65e9d257cef4bc395d58b653e402121a9d18b47fe1eeb43"
+      ],
+      [
+        "entity-query.sql",
+        "cf4296549c873659eebe2bb84278d07f4fb0da98b970d0b638ba11b20ed9bafc"
+      ],
+      [
+        "entity-times.sql",
+        "c0eab24b02425b184c6cf9fef91d87377ece7c0fe3f82763ab5090f4b107ca5c"
+      ],
+      [
+        "evolution.sql",
+        "e143834204b34ca58fe3b69ff92b2959aa32e585cbb8bcad55a1e526f23e5ed8"
+      ],
+      [
+        "feed-receipts.sql",
+        "299716ead3943bbccea4c146cf010ca7a7b5ef42b9898a6c2d410eb4495108cb"
+      ],
+      [
+        "feed.sql",
+        "ebfa70c3b91221aff15c953130c437667f3c40748a6e76a9467a55e1d76c4787"
+      ],
+      [
+        "group-audit-reader.sql",
+        "1b80d10290645cdc3d2e12c0f5dd2b3fa76c7ad51cd0effb6fa2d097bd468660"
+      ],
+      [
+        "group-profiles.json",
+        "9a19eeafd78ae13a8baa884a58e22b1ec0f67c89899d9e66c826e595af7e160a"
+      ],
+      [
+        "group-recovery.sql",
+        "a3fcbd45ea69595b88679903d20533e9bbe18c2f5864caa6a75f82985bdca300"
+      ],
+      [
+        "groups.sql",
+        "dcdc317ce1d3844f1d16853576b21c6238de3fe752b4d86fe44d13b2a9f3df22"
+      ],
+      [
+        "history.sql",
+        "1e7e93f688fb59ab51af0d7d71afda526628ea9088f8651e95d550376c221c2e"
+      ],
+      [
+        "import-batches.sql",
+        "97cf1f1b1012864df0a95c12ba693c5a935a515047ca4533041ee4c8fc3e80a1"
+      ],
+      [
+        "imports.sql",
+        "605f63d4cfa6408d15be081eaa101a6473e3ab445e73f741138a7757391d73c3"
+      ],
+      [
+        "key-derivation.sql",
+        "b24e881af85d119c88d1ad9c22b23043f34077ed8aaa5dda3ca5b25a3704271c"
+      ],
+      [
+        "key-read.sql",
+        "2426f781c3b740d7f2680f4733f88373d6ed7203b6e658f2118bfd3c49666bae"
+      ],
+      [
+        "keys.sql",
+        "7dd48722c66c0dd255b098d93b92297539746b1ac4a06fe623564c268d4ad226"
+      ],
+      [
+        "layout.sql",
+        "fc2cdc8dfc80aef7f630a21ee9587751b9b026d9491832c0cdbb89c4a72feaa3"
+      ],
+      [
+        "lifecycle.sql",
+        "e9a0196578dcd8f9cad4cd796ffcf173fa36086bc7411e4cca82e7501fdcf8b8"
+      ],
+      [
+        "lineage.sql",
+        "b808d39ae44cbeca21bd301ff069469cbcea54c6b8fe28eb27f22ce53ce5e2fa"
+      ],
+      [
+        "load-audit-reader.sql",
+        "d24a927e9c01a315ff2b24e4bda12207434fa3d476965149f1cff253e35740fc"
+      ],
+      [
+        "load-audit-storage.sql",
+        "f714a2a07b9855bb73cc4bb429863cf9f378ab1665498033cb4f3f7418244adb"
+      ],
+      [
+        "load-audit-writer.sql",
+        "e97e58b6fd9d60c0988e090980df958a726901d8c3d2279949cf6da2ddb84360"
+      ],
+      [
+        "managed-grants.sql",
+        "0c14b6a10c896ca207604e0391fc5f3be8ba202705f77e42f69ab531626ca2ed"
+      ],
+      [
+        "migrations.sql",
+        "85f7ff1dac5afca7edc1157dc54edbba489b3fe2c2a3ac9211c0224a32fd468f"
+      ],
+      [
+        "operations.sql",
+        "1ecbfecc7642fdb2b21a7180bf4c7c7394587493061e71a9d87977a416cc7ffd"
+      ],
+      [
+        "owned.sql",
+        "77248d564e6097537c7a3b8c7b13fe129dd399ef7808a02ef2473816865d5261"
+      ],
+      [
+        "ownership.sql",
+        "73b56cc0f438d14ef9ac9f7420d98eadcdc1147569353c4daf8771a42a5344c6"
+      ],
+      [
+        "pages.sql",
+        "ab13676c5ff071c6cd1107aae49b62cd29ee4b1a05571fe18e25ec0501c1aba0"
+      ],
+      [
+        "person-entrypoints.json",
+        "13be01c73c4812cd2b5f3a8273db4ce8265ed91ae78e577b25d53ea9825ad26a"
+      ],
+      [
+        "person-entrypoints.sql",
+        "2c99d9894bf5ae278feb227419851107567e5ee0f2a1583e95113f68e29b5164"
+      ],
+      [
+        "plan.sql",
+        "a6aa13e69b95696a39adb61a3bb9999fb48807abf2006fa0daa9dabe126a2437"
+      ],
+      [
+        "preconditions.sql",
+        "1adee214ab09da316f4360d9780f2b6187e626dd6c977785b2395b1f0f246773"
+      ],
+      [
+        "preparation-baseline.json",
+        "fecfedd6793948b915553c67710b3f4374014df5d89d9e140d591d31776d6c9e"
+      ],
+      [
+        "preview.sql",
+        "933f91374edffdb069c336c9aaf27ae68421a78359a39aad3464dc2f2ba3936a"
+      ],
+      [
+        "query-abi.json",
+        "8266c19d6f1bc4e816d5981cd594b224f09bafd4975e1c851610fa94d1f75f96"
+      ],
+      [
+        "query-export.sql",
+        "52a713f1e5df28320a1c9163cf06f1e2736543b592c6b149329b6a3f00c090d9"
+      ],
+      [
+        "query-selective.sql",
+        "8d2523ba89e3322f3a44e0e7567ef3d91bb0154f6a63dcb2b72a6d852bb5ac9d"
+      ],
+      [
+        "query.sql",
+        "af38c7bd4c59411cc2349926284564877e4ed4adb6871aaa6bb8131a4dfe2c5d"
+      ],
+      [
+        "read.sql",
+        "8ff9f5b8bf48371a50f123da263c55bbf35038b967441e4f3ef8b0564a918df0"
+      ],
+      [
+        "reader.sql",
+        "df24b3281fa77061ea69e6e82d22e5aa07ce6811c60489e228bc8dd0cffbb353"
+      ],
+      [
+        "runtime.sql",
+        "383b2280e20b3dd6bd31f7edc7654f83ebd7fefc1670739e24c3cf72c85c86cb"
+      ],
+      [
+        "scalars.sql",
+        "3ee4e9da7972bb801b643cf6c3a4e92f2e649cfb1b9fb38f2813edd22ced8ebf"
+      ],
+      [
+        "schema-cache.sql",
+        "ef9c43fbb48887d670dc86f7cd7689d3bcd83c193f0116df33c75d88689f42f0"
+      ],
+      [
+        "source-references.sql",
+        "494989c32543e479b74ce88ab75e30f0efba2b775a0ef3608e291272ddf18ed8"
+      ],
+      [
+        "traversal.sql",
+        "b9f78937685920ac1997ba21f86525cfb18dedff06254686bd04e4c8fa45a4f9"
+      ],
+      [
+        "view.sql",
+        "857a2c62c284a2462a71acfae88a1fcab840982fe274bcf39a49555692a88614"
+      ]
+    ],
+    "runtime_source_inventory_count": 55,
+    "runtime_source_inventory_sha256": "efba54c9ceb99137e11b7a2a95ebbb232dcde119f0cac63ecf19edafd7125b75",
+    "runtime_source_inventory_scope": "55 runtime/resource entries excluding the manifest: 50 SQL files and 5 JSON resources."
+  },
+  "runtime_python_source_changes": {
+    "review_scope": "The 0.0.50 source delta replaces per-source and final installer DDL submissions with the ordered batching helper and updates the set-oriented installer privilege queries. The 50 native SQL runtime files and five JSON resources in the selected inventory are byte-identical to the prior declared inventory. The native runtime manifest is byte-identical. This source comparison is not a new installation or managed-service result.",
+    "wheel_members": [
+      {
+        "path": "truss/catalog_runtime.py",
+        "sha256": "553e7aed35561321ea53fa387f878790ea0f93bf1f6f9314050ecdb193589683"
+      },
+      {
+        "path": "truss/_installation_privileges.py",
+        "sha256": "fe9045f016db882744fd43e7e495bbcd476d69a16f949ada5798e2d91139fbb5"
+      },
+      {
+        "path": "truss/_installation_sql_batch.py",
+        "sha256": "e512f3cd541eb6e6966f92210d571a152e3bf44f5879c9b7b71176ac6e2ce88d"
+      }
+    ]
+  },
+  "schema": "arras.truss050-extension-source-binding.v1",
+  "scope": "Public-wheel source binding only. The reviewed Truss 0.0.50 source-dependency record carries forward the narrowly reviewed plpgsql requirement; this record contains no new PostgreSQL observation and is not Arras or Lakebase acceptance.",
+  "source": {
+    "commit": "a687d0a226dad5745cbd909377bf99c7c1cddc66",
+    "release_verification_sha256": "81f6ee8ef5fb3689f65808a1a24fcc486e0f36c464735a0dd09cd31449260033",
+    "source_payload_file_count": 469,
+    "tag": "v0.0.50",
+    "wheel_filename": "truss_toolkit-0.0.50-py3-none-any.whl",
+    "wheel_sha256": "7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00"
+  }
+}

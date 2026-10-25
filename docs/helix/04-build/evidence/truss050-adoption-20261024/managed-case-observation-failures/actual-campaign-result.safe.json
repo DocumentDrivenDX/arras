@@ -1,0 +1,205 @@
+{
+  "acceptance_passed": false,
+  "actual_person_exception": null,
+  "artifacts": {
+    "audit-launch-process.safe.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-be77525d-d0c4-4607-94bb-288b164e25ec/audit-launch-process.safe.json",
+      "sha256": "bdde4b8fdfb531e1fdd64ccc29afb5cd8a9b5b7d80a0817b7c3964f0020a4905"
+    },
+    "full-managed-terminal.safe.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-be77525d-d0c4-4607-94bb-288b164e25ec/full-managed-terminal.safe.json",
+      "sha256": "baff1fa6145ce60e0733d7f28034c81d00eed984b8dc4e29567c8a705468af43"
+    },
+    "full-managed-terminal.safe.verifier.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-be77525d-d0c4-4607-94bb-288b164e25ec/full-managed-terminal.safe.verifier.json",
+      "sha256": "ffb946f59d5d9669984c4c503671dea2184f91288a3c59acb3d373547d3a82ee"
+    },
+    "independent-audit.safe.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-be77525d-d0c4-4607-94bb-288b164e25ec/independent-audit.safe.json",
+      "sha256": "8c65212b75844b3597e9d645904c9a8789f7dbdc3947f492eed891457fe1c7c4"
+    },
+    "parent-launch-process.safe.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-be77525d-d0c4-4607-94bb-288b164e25ec/parent-launch-process.safe.json",
+      "sha256": "bc8d39b43f93b23825e96f3998b2d04c19588bf2b8b69b4ad69cb3332d90e1db"
+    },
+    "person-exception.safe.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-be77525d-d0c4-4607-94bb-288b164e25ec/person-exception.safe.json",
+      "sha256": "ba4862b106bbff717fb29431ac3cdb202e8e4acdd97e1f8b36c10da4f93c320a"
+    },
+    "public-retention-review.safe.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-be77525d-d0c4-4607-94bb-288b164e25ec/public-retention-review.safe.json",
+      "sha256": "437ff7ca79bc756200094c2f29cd86b265ffaff0305a8548f1a70c21883593c7"
+    },
+    "terminal-process-custody.safe.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-be77525d-d0c4-4607-94bb-288b164e25ec/terminal-process-custody.safe.json",
+      "sha256": "e6dcdfbcdf52686cc9bab65f56639b9201344d1b8a1be3ea8284746eec19d2d3"
+    }
+  },
+  "cases_blocked": 3,
+  "cases_failed": 3,
+  "cases_passed": 6,
+  "independent_audit": {
+    "elapsed_seconds": 11.530318708042614,
+    "installed_source_before_after_equal": true,
+    "native_checks": {
+      "all_four_ordinary_roles_present": true,
+      "all_native_memberships_match_bootstrap": true,
+      "all_native_role_attributes_match_bootstrap": true,
+      "exact_selected4_oid_binding": true,
+      "installer_identity_matches_bootstrap": true,
+      "ordinary_selected4_closures_false": true,
+      "owned_module_roles_absent": true,
+      "transaction_is_read_only": true,
+      "truss_schema_absent": true
+    },
+    "native_membership_count": 18,
+    "native_role_count": 33,
+    "new_native_role_count": 0,
+    "provider_checks": {
+      "exact_project_endpoint_database_provider_identity": true,
+      "owned_compute_bounds_unchanged": true,
+      "owned_endpoint_restored_enabled": true
+    },
+    "status": "passed"
+  },
+  "limits": {
+    "cleanup_grace_seconds": 180,
+    "installer_operation_timeout_ms": 60000,
+    "installer_statement_timeout_ms": 60000,
+    "maximum_window_seconds": 14400,
+    "no_vm": true,
+    "provider_operation_timeout_seconds": 180
+  },
+  "next": "release-owner review of remaining exact case failures and fixture/source seams; any new attempt requires fresh reviewed bindings and authorization; no replay, VM or limit extension",
+  "no_vm": true,
+  "ordered_cases": [
+    {
+      "case": "LB-ADMISSION",
+      "code": "identity_tls_server_match",
+      "status": "passed"
+    },
+    {
+      "case": "LB-INSTALL",
+      "code": "typed_strict_refusal_then_selected_install",
+      "status": "passed"
+    },
+    {
+      "case": "LB-PERSON",
+      "code": "human_identity_lifecycle_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-CUSTODY",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-SETTLEMENT",
+      "code": "genuine_transport_interruption_not_observed",
+      "status": "failed"
+    },
+    {
+      "case": "LB-ACL",
+      "code": "person_state_observation_invalid",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-01",
+      "code": "managed_operation_failed",
+      "status": "failed"
+    },
+    {
+      "case": "MP-02",
+      "code": "backend_pid_unavailable",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-03",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-04",
+      "code": "managed_operation_failed",
+      "status": "failed"
+    },
+    {
+      "case": "MP-05",
+      "code": "native_setting_observation_type_invalid",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-06",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    }
+  ],
+  "original_cleanup": {
+    "independent_absence": {
+      "generated_roles_absent": true,
+      "truss_schema_absent": true
+    },
+    "resources": [
+      {
+        "name_or_opaque_id": "f84f002b2bed908f227145cf7a04cca0d8ca76053f2b348ba281b92171d04dcf",
+        "removed": true,
+        "resource_kind": "schema"
+      },
+      {
+        "name_or_opaque_id": "b55e5749b4463256b172a864d0557735ce2606c3228b1368fb2f114d06dbb21f",
+        "removed": true,
+        "resource_kind": "role"
+      },
+      {
+        "name_or_opaque_id": "ecebc426a6fc794eea00dff5bb6760592b2fe3e58d6898307686650c428b07ce",
+        "removed": true,
+        "resource_kind": "role"
+      },
+      {
+        "name_or_opaque_id": "83a0da91459db927a343545966f8840a64c210a0b6ee0894437867d7b1c1fa99",
+        "removed": true,
+        "resource_kind": "role"
+      },
+      {
+        "name_or_opaque_id": "9dd7b298152e19a45717d9d72039217fb62d2da7bcf262cd742b7a27404b7edd",
+        "removed": true,
+        "resource_kind": "role"
+      }
+    ],
+    "status": "passed"
+  },
+  "original_consumed_ledger": {
+    "path": "/private/tmp/arras-public50-qualification-20261024/activation-state/consumed-6028b3450e40ab6ea05dcda996bbd5dc71c8aa1a28f864caa8d0e4b2f15a396b.jsonl",
+    "sha256": "3b7ddde6bb2a7988f71978debb70e155f7b0e4b261ac90acc74e4590605eee39"
+  },
+  "person_trace_status": "no_generic_person_exception_observed",
+  "process_custody": "CLEAR",
+  "public_retention": {
+    "excluded_private_artifacts": [
+      "target JSON",
+      "authorization JSON",
+      "actor/credential reference config",
+      "fixture source and state",
+      "raw stdout/stderr logs",
+      "Keychain and OAuth material"
+    ],
+    "publication_authorized": false,
+    "review_sha256": "437ff7ca79bc756200094c2f29cd86b265ffaff0305a8548f1a70c21883593c7",
+    "status": "ELIGIBLE_SANITIZED_RECEIPTS_ONLY"
+  },
+  "recorded_at": "2026-10-24T12:28:55.773491+00:00",
+  "resources": "RETURNED_NO_ACTIVE_EFFECTS",
+  "schema": "arras.public50-D6-actual-campaign-result/1",
+  "source_revision": "69f4ab3c498e58636b4102ac921cacc5f18cacbb",
+  "status": "FAILED_NOT_ACCEPTED_INDEPENDENT_CLEANUP_PASSED",
+  "time": {
+    "cleanup_deadline_utc": "2026-10-24T15:03:00Z",
+    "deadline_verdict": "WITHIN_FIXED_DEADLINES",
+    "duration_seconds": 640.390992416,
+    "end_utc": "2026-10-24T12:26:24Z",
+    "initial_remaining_seconds": 9857.018591880798,
+    "late_completion": false,
+    "normal_expiry_utc": "2026-10-24T15:00:00Z",
+    "start_utc": "2026-10-24T12:15:44Z"
+  }
+}

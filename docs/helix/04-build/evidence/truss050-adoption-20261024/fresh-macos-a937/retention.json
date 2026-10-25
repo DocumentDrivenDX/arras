@@ -1,0 +1,101 @@
+{
+  "all_five_required_ci_jobs_succeeded": true,
+  "candidate_artifact_api_sha256": "89b90632518e7e383e9273a70254bf08be681901d2bb3efcc4a3d977616eba83",
+  "candidate_build_review_sha256": "068c71857b3d1009f35b5cf54d718f5d67d5eb61c02f82d2080fe8c7200aec2f",
+  "candidate_synthetic_merge_api_sha256": "5805c91197b02ad984702bcaacd6b8f25797fe16476ece2c598d49f88b234613",
+  "candidate_synthetic_merge_commit": "8c4c627c367066aa5c621fbbb7aed604edd960eb",
+  "candidate_synthetic_merge_tree": "4aeaa446a2579cce8315be627cd7bd18d32e736a",
+  "canonical_wheel": {
+    "installed_arras_payload_count": 172,
+    "sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+    "version": "0.6.1"
+  },
+  "ci_jobs_summary_sha256": "0be9f55720f0378c37ac7854130731f3cfab8a86175480c530fdf1dfcfee5f69",
+  "macos": {
+    "all_native_wheel_hashes_verified": true,
+    "ambiguous_processes": 0,
+    "cleanup_status": "passed",
+    "corpus_counts": {
+      "failed": 0,
+      "harness_error": 0,
+      "host_specific": 0,
+      "limit": 8,
+      "passed": 64
+    },
+    "installed_arras_payload_exact_match": true,
+    "limits_count": 8,
+    "native_wheel_count": 7,
+    "process_group_cleanup_complete": null,
+    "remaining_processes": 0,
+    "remaining_roots": 0,
+    "runtime": {
+      "machine": "arm64",
+      "python": "3.11",
+      "sys_platform": "darwin"
+    },
+    "status": "passed",
+    "system_dynamic_link_audit": "not performed"
+  },
+  "producer": {
+    "candidate_artifact_digest": "sha256:742e141946889f704bef8430072c5279dcf75a48901512c4cf390b136901ef88",
+    "candidate_artifact_id": "12566851185",
+    "pull_request_head_sha": "a937d74a516f8108af8e4a9c5bb1a2b5c4981434",
+    "source_sha": "8c4c627c367066aa5c621fbbb7aed604edd960eb",
+    "source_tree_sha": "4aeaa446a2579cce8315be627cd7bd18d32e736a"
+  },
+  "retained_files_sha256": {
+    "artifact-build-api.json": {
+      "bytes": 734,
+      "sha256": "89b90632518e7e383e9273a70254bf08be681901d2bb3efcc4a3d977616eba83"
+    },
+    "candidate-wheel-provenance.json": {
+      "bytes": 547,
+      "sha256": "82b958fd3a312e1b59ccea5c68dc648e259179569f2ed0a9eeaad0dd0c197a9d"
+    },
+    "canonical-macos-a937-sol-review.safe.json": {
+      "bytes": 4675,
+      "sha256": "95cf189d81b9bca82f35cd8156cb36cd2cbdb7c742c4ad2f34b9fc82da4e791b"
+    },
+    "macos-arm64.find-links.html": {
+      "bytes": 1957,
+      "sha256": "a04f0e579585e30cc8a33830290ff66695bbe8fab264a3367ea0709152b8a40e"
+    },
+    "macos-arm64.json": {
+      "bytes": 4383,
+      "sha256": "724a5d033e4b34a20340bf35264729068b972428278bf5c51c96f410e99e3841"
+    },
+    "native-macos-cleanup-observation.json": {
+      "bytes": 203530,
+      "sha256": "0caea5a54f37190d4f4c97089dce9e78ed6da7aed6d21ec3b75cd2dfe78624cb"
+    },
+    "native-macos-cohort-binding.json": {
+      "bytes": 893,
+      "sha256": "a06b005c5103be3869817c28e71baade552f3cdcb2686b6231ff39f77ccbc02d"
+    },
+    "native-macos-cohort.bound.json": {
+      "bytes": 4506,
+      "sha256": "6de88e06c7b387f037175c16acd2a995ac6d7b5e6373f7cd716b82041a2cbd9d"
+    },
+    "native-macos-consumer-provenance.json": {
+      "bytes": 2367,
+      "sha256": "25a6808d5cf408fd40c6a3b7d23235b64396e45e370e03d8894a6c70ec7f005c"
+    },
+    "native-macos-job-api.json": {
+      "bytes": 3594,
+      "sha256": "38b8c397fa6b177edb1b42350d874048c20dc2219e3b168246b0ccb4a28a82d3"
+    },
+    "native-macos-verification.json": {
+      "bytes": 381563,
+      "sha256": "a9dd0f07397b209b2c700c4010804024c3a540578e72abfc68d3ff98419ceff7"
+    }
+  },
+  "schema": "arras.native-macos-retention/1",
+  "source_api_digest": "sha256:b25afb31e70682b8bda4928b776be2ce0e0aef662fc011be3ce2845084c4bf19",
+  "source_artifact_id": 12567001371,
+  "source_artifact_zip_bytes": 143987,
+  "source_artifact_zip_sha256": "b25afb31e70682b8bda4928b776be2ce0e0aef662fc011be3ce2845084c4bf19",
+  "source_job_id": 120924323356,
+  "source_run_id": 40111502711,
+  "source_workflow_run_head_sha": "a937d74a516f8108af8e4a9c5bb1a2b5c4981434",
+  "wan_acceptance_claim": false
+}

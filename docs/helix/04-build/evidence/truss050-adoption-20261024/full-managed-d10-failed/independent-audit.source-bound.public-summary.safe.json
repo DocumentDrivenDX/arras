@@ -1,0 +1,34 @@
+{
+  "acceptance_claim": false,
+  "bound_manifest_sha256": "25ed7ffe58f8f9f0cf87ead0d14f5b6360937741e9ac2b08f6a0e5afaca55324",
+  "dispatch_go_sha256": "5c3af2d2baeaf3666821178fead9fedde9600362f28d6193f58945790a39aa2b",
+  "elapsed_seconds": 12.071467624977231,
+  "fixture_sha256": "287461ba5751e1489b9160b1fc7d2e19a4df55be3afd9aaf9b5fb800420f3d2e",
+  "installed_source_before_after_equal": true,
+  "native_checks": {
+    "all_four_ordinary_roles_present": true,
+    "all_native_memberships_match_bootstrap": true,
+    "all_native_role_attributes_match_bootstrap": true,
+    "exact_selected4_oid_binding": true,
+    "installer_identity_matches_bootstrap": true,
+    "ordinary_selected4_closures_false": true,
+    "owned_module_roles_absent": true,
+    "transaction_is_read_only": true,
+    "truss_schema_absent": true
+  },
+  "native_membership_count": 18,
+  "native_role_count": 33,
+  "new_native_role_count": 0,
+  "ordinary_selected4_closure_count": 16,
+  "provider_checks": {
+    "exact_project_endpoint_database_provider_identity": true,
+    "owned_compute_bounds_unchanged": true,
+    "owned_endpoint_restored_enabled": true
+  },
+  "read_only_native_transaction": true,
+  "restoration_mutations_performed": false,
+  "schema": "arras.public50-D10-independent-audit-public-summary/1",
+  "source_freeze_sha256": "a0c2544724bfaa9f7c6c42029f5f0104ac7a1e3c5e82b41a07d1aac904aebe9e",
+  "source_receipt_sha256": "2d1b87d65da540ea0803caaaaa2bbec5cdcd71c4847f2f737272caa2b36d67c2",
+  "status": "passed"
+}

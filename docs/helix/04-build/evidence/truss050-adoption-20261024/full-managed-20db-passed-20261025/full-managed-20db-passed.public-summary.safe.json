@@ -1,0 +1,108 @@
+{
+  "acceptance_claim": false,
+  "archives": {
+    "issues_count": 0,
+    "other_pid_archive_count": 0,
+    "raw_archives_remain_private": true,
+    "retained_archive_count": 6,
+    "status": "complete",
+    "target_operations_performed": false
+  },
+  "cases": {
+    "blocked": 0,
+    "failed": 0,
+    "generic_person_exception_observed": false,
+    "passed": 12,
+    "required": [
+      "LB-ADMISSION",
+      "LB-INSTALL",
+      "LB-PERSON",
+      "LB-CUSTODY",
+      "LB-SETTLEMENT",
+      "LB-ACL",
+      "MP-01",
+      "MP-02",
+      "MP-03",
+      "MP-04",
+      "MP-05",
+      "MP-06"
+    ],
+    "trace_valid": true
+  },
+  "cleanup": {
+    "independent_absence_checks": {
+      "generated_roles_absent": true,
+      "truss_schema_absent": true
+    },
+    "removed_resource_count": 5,
+    "status": "passed"
+  },
+  "custody": {
+    "acceptance_claim": false,
+    "custody_returned": true,
+    "source_freeze_unchanged": true,
+    "status": "OWNED_CUSTODY_RETURNED_TO_ROOT"
+  },
+  "evidence_limit": "Public summary contains no credentials, DSNs, provider identities, catalog values, raw logs, or raw fault archives.",
+  "independent_audit": {
+    "installed_source_before_after_equal": true,
+    "native_checks": {
+      "all_four_ordinary_roles_present": true,
+      "all_native_memberships_match_bootstrap": true,
+      "all_native_role_attributes_match_bootstrap": true,
+      "exact_selected4_oid_binding": true,
+      "installer_identity_matches_bootstrap": true,
+      "ordinary_selected4_closures_false": true,
+      "owned_module_roles_absent": true,
+      "transaction_is_read_only": true,
+      "truss_schema_absent": true
+    },
+    "provider_checks": {
+      "exact_project_endpoint_database_provider_identity": true,
+      "owned_compute_bounds_unchanged": true,
+      "owned_endpoint_restored_enabled": true
+    },
+    "read_only_native_transaction": true,
+    "restoration_mutations_performed": false,
+    "status": "passed"
+  },
+  "process_census": {
+    "all_observed_processes_absent": true,
+    "audit_supervisor_command_absent": true,
+    "audit_supervisor_group_id_captured": false,
+    "known_process_groups_absent": true
+  },
+  "schema": "arras.public50.full-managed-retention-summary.v1",
+  "scope": "one fresh original full-managed invocation; test and operational gates reported, release decision remains with root",
+  "source": {
+    "commit": "20db67822b20c822ee91c6823a3fe73ebc3ae932",
+    "fixture_sha256": "9942c8ce585b83ea8db6588cdad1587b7a70ea323bc00809924c620452021457",
+    "source_bridge_sha256": "03a5c5b61f102ee3b470d5b3c78e5b6f45b9df121b29494996f2fe17da344238",
+    "source_freeze_sha256": "5175295232a36ead6379337665ac7ca8675f1272ea1c01aaa72102898cbd4edc",
+    "tree": "5ef9170c03e0f9575649757850fe15e03ce94c7c",
+    "wheel_sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18"
+  },
+  "stage": "full-managed-20db-passed-20261025",
+  "support": {
+    "cleanup_grace_seconds": 180,
+    "installer_operation_timeout_ms": 60000,
+    "installer_statement_timeout_ms": 60000,
+    "maximum_window_seconds": 14400,
+    "migration_manifest_sha256": "4c6baf0282e3d0b5492f070c9c07d89ff0c9a819e748f3820f60b11c1f51c7aa",
+    "native_manifest_sha256": "288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4",
+    "postgres_version_num": "180006",
+    "provider_operation_timeout_seconds": 180,
+    "truss_version": "0.0.50",
+    "vm_used": false,
+    "weft_version": "0.4.51"
+  },
+  "window": {
+    "dispatch_sha256": "e6d6bfd4dcf0cce768c34fe6acfad29702f0b005145184d527306ae2ca4d8a75",
+    "entry_sha256": "0a61dc8f7b938f26bff20a316740fba28a1cbfd5a809059544d36ce0eeb0e3d5",
+    "late_completion": false,
+    "manifest_sha256": "b14b71d5dbb04a0c1b749c147e4399a1a5454a08e66e5fd05490ec2b66ba41e4",
+    "start_utc": "2026-10-25T18:55:14Z",
+    "terminal_utc": "2026-10-25T19:12:55Z",
+    "window_sha256": "9143660c6dda4b3ea53da2844db5d148da300cd576f85ab85ae2332596810bbb"
+  }
+}

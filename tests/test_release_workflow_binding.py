@@ -1,7 +1,12 @@
 from __future__ import annotations
 
+import hashlib
 import re
+import shutil
+import subprocess
 from pathlib import Path
+
+import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 RELEASE = ROOT / ".github/workflows/release.yml"
@@ -87,6 +92,37 @@ def test_release_builds_ui_before_running_integration_and_keeps_current_run_gate
     assert "needs: [github-release, installed-downstream, downloaded-release]" in job_text(
         workflow, "publish-npm"
     )
+
+
+def test_release_rebuild_must_match_the_selected_qualification_wheel_before_upload() -> None:
+    build = job_text(RELEASE.read_text(), "build")
+    selected = (
+        "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18"
+        "  dist/arras-0.6.1-py3-none-any.whl"
+    )
+    assert f"echo '{selected}' | sha256sum --check --strict -" in build
+    assert build.index("uv build --wheel && uv build --sdist") < build.index(selected)
+    assert build.index(selected) < build.index("python tools/verify_distribution.py")
+    assert build.index(selected) < build.index("uses: actions/upload-artifact@v4")
+
+
+@pytest.mark.parametrize("state", ["matching", "changed", "missing"])
+def test_release_wheel_hash_command_refuses_changed_or_missing_bytes(
+    tmp_path: Path, state: str
+) -> None:
+    if shutil.which("sha256sum") is None or shutil.which("sh") is None:
+        pytest.skip("the release runner's GNU sha256sum and POSIX shell are required")
+    build = job_text(RELEASE.read_text(), "build")
+    command = next(line.strip() for line in build.splitlines() if "sha256sum --check" in line)
+    expected = b"selected qualification artifact\n"
+    digest = hashlib.sha256(expected).hexdigest()
+    command = re.sub(r"[0-9a-f]{64}", digest, command)
+    wheel = tmp_path / "dist/arras-0.6.1-py3-none-any.whl"
+    wheel.parent.mkdir()
+    if state != "missing":
+        wheel.write_bytes(expected if state == "matching" else b"different release artifact\n")
+    result = subprocess.run(["sh", "-c", command], cwd=tmp_path, capture_output=True)
+    assert (result.returncode == 0) is (state == "matching")
 
 
 def test_umf_admission_is_required_before_assembly_and_repeated_from_public_wheel() -> None:

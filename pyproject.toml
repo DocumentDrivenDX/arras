@@ -2,7 +2,7 @@
 license = "MIT OR Apache-2.0"
 license-files = ["LICENSE.md", "LICENSE-MIT", "LICENSE-APACHE"]
 name = "arras"
-version = "0.6.0"
+version = "0.6.1"
 description = "The interface to an ontology: UMF types and actions, freshness-stating reads, Truss and Ashlar backends."
 readme = "README.md"
 keywords = ["ontology", "umf", "truss", "ashlar", "graphql", "data-access", "freshness"]
@@ -38,7 +38,7 @@ devhost = [
 # (tools/find-links/index.html), whose anchors carry the releases' SHA256SUMS digests; uv.lock
 # records them as hashes and `uv sync --locked` verifies every wheel. The base install needs none of it.
 truss = [
-    "truss-toolkit[native,query]==0.0.48",
+    "truss-toolkit[native,query]==0.0.50",
 ]
 # Official released UMF Python core, selected by URL and content digest rather than version alone.
 umf = [
@@ -75,7 +75,7 @@ dev = [
 # page). Never part of `dev`: only the `truss` job and a developer running `pytest -m truss` need it.
 # It has wheels for Linux x86_64 and aarch64 and macOS 14+ arm64 on Python 3.11 to 3.13, no sdist.
 truss-test = [
-    "truss-toolkit[local]==0.0.48",
+    "truss-toolkit[local]==0.0.50",
 ]
 
 [tool.uv]

@@ -1,0 +1,150 @@
+{
+  "expected_public_cohort": {
+    "migration_manifest_sha256": "96addcdb95523f478d8f50b0b47198e47a860680c7400dd359711930e837e535",
+    "native_manifest_sha256": "288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4",
+    "postgres_version_num": "180006",
+    "qualification": "Expected authorization tuple, not an observed managed installation or installed-payload proof.",
+    "truss_version": "0.0.49",
+    "truss_wheel_sha256": "7ea14b2787f02cbeec9ad99d835adbcc30c684fd5be8e0765a1d8198b50e7182",
+    "weft_version": "0.4.51"
+  },
+  "findings": [],
+  "fixed_legacy_module_sha256": "0d9c4bd6c390803483937200812e838d45734e0e0ab7925374d88aceb767f16f",
+  "implementation_reported_checks": {
+    "cli_help": "passed",
+    "combined_focused_pytest": {
+      "passed": 52,
+      "scope": "Synthetic controls plus non-database public SDK document preparation; not a service or native database campaign.",
+      "status": "passed",
+      "targets": [
+        "tests/test_lakebase_operations.py",
+        "tests/test_verify_lakebase_acceptance.py"
+      ]
+    },
+    "configured_strict_pyright": {
+      "errors": 0,
+      "scope": "Repository configured src/tests scope with task-private locked dependencies; no claim that a broader ad hoc standalone-tool typing invocation passed.",
+      "status": "passed"
+    },
+    "diff_check": "passed",
+    "independent_rerun": false,
+    "public_content_integrity": "passed",
+    "ruff_check": "passed",
+    "ruff_format": "passed"
+  },
+  "managed_acceptance": "not_run",
+  "qualification_limits": [
+    "No managed-service connection, mutation, provider restart, local PostgreSQL campaign, native corpus run or service cleanup was performed in this source-review activity.",
+    "The source supplies executable baseline procedures and synthetic controls. Full baseline and MP-01 through MP-06 remain unqualified until actual authorized observations and missing controls exist.",
+    "Ordinary human OAuth subject evidence is unavailable. Native-password or own-nonhuman OAuth observations do not establish own-human-token acceptance; supplier assertions alone do not prove OAuth identity.",
+    "Refresh/revocation/expiry, direct caller savepoint custody, remote uncertain-settlement fault controls, full native ACL/protected-activation prerequisites and provider restart/feed/session/extension controls remain explicit blockers.",
+    "Unchanged-state digests cover observed role attributes, memberships, namespace ACLs and current-database ACL, not universal provider-state equivalence.",
+    "Observed installed resource hashes and distribution metadata are distinct from verified wheel-container and complete installed-payload provenance; missing artifact provenance blocks the full gate.",
+    "Interrupt handling covers Python KeyboardInterrupt/SystemExit paths, not SIGKILL, host loss or unobservable remote settlement.",
+    "No merge, package-version change, tag, publication, native support expansion or adoption into the separate A2 release is asserted."
+  ],
+  "resolved_review_findings": [
+    "Actual driver port/TLS carrier checks",
+    "Per-operation authority and fresh role custody",
+    "Bounded caller transaction setup in both autocommit modes",
+    "Typed strict success and detach quarantine",
+    "Post-finally cleanup fact retention",
+    "KeyboardInterrupt/SystemExit partial evidence",
+    "Post-execution projection failure evidence",
+    "Cohesive helper extraction under unchanged tool ceiling"
+  ],
+  "review_date": "2026-10-23",
+  "review_method": {
+    "independent": "Read-only source/test inspection, actual file SHA-256 and line-count inspection, and AST literal hashing. No reviewed tool, fixture, SDK operation or service was executed by this reviewer.",
+    "reported_execution": "Implementation-agent and coordinator check reports below are distinguished from this independent static review."
+  },
+  "review_scope": "Frozen Lakebase harness, synthetic controls, inert examples and provenance declarations in the separate later Truss 0.0.49 adoption tranche.",
+  "reviewed_files": [
+    {
+      "bytes": 31722,
+      "path": "tools/verify_lakebase_acceptance.py",
+      "physical_lines": 775,
+      "sha256": "d91de2de433924e831efb0df96f9f914cd3ceadf59fb3a922a1345fba06394e8"
+    },
+    {
+      "bytes": 19590,
+      "path": "tools/_lakebase_acceptance.py",
+      "physical_lines": 481,
+      "sha256": "a5bc5c938b6f3c060c0a9197dbcf7bc4ab306ba2f5e5d56606ef42dd37070b96"
+    },
+    {
+      "bytes": 31583,
+      "path": "tools/_lakebase_operations.py",
+      "physical_lines": 853,
+      "sha256": "77ae87e48a641da4cbd15fdfddbde6c56d01640631374fba6e664a8c605c0a6b"
+    },
+    {
+      "bytes": 16633,
+      "path": "tools/_lakebase_native.py",
+      "physical_lines": 413,
+      "sha256": "c12fd71f9c4433ccf714cb0f662bf71d9961cf2c7a82eb1d8d12933242c2c679"
+    },
+    {
+      "bytes": 7530,
+      "path": "tools/_lakebase_receipts.py",
+      "physical_lines": 201,
+      "sha256": "4df2a14e920b463e89018ea99705f21be712b7ce3453a8a020ee16119e9b9dc3"
+    },
+    {
+      "bytes": 17364,
+      "path": "tests/test_verify_lakebase_acceptance.py",
+      "physical_lines": 437,
+      "sha256": "4c509c524469a5bc3e827997c87971d823e3cb59723d4cec0e250c13dc969121"
+    },
+    {
+      "bytes": 35353,
+      "path": "tests/test_lakebase_operations.py",
+      "physical_lines": 1034,
+      "sha256": "1b9b535665206aeb6a099e6d2402174fefbca89bd301fe99395079b629ee08c8"
+    },
+    {
+      "bytes": 679,
+      "path": "examples/lakebase_qualification/README.md",
+      "physical_lines": 12,
+      "sha256": "2380436bfd91f335320d44d6aeba17336ab86c3da1e208c49515ba8f2cca5b9c"
+    },
+    {
+      "bytes": 460,
+      "path": "examples/lakebase_qualification/fixture.py",
+      "physical_lines": 22,
+      "sha256": "e9f6d911319c82b39e2bcdce7b67fc58381d7d3546011e3513a4b6ccf7686d7d"
+    },
+    {
+      "bytes": 1722,
+      "path": "examples/lakebase_qualification/target.example.json",
+      "physical_lines": 54,
+      "sha256": "d1ed5340bc5a2a57281c4a37037de57f02bcb37f1c24997db1546d1649fa6ffe"
+    },
+    {
+      "bytes": 1280,
+      "path": "examples/lakebase_qualification/authorization.example.json",
+      "physical_lines": 46,
+      "sha256": "82844247c03ba29619c9de9a632232868f53d97f33db3064b30568e45c7f47a8"
+    },
+    {
+      "bytes": 8448,
+      "path": "tools/public-content-policy.json",
+      "physical_lines": 104,
+      "sha256": "010726bb3278515570d8869816f10bb0bb569cf8acec5bfc37af08de7583025d"
+    }
+  ],
+  "schema": "arras.truss049-managed-harness-source-review.v1",
+  "source_base_commit": "89b241bc75cf5f6180a997b9a98d657bd36d7e58",
+  "source_controls_reviewed": [
+    "Closed target/authorization schemas, exact digests/resource bindings, explicit execute flag, admitted fixture bytes, inert examples and no-clobber receipt publication precede service execution.",
+    "Fixtures supply sources, factual observations and narrowly authorized controls, never case verdicts. Harness checks actual endpoint/TLS/native identities.",
+    "Both psycopg autocommit modes establish READ COMMITTED READ WRITE before local timeout, shared caller-state observer and public host adoption.",
+    "Only contained typed third_party_grant with exact authorized selected-role match and unchanged caller/native observations permits the selected tuple; no discovered policy widening or install retry.",
+    "Actual public PendingCatalogInstallation gates unexpected-success commit. Unknown Ok payloads roll back. Failed detach closes the connection and prevents further SQL or settlement.",
+    "Fresh role custody and intended memberships are independently observed. Uncertain callback effects or settlement prohibit destructive cleanup.",
+    "Planned dry-run effects are distinguished from persistent residue; independent empty/readback queries surround the public write.",
+    "Post-finally receipt construction retains cleanup facts. KeyboardInterrupt/SystemExit and projection failures preserve bounded partial observations with nonzero status and no raw exception text.",
+    "Closed projection helper extraction preserves predicates and participates in the harness digest; all five tool modules remain below the unchanged 926-line ceiling."
+  ],
+  "status": "source_review_passed"
+}
