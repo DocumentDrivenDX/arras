@@ -448,6 +448,8 @@ class InventoryConnection:
 
     def fetchall(self) -> list[tuple[Any, ...]]:
         sql = self._last
+        if "FROM pg_catalog.pg_inherits AS i" in sql:
+            return []
         if "FROM pg_catalog.pg_class AS c" in sql:
             return [("records", "r", "p", False, "truss_owner")]
         if "FROM pg_catalog.pg_attribute AS a" in sql:
@@ -470,8 +472,6 @@ class InventoryConnection:
 
     def fetchone(self) -> tuple[Any, ...]:
         sql = self._last
-        if "pg_catalog.pg_inherits" in sql:
-            return (0,)
         if "SELECT count(*)" in sql:
             return (1,)
         if "pg_database" in sql:
@@ -530,13 +530,97 @@ def test_native_inventory_fails_closed_on_unhandled_relation_kinds() -> None:
 
 def test_native_inventory_refuses_partition_children_outside_observed_schema() -> None:
     class ExternalPartitionConnection(InventoryConnection):
-        def fetchone(self) -> tuple[Any, ...]:
-            if "pg_catalog.pg_inherits" in self._last:
-                return (1,)
-            return super().fetchone()
+        def fetchall(self) -> list[tuple[Any, ...]]:
+            if "FROM pg_catalog.pg_inherits AS i" in self._last:
+                return [("truss", "records", "r", "external", "foreign", "r")]
+            return super().fetchall()
 
     with pytest.raises(managed._Blocked, match="native_external_partition_not_inventoryable"):
         native._native_inventory(ExternalPartitionConnection())
+
+
+def test_native_inventory_records_nested_partition_ancestry_without_double_counting() -> None:
+    class PartitionConnection(InventoryConnection):
+        def fetchall(self) -> list[tuple[Any, ...]]:
+            if "FROM pg_catalog.pg_class AS c" in self._last:
+                return [
+                    ("journal", "p", "p", False, "truss_owner"),
+                    ("journal_2026", "p", "p", True, "truss_owner"),
+                    ("journal_leaf", "r", "p", True, "truss_owner"),
+                    ("unrelated", "r", "p", False, "truss_owner"),
+                ]
+            if "FROM pg_catalog.pg_inherits AS i" in self._last:
+                return [
+                    ("truss", "journal", "p", "truss", "journal_2026", "p"),
+                    ("truss", "journal_2026", "p", "truss", "journal_leaf", "r"),
+                ]
+            return super().fetchall()
+
+    connection = PartitionConnection()
+    inventory = native._native_inventory(connection)
+    relations = {item["name"]: item for item in inventory["relations"]}
+
+    assert relations["journal"]["partition_parent"] is True
+    assert "rows" not in relations["journal"]
+    assert "rows" not in relations["journal_2026"]
+    assert relations["journal_leaf"]["partition_ancestors"] == ("journal", "journal_2026")
+    assert "partition_ancestors" not in relations["unrelated"]
+    assert inventory["row_count"] == 2
+    assert sum("FROM pg_catalog.pg_inherits AS i" in sql for sql in connection.sql) == 1
+
+
+def test_native_inventory_rejects_partition_edges_not_in_relation_catalog() -> None:
+    class MissingParentConnection(InventoryConnection):
+        def fetchall(self) -> list[tuple[Any, ...]]:
+            if "FROM pg_catalog.pg_inherits AS i" in self._last:
+                return [("truss", "missing_parent", "p", "truss", "records", "r")]
+            return super().fetchall()
+
+    with pytest.raises(managed._Blocked, match="native_partition_inventory_shape_invalid"):
+        native._native_inventory(MissingParentConnection())
+
+
+def test_original_request_journal_binding_uses_only_exact_partition_descendants() -> None:
+    xid_row = json.dumps({"xid": "42"})
+    inventory = {
+        "relations": (
+            {"name": "journal", "kind": "p", "partition_parent": True},
+            {
+                "name": "journal_2026",
+                "kind": "p",
+                "partition_ancestors": ("journal",),
+            },
+            {
+                "name": "journal_leaf",
+                "kind": "r",
+                "partition_ancestors": ("journal", "journal_2026"),
+                "rows": (xid_row,),
+            },
+            {"name": "unrelated", "kind": "r", "rows": (xid_row,)},
+        )
+    }
+    lifecycle._require_receipt_journal_binding(inventory, {"original_writer_xid": "42"})
+
+    with pytest.raises(managed._Failed, match="original_request_journal_binding_missing"):
+        lifecycle._require_receipt_journal_binding(inventory, {"original_writer_xid": "43"})
+
+    unrelated_only: dict[str, Any] = dict(inventory)
+    unrelated_only["relations"] = (
+        inventory["relations"][0],
+        inventory["relations"][1],
+        {**inventory["relations"][2], "rows": cast(tuple[str, ...], ())},
+        inventory["relations"][3],
+    )
+    with pytest.raises(managed._Failed, match="original_request_journal_binding_missing"):
+        lifecycle._require_receipt_journal_binding(unrelated_only, {"original_writer_xid": "42"})
+
+    nonpartitioned = {
+        "relations": (
+            {"name": "journal", "kind": "r", "rows": (xid_row,)},
+            {"name": "unrelated", "kind": "r", "rows": (xid_row,)},
+        )
+    }
+    lifecycle._require_receipt_journal_binding(nonpartitioned, {"original_writer_xid": "42"})
 
 
 def test_sequence_state_allowance_preserves_sequence_definition() -> None:

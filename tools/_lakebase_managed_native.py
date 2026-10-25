@@ -29,19 +29,79 @@ def _relation_rows(connection: Any) -> tuple[tuple[Any, ...], ...]:
     return tuple(rows)
 
 
-def _validate_partition_scope(connection: Any) -> None:
-    row = connection.execute(
-        "SELECT count(*) FROM pg_catalog.pg_inherits AS i "
+def _partition_ancestors(
+    connection: Any, relation_rows: tuple[tuple[Any, ...], ...]
+) -> dict[str, tuple[str, ...]]:
+    """Read the bounded in-schema inheritance graph once and resolve table ancestry."""
+    relation_kinds: dict[str, str] = {}
+    for row in relation_rows:
+        if (
+            type(row) not in {tuple, list}
+            or len(row) != 5
+            or type(row[0]) is not str
+            or row[1] not in {"r", "p", "S", "i", "I"}
+            or row[0] in relation_kinds
+        ):
+            raise _Blocked("native_relation_inventory_shape_invalid")
+        relation_kinds[row[0]] = row[1]
+
+    edges = connection.execute(
+        "SELECT parent_ns.nspname, parent.relname, parent.relkind, "
+        "child_ns.nspname, child.relname, child.relkind "
+        "FROM pg_catalog.pg_inherits AS i "
         "JOIN pg_catalog.pg_class AS parent ON parent.oid=i.inhparent "
         "JOIN pg_catalog.pg_namespace AS parent_ns ON parent_ns.oid=parent.relnamespace "
         "JOIN pg_catalog.pg_class AS child ON child.oid=i.inhrelid "
         "JOIN pg_catalog.pg_namespace AS child_ns ON child_ns.oid=child.relnamespace "
-        "WHERE parent_ns.nspname='truss' AND child_ns.nspname<>'truss'"
-    ).fetchone()
-    if type(row) not in {tuple, list} or len(row) != 1 or type(row[0]) is not int:
+        "WHERE parent_ns.nspname='truss' OR child_ns.nspname='truss' "
+        "ORDER BY parent_ns.nspname, parent.relname, child_ns.nspname, child.relname"
+    ).fetchall()
+    if type(edges) not in {tuple, list} or len(edges) > _MAX_RELATIONS * 2:
         raise _Blocked("native_partition_inventory_unavailable")
-    if row[0] != 0:
-        raise _Blocked("native_external_partition_not_inventoryable")
+
+    parents: dict[str, set[str]] = {}
+    for edge in edges:
+        if (
+            type(edge) not in {tuple, list}
+            or len(edge) != 6
+            or any(type(edge[index]) is not str for index in (0, 1, 2, 3, 4, 5))
+        ):
+            raise _Blocked("native_partition_inventory_shape_invalid")
+        parent_schema, parent_name, parent_kind, child_schema, child_name, child_kind = edge
+        if parent_schema != "truss" or child_schema != "truss":
+            raise _Blocked("native_external_partition_not_inventoryable")
+        if (
+            relation_kinds.get(parent_name) != parent_kind
+            or relation_kinds.get(child_name) != child_kind
+        ):
+            raise _Blocked("native_partition_inventory_shape_invalid")
+        if parent_kind in {"r", "p"} and child_kind in {"r", "p"}:
+            parents.setdefault(child_name, set()).add(parent_name)
+        elif parent_kind not in {"i", "I"} or child_kind not in {"i", "I"}:
+            raise _Blocked("native_partition_inventory_shape_invalid")
+
+    resolved: dict[str, frozenset[str]] = {}
+    visiting: set[str] = set()
+
+    def ancestors(name: str) -> frozenset[str]:
+        if name in resolved:
+            return resolved[name]
+        if name in visiting:
+            raise _Blocked("native_partition_inventory_shape_invalid")
+        visiting.add(name)
+        found: set[str] = set()
+        for parent in parents.get(name, ()):
+            found.add(parent)
+            found.update(ancestors(parent))
+        visiting.remove(name)
+        resolved[name] = frozenset(found)
+        return resolved[name]
+
+    return {
+        name: tuple(sorted(ancestors(name)))
+        for name, kind in relation_kinds.items()
+        if kind in {"r", "p"} and parents.get(name)
+    }
 
 
 def _columns(connection: Any, name: str) -> tuple[tuple[Any, ...], ...]:
@@ -171,9 +231,13 @@ def _table_rows(connection: Any, item: dict[str, Any]) -> tuple[dict[str, Any], 
     return item, count_row[0], byte_count
 
 
-def _relation_fact(connection: Any, row: Any) -> tuple[dict[str, Any], int, int]:
+def _relation_fact(
+    connection: Any, row: Any, partition_ancestors: tuple[str, ...] = ()
+) -> tuple[dict[str, Any], int, int]:
     item = _relation_header(connection, row)
     kind = item["kind"]
+    if partition_ancestors:
+        item["partition_ancestors"] = partition_ancestors
     if kind == "S":
         return _sequence_fact(connection, item), 0, 0
     if kind in {"i", "I"}:
@@ -186,12 +250,18 @@ def _relation_fact(connection: Any, row: Any) -> tuple[dict[str, Any], int, int]
     return _table_rows(connection, item)
 
 
-def _relations(connection: Any) -> tuple[tuple[dict[str, Any], ...], int]:
+def _relations(
+    connection: Any,
+    relation_rows: tuple[tuple[Any, ...], ...],
+    partition_ancestors: Mapping[str, tuple[str, ...]],
+) -> tuple[tuple[dict[str, Any], ...], int]:
     result: list[dict[str, Any]] = []
     rows_seen = 0
     bytes_seen = 0
-    for relation in _relation_rows(connection):
-        item, count, byte_count = _relation_fact(connection, relation)
+    for relation in relation_rows:
+        item, count, byte_count = _relation_fact(
+            connection, relation, partition_ancestors.get(relation[0], ())
+        )
         result.append(item)
         rows_seen += count
         bytes_seen += byte_count
@@ -247,8 +317,9 @@ def _native_inventory(connection: Any) -> dict[str, Any]:
         raise _Blocked("observer_connection_not_idle")
     try:
         connection.execute("BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY")
-        _validate_partition_scope(connection)
-        relations, row_count = _relations(connection)
+        relation_rows = _relation_rows(connection)
+        partition_ancestors = _partition_ancestors(connection, relation_rows)
+        relations, row_count = _relations(connection, relation_rows, partition_ancestors)
         payload = {"relations": relations, **_global_facts(connection), "row_count": row_count}
         digest = hashlib.sha256(
             json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")

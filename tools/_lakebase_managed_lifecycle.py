@@ -8,7 +8,7 @@ import json
 import uuid
 from collections.abc import Callable, Mapping
 from contextlib import contextmanager
-from typing import Any
+from typing import Any, cast
 
 from _lakebase_managed_common import (
     DOCUMENT_ID as _DOCUMENT_ID,
@@ -147,15 +147,59 @@ def _find_exact_request_receipt(
     return matches[0]
 
 
+def _partitioned_journal_rows(relations: tuple[Any, ...] | list[Any]) -> list[str]:
+    rows: list[str] = []
+    for raw_item in relations:
+        if type(raw_item) is not dict:
+            continue
+        item = cast(dict[str, Any], raw_item)
+        ancestors = item.get("partition_ancestors", ())
+        if type(ancestors) not in {tuple, list} or any(type(name) is not str for name in ancestors):
+            raise _Failed("original_request_journal_binding_missing")
+        if "journal" not in ancestors or item.get("kind") != "r":
+            continue
+        relation_rows = item.get("rows")
+        if type(relation_rows) not in {tuple, list}:
+            raise _Failed("original_request_journal_binding_missing")
+        typed_rows = cast(tuple[Any, ...] | list[Any], relation_rows)
+        if any(type(raw) is not str for raw in typed_rows):
+            raise _Failed("original_request_journal_binding_missing")
+        rows.extend(cast(tuple[str, ...] | list[str], typed_rows))
+    return rows
+
+
 def _require_receipt_journal_binding(inventory: Any, receipt: Mapping[str, Any]) -> None:
-    rows = next(
-        (item.get("rows", ()) for item in inventory["relations"] if item["name"] == "journal"),
-        (),
+    relations_value: Any = (
+        cast(Mapping[str, Any], inventory).get("relations")
+        if isinstance(inventory, Mapping)
+        else None
     )
+    if type(relations_value) not in {tuple, list}:
+        raise _Failed("original_request_journal_binding_missing")
+    relations = cast(tuple[Any, ...] | list[Any], relations_value)
+    journals: list[dict[str, Any]] = []
+    for raw_item in relations:
+        if type(raw_item) is dict:
+            item = cast(dict[str, Any], raw_item)
+            if item.get("name") == "journal":
+                journals.append(item)
+    if len(journals) != 1:
+        raise _Failed("original_request_journal_binding_missing")
+    journal = journals[0]
+    if journal.get("kind") == "p":
+        rows = _partitioned_journal_rows(relations)
+    elif journal.get("kind") == "r":
+        rows_value: Any = journal.get("rows", ())
+        if type(rows_value) not in {tuple, list}:
+            raise _Failed("original_request_journal_binding_missing")
+        typed_rows = cast(tuple[Any, ...] | list[Any], rows_value)
+        if any(type(raw) is not str for raw in typed_rows):
+            raise _Failed("original_request_journal_binding_missing")
+        rows = cast(tuple[str, ...] | list[str], typed_rows)
+    else:
+        raise _Failed("original_request_journal_binding_missing")
     original_xid = receipt.get("original_writer_xid")
-    if not any(
-        _json_xid(_parse_json_row(raw), original_xid) for raw in rows if isinstance(raw, str)
-    ):
+    if not any(_json_xid(_parse_json_row(raw), original_xid) for raw in rows):
         raise _Failed("original_request_journal_binding_missing")
 
 
