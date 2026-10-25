@@ -117,7 +117,10 @@ def test_registry_publishing_is_separate_oidc_only_after_public_release_gates() 
     assert "id: npm-upload" in workflow
     assert "if: steps.upload-check.outputs.status == 'absent'" in workflow
     assert "NPM_UPLOAD_OUTCOME: ${{ steps.npm-upload.outcome }}" in workflow
-    assert '"publication_mode": "oidc_upload" if os.environ["NPM_UPLOAD_OUTCOME"] == "success" else "existing_exact_bytes"' in workflow
+    assert (
+        '"publication_mode": "oidc_upload" if os.environ["NPM_UPLOAD_OUTCOME"] == "success" else "existing_exact_bytes"'
+        in workflow
+    )
     assert '"oidc_trusted_publisher": os.environ["NPM_UPLOAD_OUTCOME"] == "success"' in workflow
 
 

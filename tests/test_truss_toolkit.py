@@ -48,7 +48,13 @@ def test_the_toolkit_and_weft_resolve_from_the_committed_find_links_page() -> No
     page = (ROOT / "tools/find-links/index.html").read_text()
     assert f"/truss/releases/download/v{TOOLKIT_VERSION}/" in page
     assert f"/weft/releases/download/v{WEFT_VERSION}/" in page
-    assert len(re.findall(r"#sha256=[0-9a-f]{64}\"", page)) == 4 + 12  # plus pgserver-pg18
+    umf_wheel = (
+        "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/"
+        "umf_core-0.10.0-py3-none-any.whl"
+    )
+    umf_sha256 = "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9"
+    assert f"{umf_wheel}#sha256={umf_sha256}" in page
+    assert len(re.findall(r"#sha256=[0-9a-f]{64}\"", page)) == 17  # 4 Weft + 12 pgserver + UMF
 
 
 def test_active_native_cohorts_bind_the_exact_public_truss_wheel() -> None:

@@ -223,8 +223,7 @@ def test_pypi_preflight_rejects_all_direct_references_even_in_an_extra(
     wheel = tmp_path / "arras-0.6.2-py3-none-any.whl"
     sdist = tmp_path / "arras-0.6.2.tar.gz"
     bad = (
-        "Metadata-Version: 2.4\nName: arras\nVersion: 0.6.2\n"
-        f"Requires-Dist: {requirement}\n\n"
+        f"Metadata-Version: 2.4\nName: arras\nVersion: 0.6.2\nRequires-Dist: {requirement}\n\n"
     ).encode()
     _write_wheel(wheel, bad)
     _write_sdist(sdist, bad)

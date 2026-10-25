@@ -182,9 +182,12 @@ def test_registry_publication_is_separate_and_oidc_only() -> None:
     assert "needs: [verify-release, pypi-preflight]" in pypi
     assert "environment: npm" in npm and "id-token: write" in npm
     assert "environment: pypi" in pypi and "id-token: write" in pypi
-    assert "npm publish \"verified/public-release-assets/" in npm
+    assert 'npm publish "verified/public-release-assets/' in npm
     assert "pypa/gh-action-pypi-publish@release/v1" in pypi
-    assert "cp verified/public-release-assets/*.whl verified/public-release-assets/*.tar.gz dist/" in pypi
+    assert (
+        "cp verified/public-release-assets/*.whl verified/public-release-assets/*.tar.gz dist/"
+        in pypi
+    )
     assert "NODE_AUTH_TOKEN" not in workflow and "NPM_TOKEN" not in workflow
 
 

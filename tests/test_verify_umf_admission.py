@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import base64
+import csv
 import hashlib
 import importlib.util
 import io
@@ -145,6 +146,104 @@ def test_umf_wheel_identity_requires_the_official_release_artifact(tmp_path: Pat
     wrong.write_bytes(b"not the released wheel")
     with pytest.raises(verifier.VerificationError, match="unexpected-official-artifact"):
         verifier._wheel_details(wrong, expected="umf")
+
+
+def _write_arras_wheel(path: Path, requirements: tuple[str, ...]) -> None:
+    dist_info = "arras-0.6.2.dist-info"
+    metadata = (
+        "Metadata-Version: 2.4\nName: arras\nVersion: 0.6.2\n"
+        + "".join(f"Requires-Dist: {item}\n" for item in requirements)
+        + "\n"
+    ).encode()
+    members = {
+        f"{dist_info}/METADATA": metadata,
+        f"{dist_info}/WHEEL": b"Wheel-Version: 1.0\nRoot-Is-Purelib: true\nTag: py3-none-any\n",
+    }
+    record_rows: list[list[str]] = []
+    for name, payload in members.items():
+        digest = base64.urlsafe_b64encode(hashlib.sha256(payload).digest())
+        record_rows.append(
+            [name, f"sha256={digest.rstrip(b'=').decode('ascii')}", str(len(payload))]
+        )
+    record_rows.append([f"{dist_info}/RECORD", "", ""])
+    buffer = io.StringIO()
+    csv.writer(buffer, lineterminator="\n").writerows(record_rows)
+    members[f"{dist_info}/RECORD"] = buffer.getvalue().encode()
+    with zipfile.ZipFile(path, "w") as archive:
+        for name, payload in members.items():
+            archive.writestr(name, payload)
+
+
+@pytest.mark.parametrize(
+    "requirement",
+    [
+        'umf-core==0.10.0; extra == "umf"',
+        f"{verifier.UMF_REQUIREMENT}; extra == 'umf'",
+    ],
+)
+def test_arras_wheel_accepts_only_exact_umf_extra_requirement(
+    tmp_path: Path, requirement: str
+) -> None:
+    wheel = tmp_path / "arras-0.6.2-py3-none-any.whl"
+    _write_arras_wheel(wheel, (requirement,))
+
+    assert verifier._wheel_details(wheel, expected="arras")["version"] == "0.6.2"
+
+
+@pytest.mark.parametrize(
+    "requirements",
+    [
+        ("umf-core==0.10.1; extra == 'umf'",),
+        ("umf-core>=0.10.0; extra == 'umf'",),
+        (
+            'umf-core==0.10.0; extra == "umf"',
+            'umf-core==0.10.0; extra == "umf"',
+        ),
+        ("umf-core==0.10.0; extra == 'other'",),
+    ],
+)
+def test_arras_wheel_rejects_wrong_or_duplicate_umf_requirements(
+    tmp_path: Path, requirements: tuple[str, ...]
+) -> None:
+    wheel = tmp_path / "arras-0.6.2-py3-none-any.whl"
+    _write_arras_wheel(wheel, requirements)
+
+    with pytest.raises(verifier.VerificationError, match="optional-extra-not-pinned"):
+        verifier._wheel_details(wheel, expected="arras")
+
+
+def test_umf_extra_install_uses_the_same_explicit_qualified_wheel(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    wheel = tmp_path / "arras-0.6.2-py3-none-any.whl"
+    wheel.write_bytes(b"staged wheel")
+    calls: list[list[str]] = []
+
+    def capture(command: list[str], **_kwargs: Any) -> subprocess.CompletedProcess[str]:
+        calls.append(command)
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(verifier, "_run", capture)
+    verifier._install_requirement(
+        tmp_path / "python",
+        wheel,
+        extra=True,
+        cwd=tmp_path,
+        env={},
+        report=tmp_path / "report.json",
+    )
+    verifier._install_requirement(
+        tmp_path / "python",
+        wheel,
+        extra=False,
+        cwd=tmp_path,
+        env={},
+        report=tmp_path / "report.json",
+    )
+
+    assert calls[0][-2:] == [f"arras[umf] @ {wheel.as_uri()}", verifier.UMF_REQUIREMENT]
+    assert calls[1][-1] == f"arras @ {wheel.as_uri()}"
+    assert verifier.UMF_REQUIREMENT not in calls[1]
 
 
 def test_staged_artifact_identity_is_rechecked_after_install_probes(tmp_path: Path) -> None:

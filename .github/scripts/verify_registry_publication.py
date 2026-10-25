@@ -32,9 +32,7 @@ _TAG = re.compile(r"v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\Z")
 _SHA40 = re.compile(r"[0-9a-f]{40}\Z")
 _SHA64 = re.compile(r"[0-9a-f]{64}\Z")
 _RUN_ID = re.compile(r"[1-9][0-9]{0,19}\Z")
-_DIRECT_REQUIREMENT = re.compile(
-    r"^\s*[A-Za-z0-9][A-Za-z0-9._-]*\s*(?:\[[^\]]*\]\s*)?@", re.ASCII
-)
+_DIRECT_REQUIREMENT = re.compile(r"^\s*[A-Za-z0-9][A-Za-z0-9._-]*\s*(?:\[[^\]]*\]\s*)?@", re.ASCII)
 _REQUIRED_JOBS = {
     "check": {"check"},
     "truss": {"Truss adapter on PostgreSQL 18.6"},
@@ -536,7 +534,11 @@ def check_pypi_registry(package: str, version: str, expected_files: dict[str, st
 
 
 def wait_for_registry_match(check: Any, timeout_seconds: int = 180) -> str:
-    if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, int) or not 1 <= timeout_seconds <= 180:
+    if (
+        isinstance(timeout_seconds, bool)
+        or not isinstance(timeout_seconds, int)
+        or not 1 <= timeout_seconds <= 180
+    ):
         _fail("registry visibility timeout must be from 1 to 180 seconds")
     deadline = time.monotonic() + timeout_seconds
     while True:
@@ -624,19 +626,16 @@ def _execute(args: argparse.Namespace) -> int:
                 _fail(f"PyPI rejects direct-URL Requires-Dist metadata in: {names}")
             print(json.dumps({"status": "compatible"}, sort_keys=True))
         elif args.command == "check-npm":
+
             def check_npm() -> str:
-                return check_npm_registry(
-                    "@documentdrivendx/arras-ui", args.version, args.sha256
-                )
+                return check_npm_registry("@documentdrivendx/arras-ui", args.version, args.sha256)
 
             status = (
                 wait_for_registry_match(check_npm, args.visibility_timeout)
                 if args.wait_for_present
                 else check_npm()
             )
-            _print_state(
-                status, args.output
-            )
+            _print_state(status, args.output)
         else:
             expected = _read_json(args.expected_files, "expected PyPI file manifest")
             files = expected.get("files")
@@ -644,6 +643,7 @@ def _execute(args: argparse.Namespace) -> int:
                 not isinstance(k, str) or not isinstance(v, str) for k, v in files.items()
             ):
                 _fail("expected PyPI file manifest is malformed")
+
             def check_pypi() -> str:
                 return check_pypi_registry("arras", args.version, files)
 
