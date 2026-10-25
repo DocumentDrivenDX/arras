@@ -44,21 +44,51 @@ passed its Linux release gates, including 107 migration tests, 62 HF cases and
 174 managed-grant tests. Its selected small functional workload also passed; it
 does not establish a general performance result or Arras Lakebase acceptance.
 
-The active 0.6.1 gates therefore remain open: qualify the exact final Arras wheel
-in the complete fresh-installed macOS campaign on the selected CPython 3.11.9
-environment (72 applicable cases: 64 passes
-and eight unchanged declared limits) and the complete twelve-case Lakebase
-campaign with independent owned-resource cleanup. The already-provisioned
-ordinary actor setup is reusable; no new VM or repeated administrator
-provisioning is part of this continuation. Prior 0.0.49 receipts remain
-historical and do not satisfy either 0.0.50-bound gate.
+The exact canonical Arras 0.6.1 wheel SHA-256 is
+`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`.
+At source `2d1bc7e34af7499d5f4f582d4ee41e0d772920cc`, CI run
+[`40119390075`](https://github.com/DocumentDrivenDX/arras/actions/runs/40119390075)
+passed all five jobs. Its [fresh-installed Mac campaign](../04-build/evidence/truss050-adoption-20261024/fresh-macos-40119390075/)
+on macOS arm64 / CPython 3.11.9 completed 72 applicable cases: 64 passes and
+eight unchanged declared limits, with seven replica-only cases inapplicable.
+Exact installed-payload correspondence and cleanup passed. No system-wide
+dynamic-link audit or execution of forced process-group cleanup is claimed.
+
+The human authorized resumption of the owned-database recovery qualification
+on 2026-10-25. Controller preflight passed 6/6 checks and collector controls
+passed 8/8; these are controls, not acceptance evidence. The first post-resume
+2d baseline remains a 5/6 journal-binding failure. After the bounded
+partition-ancestry repair, the fresh source-20db baseline passed 6/6 with
+original cleanup, independent audit (`560f5c20…`), process census
+(`8da9…`) and custody handback (`9a599e22…`) also passing. The source-bound records are retained in
+[baseline-20db-passed-20261025](../04-build/evidence/truss050-adoption-20261024/baseline-20db-passed-20261025/). CI run `40221099126` source-20db Mac run passed 64 cases, retained eight unchanged
+limits and skipped seven inapplicable replica cases; native-wheel hashes,
+172-file payload parity and cleanup passed. The full original twelve-case
+Lakebase campaign on that wheel passed 12/12 with zero failures or blocked cases;
+original cleanup, independent audit, process census and custody handback passed.
+Its source-bound records are in [full-managed-20db-passed-20261025](../04-build/evidence/truss050-adoption-20261024/full-managed-20db-passed-20261025/).
+The scoped supplemental census records all three known groups absent, zero
+owned-script matches and zero denials. The direct supervisor PGID was not
+captured; no forced-cleanup claim is made. Historical D11/D12 and the initial
+2d failure remain preserved as failed evidence. Final release review, exact-
+commit CI, release-built artifact, merge/tag and publication remain open.
+
+The historical [full WAN campaign, D11](../04-build/evidence/truss050-adoption-20261024/full-managed-d11-failed/),
+finished 10 passed / 2 failed; the separate [D12 baseline diagnostic](../04-build/evidence/truss050-adoption-20261024/baseline-six-diagnostic/)
+finished 5 passed / 1 failed and did not run the managed gate. Those failed
+results remain historical and do not replace the completed 20db campaign. The already-provisioned
+ordinary actor setup is reusable; no VM was created or required for these WAN
+runs. Credential renewal remains with the user or designated workspace
+credential administrator. Historical 0.0.49 receipts retain their original scope.
+Both complete campaigns must bind to the same eventual release wheel bytes;
+any wheel-byte change requires both campaigns rebound and rerun.
 
 PR 9 is under qualification. Its earlier candidate with 0.6.0 package metadata
 passed fresh installed native conformance (64 cases and eight unchanged declared
 limits, zero failed/harness-error), artifact parity, doctor and official UMF
 checks. Those receipts retain their original wheel identity; final 0.6.1 artifacts
-require their own evidence. Actual Lakebase acceptance, final review, merge and
-publication remain pending. The TP-001 and integration-plan execution amendments
+require their own evidence. Final review, merge and publication remain pending; the exact-wheel managed
+execution gate has passed. The TP-001 and integration-plan execution amendments
 govern the original managed proof and reusable least-privilege identity setup.
 
 ## 0.6.0

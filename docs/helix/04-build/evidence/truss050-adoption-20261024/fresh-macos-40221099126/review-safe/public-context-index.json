@@ -1,0 +1,50 @@
+{
+  "schema": "arras.native-macos-review-safe-public-context/1",
+  "original_export_manifest": "review-safe-export.json",
+  "original_export_manifest_sha256": "8877fe5ecf490f6c626a173de7561bf260911776d0a7616477b9f1b96bd4474a",
+  "original_manifest_preserved": true,
+  "original_manifest_readme_sha256": "4e96b08e5ed4dfe6238551b91371f64a45809e647c7601d8bde6b73bd5dcf544",
+  "current_public_files": {
+    "README.md": {
+      "bytes": 875,
+      "sha256": "c7f266383e1ec71ec11795ce50fcfea2f22a0fee18b0b7130d3b6f64e6a1837c"
+    },
+    "candidate-wheel-provenance.json": {
+      "bytes": 547,
+      "sha256": "8d703fde2ab2cfd76b6f428d094cbc3887ff335c13b3fa590bb63d916cd45357"
+    },
+    "macos-arm64.find-links.html": {
+      "bytes": 1957,
+      "sha256": "a04f0e579585e30cc8a33830290ff66695bbe8fab264a3367ea0709152b8a40e"
+    },
+    "macos-arm64.json": {
+      "bytes": 4383,
+      "sha256": "724a5d033e4b34a20340bf35264729068b972428278bf5c51c96f410e99e3841"
+    },
+    "native-macos-cleanup-summary.json": {
+      "bytes": 357,
+      "sha256": "d482c3581223ab16229bed9079c61c5b1dfd5ac0b725bdb57cdd5004f1372164"
+    },
+    "native-macos-cohort-binding.safe.json": {
+      "bytes": 681,
+      "sha256": "0b02dbd5348d6807ce04356f0dc364a20e25dbb67ce9d22d0f4ffc72f1f0a0cc"
+    },
+    "native-macos-cohort.bound.json": {
+      "bytes": 4506,
+      "sha256": "6de88e06c7b387f037175c16acd2a995ac6d7b5e6373f7cd716b82041a2cbd9d"
+    },
+    "native-macos-consumer-provenance.json": {
+      "bytes": 2367,
+      "sha256": "b5938f5b8490afd725d9f1fce4a22a549eaf09e08227ea829fa7b6f66c2a070d"
+    },
+    "native-macos-verification.safe.json": {
+      "bytes": 372292,
+      "sha256": "c0d9080a051dac1f011a6419f61fb507af57d0d2303ed8bc648cd577b7b7b9bf"
+    },
+    "review-safe-export.json": {
+      "bytes": 3790,
+      "sha256": "8877fe5ecf490f6c626a173de7561bf260911776d0a7616477b9f1b96bd4474a"
+    }
+  },
+  "private_originals": "Remain in separate private custody; no private-originals directory or original ZIP/process-bearing files are included in this public folder."
+}

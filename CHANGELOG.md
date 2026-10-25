@@ -11,14 +11,31 @@ uncertainty and quarantine behavior.
 The Truss native runtime manifest remains `truss-catalog-runtime/0.74-candidate`
 with SHA-256 `288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4`.
 The active migration manifest is versioned separately and retains the prior
-0.0.49 manifest. The 0.0.50 public source binding does not transfer earlier
-installed-native or Lakebase receipts; both complete 0.6.1 campaigns remain
-required for the exact final Arras wheel.
+0.0.49 manifest. The 0.0.50 public source binding does not transfer earlier installed-native or
+Lakebase receipts. The exact canonical Arras wheel has since passed both complete
+0.6.1 campaigns; source-bound receipts are retained in the governed evidence tree.
 
 Adds separately authorized Lakebase qualification with original identity,
-transaction, feed, recovery and provider observations. Source/local checks and
-partial service evidence do not imply managed acceptance. Review, actual managed
-qualification, final artifact gates and publication are in progress.
+transaction, feed, recovery and provider observations. The exact-wheel macOS
+campaign passed, and the original twelve-case managed campaign passed 12/12 with
+cleanup, audit, census and custody checks. Final review, exact-commit CI, release
+artifacts, merge/tag and publication remain open; execution results alone do not
+declare final release acceptance.
+
+As of 2026-10-25, source `20db67822b20c822ee91c6823a3fe73ebc3ae932` passed all
+five CI jobs in run `40221099126` and remains bound to the canonical wheel SHA-256
+`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`. Fresh Mac
+arm64 / CPython 3.11.9 qualification in run `40221099126` passed 64 cases with
+eight declared limits and seven replica-only cases inapplicable; native-wheel
+hashes, 172-file installed payload parity and cleanup passed. The repaired fresh
+Lakebase baseline passed 6/6. The separate original twelve-case Lakebase campaign
+passed 12/12 with original cleanup, independent audit, process census and custody
+handback passed. Source-bound safe receipts are retained in the governed evidence
+tree. The scoped supplemental census did not capture the direct supervisor PGID;
+no forced-cleanup claim is made. The initial journal-binding failure and earlier
+D11/D12 failures remain historical. Final review, exact-commit CI, release build,
+merge/tag and publication gates remain open; this remains a release candidate,
+not a published or finally accepted release.
 
 ## 0.6.0 — 2026-10-23
 

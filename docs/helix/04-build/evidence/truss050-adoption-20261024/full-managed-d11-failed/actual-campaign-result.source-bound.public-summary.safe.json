@@ -1,0 +1,117 @@
+{
+  "acceptance_note": "This 10-passed, 2-failed, 0-blocked invocation is not accepted; partial cases do not close the full 12-case gate.",
+  "acceptance_passed": false,
+  "audit_facts": {
+    "installed_source_before_after_equal": true,
+    "native_membership_count": 18,
+    "native_role_count": 33,
+    "new_native_role_count": 0,
+    "ordinary_selected4_closure_count": 16,
+    "ordinary_selected4_closures_false": true,
+    "provider_checks": {
+      "exact_project_endpoint_database_provider_identity": true,
+      "owned_compute_bounds_unchanged": true,
+      "owned_endpoint_restored_enabled": true
+    },
+    "status": "passed"
+  },
+  "canonical_arras_wheel_sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+  "cases": [
+    {
+      "case": "LB-ADMISSION",
+      "code": "identity_tls_server_match",
+      "status": "passed"
+    },
+    {
+      "case": "LB-INSTALL",
+      "code": "typed_strict_refusal_then_selected_install",
+      "status": "passed"
+    },
+    {
+      "case": "LB-PERSON",
+      "code": "human_identity_lifecycle_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-CUSTODY",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-SETTLEMENT",
+      "code": "genuine_transport_interruption_not_observed",
+      "status": "failed"
+    },
+    {
+      "case": "LB-ACL",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-01",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-02",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-03",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-04",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-05",
+      "code": "genuine_transport_interruption_not_observed",
+      "status": "failed"
+    },
+    {
+      "case": "MP-06",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    }
+  ],
+  "cause": "unknown; no pre-fault exception was captured and no matching validated fault group does not establish raw event absence",
+  "cleanup_independent_absence": {
+    "generated_roles_absent": true,
+    "truss_schema_absent": true
+  },
+  "counts": {
+    "blocked": 0,
+    "failed": 2,
+    "passed": 10
+  },
+  "custody_returned": true,
+  "diagnostic_limit": "Existing reviewed diagnostic exposes no managed exception and no matching validated fault group for the two genuine_transport_interruption_not_observed failures. Cause not inferred.",
+  "elapsed_seconds": 980.656331541,
+  "independent_audit_status": "passed",
+  "installed_source_before_after_equal": true,
+  "no_active_exec_sessions": true,
+  "no_vm": true,
+  "original_cleanup_status": "passed",
+  "receipt_bindings_sha256": {
+    "actual-campaign-result.safe.json": "6b35f2ca756bbdbca915d37050bad04e59c129f34d9e0e31513b71f059e77df1",
+    "audited-custody-handback.safe.json": "b47a89ba846fb82d747d8154e1abc7bdd0511a7903391b3658d32d8c54215b2f",
+    "full-diagnostics.safe.json": "3b2bfc583e6678d387855b59d4125a1261799b3f3ddfb813271e3175cfb8ff9c",
+    "full-managed-terminal.safe.json": "39498ed804ffde6b953447980ae7e8161b1b69ded888a73455071bd9186ce469",
+    "full-managed-terminal.safe.verifier.json": "e6aa7c9885bbc62f56abfdfb12086592183b4736be0f0420329f1cc90fe5e3cf",
+    "independent-audit.safe.json": "c556afeea9d0acf28f798b637fcb9c3259e02eaaf164409277ff6282f957a772",
+    "terminal-process-custody.safe.json": "fea34c1d51e8deade9faa0241178dd4f4b25c2369d16760450b22bc42aec2f1b"
+  },
+  "schema": "arras.public50-D11-campaign-public-summary/1",
+  "source_commit": "2d1bc7e34af7499d5f4f582d4ee41e0d772920cc",
+  "source_receipt_sha256": "6b35f2ca756bbdbca915d37050bad04e59c129f34d9e0e31513b71f059e77df1",
+  "source_tree": "396f50b8ddc10bc8d3e16a5baf7f81055e17efc4",
+  "sql_operation_timeout_ms": 60000,
+  "status": "FAILED_NOT_ACCEPTED_CLEANUP_INDEPENDENTLY_VERIFIED",
+  "truss_version": "0.0.50",
+  "wall_start": "2026-10-24T18:24:15Z",
+  "wall_terminal": "2026-10-24T18:40:36Z"
+}

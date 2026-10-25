@@ -2144,3 +2144,99 @@ The complete twelve-case WAN gate remains open after this source correction.
 A fresh campaign, independent cleanup/audit and exact artifact/source bindings
 are required before merge or tagging. The release wheel guard remains unchanged
 until both installed and managed gates pass against the same canonical bytes.
+
+### Historical Mac proof and failed WAN continuation — 2026-10-24 (superseded by the 2026-10-25 outcome below)
+
+Source `2d1bc7e34af7499d5f4f582d4ee41e0d772920cc`, tree
+`396f50b8ddc10bc8d3e16a5baf7f81055e17efc4`, passed all five jobs in CI run
+[`40119390075`](https://github.com/DocumentDrivenDX/arras/actions/runs/40119390075).
+The complete wheel remains byte-identical to canonical Arras 0.6.1 SHA-256
+`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`.
+The [same-source fresh Mac proof](evidence/truss050-adoption-20261024/fresh-macos-40119390075/)
+retains all 72 applicable cases: 64 passes and eight unchanged declared limits,
+plus seven inapplicable replica-only cases. All 172 hashed installed Arras
+payload rows, seven native archive bindings and cleanup were independently
+reviewed. System-wide dynamic-link inspection was not performed; forced
+process-group cleanup execution is not claimed.
+
+The [D11 full WAN campaign](evidence/truss050-adoption-20261024/full-managed-d11-failed/)
+ran from the Mac to Lakebase from 18:24:15 to 18:40:36 UTC, taking
+980.656331541 seconds. Ten cases passed; LB-SETTLEMENT and MP-05 failed with
+`genuine_transport_interruption_not_observed`; none were blocked. Compute
+restart and durable-feed recovery passed in this run. Original cleanup, the
+fresh independent native/provider audit and explicit process-custody handback
+passed. The original pre-fault cause was not captured. An empty selected
+observer group does not establish that the raw event stream was empty.
+
+The separate [D12 baseline-six diagnostic](evidence/truss050-adoption-20261024/baseline-six-diagnostic/)
+ran from 19:37:54 to 19:48:17 UTC, taking 623.288901375 seconds. Five baseline
+cases passed; LB-SETTLEMENT failed with
+`genuine_transport_interruption_not_observed`; none were blocked. The managed
+gate was not run. Retained private archive commitments show the selected
+request reached the original COMMIT driver, which returned normally in
+51.759458 ms; no transport-cut row was recorded. The worker's exact cause
+remains unknown, and D12 does not establish D11 causality. The observer's
+loader-filename limitation prevents interpreting its empty selected group as
+raw absence evidence. Original cleanup, the fresh independent audit, process
+census and explicit custody handback passed. Each audit retained the baseline
+33 roles and 18 memberships, no new roles, sixteen ordinary platform-closure
+checks false, and three passing provider checks. Raw archives, target/identity
+material and process identifiers remain private; retained summaries bind to
+the originals by hash.
+
+Both runs retained the 60,000 ms SQL-operation limit and used the existing WAN
+path without a VM. Neither failed campaign supplies acceptance credit. A fresh
+baseline campaign and its cleanup/audit/custody must pass before a separately
+bound original twelve-case campaign. The latter must pass all cases and its
+cleanup/audit/custody before merge or tagging. Source review and offline
+controls cannot close those service gates. The release digest guard remains
+unapplied until the complete installed Mac and actual twelve-case WAN
+campaigns qualify the same canonical bytes.
+
+On 2026-10-25 the human explicitly resumed the owned-database recovery
+qualification. The earlier failed coordinator turn is not evidence of a tool
+approval rejection or a verified continuing account restriction; no feedback
+clearance is claimed. Controller preflight passed 6/6 checks and collector
+controls passed 8/8; these are controls, not acceptance evidence. The first
+post-resume baseline at source 2d remains a 5-pass / 1-fail diagnostic for
+`original_request_journal_binding_missing`; its receipt is preserved as failed
+history. The bounded partition-ancestry source repair is present in source
+`20db67822b20c822ee91c6823a3fe73ebc3ae932` (tree
+`5ef9170c03e0f9575649757850fe15e03ce94c7c`); its focused managed tests recorded
+76 passes with one native test deselected and typing reported no diagnostics.
+The subsequent fresh baseline at source 20db passed all six cases, with original
+cleanup, fresh independent audit (`560f5c20…`), process census (`8da9…`) and
+custody handback (`9a599e22…`) passing. These are supplied receipt prefixes, not
+complete digests; safe evidence copies are being staged and no full hash or link
+is inferred here. D11 remains 10/12 with LB-SETTLEMENT and MP-05 failing
+`genuine_transport_interruption_not_observed`; D12 remains a 5/6 baseline
+diagnostic with LB-SETTLEMENT failing and its managed gate not run. Both retain
+separate passing cleanup, audit and custody results and neither grants
+acceptance credit. CI run `40221099126` supplies the same-source Mac proof as exact-wheel component evidence:
+64 passes, eight unchanged declared limits, seven replica-only cases skipped as
+inapplicable, seven native wheel hashes and 172 exact Arras payload hashes;
+cleanup passed. Its review-safe export is prepared for the evidence destination
+`evidence/truss050-adoption-20261024/fresh-macos-40221099126/review-safe/`;
+export manifest SHA-256 is `8877fe5ecf490f6c626a173de7561bf260911776d0a7616477b9f1b96bd4474a`
+and its source-bound export manifest is retained in the repository. The original full twelve-case campaign on the same canonical wheel passed 12/12 with zero failures or blocked cases; original cleanup, independent audit, process census and custody handback passed. See [full managed records](evidence/truss050-adoption-20261024/full-managed-20db-passed-20261025/). The supplemental scoped census found all three known process groups absent, zero exact owned-script matches and zero inspection denials. The direct supervisor PGID was not captured and no forced-cleanup claim is made; the public-safe projection is retained with the full run. The initial 2d failure and D11/D12 failures remain historical. The wheel guard now binds the qualified canonical wheel. Final review, exact-commit CI, release-built artifact, merge/tag and publication gates remain open.
+
+### Consolidated source accounting — 2026-10-25
+
+This bounded reconciliation covers the four named source chats and assigned
+Arras/Truss records. It does not claim a global repository audit or acceptance.
+
+| Source record | Disposition and correspondence | Owner / next action |
+| --- | --- | --- |
+| PR9 corrections `93a5020`, `69f4ab3`, `291cd2f`, `e5d8100`, `f37b308`, `a937d74` and partition-ancestry repair in `20db67822b20c822ee91c6823a3fe73ebc3ae932` | Integrated in the current clean source `20db67822b20c822ee91c6823a3fe73ebc3ae932` (tree `5ef9170c03e0f9575649757850fe15e03ce94c7c`), which pins Truss 0.0.50. The ancestry repair closes the source-deterministic empty-parent journal-binding defect underlying the failed 2d baseline; focused tests reported 76 passed / one native deselected and typing reported no diagnostics. No required PR9 runtime-code delta is absent within this bounded source set. | Root Arras retains the candidate and continues exact-wheel acceptance; no source mutation in this document update. |
+| Survivor chat and 39-file preparation bundle | Source remains unchanged; the bundle README digest is `8423b20af136efecaccd6375de71e69a42bf46dea92456e76de0cba236c634e6`. The governed documents are reconciled in the authorized release candidate; this source accounting does not claim final release acceptance. | Root Arras carries the candidate through final review and exact-commit release gates. |
+| Release-coordination chat | Four Truss requirement/findings documents are recorded, but no exact code commit/path correspondence is established in the bounded ledger. | Root Arras maps any still-required item against the candidate before acceptance; unresolved required runtime work blocks qualification. |
+| Shared UMF integration chat | PR9 corrections above are integrated. Portable 114/0 is not native or WAN acceptance. The expression-matcher and launcher findings have no additional Arras runtime commit correspondence in this candidate. | UMF/Weft owner carries shared tooling findings; Root Arras addresses a candidate-specific required delta only if exact source correspondence establishes one. |
+| Lakebase source chat | Historical worktree is unavailable. Preserved records bind D11 (10/12 failed) and D12 baseline (5/6 failed), plus the initial 2d post-resume baseline (5/6, `original_request_journal_binding_missing`). The repaired source 20db has a later 6/6 baseline PASS with cleanup, independent audit, census and custody PASS; safe source-bound copies are retained in `baseline-20db-passed-20261025`; a fresh full campaign is retained in `full-managed-20db-passed-20261025`. | Root Arras retains the failed history and records the completed gate evidence; final review, exact-commit CI, release artifacts, merge/tag and publication remain. |
+| PR10 integration `27a1915124aaa47944a4722328dcba63b7107e99`, handoff `e3188af0ba1f1d38c1db4205d0ff9162cae2ccbdd9872cc62c69b85a731c5391` | Deferred as a separate future Arras cohort (actions/UMF integration; schema v3 / 18 planned assets); not merged into frozen PR9 and not assigned its version. | Root Arras starts a separate batch after verified public PR9 handoff, then binds its own wheel, Mac and full twelve-case cleanup/acceptance evidence. |
+| Truss 0.0.50 published source `a687d0a226dad5745cbd909377bf99c7c1cddc66`; wheel `7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00`; installer candidate `0b61b51`; Arras wheel `259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18` | Integrated as the exact published dependency for PR9; no duplicate Truss release. Metadata 0.0.49 is not a substitute for frozen 0.0.50. | Root Arras retains the exact pin and wheel binding. |
+| Truss PWS03 snapshot `8bc82edd270a0043cd48ef8073fb2ef755eb017b` (parent `14e16ce852381fd376da1d2187fc941683903ab2`) and UMF counterpart `5f0d603df3b391bbc7ec88fe06a2e7b53b02c7b4` | Deferred from PR9 into a separate upstream Truss integration/release batch: it adds `inspectAccessViews` / `ResolvedField.temporal` under CONTRACT-075 profile `umf-access-temporal/0.1.0`, outside the frozen Truss 0.0.50 contract. Its historical bridge producer `5df7d94ab20d02c76b34016429207bb1d4fcb97f8c1e8d9fce234d1139725bcb`, UMF source `f323a2dec16132c00eb1bc75c65c416f94804c26`, bundle `7f2a434b4b1bd0a2b8c1fe6ef47130f9f1543848a49445679c372d3fa6099856` and excluded archive `972396293616cf930a99c29249ff0490f131fc76c832931b6def2d3278f491cb` remain separately retained. The source closes records/diagnostics and preserves original document hash/FieldView pointer; timestamp remains distinct localTimestamp preparation 2.1. PWS05 is a draft and PWS04 a prerequisite, not a prepared guard or native qualification; no current test execution is claimed. | Surviving Arras/Truss owner coordinates the separate Truss batch after PR9. First agree exact UMF interface/version/content pins with UMF/Weft migration owner `01a1602c-4669-7391-b16c-aadff7fe7035` and its qualified successor cohort (`5f0d603…`). Then run required Truss tests and qualify/release a new public Truss version; Root Arras may adopt only that exact published dependency in a later candidate and qualify its resulting wheel. |
+| Older Truss refs `1ed2dc0`, `b681490`, `f581130`; UMF action SDK `b530ea2`; Arras baseline `df92316` | Superseded or integrated upstream according to the committed bounded coverage ledger; `b681490` is an older 0.0.45 adoption outside its recorded main. None maps to an absent PR9 runtime delta. | No PR9 action; preserve original refs and provenance. |
+
+
+
+The earlier dated execution notes above preserve their original state at capture. The final current outcome is recorded in “Final exact-wheel execution — 2026-10-25”: both exact-wheel campaigns and the managed cleanup/audit/custody controls passed; only release closeout gates remain open.

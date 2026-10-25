@@ -440,8 +440,24 @@ savepoint claims require separately labelled direct public Truss-host evidence.
 The metadata-only UMF profile remains unsupported by Truss; this adoption does
 not introduce an official value/action runtime or Ashlar support.
 
-## Current public 0.0.50 source selection — qualification open
+## Current public 0.0.50 source selection — final release gates open
 
 The current Arras 0.6.1 candidate selects public Truss 0.0.50, wheel SHA-256 `7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00`, from source `a687d0a226dad5745cbd909377bf99c7c1cddc66`. The native runtime manifest remains `truss-catalog-runtime/0.74-candidate`, SHA-256 `288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4`; the distinct active migration manifest is SHA-256 `4c6baf0282e3d0b5492f070c9c07d89ff0c9a819e748f3820f60b11c1f51c7aa` and retains the prior 0.0.49 manifest. The additive [source-binding record](../../04-build/evidence/truss050-adoption-20261024/extension-source-binding.json) documents the unchanged inventory of 50 native SQL files and five JSON resources and references a source-only dependency review; it is not a database observation or managed acceptance.
 
-This current selection supersedes the earlier 0.0.49 pin for the candidate. The 0.0.49 amendments and receipts above remain historical at their original scope. Full fresh-installed qualification of the exact final Arras wheel and all twelve actual Lakebase cases with independent cleanup remain open. The reusable ordinary actor setup is already provisioned; no new VM or repeat administrator provisioning is required. Actual managed behavior must still be observed against the authorized target; no source or prior release result substitutes for that run.
+This current selection supersedes the earlier 0.0.49 pin for the candidate. The 0.0.49 amendments and receipts above remain historical at their original scope. The canonical Arras wheel passed the fresh-installed macOS campaign and original twelve-case Lakebase campaign (12/12, zero failures or blocked cases), with original cleanup, independent audit, process census and custody handback passed. Source-bound records are retained under `docs/helix/04-build/evidence/truss050-adoption-20261024/`. The supplemental scoped census did not capture the direct supervisor PGID; no forced-cleanup claim is made. These are execution facts, not a contract expansion or declaration of final release acceptance; final review, exact-commit CI and release/publication gates remain open. The reusable ordinary actor setup remains provisioned; no new VM or repeated administrator provisioning is required.
+
+
+## Current Truss 0.0.50 qualification checkpoint — 2026-10-25
+
+The selected adapter contract and latest-only runtime rule are unchanged. The
+Arras 0.6.1 source `20db67822b20c822ee91c6823a3fe73ebc3ae932` pins public Truss
+0.0.50. The fresh installed Mac cohort passed 64 cases, retained eight declared
+limits and verified seven native-wheel hashes and 172 installed Arras payload
+hashes. The repaired fresh Lakebase baseline passed 6/6. The original full
+twelve-case managed campaign passed 12/12 with zero failures or blocked cases;
+original cleanup, independent audit, process census and custody handback passed.
+Source-bound records are retained under
+`docs/helix/04-build/evidence/truss050-adoption-20261024/`. The scoped
+supplement did not capture the direct supervisor PGID; no forced-cleanup claim
+is made. These are execution facts, not a contract expansion or managed-support
+claim; final review, exact-commit CI, merge/tag and publication remain open.

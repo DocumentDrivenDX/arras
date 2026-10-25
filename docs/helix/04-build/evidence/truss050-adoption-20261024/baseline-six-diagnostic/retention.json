@@ -1,0 +1,168 @@
+{
+  "campaign": {
+    "acceptance_claim": false,
+    "canonical_arras_wheel_sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+    "counts": {
+      "blocked": 0,
+      "failed": 1,
+      "passed": 5
+    },
+    "driver_commit_outcome_elapsed_ms": 51.759458,
+    "driver_commit_outcome_elapsed_ns": 51759458,
+    "elapsed_seconds": 623.288901375,
+    "failed_case_code": "genuine_transport_interruption_not_observed",
+    "failed_cases": [
+      "LB-SETTLEMENT"
+    ],
+    "managed_gate": "not_run",
+    "no_vm": true,
+    "recorded_driver_outcome_exception_class": null,
+    "recorded_transport_cut_count": 0,
+    "result_receipt_sha256": "4735b47ab7fd09fc5cc96d8f7b6d7ba9901b78079dc8eb17ff7941467b1e3055",
+    "scope": "baseline",
+    "source_commit": "2d1bc7e34af7499d5f4f582d4ee41e0d772920cc",
+    "sql_operation_timeout_ms": 60000,
+    "stage": "baseline_six_diagnostic",
+    "truss_version": "0.0.50",
+    "wall_start": "2026-10-24T19:37:54Z",
+    "wall_terminal": "2026-10-24T19:48:17Z"
+  },
+  "claim": "D12 baseline-six diagnostic only; LB-SETTLEMENT failed; full acceptance not established",
+  "cleanup_and_audit": {
+    "acceptance_credit": false,
+    "cleanup_status": "passed",
+    "custody_returned": true,
+    "independent_audit_status": "passed",
+    "installed_source_before_after_equal": true,
+    "native_membership_count": 18,
+    "native_role_count": 33,
+    "new_native_role_count": 0,
+    "no_active_exec_sessions": true,
+    "ordinary_selected4_closure_count": 16,
+    "ordinary_selected4_closures_false": true,
+    "provider_checks": 3
+  },
+  "diagnostic_scope": {
+    "archive_collection_status": "complete",
+    "diagnostics_receipt_sha256": "8deaf7bcd169ae35fa503db7872e73bb3768fcde571b211005605a7d1ed908d9",
+    "empty_selected_group_is_raw_absence_evidence": false,
+    "historical_D11_cause_inferred": false,
+    "observer_sentinel_binding_defect": true,
+    "private_archive_commitments": [
+      {
+        "event_count": 3,
+        "row_count": 3,
+        "sha256": "ac8c739e94c773a5d5f37d0b5a1b0022d807da4730399977e9e43acb9ebb1c06",
+        "size_bytes": 1385
+      },
+      {
+        "event_count": 9,
+        "row_count": 9,
+        "sha256": "758d88a8fffde817065f6e8fb4412fbd6ae136e0a89539651f1b73da756f270d",
+        "size_bytes": 4702
+      }
+    ],
+    "worker_cause": "unknown"
+  },
+  "files": {
+    "README.md": {
+      "bytes": 1746,
+      "retention": "authored_summary",
+      "sha256": "3102d64bac7b5286d050563e2b09afdd6e0ef0f22f1626cafdbc6735b3cfcca9"
+    },
+    "actual-baseline-six-diagnostic-result.source-bound.public-summary.safe.json": {
+      "bytes": 4968,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "27d793e875a7e2c306da7df871a424b9d97c426454c1670e5811ee8e3f323663"
+    },
+    "baseline-six-diagnostics.source-bound.public-summary.safe.json": {
+      "bytes": 1291,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "448535e55df2ac8385279f95a5bb42173d7cb7c0cb118754b74e47f52e660a7d"
+    },
+    "baseline-six-inner.source-bound.public-summary.safe.json": {
+      "bytes": 1209,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "74fea10be3bff593d93f67b19e60a844cffe0bcfc12581706095277abcf497af"
+    },
+    "baseline-six-terminal.source-bound.public-summary.safe.json": {
+      "bytes": 1190,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "b95a26c66d7b962a81527bc652e449aec0b364a965b927d088a8cb4018395746"
+    },
+    "custody-handback.source-bound.public-summary.safe.json": {
+      "bytes": 625,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "f8a1ccff7cbb70c9593c8a6e9c4026424dd78c31c3e3388df56248199374f3a3"
+    },
+    "independent-audit.source-bound.public-summary.safe.json": {
+      "bytes": 1108,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "7da07d27b95a08daa17dc7cd9c0b9ee78de3b9ae3d673714e4418211adbf832f"
+    },
+    "process-custody.source-bound.public-summary.safe.json": {
+      "bytes": 387,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "9ef3313dbba6e877ecc29ce3f737f752e8aaf700349aea5165709ed3d36f79bf"
+    }
+  },
+  "private_sources_not_copied": [
+    "raw fault archives",
+    "private stdout/stderr and launch logs/scripts",
+    "credentials, target/provider identity details",
+    "native catalogs",
+    "authorization/window/dispatch material",
+    "private source paths, PIDs/PGIDs and opaque resource identifiers"
+  ],
+  "schema": "arras.public50-D12-baseline-six-diagnostic-retention/1",
+  "source_receipt_bindings": [
+    {
+      "sha256": "8869dc88c7a4c0eedc4509add66f6ecae193bbfa12b7c1feaef7067514c31333",
+      "source_name": "baseline-six-terminal.safe.json"
+    },
+    {
+      "sha256": "64040193b303d19e8eee2dde5741a5746e4df7e88fe7116c6982ae481851ddb0",
+      "source_name": "baseline-six-terminal.safe.verifier.json"
+    },
+    {
+      "sha256": "8deaf7bcd169ae35fa503db7872e73bb3768fcde571b211005605a7d1ed908d9",
+      "source_name": "baseline-six-diagnostics.safe.json"
+    },
+    {
+      "sha256": "f24e1245e6fcd785ba63b722df14dfa17df74b60e2efbb2ddfb5066d49f1437f",
+      "source_name": "independent-baseline-six-audit.safe.json"
+    },
+    {
+      "sha256": "442ead87223eb225830d188fa9aa0009e4da7f4a38960bbe86f0359aec12869b",
+      "source_name": "terminal-process-custody.safe.json"
+    },
+    {
+      "sha256": "e05c32a9073fa11a9ce9d6180bc4c858159d0bb57c0653f2d2ee09a14ee629dc",
+      "source_name": "parent-launch-process.safe.json"
+    },
+    {
+      "sha256": "de9fb2bbc14f9e52bff12a783d027cfac30a3ac5bc79fb74f57ed5fbd8110cab",
+      "source_name": "audit-supervisor-launch.safe.json"
+    },
+    {
+      "sha256": "6fca77e91bacdc33bd147c3c9911978f7f52279ed2f8f1b76eda33a7dfacddc7",
+      "source_name": "operational-go-consumed.safe.json"
+    },
+    {
+      "sha256": "c5bceb7e945f9c1848508f043854ae0a08067d396ad371e584a0379c99370ddf",
+      "source_name": "fault-archives-before.private.json"
+    },
+    {
+      "sha256": "c19ab08fac3fb840f00d7ce00e8918bdb6ff78a349707006a2b2b6cf03efd216",
+      "source_name": "owned-fault-archives.safe.json"
+    },
+    {
+      "sha256": "2d160f4dff35dfb01274fa2700faf899595919ca3976ba845f8b79a108d993c5",
+      "source_name": "audited-custody-handback.safe.json"
+    },
+    {
+      "sha256": "a20a38b31c30f5e7a16e8ceecd3e4982702bba5db5f71381f88fc6ffaf97003d",
+      "source_name": "terminal.safe.json"
+    }
+  ]
+}

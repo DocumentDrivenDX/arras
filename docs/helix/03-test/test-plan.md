@@ -805,7 +805,7 @@ SHA-256. Any byte change, including packaging or metadata, requires both full
 campaigns rebound and rerun. Payload correspondence, earlier CI, a partial run
 or an isolated successful case cannot substitute for either complete campaign.
 
-## Current Truss 0.0.50 adoption gates — 2026-10-24
+## Initial Truss 0.0.50 adoption gate plan — 2026-10-24 (execution outcome below)
 
 The active 0.6.1 source pins public Truss 0.0.50 wheel
 `7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00`, source
@@ -832,3 +832,38 @@ Both receipts must bind to identical canonical Arras wheel bytes. Historical
 0.0.49 receipts, source-local tests, source binding, and partial schedules do
 not satisfy either current gate. The public artifact source comparison does not
 imply a new target database observation or native execution result.
+
+
+### Pre-full-campaign execution checkpoint — 2026-10-25 (historical; superseded below)
+
+The source `20db67822b20c822ee91c6823a3fe73ebc3ae932` (tree
+`5ef9170c03e0f9575649757850fe15e03ce94c7c`) binds all five successful CI jobs in run `40221099126`
+and the exact Arras 0.6.1 wheel SHA-256
+`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`; whole-wheel
+byte equality was verified against the retained build artifact. The fresh Mac
+arm64 / CPython 3.11.9 corpus contains 72 selected cases: 64 passed and eight
+unchanged declared limits; seven replica-only cases were inapplicable. Seven
+native archive hashes, exact parity for 172 installed Arras payload files and
+cleanup passed. This Mac result does not replace the managed gate.
+
+The source fix binds journal receipts to actual partition ancestry rather than
+requiring journal rows on a definition-only parent. Its focused suite recorded
+76 passed with one native case deselected, and selected-interpreter typing
+reported no diagnostics. The first post-resume 2d baseline remains failed
+(5/6, `original_request_journal_binding_missing`) and is not rewritten. The
+repaired 20db fresh baseline passed all six cases; original cleanup, independent
+audit (`560f5c20…`), process census (`8da9…`) and custody handback
+(`9a599e22…`) passed. At this historical checkpoint, the source-bound baseline receipts were being
+prepared for retention; they are now retained under
+`../04-build/evidence/truss050-adoption-20261024/baseline-20db-passed-20261025/`.
+The twelve-case run had not yet completed at this checkpoint. Its final result is
+recorded in the following section. D11 (10/12), D12 baseline (5/6, managed gate
+not run), and the initial 2d journal-binding failure remain historical failed
+evidence, with cleanup/audit/custody records preserved separately.
+
+
+### Final exact-wheel execution — 2026-10-25
+
+Source `20db67822b20c822ee91c6823a3fe73ebc3ae932` / tree `5ef9170c03e0f9575649757850fe15e03ce94c7c` binds the canonical Arras wheel SHA-256 `259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`. CI run `40221099126` passed all five jobs. Fresh-installed macOS arm64 / CPython 3.11.9 passed 64 cases, retained eight declared limits, marked seven replica-only cases inapplicable and passed cleanup.
+
+The repaired fresh baseline passed 6/6. The separate original full twelve-case Lakebase campaign passed 12/12 with zero failures or blocked cases; original cleanup, independent audit, process census and custody handback passed. Source-bound safe evidence is retained under `../04-build/evidence/truss050-adoption-20261024/`. The supplemental scoped OS census found all three known process groups absent, zero exact owned-script matches and zero inspection denials. It did not capture the direct supervisor PGID; no forced-cleanup claim is made. The initial post-resume 2d failure and D11/D12 failures remain preserved as historical failed evidence. Gate execution passed; final review, exact-commit CI, release build, merge/tag and publication remain open.

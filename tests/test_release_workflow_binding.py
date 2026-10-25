@@ -97,7 +97,7 @@ def test_release_builds_ui_before_running_integration_and_keeps_current_run_gate
 def test_release_rebuild_must_match_the_selected_qualification_wheel_before_upload() -> None:
     build = job_text(RELEASE.read_text(), "build")
     selected = (
-        "c31b56e53fa653ba090e08f2dcff1edb85849f56489b543b150108ae75eab57f"
+        "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18"
         "  dist/arras-0.6.1-py3-none-any.whl"
     )
     assert f"echo '{selected}' | sha256sum --check --strict -" in build

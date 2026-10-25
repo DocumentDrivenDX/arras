@@ -1,0 +1,12 @@
+{
+  "schema": "arras.native-independent-cleanup/3",
+  "status": "passed",
+  "verifier_exit_code": 0,
+  "known_owned_process_count": 1364,
+  "remaining_process_count": 0,
+  "remaining_temp_root_count": 0,
+  "ambiguous_process_count": 0,
+  "owned_process_group_cleanup_complete": null,
+  "process_observation_error_type": null,
+  "wrapper_error_type": null
+}

@@ -1,0 +1,502 @@
+{
+  "authentication_profile": "mixed",
+  "authorization_sha256": "d37d55eebcd3a2bfca7afe8ec69493e4edca87dd7010d8879d076dd7ec5dd9e2",
+  "cases": [
+    {
+      "case": "LB-ADMISSION",
+      "code": "identity_tls_server_match",
+      "status": "passed"
+    },
+    {
+      "case": "LB-INSTALL",
+      "code": "typed_strict_refusal_then_selected_install",
+      "status": "passed"
+    },
+    {
+      "case": "LB-PERSON",
+      "code": "human_identity_lifecycle_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-CUSTODY",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-SETTLEMENT",
+      "code": "genuine_transport_interruption_not_observed",
+      "status": "failed"
+    },
+    {
+      "case": "LB-ACL",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-01",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-02",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-03",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-04",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-05",
+      "code": "genuine_transport_interruption_not_observed",
+      "status": "failed"
+    },
+    {
+      "case": "MP-06",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    }
+  ],
+  "cleanup": {
+    "independent_absence": {
+      "generated_roles_absent": true,
+      "truss_schema_absent": true
+    },
+    "resources": [
+      {
+        "name_or_opaque_id": "f84f002b2bed908f227145cf7a04cca0d8ca76053f2b348ba281b92171d04dcf",
+        "removed": true,
+        "resource_kind": "schema"
+      },
+      {
+        "name_or_opaque_id": "b55e5749b4463256b172a864d0557735ce2606c3228b1368fb2f114d06dbb21f",
+        "removed": true,
+        "resource_kind": "role"
+      },
+      {
+        "name_or_opaque_id": "ecebc426a6fc794eea00dff5bb6760592b2fe3e58d6898307686650c428b07ce",
+        "removed": true,
+        "resource_kind": "role"
+      },
+      {
+        "name_or_opaque_id": "cb26e0b5bcf9f0435be57aceb25d39ce7715663f3bc833e6382657d2e3986a4d",
+        "removed": true,
+        "resource_kind": "role"
+      },
+      {
+        "name_or_opaque_id": "d9d60f717590f9a0876ab8bd7504a47b779ac925bb613020383af48875f23abe",
+        "removed": true,
+        "resource_kind": "role"
+      }
+    ],
+    "status": "passed"
+  },
+  "expected": {
+    "migration_manifest_sha256": "4c6baf0282e3d0b5492f070c9c07d89ff0c9a819e748f3820f60b11c1f51c7aa",
+    "native_manifest_sha256": "288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4",
+    "postgres_version_num": "180006",
+    "truss_version": "0.0.50",
+    "truss_wheel_sha256": "7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00",
+    "weft_version": "0.4.51"
+  },
+  "fixture_sha256": "287461ba5751e1489b9160b1fc7d2e19a4df55be3afd9aaf9b5fb800420f3d2e",
+  "gate_blockers": [],
+  "harness_sha256": "ce2f82add2213635c452df1ca394095178f546d3f6718a8ae7dd15cc3f55674f",
+  "managed_gate": "failed",
+  "observed": {
+    "credential_source_provenance": {
+      "denied": {
+        "auth_profile": "nonhuman-oauth",
+        "credential_source_sha256": "d90d5d7c719bf556c2b5408e09cdd67aa551dd877d623534e6da2fb9e8e96c25",
+        "provider_observation_sha256": "c7647d73370d5e34825be82674247f3577157a5fb22ce374373248507af21099",
+        "subject_kind": "nonhuman",
+        "subject_reference_sha256": "ed10b5bc953e12369cac5f394826d2d1ab7d366dfa2ced0edb577519769fb3d9"
+      },
+      "reader": {
+        "auth_profile": "nonhuman-oauth",
+        "credential_source_sha256": "d90d5d7c719bf556c2b5408e09cdd67aa551dd877d623534e6da2fb9e8e96c25",
+        "provider_observation_sha256": "c7647d73370d5e34825be82674247f3577157a5fb22ce374373248507af21099",
+        "subject_kind": "nonhuman",
+        "subject_reference_sha256": "70097e20d551ee51b171d0b7cc89e2c89cebe95e8d465efc0a67e3606a2e728c"
+      },
+      "registrar": {
+        "auth_profile": "nonhuman-oauth",
+        "credential_source_sha256": "d90d5d7c719bf556c2b5408e09cdd67aa551dd877d623534e6da2fb9e8e96c25",
+        "provider_observation_sha256": "c7647d73370d5e34825be82674247f3577157a5fb22ce374373248507af21099",
+        "subject_kind": "nonhuman",
+        "subject_reference_sha256": "7f1d5966dd8174ee5f39fe095482e8fe50989ed6cd70dd592e43d6901b1e8b89"
+      },
+      "writer": {
+        "auth_profile": "human-oauth",
+        "credential_source_sha256": "d90d5d7c719bf556c2b5408e09cdd67aa551dd877d623534e6da2fb9e8e96c25",
+        "provider_observation_sha256": "c7647d73370d5e34825be82674247f3577157a5fb22ce374373248507af21099",
+        "subject_kind": "human",
+        "subject_reference_sha256": "6a6bafd7821bd795c035ea28c0c1b340c3ee745d5a97d431565ee8ec91f383c3"
+      }
+    },
+    "installed_truss_version": "0.0.50",
+    "installed_weft_version": "0.4.51",
+    "installer": {
+      "can_create_database": true,
+      "can_create_roles": true,
+      "can_login": true,
+      "can_replicate": true,
+      "database_matches": true,
+      "role_sha256": "6f30455e5e9fb2c523f0995778ec8af804ab988248394de7f4a9f4f681c3a6e1",
+      "server_version_num": "180006",
+      "ssl": true,
+      "superuser": false,
+      "tls_cipher": "TLS_AES_256_GCM_SHA384",
+      "tls_version": "TLSv1.3",
+      "truss_namespace_absent_before_mutation": true
+    },
+    "module_document_sha256": "0d9c4bd6c390803483937200812e838d45734e0e0ab7925374d88aceb767f16f",
+    "native_observer_fact_count": 6,
+    "operations": {
+      "acl": {
+        "intended_memberships_match": true,
+        "snapshot_after_sha256": "d9d721e3d03e44d66b6b889f62a818fd5c198071a78281b922643d13f22616bd",
+        "snapshot_before_sha256": "d9d721e3d03e44d66b6b889f62a818fd5c198071a78281b922643d13f22616bd"
+      },
+      "artifacts": {
+        "evidence_codes": [],
+        "migration_manifest_sha256": "4c6baf0282e3d0b5492f070c9c07d89ff0c9a819e748f3820f60b11c1f51c7aa",
+        "native_manifest_sha256": "288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4",
+        "truss_version": "0.0.50",
+        "truss_wheel_sha256": "7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00"
+      },
+      "managed": {
+        "LB-ACL": {
+          "after_acl_sha256": "70e76e5b7cd83a599614b12b3fca2cfe02e994d4efe9648c604fd7a627f9c5d2",
+          "before_acl_sha256": "70e76e5b7cd83a599614b12b3fca2cfe02e994d4efe9648c604fd7a627f9c5d2",
+          "denied_catalog_refused": true,
+          "membership_fact_count": 24,
+          "ordinary_actor_count": 4,
+          "ordinary_object_grant_count": 0,
+          "person_lifecycle_facts_available": true,
+          "person_membership_lifecycle_verified": true,
+          "person_memberships_sha256": "f065f5350029b67d9b994c356d3696f43a065e2d0727c3ede978282b53c37010",
+          "person_restore_operation_sha256": "e2689d4d437ec6deff384ae4b4f2fd0f122baf88e426a7ebe087c66508be99e6",
+          "person_revoke_operation_sha256": "f4a622f3843890b7fc3d4e183ccffd3c4a40cc79b9ac49b5181bca643b613478",
+          "person_state_sha256": "e486c5741a679f234a48116eb44c73ae7c1c6cff531e025796ae86e354a72df2",
+          "selected_public_write_readback": true
+        },
+        "LB-CUSTODY": {
+          "caller_identity_sha256": "f817e299dd506232126a6e86c00031965b6247372d4fc23795ed612b187b6c3c",
+          "caller_prework_count": 1,
+          "caller_savepoint_restored": true,
+          "native_after_sha256": "28da3465d29574fc7f6ed0c233a31df64c741b9f225c7c86fc652f073c1755b2",
+          "native_before_sha256": "28da3465d29574fc7f6ed0c233a31df64c741b9f225c7c86fc652f073c1755b2",
+          "public_query_row_count": 2,
+          "public_refusal_type": "QueryRefused"
+        },
+        "MP-01": {
+          "backend_pid_changed": true,
+          "feed": {
+            "consumer_id_sha256": "65b2d950692a480e957277a53e22f7334c3e152c7dea7f128052dd98ff7e3844",
+            "destination_receipt_sha256": "62d58f19f6a7d971ccbc1df0b0300dbb03523aa6e332a0a6d2c31ce26862e32a",
+            "destination_reopened_equal": true,
+            "destination_replay_equal": true,
+            "empty_interval_drained": true,
+            "feed_page_count": 8,
+            "feed_page_sha256": "6448e897f7f1ae4f87b1d6df3ace3997697e66d2c6fdde300d8810fbaa5eccac",
+            "feed_payload_bytes": 155472,
+            "source_ack_reconciled": "matched",
+            "transaction_page_count": 7,
+            "unacknowledged_replay_equal": true
+          },
+          "generation_after_sha256": "240c11fb1df13eac8e1affd010265de8f43b446b172bd2586a8fc2bda4c407fa",
+          "generation_before_sha256": "c3a89e0f5dc4aab45dfae7880aab571e854f5dbee4d8140afc4376e3a51a39fb",
+          "native_inventory_sha256": "82985519432989d9d27ea132109f76d14d4894cf2919bca184a636e7e373f54d",
+          "operation_sha256": "a9fd08be043aaed8c090fae1d7d37a162d1ec144f3d3b2451f1f41287223f848",
+          "public_object_count": 2
+        },
+        "MP-02": {
+          "ended_backend_pid": 2666,
+          "native_pid_absent": true,
+          "new_session_row_count": 6,
+          "old_handle_rebound": false,
+          "old_handle_refused": true,
+          "original_connection_state": "closed",
+          "stale_query_outcome": "transaction_unusable",
+          "termination_operation_sha256": "030a5fb3608362ba1e5fd1b742dc1ea47dea6735ba1090da28e3bfc74f4b2bb2"
+        },
+        "MP-03": {
+          "allowed_query_row_count": 6,
+          "allowed_query_succeeded": true,
+          "denied_catalog_refused": true,
+          "direct_membership_count": 5,
+          "effective_membership_count": 5,
+          "elevated_membership_count": 0,
+          "ordinary_attributes_safe": true,
+          "ordinary_role_count": 4,
+          "snapshot_sha256": "47523c0afa44747d931e0cc7861904c6dd1a10f327f32e4cf92f009a426fbcbf",
+          "truss_table_privilege_count": 864
+        },
+        "MP-04": {
+          "consumer_id_sha256": "fe9b581c670de8df62e091f289f973b1eae47afce1f869983ffa6e9de3c4b122",
+          "destination_receipt_sha256": "4830c4c84d35bc1d1c1df2dd3f3cc4130e984b2baa60cac3ef13d68674dac4f0",
+          "destination_reopened_equal": true,
+          "destination_replay_equal": true,
+          "empty_interval_drained": true,
+          "feed_page_count": 8,
+          "feed_page_sha256": "6a9614cfa1a0a62b4663e85ea2e31b7176299408f3a28b886cb08909d94bc86c",
+          "generation_after_sha256": "39cabaabdc0ec4adf3d226b7f7a36f36a615ed4f7842b6425ef8307c6713de88",
+          "generation_before_sha256": "063b9b9053a8c16a3f7eac6b19bc0b0f141bcb9050e7f9ef6733705cbce99994",
+          "native_after_restart_sha256": "53a817f182cb21dfbd40d29d38d69ccb068e65dd0799ecad852d96b2852aafa9",
+          "restart_operation_sha256": "b6963d84a86e504ff4f45306c15f0ff1a5e6e4c2a90be664c6b1f352c40371c3",
+          "source_ack_reconciled": "matched",
+          "transaction_page_count": 7
+        },
+        "MP-06": {
+          "bounded_vacuous_inventory": false,
+          "callable_count": 3,
+          "dependency_count": 4,
+          "observed_extensions_sha256": "9fa75dc59f7a7d7dcae86637370ea47915a179fe7b22fec4d495fc710547cdb6",
+          "ordinary_execute_count": 12,
+          "ordinary_language_usage_count": 4,
+          "ordinary_principal_count": 4,
+          "required_extension_count": 1,
+          "requirements_declaration_sha256": "841579af03e375d1bafa1e6a19dc483d9d5ab096fe9a75fd36d834dfb48ee894",
+          "runtime_manifest_sha256": "288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4",
+          "source_inventory_sha256": "efba54c9ceb99137e11b7a2a95ebbb232dcde119f0cac63ecf19edafd7125b75"
+        }
+      },
+      "operations": {
+        "access_configuration": "passed",
+        "denial": "passed",
+        "installation_ran": true,
+        "read": "passed",
+        "refreshed_connection": "not_run",
+        "registration": "passed",
+        "write": "passed"
+      },
+      "person": {
+        "actors": {
+          "denied": {
+            "after_refresh": null,
+            "before": {
+              "auth_profile": "nonhuman-oauth",
+              "credential_expires_at": 1792869882,
+              "credential_generation": "ae1975206cfcb83374f0452f16834ea5a61eb1ef5bf50a089101bd51aeb40567",
+              "provenance_method": "provider-identity-api",
+              "provider_observation_sha256": "c7647d73370d5e34825be82674247f3577157a5fb22ce374373248507af21099",
+              "provider_resource_sha256": "f67fc2abdd06dbc20b318287570934ff9589dcc40c6abd7030b841ee4cc3f740",
+              "sql_role_sha256": "46b1534ef50805b08b76e5cf25b1e0f9fbe63871ae770312b139b67b32594470",
+              "subject_kind": "nonhuman",
+              "subject_reference_sha256": "ed10b5bc953e12369cac5f394826d2d1ab7d366dfa2ced0edb577519769fb3d9"
+            },
+            "sql": {
+              "current_user_sha256": "46b1534ef50805b08b76e5cf25b1e0f9fbe63871ae770312b139b67b32594470",
+              "initial_connection_verified": true,
+              "session_user_sha256": "46b1534ef50805b08b76e5cf25b1e0f9fbe63871ae770312b139b67b32594470",
+              "tls_verified": true
+            }
+          },
+          "reader": {
+            "after_refresh": null,
+            "before": {
+              "auth_profile": "nonhuman-oauth",
+              "credential_expires_at": 1792869879,
+              "credential_generation": "9a370176f47b1b0599c117073bc6f3ab2adc8830fd6d7500901a7711c5713e1f",
+              "provenance_method": "provider-identity-api",
+              "provider_observation_sha256": "c7647d73370d5e34825be82674247f3577157a5fb22ce374373248507af21099",
+              "provider_resource_sha256": "f67fc2abdd06dbc20b318287570934ff9589dcc40c6abd7030b841ee4cc3f740",
+              "sql_role_sha256": "58ab93af1dbb6cb2a930a5a54471560f486c8623e613015664d6bd66671e6cf5",
+              "subject_kind": "nonhuman",
+              "subject_reference_sha256": "70097e20d551ee51b171d0b7cc89e2c89cebe95e8d465efc0a67e3606a2e728c"
+            },
+            "sql": {
+              "current_user_sha256": "58ab93af1dbb6cb2a930a5a54471560f486c8623e613015664d6bd66671e6cf5",
+              "initial_connection_verified": true,
+              "session_user_sha256": "58ab93af1dbb6cb2a930a5a54471560f486c8623e613015664d6bd66671e6cf5",
+              "tls_verified": true
+            }
+          },
+          "registrar": {
+            "after_refresh": null,
+            "before": {
+              "auth_profile": "nonhuman-oauth",
+              "credential_expires_at": 1792869873,
+              "credential_generation": "a73da50f888cf77797466799be3141fb2cf435d56707ed2c6d2a04fb7d2e3e59",
+              "provenance_method": "provider-identity-api",
+              "provider_observation_sha256": "c7647d73370d5e34825be82674247f3577157a5fb22ce374373248507af21099",
+              "provider_resource_sha256": "f67fc2abdd06dbc20b318287570934ff9589dcc40c6abd7030b841ee4cc3f740",
+              "sql_role_sha256": "16d1b229aaf58d85c4130e9559543d02170422e2e2d98b56a9334f6ea5b505c2",
+              "subject_kind": "nonhuman",
+              "subject_reference_sha256": "7f1d5966dd8174ee5f39fe095482e8fe50989ed6cd70dd592e43d6901b1e8b89"
+            },
+            "sql": {
+              "current_user_sha256": "16d1b229aaf58d85c4130e9559543d02170422e2e2d98b56a9334f6ea5b505c2",
+              "initial_connection_verified": true,
+              "session_user_sha256": "16d1b229aaf58d85c4130e9559543d02170422e2e2d98b56a9334f6ea5b505c2",
+              "tls_verified": true
+            }
+          },
+          "writer": {
+            "after_refresh": {
+              "auth_profile": "human-oauth",
+              "credential_expires_at": 1792870176,
+              "credential_generation": "514c72c1b9b5b6f5182c4aba511669c874b73fe848c9823a5ddf988dd12b4a7a",
+              "provenance_method": "provider-identity-api",
+              "provider_observation_sha256": "c7647d73370d5e34825be82674247f3577157a5fb22ce374373248507af21099",
+              "provider_resource_sha256": "f67fc2abdd06dbc20b318287570934ff9589dcc40c6abd7030b841ee4cc3f740",
+              "sql_role_sha256": "018ea470e3ee96e9db7a23e30d954fd2ce94d79d3cdb2a504bc83009e0f2c0c2",
+              "subject_kind": "human",
+              "subject_reference_sha256": "6a6bafd7821bd795c035ea28c0c1b340c3ee745d5a97d431565ee8ec91f383c3"
+            },
+            "before": {
+              "auth_profile": "human-oauth",
+              "credential_expires_at": 1792866575,
+              "credential_generation": "ce9b848294b4b6fb918a6746b579c233f2b52e2defa32178f88286a5422d8df7",
+              "provenance_method": "provider-identity-api",
+              "provider_observation_sha256": "c7647d73370d5e34825be82674247f3577157a5fb22ce374373248507af21099",
+              "provider_resource_sha256": "f67fc2abdd06dbc20b318287570934ff9589dcc40c6abd7030b841ee4cc3f740",
+              "sql_role_sha256": "018ea470e3ee96e9db7a23e30d954fd2ce94d79d3cdb2a504bc83009e0f2c0c2",
+              "subject_kind": "human",
+              "subject_reference_sha256": "6a6bafd7821bd795c035ea28c0c1b340c3ee745d5a97d431565ee8ec91f383c3"
+            },
+            "sql": {
+              "current_user_sha256": "018ea470e3ee96e9db7a23e30d954fd2ce94d79d3cdb2a504bc83009e0f2c0c2",
+              "initial_connection_verified": true,
+              "session_user_sha256": "018ea470e3ee96e9db7a23e30d954fd2ce94d79d3cdb2a504bc83009e0f2c0c2",
+              "tls_verified": true
+            }
+          }
+        },
+        "expiry_control": {
+          "effective_at_unix": 1792866575,
+          "expired_connection_denied": true,
+          "mechanism": "provider-credential-expiry",
+          "operation_sha256": "0d27eafddbbf94b554efec9c598865ac90ca0089e359f3a64205dfc3c6d4c752",
+          "refreshed_connection_verified": true
+        },
+        "membership_control": {
+          "existing_session_denied": true,
+          "fresh_connection_denied": true,
+          "restoration_verified": true,
+          "restore_operation_sha256": "e2689d4d437ec6deff384ae4b4f2fd0f122baf88e426a7ebe087c66508be99e6",
+          "restored_membership_sha256": "f065f5350029b67d9b994c356d3696f43a065e2d0727c3ede978282b53c37010",
+          "revoke_operation_sha256": "f4a622f3843890b7fc3d4e183ccffd3c4a40cc79b9ac49b5181bca643b613478",
+          "revoked_membership_sha256": "f065f5350029b67d9b994c356d3696f43a065e2d0727c3ede978282b53c37010"
+        },
+        "refresh": {
+          "credential_changed": true,
+          "invalid_credential_refused": true,
+          "other_person_credential_refused": true
+        },
+        "schema_version": 1,
+        "state": {
+          "after_sha256": "e486c5741a679f234a48116eb44c73ae7c1c6cff531e025796ae86e354a72df2",
+          "before_sha256": "e486c5741a679f234a48116eb44c73ae7c1c6cff531e025796ae86e354a72df2",
+          "sequence_allocations": {
+            "comparison_count": 4,
+            "sha256": "46d68ca1ccbaaebe9a21c2679359a7da0228ba8ba6812e81c4411c61e73c21e2"
+          },
+          "unchanged": true
+        }
+      },
+      "preconditions": {
+        "status_detail": "not_installed",
+        "status_reason": "not_configured",
+        "truss_schema_absent": true
+      },
+      "strict_probe": {
+        "caller_state_unchanged": true,
+        "native_state_unchanged": true,
+        "object_class": "schema",
+        "outcome": "typed_refusal",
+        "phase": "pre_ownership",
+        "role_selected": true,
+        "selected_role_sha256": "f123179708aacfc13f0ee6c74a9cdc32bcf7983bfcf57ae100dba41f2b46193b"
+      }
+    },
+    "ordinary_roles": {
+      "denied": {
+        "can_create_database": false,
+        "can_create_roles": false,
+        "can_login": true,
+        "can_replicate": false,
+        "database_matches": true,
+        "role_sha256": "46b1534ef50805b08b76e5cf25b1e0f9fbe63871ae770312b139b67b32594470",
+        "server_version_num": "180006",
+        "ssl": true,
+        "superuser": false,
+        "tls_cipher": "TLS_AES_256_GCM_SHA384",
+        "tls_version": "TLSv1.3",
+        "truss_namespace_absent_before_mutation": true
+      },
+      "reader": {
+        "can_create_database": false,
+        "can_create_roles": false,
+        "can_login": true,
+        "can_replicate": false,
+        "database_matches": true,
+        "role_sha256": "58ab93af1dbb6cb2a930a5a54471560f486c8623e613015664d6bd66671e6cf5",
+        "server_version_num": "180006",
+        "ssl": true,
+        "superuser": false,
+        "tls_cipher": "TLS_AES_256_GCM_SHA384",
+        "tls_version": "TLSv1.3",
+        "truss_namespace_absent_before_mutation": true
+      },
+      "registrar": {
+        "can_create_database": false,
+        "can_create_roles": false,
+        "can_login": true,
+        "can_replicate": false,
+        "database_matches": true,
+        "role_sha256": "16d1b229aaf58d85c4130e9559543d02170422e2e2d98b56a9334f6ea5b505c2",
+        "server_version_num": "180006",
+        "ssl": true,
+        "superuser": false,
+        "tls_cipher": "TLS_AES_256_GCM_SHA384",
+        "tls_version": "TLSv1.3",
+        "truss_namespace_absent_before_mutation": true
+      },
+      "writer": {
+        "can_create_database": false,
+        "can_create_roles": false,
+        "can_login": true,
+        "can_replicate": false,
+        "database_matches": true,
+        "role_sha256": "018ea470e3ee96e9db7a23e30d954fd2ce94d79d3cdb2a504bc83009e0f2c0c2",
+        "server_version_num": "180006",
+        "ssl": true,
+        "superuser": false,
+        "tls_cipher": "TLS_AES_256_GCM_SHA384",
+        "tls_version": "TLSv1.3",
+        "truss_namespace_absent_before_mutation": true
+      }
+    },
+    "provider_observation_sha256": "c7647d73370d5e34825be82674247f3577157a5fb22ce374373248507af21099",
+    "provider_resource_sha256": "f67fc2abdd06dbc20b318287570934ff9589dcc40c6abd7030b841ee4cc3f740",
+    "truss_installed_before_run": false
+  },
+  "qualification_note": "Results are limited to the authorized target, observed artifacts, and exact selected scope.",
+  "request_reference_sha256": "efb1b0a6a4da3157a713dd33072cc064fe8275f220267ab2ca03645df60f6913",
+  "required_cases": [
+    "LB-ADMISSION",
+    "LB-INSTALL",
+    "LB-PERSON",
+    "LB-CUSTODY",
+    "LB-SETTLEMENT",
+    "LB-ACL",
+    "MP-01",
+    "MP-02",
+    "MP-03",
+    "MP-04",
+    "MP-05",
+    "MP-06"
+  ],
+  "schema": "arras.lakebase-qualification/1",
+  "scope": "full-managed",
+  "status": "failed",
+  "target_sha256": "bf6a67b6f475c9504a44312e0cb32d04af87836c660ef9b223d1a278b9cffbbd"
+}

@@ -1,0 +1,15 @@
+{
+  "checkout_head": "adc11cf64459929d00ea44df6debdf0c9974815d",
+  "event": "pull_request",
+  "pull_request_head_sha": "2d1bc7e34af7499d5f4f582d4ee41e0d772920cc",
+  "run_attempt": "1",
+  "run_id": "40119390075",
+  "schema": "arras.ci-candidate-wheel/1",
+  "source_sha": "adc11cf64459929d00ea44df6debdf0c9974815d",
+  "source_tree_sha": "396f50b8ddc10bc8d3e16a5baf7f81055e17efc4",
+  "wheel": {
+    "name": "arras-0.6.1-py3-none-any.whl",
+    "sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+    "version": "0.6.1"
+  }
+}

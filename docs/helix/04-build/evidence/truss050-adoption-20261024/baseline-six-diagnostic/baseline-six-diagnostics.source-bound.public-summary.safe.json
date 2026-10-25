@@ -1,0 +1,41 @@
+{
+  "acceptance_claim": false,
+  "interpretation": "A no-matching-event group is not evidence that raw events were absent; private archives remain outside this stage.",
+  "managed_operation_exceptions": [],
+  "parent_exception_type": null,
+  "parent_return_code": 1,
+  "person_exception": null,
+  "schema": "arras.public50-D12-baseline-diagnostics-public-summary/1",
+  "scope": "baseline",
+  "settlement_failure_diagnostic": {
+    "discarded_failure": {
+      "exception_class": null,
+      "line": 936,
+      "request_sha256": null,
+      "sqlstate": null,
+      "status": "no_exception_in_failure_slot"
+    },
+    "events": [
+      {
+        "elapsed_monotonic_ns": 28928095167,
+        "event": "exception",
+        "exception_class": "Failed",
+        "function": "_run_commit_fault",
+        "line": 936,
+        "source": "lifecycle",
+        "sqlstate": null
+      }
+    ],
+    "status": "captured",
+    "trace_error_type": null,
+    "trace_truncated": false,
+    "trace_valid": true
+  },
+  "settlement_fault_events": {
+    "events": [],
+    "status": "no_matching_validated_event_group"
+  },
+  "source_receipt_sha256": "8deaf7bcd169ae35fa503db7872e73bb3768fcde571b211005605a7d1ed908d9",
+  "status": "baseline_diagnostic_no_generic_person_exception_observed",
+  "trace_valid": true
+}
