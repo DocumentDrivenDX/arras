@@ -26,9 +26,13 @@ bounded official-UMF admission and opt-in read-only memory metadata projection.
 Local candidate evidence and completed public acceptance are recorded below and
 in the [integration plan](../04-build/arras-integration-plan-20261022.md).
 
-GitHub Release assets are mandatory. Publish to real PyPI/npm only through
-existing configured access; the human explicitly permits deferring those uploads
-if access cannot be found. Do not advertise an unavailable registry install.
+GitHub Release assets and automatic PyPI/npm delivery are required for new
+registry-enabled releases. Publishers consume the exact qualified assets after
+the complete release/public-download gates, using configured OIDC trust. Missing
+access fails the affected publisher; it does not silently defer publication.
+Earlier explicitly deferred releases retain their historical delivery scope.
+Do not advertise a registry install until its download and clean consumer checks
+pass.
 
 ## Before Deploy
 
@@ -41,13 +45,19 @@ if access cannot be found. Do not advertise an unavailable registry install.
 - Version, deliberate public catalog, contract mappings, page/theme manifests and
   wheel-carried npm metadata agree. No secret, downstream import, private theme
   dependency or customer-specific fixture enters the public source/artifacts.
-- Standard GitHub authentication and push access are verified. Repository release
-  permissions are sufficient; optional registry variables remain off unless the
-  matching publisher is configured. Local npm authentication returned `E401`;
-  no local PyPI configuration was found. Organization-secret inspection is not
-  permitted by the current account scope. No credential values are recorded.
+- Standard GitHub authentication and push access are verified. Configure PyPI
+  and npm trusted publishers for `DocumentDrivenDX/arras`, workflow
+  `publish-registries.yml`, with environments `pypi` and `npm`. Each environment
+  permits only the `main` publishing driver and requires no per-release reviewer.
+  Do not record credentials. First npm publication requires scope-owner bootstrap
+  authentication before its package can acquire a trusted publisher.
 - Validate explicit consumer configuration and identity-conflict controls. The
   offline doctor reads only declared inputs, never ambient tokens or live hosts.
+- Check wheel and sdist dependency metadata for every direct-reference scheme,
+  including optional extras. Plain PyPI install qualification covers the base
+  package. Extras with off-index upstream dependencies retain explicit verified
+  wheelhouse instructions and separate installed-cohort evidence; do not claim
+  that plain `pip install arras[umf]` or `arras[truss]` resolves from PyPI.
 
 ## Validation Gates
 
@@ -61,7 +71,7 @@ if access cannot be found. Do not advertise an unavailable registry install.
 | Telemetry naming | Typed per-host service/attribute/event/log names work through effective configuration, preserve canonical defaults, never mutate the global provider, and pass actual SDK receiver, redaction, failure-isolation and concurrent-host controls. Existing host formatting alone does not close this explicit requirement. |
 | Policy | Current-principal allow/refusal/revocation checks pass. An annotation-aware synthetic provider proves same-group commit/rollback; unsupported native providers refuse before writing. No speculative sensitive workload is introduced. |
 | Exact artifacts | Build wheel/sdist/npm from final source. Rebuild the wheel from that exact sdist, compare complete payloads/metadata, run fresh installed consumers and retain a separate verification receipt. Rebuild again after any packaged source/test/tool change. |
-| Tag and assets | Mandatory exact-tag source/native/UI/downstream/build gates precede GitHub publication. Attach wheel, sdist, wheel-carried npm tarball, receipt and `SHA256SUMS`; optional publishers use those same verified bytes. |
+| Tag and assets | Mandatory exact-tag source/native/UI/downstream/build gates precede GitHub publication. Attach wheel, sdist, wheel-carried npm tarball, receipt and `SHA256SUMS`; registry publishers use those same verified bytes. |
 | Downloaded release | Download the public release assets into a new directory, verify digests and repeat installed consumer/skeleton/doctor checks. A local build alone does not pass this gate. |
 | Official UMF qualification (0.6.0+) | The exact final wheel passes the installed admission/metadata gate with pinned official UMF 0.10.0: all 139 ordered reference and separate fresh-empty production Registry comparisons, six base and ten extra-enabled controls, zero skips, and verified cleanup. Repeat against the exact public-download wheel in a fresh environment; retain distinct receipts. The 0.5.1 candidate receipt is historical and cannot close this gate. |
 | Public assembly (0.6.0+) | Use release-evidence schema v2: include the mandatory safe UMF receipt projection as asset 17, bind it to the exact wheel, and repeat UMF qualification after public download. Keep v1/sixteen-asset evidence for historical releases unchanged. |
@@ -138,7 +148,7 @@ The [current Mac records](../04-build/evidence/truss050-adoption-20261024/fresh-
 | Public source | Commit the coordinated frozen source and push the authorized release candidate. | Exact commit CI passes, including all required native/UI/downstream jobs. |
 | Tagged build | Create and push the version-matching tag; observe mandatory release jobs. | Exact bundle built and all prepublication checks pass. |
 | GitHub release | Workflow attaches verified artifacts and receipt. | Fresh public download/installed-consumer checks pass. |
-| Registry delivery | Use existing PyPI/npm access if available; otherwise record the explicit deferral. | Successful registry installs are qualified separately, or notes clearly name GitHub assets as the delivery route. |
+| Registry delivery | Automatically publish exact qualified assets through registry OIDC trust after all release/public-download gates pass. | Registry bytes match the qualified digests, fresh isolated installs pass, and a separate receipt records each registry outcome. Missing access or conflicting existing bytes fails publication. |
 
 ## Recorded 0.5.1 acceptance
 

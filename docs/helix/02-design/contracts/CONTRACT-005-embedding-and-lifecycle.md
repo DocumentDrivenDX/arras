@@ -322,9 +322,35 @@ only after all required commands and identity checks succeeded; missing output,
 empty tests, a failed command or a skipped required stage fails. This later
 receipt remains separate from the immutable prepublication aggregate; do not
 rewrite published bundle bytes or invent successful publication/download evidence.
-Both optional registry jobs must depend on `downloaded-release` as well as the
-existing GitHub/reusable-consumer gates. An unconfigured publisher can remain
-explicitly deferred under the human's instruction; public download gates cannot.
+New releases MUST automatically publish the verified Python wheel/sdist to PyPI
+and the wheel-carried UI archive to npm after the complete release and anonymous
+public-download gates succeed. The publisher MUST bind the original successful
+release run, repository, workflow, source, immutable tag, driver and exact asset
+digests. A separate registry workflow MUST verify those prerequisites before
+requesting publishing authority; it MUST NOT rebuild the payload or execute
+untrusted release-source code with publishing credentials.
+
+Publishing uses OpenID Connect (OIDC), constrained to the repository, publishing
+workflow and named registry environment. Missing access fails the affected
+publication; it MUST NOT silently skip a required publisher or substitute a
+long-lived token. Historical registry deferrals retain their original scope.
+An existing version is recoverable only when registry-served files match the
+qualified bytes. A conflicting version, failed authentication or indeterminate
+network response MUST NOT be treated as an absent version.
+
+PyPI eligibility checks MUST reject direct-URL dependencies, including optional
+extras, before release publication. Metadata changes require a new qualified
+version; a publisher MUST NOT strip dependencies or upload an undisclosed
+same-version variant. After upload, verify anonymous registry-served digests and
+a fresh isolated registry installation with explicit consumer checks. Record
+registry delivery separately from GitHub publication and native qualification.
+
+Plain-index PyPI delivery qualifies the base package. An optional extra whose
+upstream dependencies are not on PyPI MUST document its qualified wheelhouse
+route and retain the exact upstream digests. Version-only dependency metadata
+MUST NOT imply plain-index availability of those extras. Keep their separate
+installed-cohort qualification; do not remove supported features or adopt a new
+upstream producer solely to make an upload succeed.
 
 Workflow tests check the actual dependency graph and exact tool/input wiring.
 Execute the actual extracted comparison/download shell with temporary trusted/

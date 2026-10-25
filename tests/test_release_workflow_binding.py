@@ -86,12 +86,39 @@ def test_release_builds_ui_before_running_integration_and_keeps_current_run_gate
         r"(?m)^    needs: \[check, build, assemble-evidence, github-release, installed-downstream\]$",
         job_text(workflow, "downloaded-release"),
     )
-    assert "needs: [github-release, installed-downstream, downloaded-release]" in job_text(
-        workflow, "publish-pypi"
-    )
-    assert "needs: [github-release, installed-downstream, downloaded-release]" in job_text(
-        workflow, "publish-npm"
-    )
+    assert "publish-pypi:" not in workflow and "publish-npm:" not in workflow
+    assert "ARRAS_PUBLISH_PYPI" not in workflow and "ARRAS_PUBLISH_NPM" not in workflow
+    assert "verify_registry_publication.py pypi-metadata" in job_text(workflow, "build")
+
+
+def test_registry_publishing_is_separate_oidc_only_after_public_release_gates() -> None:
+    workflow_path = ROOT / ".github/workflows/publish-registries.yml"
+    workflow = workflow_path.read_text()
+    assert 'workflows: ["Release"]' in workflow
+    assert "workflow_run:" in workflow and "workflow_dispatch:" in workflow
+    assert "release-driver-provenance" in workflow and "release-assets" in workflow
+    assert "verify_public_release_assets.py plan" in workflow
+    assert "verify_public_release_assets.py verify" in workflow
+    assert "expected_tag_object_sha" in workflow
+    assert "expected_sums_sha256" in workflow and "expected_wheel_sha256" in workflow
+    assert "environment: npm" in workflow and "environment: pypi" in workflow
+    assert workflow.count("id-token: write") == 2
+    assert "NODE_AUTH_TOKEN" not in workflow and "NPM_TOKEN" not in workflow
+    assert "ARRAS_PUBLISH_NPM" not in workflow and "ARRAS_PUBLISH_PYPI" not in workflow
+    assert "--provenance" in workflow and "gh-action-pypi-publish@release/v1" in workflow
+    assert "check-npm" in workflow and "check-pypi" in workflow
+    assert "npm install --prefix" in workflow and "python3 -m venv" in workflow
+    assert workflow.count("ref: ${{ github.workflow_sha }}") == 5
+    assert workflow.count('test "$(git rev-parse HEAD)" = "$EXPECTED_DRIVER_SHA"') == 5
+    assert workflow.count("--wait-for-present") == 2
+    assert workflow.count("--visibility-timeout 180") == 2
+    assert workflow.count("publisher_workflow_sha") == 2
+    assert '"install_scope": "plain-index-base"' in workflow
+    assert "id: npm-upload" in workflow
+    assert "if: steps.upload-check.outputs.status == 'absent'" in workflow
+    assert "NPM_UPLOAD_OUTCOME: ${{ steps.npm-upload.outcome }}" in workflow
+    assert '"publication_mode": "oidc_upload" if os.environ["NPM_UPLOAD_OUTCOME"] == "success" else "existing_exact_bytes"' in workflow
+    assert '"oidc_trusted_publisher": os.environ["NPM_UPLOAD_OUTCOME"] == "success"' in workflow
 
 
 def test_release_rebuild_must_match_the_selected_qualification_wheel_before_upload() -> None:

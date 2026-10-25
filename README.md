@@ -12,23 +12,23 @@ Arras is embedded by host apps that supply their own identity and configuration.
 
 ## Status
 
-Beta (`0.x`). The in-memory and Truss adapters are implemented. Arras 0.6.1 is the current published release; its [release notes](docs/helix/05-deploy/release-notes.md) identify the qualified subsets and exact artifact/platform evidence. The in-memory and Truss support claims remain bounded to those named cohorts. The Ashlar adapter and the feed from Truss to it are not built; the backend contract and packaged conformance corpus (`arras.conformance.run_corpus`) are what a new adapter is held to.
+Beta (`0.x`). The in-memory and Truss adapters are implemented. The [release notes](docs/helix/05-deploy/release-notes.md) identify published versions, qualified subsets and exact artifact/platform evidence. The in-memory and Truss support claims remain bounded to those named cohorts. The Ashlar adapter and the feed from Truss to it are not built; the backend contract and packaged conformance corpus (`arras.conformance.run_corpus`) are what a new adapter is held to.
 
 ## Install
 
-Arras 0.6.1 is available from the [GitHub Release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.1).
-Install its wheel after checking the attached `SHA256SUMS`:
+Choose a qualified version from the [GitHub releases](https://github.com/DocumentDrivenDX/arras/releases) and check its attached `SHA256SUMS`.
+For versions whose PyPI publication and registry-install checks have completed, install the base package with:
 
 ```bash
-pip install ./arras-0.6.1-py3-none-any.whl
+pip install arras
 ```
 
 [Release notes](docs/helix/05-deploy/release-notes.md) record publication status and
-registry availability. PyPI/npm uploads are separate from GitHub asset delivery;
-do not assume a registry package is available. A source/git install omits the
+registry availability. GitHub-only versions can be installed from their verified
+downloaded wheel. A source/git install omits the
 built UI; use the release wheel for the mountable page and carried npm tarball.
 
-The base install needs only `graphql-core`. Extras: `arras[otel]` (OpenTelemetry spans), `arras[devhost]` (the development host), `arras[truss]` (the Truss adapter; the Truss and Weft wheels are not on a package index, so resolve them from `tools/find-links/index.html`, as `pyproject.toml` does).
+The base install needs only `graphql-core`. Extras: `arras[otel]` (OpenTelemetry spans), `arras[devhost]` (the development host), `arras[truss]` (the Truss adapter) and `arras[umf]` (the official UMF reader). The supported plain PyPI route is the base package, once that release’s registry checks have passed. The Truss and UMF extras require the exact upstream wheels staged in a host-controlled wheelhouse; their version-only requirements do not assert that those dependencies are on PyPI. Verify the upstream release digests in `tools/find-links/index.html`, install from that wheelhouse, then install the selected Arras extra with the same find-links source. This preserves the qualified upstream cohort without direct-URL dependency metadata.
 
 ## Quick start
 

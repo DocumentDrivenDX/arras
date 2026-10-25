@@ -2272,3 +2272,31 @@ not supported application runtimes, and no pre-0.10 compatibility is added. The
 separate PR10 actions/UMF cohort and Truss PWS03 temporal-access integration remain
 deferred to their own qualified cohorts; neither is folded into this frozen PR9
 release.
+
+### Registry publication continuation — 2026-10-25
+
+The human requests automatic registry publication for future releases and chose
+unchanged npm 0.6.1 plus a new Python 0.6.2 release. The original 0.6.1 Python
+wheel declares a direct UMF URL, which PyPI rejects even under an optional extra.
+Its GitHub assets and immutable tag remain unchanged; no same-version metadata
+variant is permitted. The 0.6.2 preparation changes dependency metadata to the
+same qualified UMF core 0.10.0 version and digest, without adopting the separate
+open producer or changing latest-only runtime support.
+
+The one-time scope-owner npm 0.6.1 publication is complete. Anonymous registry
+download matches tarball SHA-256
+`9c741538b1a32f21b37afcd39f10c24285a1728194a7073cbac9cda2d93e2285`;
+a fresh unauthenticated consumer has all 321 package files byte-identical,
+imports the UI and testkit, and resolves browser, shell and CSS exports. This
+Node 26.12.1 / npm 11.20.0 proof does not rerun or broaden the original browser
+or native campaigns, and it does not attest an OIDC upload. The [retained registry receipts](../05-deploy/evidence/registry-publication-20261025/) preserve both phases.
+
+The publisher workflow must verify the original successful release and complete
+public-download gates, use exact GitHub assets and OIDC, refuse conflicting
+registry versions, and verify registry bytes plus clean installs. Main-only
+GitHub environments `pypi` and `npm` are configured under explicit human
+approval; registry trusted-publisher grants and hosted publisher execution still
+require completion evidence. The PyPI base route is plain-index; UMF/Truss
+extras retain the qualified upstream wheelhouse route until their dependencies
+have separate registry publication. Python 0.6.2 is not yet published or
+qualified by the historical 0.6.1 receipt alone.

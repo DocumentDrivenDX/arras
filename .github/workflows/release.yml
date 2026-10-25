@@ -1,8 +1,8 @@
 name: Release
 
 # On a matching vX.Y.Z tag, keep the Truss and build checks mandatory, then attach the exact
-# verified Python and UI artifacts to GitHub. Registry publishing is opt-in per repository variable:
-# ARRAS_PUBLISH_PYPI=true and/or ARRAS_PUBLISH_NPM=true.
+# verified Python and UI artifacts to GitHub. Registry publication runs separately only after all
+# release gates and anonymous public-download qualification have succeeded.
 #
 # The wheel and npm tarball carry the UI build. A git install builds the Python package from the tag
 # without it, because main never carries build output: use the wheel for the console.
@@ -152,6 +152,11 @@ jobs:
       - run: npm ci && npm run build:wheel
         working-directory: ui
       - run: uv build --wheel && uv build --sdist
+      - name: Require PyPI-compatible wheel and sdist metadata before publishing a release
+        run: |
+          python .github/scripts/verify_registry_publication.py pypi-metadata \
+            --wheel dist/arras-*.whl \
+            --sdist dist/arras-*.tar.gz
       - name: Require the exact wheel selected for installed and managed qualification
         run: |
           echo '259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18  dist/arras-0.6.1-py3-none-any.whl' | sha256sum --check --strict -
@@ -809,50 +814,3 @@ jobs:
             ui/test-results
             ui/playwright-report
           if-no-files-found: ignore
-
-  # PyPI consumes the exact verified wheel and sdist; enabling requires repository variable
-  # ARRAS_PUBLISH_PYPI=true and a configured pypi trusted publisher.
-  publish-pypi:
-    if: vars.ARRAS_PUBLISH_PYPI == 'true'
-    needs: [github-release, installed-downstream, downloaded-release]
-    runs-on: ubuntu-latest
-    environment: pypi
-    permissions:
-      id-token: write
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: release-assets
-          path: release-assets
-      - name: Verify and stage only Python distributions
-        run: |
-          (cd release-assets && sha256sum -c SHA256SUMS)
-          mkdir -p dist
-          cp release-assets/*.whl release-assets/*.tar.gz dist/
-      - uses: pypa/gh-action-pypi-publish@release/v1
-
-  # npm consumes the exact tarball extracted from the verified wheel; enabling requires repository
-  # variable ARRAS_PUBLISH_NPM=true and a configured npm environment token.
-  publish-npm:
-    if: vars.ARRAS_PUBLISH_NPM == 'true'
-    needs: [github-release, installed-downstream, downloaded-release]
-    runs-on: ubuntu-latest
-    environment: npm
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: release-assets
-          path: release-assets
-      - name: Verify release bundle checksums
-        run: cd release-assets && sha256sum -c SHA256SUMS
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          registry-url: https://registry.npmjs.org/
-      - name: Publish the verified package carried by the wheel
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish ./release-assets/*.tgz --access public --provenance
