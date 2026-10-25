@@ -12,15 +12,15 @@ Arras is embedded by host apps that supply their own identity and configuration.
 
 ## Status
 
-Beta (`0.x`). The in-memory and Truss adapters are implemented. Arras 0.6.0 is the current published release; its [release notes](docs/helix/05-deploy/release-notes.md) identify the qualified subsets and exact artifact/platform evidence. The in-memory and Truss support claims remain bounded to those named cohorts. The Ashlar adapter and the feed from Truss to it are not built; the backend contract and packaged conformance corpus (`arras.conformance.run_corpus`) are what a new adapter is held to.
+Beta (`0.x`). The in-memory and Truss adapters are implemented. Arras 0.6.1 is the current published release; its [release notes](docs/helix/05-deploy/release-notes.md) identify the qualified subsets and exact artifact/platform evidence. The in-memory and Truss support claims remain bounded to those named cohorts. The Ashlar adapter and the feed from Truss to it are not built; the backend contract and packaged conformance corpus (`arras.conformance.run_corpus`) are what a new adapter is held to.
 
 ## Install
 
-Arras 0.6.0 is available from the [GitHub Release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.0).
+Arras 0.6.1 is available from the [GitHub Release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.1).
 Install its wheel after checking the attached `SHA256SUMS`:
 
 ```bash
-pip install ./arras-0.6.0-py3-none-any.whl
+pip install ./arras-0.6.1-py3-none-any.whl
 ```
 
 [Release notes](docs/helix/05-deploy/release-notes.md) record publication status and
@@ -301,7 +301,7 @@ Checks beyond the unit tests: `tests/test_modules.py` holds the library's module
 
 ## The Truss adapter
 
-`arras.adapters.truss.create_backend(name, source, installing=None, *, module_access=None, tolerated_grantees=())` builds the Truss backend (reader and provider). It is built, with its install-or-verify `migrate()`, `configure_access()` (a module's reader, writer and, optionally, auditor roles) and `install_roles()`, and a credential-free endpoint handle for the MCP process. Arras 0.6.1 pins public `truss-toolkit[native,query]==0.0.50` and `weft-sql==0.4.51`; published 0.6.0 used Truss 0.0.48. A host may explicitly supply an immutable `tolerated_grantees` tuple for fresh installation; reconnect preserves the stored policy. Each release is qualified against exact wheel bytes through fresh-installed native and actual managed-service campaigns. See the [release notes](docs/helix/05-deploy/release-notes.md) for the 0.6.1 artifact identities, phase-specific results and remaining gates. Arras 0.6.0 adds optional official UMF admission and an opt-in, read-only memory metadata profile; its public Linux release gates passed on the named release wheel. The earlier 0.5.1 native cohort remains historical evidence and does not transfer to this release. The adapter is the only place that imports Truss.
+`arras.adapters.truss.create_backend(name, source, installing=None, *, module_access=None, tolerated_grantees=())` builds the Truss backend (reader and provider). It is built, with its install-or-verify `migrate()`, `configure_access()` (a module's reader, writer and, optionally, auditor roles) and `install_roles()`, and a credential-free endpoint handle for the MCP process. Arras 0.6.1 pins public `truss-toolkit[native,query]==0.0.50` and `weft-sql==0.4.51`; published 0.6.0 used Truss 0.0.48. A host may explicitly supply an immutable `tolerated_grantees` tuple for fresh installation; reconnect preserves the stored policy. Each release is qualified against exact wheel bytes through fresh-installed native and actual managed-service campaigns. See the [release notes](docs/helix/05-deploy/release-notes.md) for the 0.6.1 artifact identities, phase-specific results and bounded evidence. Arras 0.6.0 adds optional official UMF admission and an opt-in, read-only memory metadata profile; its public Linux release gates passed on the named release wheel. The earlier 0.5.1 native cohort remains historical evidence and does not transfer to this release. The adapter is the only place that imports Truss.
 
 What the host provides:
 

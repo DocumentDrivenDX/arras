@@ -17,9 +17,9 @@ ddx:
 
 # Arras release notes
 
-## 0.6.1 candidate
+## 0.6.1 published
 
-This patch selects public Truss 0.0.50 and preserves Weft 0.4.51 and official UMF
+This release selects public Truss 0.0.50 and preserves Weft 0.4.51 and official UMF
 core 0.10.0. Fresh installation accepts an explicit immutable
 `tolerated_grantees` tuple; reconnect verifies stored policy without widening it.
 The existing metadata-only profile, runtime support boundaries and historical
@@ -70,8 +70,14 @@ Its source-bound records are in [full-managed-20db-passed-20261025](../04-build/
 The scoped supplemental census records all three known groups absent, zero
 owned-script matches and zero denials. The direct supervisor PGID was not
 captured; no forced-cleanup claim is made. Historical D11/D12 and the initial
-2d failure remain preserved as failed evidence. Final release review, exact-
-commit CI, release-built artifact, merge/tag and publication remain open.
+2d failure remain preserved as failed evidence. The final PR 9 source is
+`243f1ebaf8b32beb0abc30d0d4fdcd9dd7b5ea92` (tree
+`9ee467d942ba7440d6adaa9b891b8f00aa2d8c1c`), published as annotated tag
+`v0.6.1` (tag object `99609317f1cfc95a2e8e3768f2481910dcf42e23`). The exact-tag
+[release workflow](https://github.com/DocumentDrivenDX/arras/actions/runs/40227314485) passed all ten mandatory jobs, including
+release build/assembly, installed downstream and anonymous public-download
+qualification. The [GitHub release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.1) carries the exact canonical
+wheel; public assets and the completed public repeat are described below.
 
 The historical [full WAN campaign, D11](../04-build/evidence/truss050-adoption-20261024/full-managed-d11-failed/),
 finished 10 passed / 2 failed; the separate [D12 baseline diagnostic](../04-build/evidence/truss050-adoption-20261024/baseline-six-diagnostic/)
@@ -80,16 +86,27 @@ results remain historical and do not replace the completed 20db campaign. The al
 ordinary actor setup is reusable; no VM was created or required for these WAN
 runs. Credential renewal remains with the user or designated workspace
 credential administrator. Historical 0.0.49 receipts retain their original scope.
-Both complete campaigns must bind to the same eventual release wheel bytes;
-any wheel-byte change requires both campaigns rebound and rerun.
+Both complete campaigns bind to the same canonical Arras wheel SHA-256
+`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`; any future wheel-byte change requires both campaigns rebound and rerun.
 
-PR 9 is under qualification. Its earlier candidate with 0.6.0 package metadata
-passed fresh installed native conformance (64 cases and eight unchanged declared
-limits, zero failed/harness-error), artifact parity, doctor and official UMF
-checks. Those receipts retain their original wheel identity; final 0.6.1 artifacts
-require their own evidence. Final review, merge and publication remain pending; the exact-wheel managed
-execution gate has passed. The TP-001 and integration-plan execution amendments
-govern the original managed proof and reusable least-privilege identity setup.
+The earlier PR 9 candidate with 0.6.0 package metadata passed fresh installed
+native conformance (64 cases and eight unchanged declared limits), artifact
+parity, doctor and official UMF checks. Those receipts retain their original wheel
+identity and remain historical. The 0.6.1 public bundle has 17 assets (16 listed
+in `SHA256SUMS`), release-evidence schema v2 and an exact wheel SHA-256 of
+`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`. The anonymous public-download qualification verified every asset against
+the exact assembled release stage and confirmed that the npm tarball matches the
+wheel-carried bytes. On the downloaded wheel, the public UMF repeat matched all
+139 ordered reference and 139 fresh-empty Registry cases, with six base and ten
+extra-enabled controls, zero skips and passing cleanup. The public doctor passed
+20 cases; the installed extension consumer passed four tests and 72 memory-corpus
+cases. The public Linux theme suite passed all 205 nonvisual checks with no
+unexpected skips; visual checks were inapplicable on Linux. All results are
+bounded to the named wheel and recorded cohorts. Release run `40227314485` passed
+all mandatory jobs. Optional `publish-pypi` and `publish-npm` jobs were skipped as
+configured; GitHub assets remain the delivery route. The TP-001 and integration-
+plan amendments continue to govern the original managed proof and reusable
+least-privilege identity setup. The [retained public-repeat receipts](../04-build/evidence/truss050-adoption-20261024/public-release-qualification-20261025/) bind the downloaded wheel and actual postpublication UMF phase.
 
 ## 0.6.0
 

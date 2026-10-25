@@ -82,20 +82,28 @@ if access cannot be found. Do not advertise an unavailable registry install.
   replica-only cases inapplicable, and successful cleanup. The [current Mac
   records](../04-build/evidence/truss050-adoption-20261024/fresh-macos-40221099126/)
   retain exact installed-payload and source correspondence. The separate full
-  twelve-case managed campaign on the same wheel passed; final release acceptance
-  remains subject to review and exact-final-commit artifact gates.
-- [ ] Release-built artifacts match that exact wheel and complete their own
-  distribution, native, doctor, official UMF and downstream UI release gates.
+  twelve-case managed campaign on the same wheel passed 12/12 with zero failures
+  or blocked cases and passing original cleanup, independent audit, census and
+  custody handback. The public release built from merge commit
+  `243f1ebaf8b32beb0abc30d0d4fdcd9dd7b5ea92` carries the same wheel bytes.
+- [x] Release-built artifacts match that exact wheel and complete their own
+  distribution, native, doctor, official UMF and downstream UI release gates;
+  mandatory exact-tag jobs passed in [run 40227314485](https://github.com/DocumentDrivenDX/arras/actions/runs/40227314485).
 - [x] All twelve actual Lakebase cases and independent owned cleanup pass; the
   original safe receipt, fixture/harness identities, review and support limits
   are linked from the integration plan and release notes.
 - [x] Reusable ordinary identity setup and private credential-reference custody
   are documented separately from disposable database cleanup, so routine future
   campaigns use that setup without repeating admin provisioning.
-- [ ] Final source/control/service-evidence review and exact-commit CI pass;
-  PR 9 is merged and the version-matching immutable release workflow passes.
-- [ ] Public anonymous download and installed-consumer repeats pass on the
-  published bytes; registry delivery or the authorized deferral is recorded.
+- [x] Final source/control/service-evidence review and exact-commit CI pass;
+  PR 9 is merged and the version-matching immutable release workflow passes in
+  [run 40227314485](https://github.com/DocumentDrivenDX/arras/actions/runs/40227314485).
+- [x] Public anonymous download and installed-consumer repeats pass on the
+  published bytes. The release contains 17 assets (16 SHA256SUMS entries), with
+  schema-v2 evidence and public UMF 139/139 reference plus 139/139 fresh-Registry
+  matches, six base and ten extra controls, zero skips and passing cleanup.
+  Optional PyPI/npm publisher jobs were skipped as configured; GitHub assets
+  remain the delivery route.
 
 The human authorized resumption of the owned-database recovery qualification
 on 2026-10-25. Controller preflight passed 6/6 checks and collector controls
@@ -120,7 +128,7 @@ The supplemental scoped process census found all three known groups absent and
 no exact owned-script matches or inspection denials. The direct supervisor PGID
 was not captured and no forced-cleanup claim is made; see the retained
 [projection](../04-build/evidence/truss050-adoption-20261024/full-managed-20db-passed-20261025/root-process-census-supplement.public-projection.json).
-The [current Mac records](../04-build/evidence/truss050-adoption-20261024/fresh-macos-40221099126/) retain exact source/cohort/payload bindings. Gate execution passed; final review, exact-commit CI, release-built artifact, merge/tag and publication gates remain open.
+The [current Mac records](../04-build/evidence/truss050-adoption-20261024/fresh-macos-40221099126/) retain exact source/cohort/payload bindings. PR 9 merged as `243f1ebaf8b32beb0abc30d0d4fdcd9dd7b5ea92`, and [v0.6.1](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.1) plus its mandatory public-download and installed-consumer repeats passed in [release run 40227314485](https://github.com/DocumentDrivenDX/arras/actions/runs/40227314485). The separately authorized PyPI/npm deferral remains in force.
 
 ## Rollout Stages
 
