@@ -56,11 +56,14 @@ value/constraint execution, canonical actions, broader ownership/registration,
 general native metadata, or Ashlar support. The final independent public review is
 complete and linked in the [release notes](05-deploy/release-notes.md).
 
-For the current 0.6.1 / Truss 0.0.50 candidate, the exact canonical wheel passed
-its fresh-installed Mac and original twelve-case Lakebase execution gates. The
-source-bound evidence and remaining final release gates are recorded in the
-[release notes](05-deploy/release-notes.md), [deployment checklist](05-deploy/deployment-checklist.md)
-and [integration plan](04-build/arras-integration-plan-20261022.md).
+Arras 0.6.1 / Truss 0.0.50 is published from merge commit
+`243f1ebaf8b32beb0abc30d0d4fdcd9dd7b5ea92` as tag `v0.6.1`. The canonical
+wheel `259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18` passed the exact-wheel Mac and original twelve-case Lakebase
+gates, and the exact-tag release workflow completed all mandatory public asset,
+installed-consumer and UI/UMF repeats. The [release notes](05-deploy/release-notes.md),
+[deployment checklist](05-deploy/deployment-checklist.md) and
+[integration plan](04-build/arras-integration-plan-20261022.md) record the bounded
+receipts and explicitly deferred registry jobs.
 
 Raw incoming material goes in `docs/intake/`, outside HELIX. Author artifacts
 through the HELIX skill (`/helix`).
@@ -68,23 +71,25 @@ through the HELIX skill (`/helix`).
 - [EX-05/EX-07 external overlay execution plan](04-build/ex05-ex07-external-overlay-20261022.md)
 
 
-## Arras 0.6.1 candidate status — 2026-10-25
+## Arras 0.6.1 published status — 2026-10-25
 
-The current PR 9 candidate is source
-`20db67822b20c822ee91c6823a3fe73ebc3ae932` (tree
-`5ef9170c03e0f9575649757850fe15e03ce94c7c`) and pins published Truss 0.0.50.
-All five exact-source CI jobs in run `40221099126` passed and the canonical Arras wheel remains
-`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`, byte-equal
-to its retained build artifact. Fresh macOS arm64 / CPython 3.11.9 evidence from run `40221099126` has
-64 passes, eight unchanged limits, seven inapplicable replica cases, seven
-verified native-wheel hashes, exact 172-file Arras payload parity and passing
-cleanup. The repaired fresh Lakebase baseline passed 6/6, and the separate original
-full twelve-case Lakebase campaign passed 12/12 with zero failures or blocked
-cases. Original cleanup, independent audit, process census and custody handback
-passed; source-bound safe records are retained under
+Arras 0.6.1 pins published Truss 0.0.50 and was merged from source
+`243f1ebaf8b32beb0abc30d0d4fdcd9dd7b5ea92` (tree `9ee467d942ba7440d6adaa9b891b8f00aa2d8c1c`) under annotated
+tag `v0.6.1` (object `99609317f1cfc95a2e8e3768f2481910dcf42e23`). Its canonical wheel remains
+`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`. Exact-wheel fresh macOS arm64 / CPython 3.11.9 evidence from run
+`40221099126` has 64 passes, eight unchanged limits, seven inapplicable replica
+cases, seven verified native-wheel hashes, exact 172-file Arras payload parity
+and passing cleanup. The repaired fresh Lakebase baseline passed 6/6; the separate
+original full twelve-case Lakebase campaign on the same wheel passed 12/12 with
+zero failures or blocked cases. Original cleanup, independent audit, process
+census and custody handback passed; source-bound safe records are retained under
 [`full-managed-20db-passed-20261025`](04-build/evidence/truss050-adoption-20261024/full-managed-20db-passed-20261025/).
 The scoped supplemental census did not capture the direct supervisor PGID; no
 forced-cleanup claim is made. The initial 2d journal-binding failure and D11/D12
-failures remain historical. Final review, exact-commit CI, release build,
-merge/tag and publication remain open; these execution results do not declare
-final release acceptance.
+failures remain historical. Exact-tag [release run 40227314485](https://github.com/DocumentDrivenDX/arras/actions/runs/40227314485)
+passed all mandatory jobs, including anonymous public asset verification and
+installed downstream repeats. The published 17-asset schema-v2 bundle binds the
+exact wheel; public UMF matched 139 reference and 139 fresh-empty Registry cases,
+with six base and ten extra controls, zero skips and passing cleanup. Registry
+publisher jobs were skipped as configured; GitHub Release assets are the delivery
+route.

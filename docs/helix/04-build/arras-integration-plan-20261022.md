@@ -2218,7 +2218,7 @@ inapplicable, seven native wheel hashes and 172 exact Arras payload hashes;
 cleanup passed. Its review-safe export is prepared for the evidence destination
 `evidence/truss050-adoption-20261024/fresh-macos-40221099126/review-safe/`;
 export manifest SHA-256 is `8877fe5ecf490f6c626a173de7561bf260911776d0a7616477b9f1b96bd4474a`
-and its source-bound export manifest is retained in the repository. The original full twelve-case campaign on the same canonical wheel passed 12/12 with zero failures or blocked cases; original cleanup, independent audit, process census and custody handback passed. See [full managed records](evidence/truss050-adoption-20261024/full-managed-20db-passed-20261025/). The supplemental scoped census found all three known process groups absent, zero exact owned-script matches and zero inspection denials. The direct supervisor PGID was not captured and no forced-cleanup claim is made; the public-safe projection is retained with the full run. The initial 2d failure and D11/D12 failures remain historical. The wheel guard now binds the qualified canonical wheel. Final review, exact-commit CI, release-built artifact, merge/tag and publication gates remain open.
+and its source-bound export manifest is retained in the repository. The original full twelve-case campaign on the same canonical wheel passed 12/12 with zero failures or blocked cases; original cleanup, independent audit, process census and custody handback passed. See [full managed records](evidence/truss050-adoption-20261024/full-managed-20db-passed-20261025/). The supplemental scoped census found all three known process groups absent, zero exact owned-script matches and zero inspection denials. The direct supervisor PGID was not captured and no forced-cleanup claim is made; the public-safe projection is retained with the full run. The initial 2d failure and D11/D12 failures remain historical. The wheel guard now binds the qualified canonical wheel. At this prepublication checkpoint, final review, exact-commit CI, release-built artifact, merge/tag and publication gates remained open; the later published outcome is recorded below.
 
 ### Consolidated source accounting — 2026-10-25
 
@@ -2239,4 +2239,36 @@ Arras/Truss records. It does not claim a global repository audit or acceptance.
 
 
 
-The earlier dated execution notes above preserve their original state at capture. The final current outcome is recorded in “Final exact-wheel execution — 2026-10-25”: both exact-wheel campaigns and the managed cleanup/audit/custody controls passed; only release closeout gates remain open.
+The earlier dated execution notes and consolidated source table above preserve their original state at capture. The final current outcome is recorded below: both exact-wheel campaigns and managed cleanup/audit/custody controls passed, followed by successful exact-tag public release and downloaded-consumer qualification.
+
+### Published Arras 0.6.1 exact-wheel closure — 2026-10-25
+
+Arras PR 9 merged as `243f1ebaf8b32beb0abc30d0d4fdcd9dd7b5ea92` (tree
+`9ee467d942ba7440d6adaa9b891b8f00aa2d8c1c`). Immutable annotated tag
+`v0.6.1` (object `99609317f1cfc95a2e8e3768f2481910dcf42e23`) points to that commit. The public
+[GitHub release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.1) carries the exact canonical Arras wheel
+SHA-256 `259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`; all 17 public assets (16 payloads plus `SHA256SUMS`)
+match the workflow's trusted assembly, use release-evidence schema v2, and the
+wheel-carried npm tarball matches the published npm asset.
+
+The exact-tag [release workflow run 40227314485](https://github.com/DocumentDrivenDX/arras/actions/runs/40227314485) passed all ten
+mandatory jobs, including source/tag checks, build, native, official UMF, UI,
+assembly, GitHub publication, installed downstream and the complete anonymous
+public-download repeat. That repeat's public UMF receipt matched 139 ordered
+reference and 139 separate fresh-empty Registry cases, six base and ten extra
+controls, zero skips and passing cleanup. Public distribution and doctor checks
+passed; the installed extension consumer passed four tests and all 72 memory
+cases; the packed Linux theme suite passed 205 nonvisual checks with no unexpected
+skips. The complete source-bound Mac and actual Lakebase WAN results above remain
+bound to the same exact wheel bytes. Historical D11/D12 and the initial 2d failure
+remain failed records; the 20db baseline and original twelve-case campaign remain
+the passing managed evidence. The direct supervisor PGID was not captured, so no
+forced-cleanup claim is made. Optional PyPI/npm publishing jobs were skipped as
+configured; GitHub assets are the delivery route.
+
+The runtime remains latest-only: databases from every admitted UMF 0.10 lineage
+forward-migrate to latest without an age cutoff; historical migration tools are
+not supported application runtimes, and no pre-0.10 compatibility is added. The
+separate PR10 actions/UMF cohort and Truss PWS03 temporal-access integration remain
+deferred to their own qualified cohorts; neither is folded into this frozen PR9
+release.
