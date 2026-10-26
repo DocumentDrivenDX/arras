@@ -33,14 +33,13 @@ otel = [
 devhost = [
     "uvicorn>=0.30",
 ]
-# The Truss adapter (ADR-006, ADR-010): the pinned toolkit with its psycopg driver and Weft. Neither
-# the toolkit nor Weft is on PyPI, so they resolve from the committed find-links page
-# (tools/find-links/index.html), whose anchors carry the releases' SHA256SUMS digests; uv.lock
-# records them as hashes and `uv sync --locked` verifies every wheel. The base install needs none of it.
+# The Truss adapter (ADR-006, ADR-010): preserve the exact toolkit, psycopg driver and Weft pins.
+# Public PyPI extras acceptance requires the isolated public-index gate in CONTRACT-005; the
+# find-links page retains qualified release digests as provenance, not as a qualification fallback.
 truss = [
     "truss-toolkit[native,query]==0.0.50",
 ]
-# Official released UMF Python core; exact 0.10.0 artifact and digest are pinned by the find-links page.
+# Official released UMF Python core; public PyPI extras acceptance also verifies the exact 0.10.0 artifact digest.
 umf = [
     "umf-core==0.10.0",
 ]

@@ -78,9 +78,14 @@ stored registry tokens or per-release approval. npm postflight now allows up to
 600 seconds for visibility within a 20-minute job limit; PyPI retains 180 seconds.
 Only absence is retried; conflicting bytes and other errors still fail
 immediately. The published 0.6.3 runtime, tag and all 17 release assets are
-unchanged. Optional UMF/Truss extras retain the qualified wheelhouse boundary;
-the PyPI fresh-install claim covers the base package. Runtime support remains
-latest-only with forward migration for admitted UMF 0.10 lineages.
+unchanged. Its PyPI fresh-install receipt covers only the base package; it does
+not establish that either optional extra resolves from PyPI. Future PyPI release
+qualifications require a separate post-publication fresh install of both
+`arras[truss,umf]` from the public PyPI index with no wheelhouse or extra index,
+exact digest checks for the selected qualified UMF/Truss/Weft GitHub assets,
+installed-origin/direct-URL checks, `pip check`, and public import, doctor and
+UMF document smokes. Runtime support remains latest-only with forward migration
+for admitted UMF 0.10 lineages.
 
 ## 0.6.2 failed before publication
 

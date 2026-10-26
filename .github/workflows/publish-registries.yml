@@ -535,3 +535,76 @@ jobs:
             pypi-publication-receipt.json
           if-no-files-found: error
           retention-days: 90
+
+  pypi-extras-verify:
+    if: needs.verify-release.outputs.target != 'npm' && needs.pypi-publish.result == 'success'
+    needs: [verify-release, pypi-publish]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            platform: linux-x86_64
+          - runner: macos-15
+            platform: macos-arm64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+      - name: Assert checked-out publisher driver matches the workflow SHA
+        env:
+          EXPECTED_DRIVER_SHA: ${{ github.workflow_sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_DRIVER_SHA"
+      - uses: actions/download-artifact@v4
+        with:
+          name: registry-verified-release-${{ needs.verify-release.outputs.version }}
+          path: verified
+      - uses: actions/download-artifact@v4
+        with:
+          name: registry-publication-pypi-${{ needs.verify-release.outputs.version }}
+          path: pypi-publication
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install both extras from public PyPI in a fresh isolated environment
+        env:
+          VERSION: ${{ needs.verify-release.outputs.version }}
+          PIP_CONFIG_FILE: /dev/null
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/arras-pypi-extras"
+          env -u PIP_INDEX_URL -u PIP_EXTRA_INDEX_URL -u PIP_FIND_LINKS -u PIP_NO_INDEX \
+            "$RUNNER_TEMP/arras-pypi-extras/bin/python" -m pip --isolated install \
+            --disable-pip-version-check --no-cache-dir --index-url https://pypi.org/simple \
+            --report pypi-extras-install-report.json "arras[truss,umf]==$VERSION"
+      - name: Verify exact artifact provenance, installed imports and public extra smokes
+        env:
+          VERSION: ${{ needs.verify-release.outputs.version }}
+          ARRAS_REQUIRE_UMF: "1"
+          ARRAS_REQUIRE_WEFT: "1"
+          PIP_CONFIG_FILE: /dev/null
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/arras-pypi-extras/bin/python" .github/scripts/verify_pypi_extras.py \
+            --report pypi-extras-install-report.json \
+            --qualified-index tools/find-links/index.html \
+            --version "$VERSION" \
+            --wheel-sha256 "${{ needs.verify-release.outputs.wheel_sha256 }}" \
+            --doctor-request examples/extension_host/doctor-request.json \
+            --umf-document tests/fixtures/umf-core-reference/current-conformance.json \
+            --output-json pypi-extras-qualification.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: registry-pypi-extras-${{ needs.verify-release.outputs.version }}-${{ matrix.platform }}
+          path: |
+            pypi-publication/pypi-postflight.json
+            pypi-publication/pypi-publication-receipt.json
+            pypi-extras-install-report.json
+            pypi-extras-qualification.json
+          if-no-files-found: error
+          retention-days: 90
