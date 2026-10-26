@@ -1,0 +1,58 @@
+{
+  "future_visibility_policy": {
+    "conflicts_and_other_errors": "fail immediately",
+    "npm_job_timeout_minutes": 20,
+    "npm_timeout_seconds": 600,
+    "pypi_timeout_seconds": 180,
+    "retry_only": "registry absence"
+  },
+  "github_release_id": 423807244,
+  "npm": {
+    "first_postflight": "failed_after_180_seconds_of_registry_absence",
+    "fresh_install_smoke": "passed",
+    "oidc_upload_attempt": 1,
+    "oidc_upload_job_id": 121375363299,
+    "oidc_upload_step": "success",
+    "provenance_transparency_log_index": 3476926729,
+    "raw_first_job_log_sha256": "281b4479d05e39049442230ddf03dbc39f9c8b261a02e1b5b3873a7990e2c2be",
+    "registry_bytes_verified": true,
+    "registry_matching_observed_at": "2026-10-26T03:04:34Z",
+    "retry_job_id": 121377018779,
+    "retry_mode": "existing_exact_bytes",
+    "retry_upload_step": "skipped",
+    "version": "0.6.3"
+  },
+  "npm_tarball_sha256": "17be04205f928e8b4636ec3665ae03fa21f610c24307624a95b7c7b21f0e4585",
+  "publisher_workflow_sha": "4da64d75296cfe9024cf2f3b18f40532a83a568a",
+  "pypi": {
+    "fresh_install_smoke": "passed",
+    "install_scope": "plain-index-base",
+    "optional_extras_scope": "qualified UMF/Truss wheelhouse",
+    "registry_bytes_verified": true,
+    "trusted_publisher_upload": "passed",
+    "upload_attempt": 1,
+    "upload_job_id": 121375348649,
+    "version": "0.6.3"
+  },
+  "receipts": {
+    "npm": {
+      "file": "npm063-publication-receipt.json",
+      "sha256": "6a947bfa7165cc50c1f8005ece36c9902d7bbf8bb42f5835e428b89e86dec603"
+    },
+    "pypi": {
+      "file": "pypi063-publication-receipt.json",
+      "sha256": "fd92bfd54b7f2d781773a414d1e5175e4ea2e246dc0b410a50829e12887f3dc8"
+    }
+  },
+  "registry_run_id": 40261690123,
+  "release_gates": "all_ten_passed",
+  "release_run_id": 40257854519,
+  "schema": "arras.registry-063-publication/1",
+  "scope": "Publisher-only visibility correction; no runtime, version, artifact, immutable-tag, native or WAN changes. The retry receipt does not claim a second OIDC upload.",
+  "source_sha": "81d560310f46f1d2c105e6635d70b0eeb97d4684",
+  "status": "passed",
+  "successful_run_attempt": 2,
+  "tag": "v0.6.3",
+  "tag_object_sha": "04af6523b7cba0388bb4848215078f9f30cc8575",
+  "wheel_sha256": "ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d"
+}

@@ -59,6 +59,29 @@ retains it. The publisher now requires the exact successful API display name,
 with negative cases kept fail-closed. Registry backfill uses the successful
 release's exact immutable pins; runtime and release assets do not change.
 
+
+### 0.6.3 registry publication complete — 2026-10-26
+
+[Registry run 40261690123](https://github.com/DocumentDrivenDX/arras/actions/runs/40261690123)
+completed successfully on attempt two. PyPI accepted the exact wheel and sdist
+through its trusted publisher; anonymous bytes and a fresh plain-index base
+installation passed. npm accepted the exact tarball through GitHub OIDC with
+signed provenance on attempt one. Its public endpoint remained absent beyond
+the initial 180-second postflight limit, then exposed matching bytes. The retry
+skipped the matching upload and passed byte verification and a fresh install;
+its receipt correctly records `existing_exact_bytes`, not another OIDC upload.
+The [publication record](evidence/registry-publication-20261025/registry063-publication.safe.json) retains both outcomes and receipt hashes.
+
+Future successful tagged releases automatically publish the qualified assets
+through the configured main-only `pypi` and `npm` trusted publishers without
+stored registry tokens or per-release approval. npm postflight now allows up to
+600 seconds for visibility within a 20-minute job limit; PyPI retains 180 seconds.
+Only absence is retried; conflicting bytes and other errors still fail
+immediately. The published 0.6.3 runtime, tag and all 17 release assets are
+unchanged. Optional UMF/Truss extras retain the qualified wheelhouse boundary;
+the PyPI fresh-install claim covers the base package. Runtime support remains
+latest-only with forward migration for admitted UMF 0.10 lineages.
+
 ## 0.6.2 failed before publication
 
 The [exact-tag release run 40249110726](https://github.com/DocumentDrivenDX/arras/actions/runs/40249110726)

@@ -286,6 +286,7 @@ jobs:
     if: needs.verify-release.outputs.target != 'pypi' && needs.npm-preflight.result == 'success'
     needs: [verify-release, npm-preflight]
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     environment: npm
     permissions:
       contents: read
@@ -349,7 +350,7 @@ jobs:
           NPM_SHA256="$(sha256sum "$TARBALL" | cut -d' ' -f1)"
           GITHUB_OUTPUT=/dev/null python3 .github/scripts/verify_registry_publication.py check-npm \
             --version "$VERSION" --sha256 "$NPM_SHA256" --wait-for-present \
-            --visibility-timeout 180 --output npm-postflight.json
+            --visibility-timeout 600 --output npm-postflight.json
           npm install --prefix "$RUNNER_TEMP/npm-registry-smoke" --ignore-scripts --no-audit --no-fund \
             --registry https://registry.npmjs.org/ "@documentdrivendx/arras-ui@$VERSION"
           NPM_SMOKE_NODE_MODULES="$RUNNER_TEMP/npm-registry-smoke/node_modules" node --input-type=module -e '

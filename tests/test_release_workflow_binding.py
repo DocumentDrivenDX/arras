@@ -179,7 +179,11 @@ def test_registry_publishing_is_separate_oidc_only_after_public_release_gates() 
     assert workflow.count("ref: ${{ github.workflow_sha }}") == 5
     assert workflow.count('test "$(git rev-parse HEAD)" = "$EXPECTED_DRIVER_SHA"') == 5
     assert workflow.count("--wait-for-present") == 2
-    assert workflow.count("--visibility-timeout 180") == 2
+    npm_publish = job_text(workflow, "npm-publish")
+    pypi_publish = job_text(workflow, "pypi-publish")
+    assert "timeout-minutes: 20" in npm_publish
+    assert "--visibility-timeout 600" in npm_publish
+    assert "--visibility-timeout 180" in pypi_publish
     assert workflow.count("publisher_workflow_sha") == 2
     assert '"install_scope": "plain-index-base"' in workflow
     assert "id: npm-upload" in workflow
