@@ -51,6 +51,14 @@ identity. Both the initial and anonymous public-download theme gates use that
 driver. The immutable 0.6.3 tag, package version, source and wheel stay unchanged;
 all ten release gates and subsequent registry checks remain required.
 
+Recovery Release `40257854519` subsequently passed all ten gates and published the
+GitHub bundle. The first automatic registry run refused a shorthand-versus-full
+reusable-job label mismatch before uploads; the
+[registry refusal record](evidence/registry-publication-20261025/registry063-job-label-refusal.safe.json)
+retains it. The publisher now requires the exact successful API display name,
+with negative cases kept fail-closed. Registry backfill uses the successful
+release's exact immutable pins; runtime and release assets do not change.
+
 ## 0.6.2 failed before publication
 
 The [exact-tag release run 40249110726](https://github.com/DocumentDrivenDX/arras/actions/runs/40249110726)

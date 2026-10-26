@@ -41,7 +41,9 @@ _REQUIRED_JOBS = {
     "assemble-evidence": {"assemble-evidence"},
     "ui-qualification": {"UI and packed-theme release qualification"},
     "github-release": {"github-release"},
-    "installed-downstream": {"installed-downstream"},
+    "installed-downstream": {
+        "installed-downstream / Install verified wheel and run explicit qualification stages"
+    },
     "downloaded-release": {"Verify anonymous public release bundle"},
 }
 

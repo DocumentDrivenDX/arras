@@ -48,7 +48,7 @@ def release_context() -> tuple[dict[str, Any], ...]:
         "assemble-evidence",
         "UI and packed-theme release qualification",
         "github-release",
-        "installed-downstream",
+        "installed-downstream / Install verified wheel and run explicit qualification stages",
         "Verify anonymous public release bundle",
         "Fresh installed UMF admission proof on exact wheel",
     ]
@@ -141,6 +141,46 @@ def test_successful_publication_requires_exact_original_run_and_all_ten_gates() 
     missing["total_count"] -= 1
     with pytest.raises(registry.RegistryPublicationError, match="missing mandatory gates"):
         validate(run, missing, workflow, provenance, tag_ref, tag_object, release)
+
+
+@pytest.mark.parametrize("conclusion", ["failure", "skipped"])
+def test_installed_downstream_gate_requires_success(conclusion: str) -> None:
+    run, jobs, workflow, provenance, tag_ref, tag_object, release = release_context()
+    downstream = next(
+        job
+        for job in jobs["jobs"]
+        if job["name"]
+        == "installed-downstream / Install verified wheel and run explicit qualification stages"
+    )
+    downstream["conclusion"] = conclusion
+    with pytest.raises(registry.RegistryPublicationError, match="did not succeed"):
+        validate(run, jobs, workflow, provenance, tag_ref, tag_object, release)
+
+
+def test_installed_downstream_gate_rejects_missing_wrong_suffix_and_duplicate_names() -> None:
+    context = release_context()
+    run, jobs, workflow, provenance, tag_ref, tag_object, release = context
+    correct_name = (
+        "installed-downstream / Install verified wheel and run explicit qualification stages"
+    )
+
+    missing = json.loads(json.dumps(jobs))
+    missing["jobs"] = [job for job in missing["jobs"] if job["name"] != correct_name]
+    missing["total_count"] = len(missing["jobs"])
+    with pytest.raises(registry.RegistryPublicationError, match="missing mandatory gates"):
+        validate(run, missing, workflow, provenance, tag_ref, tag_object, release)
+
+    wrong_suffix = json.loads(json.dumps(jobs))
+    downstream = next(job for job in wrong_suffix["jobs"] if job["name"] == correct_name)
+    downstream["name"] = "installed-downstream / Install verified wheel"
+    with pytest.raises(registry.RegistryPublicationError, match="missing mandatory gates"):
+        validate(run, wrong_suffix, workflow, provenance, tag_ref, tag_object, release)
+
+    duplicate = json.loads(json.dumps(jobs))
+    duplicate["jobs"].append(dict(duplicate["jobs"][7]))
+    duplicate["total_count"] = len(duplicate["jobs"])
+    with pytest.raises(registry.RegistryPublicationError, match="duplicate names"):
+        validate(run, duplicate, workflow, provenance, tag_ref, tag_object, release)
 
 
 def test_publication_rejects_wrong_run_source_event_or_release_identity() -> None:

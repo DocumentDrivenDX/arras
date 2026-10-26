@@ -2405,3 +2405,18 @@ WAN gates remain valid for these unchanged runtime bytes; no local campaign or
 reviewer chain is repeated. Successful recovery still requires public-download,
 then automatic PyPI/npm trusted publishing, anonymous registry bytes and fresh
 consumer installs. A driver-only recovery does not itself prove publication.
+
+
+### 0.6.3 release complete; registry label correction — 2026-10-26
+
+Recovery Release `40257854519` passed all ten gates, including anonymous public
+download/consumer qualification, and created GitHub release `423807244` with
+17 assets. Its immutable source/tag and selected wheel are unchanged. Automatic
+registry run `40260560271` then refused the actual successful reusable-workflow
+job's full display name before either upload; the [refusal record](../05-deploy/evidence/registry-publication-20261025/registry063-job-label-refusal.safe.json) retains the exact name and failure.
+The publisher now requires that exact API name, with missing, wrong-suffix,
+failed, skipped and duplicate cases tested. All ten gates and other identity,
+artifact and provenance checks remain required. Recover registry publication
+from the successful release using its exact run/tag/source/tag-object/SUMS/wheel
+pins; do not rerun the release or change artifacts for this publisher-only fix.
+Future successful releases use the same corrected automatic publisher.
