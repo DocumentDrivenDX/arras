@@ -44,7 +44,7 @@ export function selfTest() {
   assert.equal(bound.peerDependencies[arrasPackageName], "9.8.7");
   assert.equal(bound.peerDependencies.react, "^19.3.0");
   assert.deepEqual(bound.futureMetadata, source.futureMetadata);
-  console.log("neutral-theme selected-wheel peer binding checks passed");
+  process.stdout.write("neutral-theme selected-wheel peer binding checks passed\n");
 }
 
 function argument(name) {
@@ -60,8 +60,13 @@ if (process.argv.includes("--self-test")) {
     const expectedDriverSha = argument("--expected-driver-sha");
     const payloadSourceSha = argument("--payload-source-sha");
     const receiptPath = argument("--receipt");
-    assert.ok(expectedDriverSha && payloadSourceSha && receiptPath, "driver receipt arguments are required");
-    const driverSha = execFileSync("git", ["-C", root, "rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+    assert.ok(
+      expectedDriverSha && payloadSourceSha && receiptPath,
+      "driver receipt arguments are required",
+    );
+    const driverSha = execFileSync("git", ["-C", root, "rev-parse", "HEAD"], {
+      encoding: "utf8",
+    }).trim();
     assert.equal(driverSha, expectedDriverSha, "driver checkout must match the workflow SHA");
     const runner = join(root, "ui/scripts/run-downstream-qualification.mjs");
     const helper = join(root, "ui/scripts/bind-downstream-theme.mjs");

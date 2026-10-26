@@ -29,7 +29,10 @@ const defaultDist = join(repo, "dist");
 const defaultWheels = existsSync(defaultDist)
   ? readdirSync(defaultDist).filter((name) => /^arras-.+\.whl$/.test(name))
   : [];
-assert.ok(process.argv[2] || defaultWheels.length === 1, "pass one exact wheel or provide one wheel in dist/");
+assert.ok(
+  process.argv[2] || defaultWheels.length === 1,
+  "pass one exact wheel or provide one wheel in dist/",
+);
 const wheel = resolve(process.argv[2] ?? join(defaultDist, defaultWheels[0]));
 for (const arg of process.argv.slice(3))
   assert.ok(
@@ -118,7 +121,7 @@ cpSync(themePackageSource, themePackage, { recursive: true });
 const themeManifestPath = join(themePackage, "package.json");
 const sourceThemeManifest = JSON.parse(sourceThemeManifestBytes.toString("utf8"));
 const boundThemeManifest = bindNeutralThemePeer(sourceThemeManifest, pkg.version);
-writeFileSync(themeManifestPath, JSON.stringify(boundThemeManifest, null, 2) + "\n");
+writeFileSync(themeManifestPath, `${JSON.stringify(boundThemeManifest, null, 2)}\n`);
 assert.deepEqual(
   readFileSync(join(themePackageSource, "package.json")),
   sourceThemeManifestBytes,
