@@ -472,11 +472,25 @@ jobs:
         env:
           ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
         run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: release-driver
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
           cache-dependency-path: ui/package-lock.json
+      - name: Assert recovery driver and self-test the wheel-cohort theme binder
+        env:
+          EXPECTED_DRIVER_SHA: ${{ github.workflow_sha }}
+          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
+        run: >-
+          node release-driver/ui/scripts/bind-downstream-theme.mjs --self-test
+          --driver-dir release-driver --expected-driver-sha "$EXPECTED_DRIVER_SHA"
+          --payload-source-sha "$ARRAS_SOURCE_SHA"
+          --receipt artifacts/ui-qualification-driver-provenance.json
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
@@ -573,7 +587,15 @@ jobs:
             --wheel "release-assets/${WHEEL_NAME}" \
             --output-json artifacts/extension-host-fresh-dependencies.json --fresh-dependencies
       - name: Qualify downstream host and packed theme from the exact release wheel
-        run: npm run qualify:downstream -- ../release-assets/${{ needs.build.outputs.wheel_name }}
+        env:
+          ARRAS_DOWNSTREAM_UI_DIR: ${{ github.workspace }}/ui
+        run: |
+          set -euo pipefail
+          mkdir -p scripts/release-driver
+          cp ../release-driver/ui/scripts/run-downstream-qualification.mjs scripts/release-driver/
+          cp ../release-driver/ui/scripts/bind-downstream-theme.mjs scripts/release-driver/
+          node scripts/release-driver/run-downstream-qualification.mjs \
+            ../release-assets/${{ needs.build.outputs.wheel_name }}
         working-directory: ui
       - uses: actions/upload-artifact@v4
         if: always()
@@ -584,6 +606,7 @@ jobs:
             ui/playwright-report
             tests/downstream/evidence/linux
             artifacts/extension-host-fresh-dependencies.json
+            artifacts/ui-qualification-driver-provenance.json
             release-assets/distribution-verification.json
           if-no-files-found: ignore
 
@@ -615,11 +638,25 @@ jobs:
         env:
           ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
         run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: release-driver
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
           cache-dependency-path: ui/package-lock.json
+      - name: Assert public qualification driver and self-test theme binder
+        env:
+          EXPECTED_DRIVER_SHA: ${{ github.workflow_sha }}
+          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
+        run: >-
+          node release-driver/ui/scripts/bind-downstream-theme.mjs --self-test
+          --driver-dir release-driver --expected-driver-sha "$EXPECTED_DRIVER_SHA"
+          --payload-source-sha "$ARRAS_SOURCE_SHA"
+          --receipt artifacts/public-ui-qualification-driver-provenance.json
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
@@ -758,8 +795,15 @@ jobs:
           JS
       - name: Qualify the packed public wheel and complete themed suite
         working-directory: ui
+        env:
+          ARRAS_DOWNSTREAM_UI_DIR: ${{ github.workspace }}/ui
         run: |
-          npm run qualify:downstream -- ../public-release-assets/${{ needs.build.outputs.wheel_name }} \
+          set -euo pipefail
+          mkdir -p scripts/release-driver
+          cp ../release-driver/ui/scripts/run-downstream-qualification.mjs scripts/release-driver/
+          cp ../release-driver/ui/scripts/bind-downstream-theme.mjs scripts/release-driver/
+          node scripts/release-driver/run-downstream-qualification.mjs \
+            ../public-release-assets/${{ needs.build.outputs.wheel_name }} \
             > ../artifacts/public-theme.stdout.log \
             2> ../artifacts/public-theme.stderr.log
       - name: Record completed public-download qualification

@@ -226,6 +226,15 @@ jobs:
           node-version: 24
           cache: npm
           cache-dependency-path: ui/package-lock.json
+      - name: Self-test and retain verification driver identity for theme binding
+        env:
+          ARRAS_DRIVER_SHA: ${{ github.workflow_sha }}
+          ARRAS_SOURCE_SHA: ${{ needs.trusted-publication.outputs.source_sha }}
+        run: >-
+          node verification-driver/ui/scripts/bind-downstream-theme.mjs --self-test
+          --driver-dir verification-driver --expected-driver-sha "$ARRAS_DRIVER_SHA"
+          --payload-source-sha "$ARRAS_SOURCE_SHA"
+          --receipt artifacts/public-ui-qualification-driver-provenance.json
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
@@ -330,7 +339,15 @@ jobs:
           JS
       - name: Qualify all packed UI acceptance projects and controls
         working-directory: ui
-        run: npm run qualify:downstream -- ../public-release-assets/${{ needs.trusted-publication.outputs.wheel_name }}
+        env:
+          ARRAS_DOWNSTREAM_UI_DIR: ${{ github.workspace }}/ui
+        run: |
+          set -euo pipefail
+          mkdir -p scripts/release-driver
+          cp ../verification-driver/ui/scripts/run-downstream-qualification.mjs scripts/release-driver/
+          cp ../verification-driver/ui/scripts/bind-downstream-theme.mjs scripts/release-driver/
+          node scripts/release-driver/run-downstream-qualification.mjs \
+            ../public-release-assets/${{ needs.trusted-publication.outputs.wheel_name }}
       - name: Write verification-only result and provenance
         env:
           RELEASE_TAG: ${{ needs.trusted-publication.outputs.release_tag }}

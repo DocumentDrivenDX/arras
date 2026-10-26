@@ -283,3 +283,29 @@ Exact-tag/public-download and both registry OIDC/anonymous-byte/clean-install
 outcomes remain subsequent gates. The failed immutable 0.6.2 tag stays unchanged;
 latest-only runtime support and the qualified optional-dependency wheelhouse
 boundary remain in force.
+
+
+### 0.6.3 orchestration-only release recovery — 2026-10-26
+
+The first exact-tag run `40254727933` failed the repository-only neutral-theme
+fixture peer check (0.6.1 versus selected npm 0.6.3), after the runtime wheel,
+installed doctor, source/sdist, native Linux, UMF, Chromium and fresh extension
+host gates passed. The [retained refusal](evidence/registry-publication-20261025/release063-failed-theme.safe.json) records the failure before any GitHub release or registry upload.
+
+Recovery uses the reviewed default-branch driver with immutable tag `v0.6.3`,
+tag object `04af6523b7cba0388bb4848215078f9f30cc8575`, target source
+`81d560310f46f1d2c105e6635d70b0eeb97d4684`, and the already qualified wheel
+`ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d`.
+Only the temporary copied test theme's Arras peer is bound to the selected
+wheel-carried npm version; the tagged fixture, runtime source, package/API
+version and artifact bytes are unchanged. The driver helper is staged explicitly
+for both original and public-download qualification, with driver identity kept
+separate from payload identity. Version binding is checked before expensive
+qualification so future releases do not require a fixture pin bump.
+
+Run the normal ten release gates from scratch using the existing unpublished
+immutable tag and its exact expected source. The earlier fresh Mac and actual
+WAN gates remain valid for these unchanged runtime bytes; no local campaign or
+reviewer chain is repeated. Successful recovery still requires public-download,
+then automatic PyPI/npm trusted publishing, anonymous registry bytes and fresh
+consumer installs. A driver-only recovery does not itself prove publication.

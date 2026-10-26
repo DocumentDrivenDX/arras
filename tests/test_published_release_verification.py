@@ -288,5 +288,6 @@ def test_verification_workflow_is_dispatch_only_read_only_and_reuses_existing_ga
     assert "verify_public_release_assets.py plan" in workflow
     assert "verify_public_release_assets.py verify" in workflow
     assert "uses: ./.github/workflows/downstream.yml" in workflow
-    assert "npm run qualify:downstream" in workflow
+    assert "node scripts/release-driver/run-downstream-qualification.mjs" in workflow
+    assert "bind-downstream-theme.mjs --self-test" in workflow
     assert "curl --disable" in workflow

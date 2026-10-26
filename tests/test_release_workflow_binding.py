@@ -91,6 +91,59 @@ def test_release_builds_ui_before_running_integration_and_keeps_current_run_gate
     assert "verify_registry_publication.py pypi-metadata" in job_text(workflow, "build")
 
 
+def test_release_ui_driver_binds_temporary_theme_to_exact_wheel_before_browser_suite() -> None:
+    workflow = RELEASE.read_text()
+    ui = job_text(workflow, "ui-qualification")
+    assert re.search(
+        r"(?ms)uses: actions/checkout@v4\n        with:\n          ref: \$\{\{ github.workflow_sha \}\}\n          path: release-driver",
+        ui,
+    )
+    assert '--expected-driver-sha "$EXPECTED_DRIVER_SHA"' in ui
+    assert "--receipt artifacts/ui-qualification-driver-provenance.json" in ui
+    self_test = ui.index("bind-downstream-theme.mjs --self-test")
+    browser_suite = ui.index("npm run e2e -- --project=chromium")
+    assert self_test < browser_suite
+    assert "ui-qualification-driver-provenance.json" in ui
+    assert (
+        "cp ../release-driver/ui/scripts/run-downstream-qualification.mjs scripts/release-driver/"
+        in ui
+    )
+    assert "cp ../release-driver/ui/scripts/bind-downstream-theme.mjs scripts/release-driver/" in ui
+    assert "ARRAS_DOWNSTREAM_UI_DIR: ${{ github.workspace }}/ui" in ui
+    assert "node scripts/release-driver/run-downstream-qualification.mjs" in ui
+    public_download = job_text(workflow, "downloaded-release")
+    assert "ref: ${{ github.workflow_sha }}" in public_download
+    assert "node release-driver/ui/scripts/bind-downstream-theme.mjs --self-test" in public_download
+    assert (
+        "cp ../release-driver/ui/scripts/run-downstream-qualification.mjs scripts/release-driver/"
+        in public_download
+    )
+    assert "node scripts/release-driver/run-downstream-qualification.mjs" in public_download
+    fallback = (ROOT / ".github/workflows/verify-published-release.yml").read_text()
+    anonymous = job_text(fallback, "anonymous-public-consumer")
+    assert "node verification-driver/ui/scripts/bind-downstream-theme.mjs --self-test" in anonymous
+    assert (
+        "cp ../verification-driver/ui/scripts/run-downstream-qualification.mjs scripts/release-driver/"
+        in anonymous
+    )
+    assert "node scripts/release-driver/run-downstream-qualification.mjs" in anonymous
+
+
+def test_neutral_theme_peer_binding_self_test_preserves_source_and_unknown_metadata() -> None:
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("Node.js is required to test the release driver helper")
+    helper = ROOT / "ui/scripts/bind-downstream-theme.mjs"
+    result = subprocess.run(
+        [node, str(helper), "--self-test"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "peer binding checks passed" in result.stdout
+
+
 def test_ci_qualifies_the_built_wheel_doctor_before_candidate_admission() -> None:
     workflow = (ROOT / ".github/workflows/ci.yml").read_text()
     check = job_text(workflow, "check")
