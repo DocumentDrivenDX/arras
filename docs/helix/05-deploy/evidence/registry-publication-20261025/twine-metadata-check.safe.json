@@ -1,0 +1,16 @@
+{
+  "command": "twine check exact candidate wheel and sdist",
+  "readme_renderer_version": "46.0",
+  "schema": "arras.registry-python-metadata-preflight/1",
+  "sdist": {
+    "file": "arras-0.6.2.tar.gz",
+    "sha256": "0a63185bc823f113e319015c6e784129d27527261f2005821ef7664b1ec1fa29"
+  },
+  "status": "passed",
+  "twine_version": "7.0.0",
+  "upload_performed": false,
+  "wheel": {
+    "file": "arras-0.6.2-py3-none-any.whl",
+    "sha256": "82cd5ef7e7284ded7bb7af98934fe0c3f6840450948205e3430d99ff0478f176"
+  }
+}

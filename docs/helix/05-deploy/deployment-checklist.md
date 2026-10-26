@@ -228,3 +228,18 @@ is needed for a push-triggered publication, first review and adapt the
 default-branch verification driver to accept that original event identity; the
 existing helper fails closed for it.
 Closure requires the new verification result and independent public-bundle review.
+
+
+### 0.6.2 qualified wheel — 2026-10-26
+
+The selected wheel is `82cd5ef7e7284ded7bb7af98934fe0c3f6840450948205e3430d99ff0478f176`.
+CI `40244842788` passed all five required jobs. The fresh Mac and actual full12
+WAN gates, original cleanup, independent audit, archive retention, actual
+process/group absence and custody handback passed on those exact bytes. The
+[retained qualification index](evidence/registry-publication-20261025/qualification-062-index.json)
+records the qualified versions, unchanged declared limits and failed no-effect
+history. Official UMF installed admission and Twine metadata checks also passed.
+The release workflow's strict wheel guard binds these bytes; any rebuild
+mismatch blocks publication. Exact-tag Release/public-download and registry
+OIDC/byte/install receipts remain distinct required controls, recorded with the
+[versioned release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.2).

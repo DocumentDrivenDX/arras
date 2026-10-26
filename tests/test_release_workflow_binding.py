@@ -127,8 +127,8 @@ def test_registry_publishing_is_separate_oidc_only_after_public_release_gates() 
 def test_release_rebuild_must_match_the_selected_qualification_wheel_before_upload() -> None:
     build = job_text(RELEASE.read_text(), "build")
     selected = (
-        "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18"
-        "  dist/arras-0.6.1-py3-none-any.whl"
+        "82cd5ef7e7284ded7bb7af98934fe0c3f6840450948205e3430d99ff0478f176"
+        "  dist/arras-0.6.2-py3-none-any.whl"
     )
     assert f"echo '{selected}' | sha256sum --check --strict -" in build
     assert build.index("uv build --wheel && uv build --sdist") < build.index(selected)
@@ -147,7 +147,7 @@ def test_release_wheel_hash_command_refuses_changed_or_missing_bytes(
     expected = b"selected qualification artifact\n"
     digest = hashlib.sha256(expected).hexdigest()
     command = re.sub(r"[0-9a-f]{64}", digest, command)
-    wheel = tmp_path / "dist/arras-0.6.1-py3-none-any.whl"
+    wheel = tmp_path / "dist/arras-0.6.2-py3-none-any.whl"
     wheel.parent.mkdir()
     if state != "missing":
         wheel.write_bytes(expected if state == "matching" else b"different release artifact\n")

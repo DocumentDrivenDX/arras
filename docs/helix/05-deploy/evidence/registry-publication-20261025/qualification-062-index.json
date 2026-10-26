@@ -1,0 +1,23 @@
+{
+  "files": {
+    "fresh-macos-40244842788/review-safe/README.md": "32691eb39c1e6e7f3cd5d86598a9dbac730cde7218f2fc9307972a0395236756",
+    "fresh-macos-40244842788/review-safe/candidate-wheel-provenance.json": "632b93e26d7c2076d17ffd57eb74901236874bc4971b0cfdaf8245bfd74ff9fb",
+    "fresh-macos-40244842788/review-safe/macos-arm64.find-links.html": "a04f0e579585e30cc8a33830290ff66695bbe8fab264a3367ea0709152b8a40e",
+    "fresh-macos-40244842788/review-safe/macos-arm64.json": "724a5d033e4b34a20340bf35264729068b972428278bf5c51c96f410e99e3841",
+    "fresh-macos-40244842788/review-safe/native-macos-cleanup-summary.json": "0dc87cbb1ee1f45863d1fca84b2c793d0e28098b2ec488c9e5590cd7918b4c0e",
+    "fresh-macos-40244842788/review-safe/native-macos-cohort-binding.safe.json": "c7004d6ef97c2e0a34219d10642da19ee8ad61cd9f090f6d84abc73ffbd7bdd5",
+    "fresh-macos-40244842788/review-safe/native-macos-cohort.bound.json": "5304246deed0ea87bb0e9a9ea067ff96ce5dfa8b59f9bbd438827a2e5f179150",
+    "fresh-macos-40244842788/review-safe/native-macos-consumer-provenance.json": "0a107c5c58d6be88926e53defc5e946b0e8f10e005f0d123cfc47708ec31c000",
+    "fresh-macos-40244842788/review-safe/native-macos-verification.safe.json": "af9b07170c2a1acb744b45f99d0a874cff7e9e33c5e83603e4a538ed4cba84f2",
+    "fresh-macos-40244842788/review-safe/public-context-index.json": "8b34a3651b7cd4232d483070dced3859429cb1424e615008ea381c95646f7be5",
+    "fresh-macos-40244842788/review-safe/review-safe-export.json": "c0c204ce9005503df35a07aca2d5880201f6520e391597132b4276658b27080e",
+    "full-managed-40244842788/README.md": "79c572e485f707a608f54dea08bea3ec62ca32639811203ce19903b6c97ae8a3",
+    "full-managed-40244842788/final-evidence-projection.safe.json": "1bb4b909b94cfa9be17253b5a4e7d881e888c292bd06cd87e5c4b694bee3e0c8",
+    "root-release-qualification-062.json": "9ef8032e211003199dd90383b1637ed542d00cea9e44d74ebd8c7d390ed1c4cd",
+    "twine-metadata-check.safe.json": "7cacf68cd2c595353490887568caa406b11bfc4153d121678e29e82fc22d3c29",
+    "umf-admission-installed-40244842788.json": "c16ff703be2d115f74b9d0683335c96acfc716c2e319efd9260a2201b53224f0"
+  },
+  "limits": "These receipts do not attest a tag release or registry upload; those require separate successful workflow receipts.",
+  "schema": "arras.registry-062-qualification-retention/1",
+  "status": "prepublication_wheel_gates_passed"
+}
