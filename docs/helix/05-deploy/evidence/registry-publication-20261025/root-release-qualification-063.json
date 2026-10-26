@@ -1,0 +1,26 @@
+{
+  "candidate_ci_run": 40250804621,
+  "candidate_zip_sha256": "ffdd5bd403bebad9f1973fc5ca93b9b5d5c553a3f1e0fffb81e94857b3e11637",
+  "dependency_scope": {
+    "graphql_mac": "3.3.1",
+    "graphql_wan": "3.3.0",
+    "truss": "0.0.50",
+    "umf": "0.10.0",
+    "weft": "0.4.51"
+  },
+  "doctor_original_sha256": "33e035713929b3ef439f7749593128730c518aff2bf28e8e966749c8c9efe135",
+  "history": "Failed immutable v0.6.2 tag retained; its doctor refused publication. 0.6.3 static prelaunch refusal retained separately with no fixture/ledger/provider effect.",
+  "mac_safe_export_sha256": "773c90dd51cf1255c6fe7c46c3eeecc71875bf8e2fe44d7ae3822367d0585831",
+  "pr_head": "0d306a92d49853c10adbe079b2f4d3708fcf4ede",
+  "registry_scope": "PyPI plain-index base; optional UMF/Truss extras use qualified upstream wheelhouse.",
+  "remaining": "Final-source CI must reproduce the exact selected wheel; immutable-tag Release/public-download and actual PyPI/npm OIDC, anonymous-byte and clean-install gates remain required.",
+  "root_direct_originals_verified": true,
+  "runtime_support": "latest-only; admitted UMF0.10 historical data migrates forward to current without an age cutoff; no perpetual historical runtimes or pre0.10 compatibility",
+  "schema": "arras.registry-063-root-release-qualification/1",
+  "source_tree": "493f656fcccdb7fd3455e4ec8574acf2ccf84417",
+  "status": "selected_wheel_prepublication_gates_passed",
+  "umf_installed_sha256": "7285f7e20d4b1d8a41578dfe2feb0801517bb989d091e257dadf22bec792219d",
+  "wan_custody_sha256": "f90da2489c9ea5a36d5668fa2df25ba59564d4b95747ae5bdeae13c23d4ce5b7",
+  "wan_safe_projection_sha256": "1c0f0e8b8b3690246b556c86622cf795fa6e5f0ada6d9e77f7529c10f44f3da7",
+  "wheel_sha256": "ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d"
+}

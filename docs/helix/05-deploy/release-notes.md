@@ -27,6 +27,19 @@ This patch completes the registry compatibility work below with corrected
 package identity. Its new artifact requires its own qualification and exact-tag
 publication gates; earlier 0.6.2 observations do not qualify new wheel bytes.
 
+The corrected wheel passed all five CI jobs in `40250804621`, including the new
+20-case installed doctor gate. Its fresh Mac native gate passed 64 cases with
+8 declared limits and 7 replica-only cases inapplicable; 172 payload files and
+cleanup matched. The separate actual Lakebase full12 gate passed 12/12 with
+original cleanup, six retained archives, independent read-only audit and actual
+parent/supervisor/worker process and group absence before custody handback.
+The [0.6.3 qualification index](evidence/registry-publication-20261025/qualification-063-index.json)
+records exact source, wheel and evidence digests, dependency cohort boundaries
+and the retained prelaunch static refusal. The release guard selects wheel
+`ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d`.
+Exact-tag release, public-download and registry OIDC/byte/install gates remain
+separate required evidence; their status is recorded by the release workflows.
+
 ## 0.6.2 failed before publication
 
 The [exact-tag release run 40249110726](https://github.com/DocumentDrivenDX/arras/actions/runs/40249110726)

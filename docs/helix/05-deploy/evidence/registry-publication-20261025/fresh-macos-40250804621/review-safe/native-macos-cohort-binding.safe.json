@@ -1,0 +1,22 @@
+{
+  "bound_manifest": {
+    "path": "[runner-local path redacted]",
+    "sha256": "723d4f34829d57bd1b5bfb3d4ee047a3009754faf244a20d0e28f713a7fb70ea"
+  },
+  "find_links": {
+    "path": "[runner-local path redacted]",
+    "sha256": "a04f0e579585e30cc8a33830290ff66695bbe8fab264a3367ea0709152b8a40e"
+  },
+  "schema_version": 1,
+  "status": "bound",
+  "template": {
+    "path": "[runner-local path redacted]",
+    "sha256": "724a5d033e4b34a20340bf35264729068b972428278bf5c51c96f410e99e3841"
+  },
+  "wheel": {
+    "name": "arras",
+    "path": "[runner-local path redacted]",
+    "sha256": "ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d",
+    "version": "0.6.3"
+  }
+}

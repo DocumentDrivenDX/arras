@@ -241,8 +241,8 @@ records the qualified versions, unchanged declared limits and failed no-effect
 history. Official UMF installed admission and Twine metadata checks also passed.
 The release workflow's strict wheel guard binds these bytes; any rebuild
 mismatch blocks publication. Exact-tag Release/public-download and registry
-OIDC/byte/install receipts remain distinct required controls, recorded with the
-[versioned release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.2).
+OIDC/byte/install receipts remained distinct required controls. The doctor
+refusal below prevented that version from becoming a published release.
 
 
 ### 0.6.2 publication refused; 0.6.3 required — 2026-10-26
@@ -254,3 +254,32 @@ unchanged. Its earlier Mac/WAN passes do not supersede that failure; see the
 For 0.6.3, require source catalog/project identity agreement and an actual
 built-wheel doctor pass before candidate/native admission, then qualify the
 new exact wheel and complete normal tag/public-download/registry gates.
+
+
+### 0.6.3 corrected artifact qualified — 2026-10-26
+
+CI `40250804621` passed all five jobs on PR head `0d306a92d49853c10adbe079b2f4d3708fcf4ede`,
+shared tree `493f656fcccdb7fd3455e4ec8574acf2ccf84417`. The new actual built-wheel
+doctor passed all 20 cases. Fresh Mac qualification passed 64 cases with eight
+declared limits and seven replica-only cases inapplicable; all 172 payload files
+matched and cleanup left no processes or temporary roots. Mac observed
+GraphQL 3.3.1; the separate WAN environment preserves its qualified GraphQL 3.3.0
+cohort with Truss 0.0.50, Weft 0.4.51 and UMF 0.10.0.
+
+The new original full12 WAN invocation passed all twelve cases. Original cleanup
+removed five owned resources, V3 retained six archives with zero issues, and the
+independent read-only audit passed all native/provider checks with no restoration
+mutation. Actual parent, audit supervisor and worker identities and groups were
+absent before custody returned. Root independently rehashed the direct originals.
+A prelaunch static refusal caused by an incorrectly rebound deny sentinel is
+preserved separately; it consumed no ledger and imported no fixture or provider.
+The current source freeze correctly binds the fresh Mac cohort receipt.
+
+The strict release guard now selects the corrected 0.6.3 wheel
+`ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d`.
+The [qualification index](evidence/registry-publication-20261025/qualification-063-index.json) retains safe evidence and scope limits.
+Final-source CI must reproduce that exact wheel before normal merge/tag release.
+Exact-tag/public-download and both registry OIDC/anonymous-byte/clean-install
+outcomes remain subsequent gates. The failed immutable 0.6.2 tag stays unchanged;
+latest-only runtime support and the qualified optional-dependency wheelhouse
+boundary remain in force.
