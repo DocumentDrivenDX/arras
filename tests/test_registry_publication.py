@@ -372,11 +372,16 @@ def test_registry_visibility_wait_retries_only_absence_and_requires_matching_byt
     monkeypatch.setattr(registry.time, "sleep", no_sleep)
     states = iter(["absent", "matching"])
     assert registry.wait_for_registry_match(lambda: next(states), timeout_seconds=1) == "matching"
+    monkeypatch.setattr(registry.time, "monotonic", lambda: 0.0)
+    assert registry.wait_for_registry_match(lambda: "matching", timeout_seconds=600) == "matching"
 
     clock = iter([0.0, 0.0, 1.0])
     monkeypatch.setattr(registry.time, "monotonic", lambda: next(clock))
     with pytest.raises(registry.RegistryPublicationError, match="visibility timeout"):
         registry.wait_for_registry_match(lambda: "absent", timeout_seconds=1)
+
+    with pytest.raises(registry.RegistryPublicationError, match="1 to 600 seconds"):
+        registry.wait_for_registry_match(lambda: "matching", timeout_seconds=601)
 
     def unauthorized() -> str:
         raise registry.RegistryPublicationError("HTTP 401")

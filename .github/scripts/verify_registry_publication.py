@@ -539,9 +539,9 @@ def wait_for_registry_match(check: Any, timeout_seconds: int = 180) -> str:
     if (
         isinstance(timeout_seconds, bool)
         or not isinstance(timeout_seconds, int)
-        or not 1 <= timeout_seconds <= 180
+        or not 1 <= timeout_seconds <= 600
     ):
-        _fail("registry visibility timeout must be from 1 to 180 seconds")
+        _fail("registry visibility timeout must be from 1 to 600 seconds")
     deadline = time.monotonic() + timeout_seconds
     while True:
         status = check()
