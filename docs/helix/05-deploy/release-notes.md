@@ -17,7 +17,39 @@ ddx:
 
 # Arras release notes
 
-## 0.6.2 registry compatibility
+## 0.6.3 catalog correction
+
+The Python and wheel-carried npm versions in `public-api.json` now agree with
+`pyproject.toml`. CI checks source catalog/version consistency and runs the real
+installed-wheel doctor before accepting a candidate, with a separate retained
+receipt. The qualified dependency versions and runtime behavior are unchanged.
+This patch completes the registry compatibility work below with corrected
+package identity. Its new artifact requires its own qualification and exact-tag
+publication gates; earlier 0.6.2 observations do not qualify new wheel bytes.
+
+The corrected wheel passed all five CI jobs in `40250804621`, including the new
+20-case installed doctor gate. Its fresh Mac native gate passed 64 cases with
+8 declared limits and 7 replica-only cases inapplicable; 172 payload files and
+cleanup matched. The separate actual Lakebase full12 gate passed 12/12 with
+original cleanup, six retained archives, independent read-only audit and actual
+parent/supervisor/worker process and group absence before custody handback.
+The [0.6.3 qualification index](evidence/registry-publication-20261025/qualification-063-index.json)
+records exact source, wheel and evidence digests, dependency cohort boundaries
+and the retained prelaunch static refusal. The release guard selects wheel
+`ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d`.
+Exact-tag release, public-download and registry OIDC/byte/install gates remain
+separate required evidence; their status is recorded by the release workflows.
+
+## 0.6.2 failed before publication
+
+The [exact-tag release run 40249110726](https://github.com/DocumentDrivenDX/arras/actions/runs/40249110726)
+passed the PostgreSQL, wheel guard and distribution rebuild gates, then the
+installed doctor refused the stale carried catalog (0.6.1 versus package 0.6.2).
+No GitHub release or registry upload occurred. The immutable tag remains as a
+failed build record. The [failure receipt](evidence/registry-publication-20261025/release062-failed-doctor.safe.json)
+keeps the failure separate from the passing Mac/WAN observations below. The
+correction ships as 0.6.3.
+
 
 This release makes the Python distributions acceptable to PyPI by replacing the
 optional UMF direct URL with the exact version pin `umf-core==0.10.0`. The
@@ -50,9 +82,8 @@ public-download gates succeed. Registry byte conflicts, missing access and
 failed fresh installs fail publication. Main-only `pypi` and `npm` environments
 and their exact publisher grants are configured; no registry publishing tokens
 are stored. The unchanged npm 0.6.1 tarball is already published and verified by
-an anonymous clean consumer. Current 0.6.2 tag and registry delivery outcomes are
-recorded in the [versioned release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.2)
-and the [publisher workflow receipts](https://github.com/DocumentDrivenDX/arras/actions/workflows/publish-registries.yml).
+an anonymous clean consumer. The failed 0.6.2 tag outcome is recorded above; successful registry delivery
+requires its own [publisher workflow receipts](https://github.com/DocumentDrivenDX/arras/actions/workflows/publish-registries.yml).
 
 ## 0.6.1 published
 

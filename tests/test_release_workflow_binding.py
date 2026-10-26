@@ -91,6 +91,21 @@ def test_release_builds_ui_before_running_integration_and_keeps_current_run_gate
     assert "verify_registry_publication.py pypi-metadata" in job_text(workflow, "build")
 
 
+def test_ci_qualifies_the_built_wheel_doctor_before_candidate_admission() -> None:
+    workflow = (ROOT / ".github/workflows/ci.yml").read_text()
+    check = job_text(workflow, "check")
+    doctor = "uv run --no-sync python tools/verify_doctor.py"
+    assert "name: Verify installed doctor against the built wheel" in check
+    assert doctor in check
+    assert check.index("uv build --wheel && uv build --sdist") < check.index(doctor)
+    assert check.index(doctor) < check.index("Verify installed extension host")
+    assert check.index(doctor) < check.index("Verify installed UMF admission")
+    assert "name: arras-doctor-installed" in check
+    assert "path: artifacts/doctor-installed.json" in check
+    candidate_artifact = check.split("name: arras-installed-candidate-artifacts", 1)[1]
+    assert "artifacts/doctor-installed.json" not in candidate_artifact
+
+
 def test_registry_publishing_is_separate_oidc_only_after_public_release_gates() -> None:
     workflow_path = ROOT / ".github/workflows/publish-registries.yml"
     workflow = workflow_path.read_text()
@@ -127,8 +142,8 @@ def test_registry_publishing_is_separate_oidc_only_after_public_release_gates() 
 def test_release_rebuild_must_match_the_selected_qualification_wheel_before_upload() -> None:
     build = job_text(RELEASE.read_text(), "build")
     selected = (
-        "82cd5ef7e7284ded7bb7af98934fe0c3f6840450948205e3430d99ff0478f176"
-        "  dist/arras-0.6.2-py3-none-any.whl"
+        "ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d"
+        "  dist/arras-0.6.3-py3-none-any.whl"
     )
     assert f"echo '{selected}' | sha256sum --check --strict -" in build
     assert build.index("uv build --wheel && uv build --sdist") < build.index(selected)
@@ -147,7 +162,7 @@ def test_release_wheel_hash_command_refuses_changed_or_missing_bytes(
     expected = b"selected qualification artifact\n"
     digest = hashlib.sha256(expected).hexdigest()
     command = re.sub(r"[0-9a-f]{64}", digest, command)
-    wheel = tmp_path / "dist/arras-0.6.2-py3-none-any.whl"
+    wheel = tmp_path / "dist/arras-0.6.3-py3-none-any.whl"
     wheel.parent.mkdir()
     if state != "missing":
         wheel.write_bytes(expected if state == "matching" else b"different release artifact\n")

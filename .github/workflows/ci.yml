@@ -49,6 +49,11 @@ jobs:
       - run: npm ci && npm run build:wheel
         working-directory: ui
       - run: uv build --wheel && uv build --sdist
+      - name: Verify installed doctor against the built wheel
+        run: |
+          mkdir -p artifacts
+          uv run --no-sync python tools/verify_doctor.py \
+            --wheel dist/arras-*.whl --output-json artifacts/doctor-installed.json
       - name: Verify exact source and sdist-rebuilt artifacts
         run: python tools/verify_distribution.py --output artifacts/distribution-verification.json dist/*.whl dist/*.tar.gz
       - name: Verify installed extension host with fresh public dependencies
@@ -139,6 +144,12 @@ jobs:
         with:
           name: arras-umf-admission-installed
           path: artifacts/umf-admission-installed.json
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: arras-doctor-installed
+          path: artifacts/doctor-installed.json
           if-no-files-found: warn
       - name: The wheel installs on a clean interpreter and carries the UI
         run: |

@@ -1,0 +1,28 @@
+{
+  "build_job_id": 121338421585,
+  "correction": "0.6.3 synchronizes catalog/version fields and adds source consistency plus actual built-wheel doctor CI admission before qualification.",
+  "defect": "Wheel metadata/npm bundle version0.6.2, carried public-api.json Python/npm version0.6.1; doctor package_mismatch refusal.",
+  "failed_gate": "installed doctor on actual release wheel",
+  "github_release_created": false,
+  "passed_before_failure": [
+    "tag/source check",
+    "PostgreSQL18.6",
+    "Python tests",
+    "official UMF comparison",
+    "wheel digest guard",
+    "source/sdist rebuilt-wheel byte equality",
+    "fresh distribution consumers"
+  ],
+  "qualified_Mac_WAN_receipts": "Preserved as passing observations of those bytes; they do not override the failed doctor or establish a complete release.",
+  "raw_job_log_sha256": "53717eb85a03d2b9647187690a3b337f200a7c49bc31139b6739d97822fb3ed5",
+  "registry_upload_performed": false,
+  "release_run_id": 40249110726,
+  "schema": "arras.registry-062-prepublication-refusal/1",
+  "source_commit": "30b49d5f8e1873c29d2c3152fa6e24bbbb2373cc",
+  "source_tree": "e32f816e9cc686ca9e181e76915e53d450b4327c",
+  "status": "failed_before_publication",
+  "tag": "v0.6.2",
+  "tag_object_sha": "b087d3ea5738df237d41e967f1eb2ac81d0c0c21",
+  "tag_will_not_be_moved": true,
+  "wheel_sha256": "82cd5ef7e7284ded7bb7af98934fe0c3f6840450948205e3430d99ff0478f176"
+}

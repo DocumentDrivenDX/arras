@@ -1,0 +1,167 @@
+{
+  "case_count": 20,
+  "cases": [
+    {
+      "codes": [
+        "credential_sources_possible"
+      ],
+      "name": "positive installed wheel with page/theme/config/Brand/env/module inputs",
+      "status": 0
+    },
+    {
+      "codes": [
+        "credential_sources_possible",
+        "package_mismatch"
+      ],
+      "name": "package pin",
+      "status": 1
+    },
+    {
+      "codes": [
+        "contract_mismatch",
+        "credential_sources_possible"
+      ],
+      "name": "contract pin",
+      "status": 1
+    },
+    {
+      "codes": [
+        "credential_sources_possible",
+        "python_export_missing"
+      ],
+      "name": "Python export",
+      "status": 1
+    },
+    {
+      "codes": [
+        "credential_sources_possible",
+        "npm_export_missing"
+      ],
+      "name": "npm export",
+      "status": 1
+    },
+    {
+      "codes": [
+        "credential_sources_possible",
+        "role_token_missing"
+      ],
+      "name": "role token",
+      "status": 1
+    },
+    {
+      "codes": [
+        "capability_unsupported",
+        "credential_sources_possible"
+      ],
+      "name": "unsupported range pin",
+      "status": 3
+    },
+    {
+      "codes": [
+        "credential_sources_possible",
+        "env_name_unknown"
+      ],
+      "name": "environment key name",
+      "status": 1
+    },
+    {
+      "codes": [
+        "config_invalid",
+        "credential_sources_possible"
+      ],
+      "name": "committed config key",
+      "status": 1
+    },
+    {
+      "codes": [
+        "credential_sources_possible",
+        "theme_incompatible"
+      ],
+      "name": "theme cohort",
+      "status": 1
+    },
+    {
+      "codes": [
+        "credential_sources_possible",
+        "module_invalid"
+      ],
+      "name": "legacy module document",
+      "status": 1
+    },
+    {
+      "codes": [
+        "capability_unsupported",
+        "credential_sources_possible"
+      ],
+      "name": "unsupported official UMF profile",
+      "status": 3
+    },
+    {
+      "codes": [
+        "credential_sources_possible",
+        "module_profile_unsupported"
+      ],
+      "name": "missing module profile",
+      "status": 3
+    },
+    {
+      "codes": [
+        "distribution_invalid"
+      ],
+      "name": "Brand semantic validation",
+      "status": 1
+    },
+    {
+      "codes": [
+        "request_invalid"
+      ],
+      "name": "duplicate request keys",
+      "status": 2
+    },
+    {
+      "codes": [
+        "request_invalid"
+      ],
+      "name": "unknown CLI option redaction",
+      "status": 2
+    },
+    {
+      "codes": [],
+      "name": "help before request access",
+      "status": 0
+    },
+    {
+      "codes": [],
+      "name": "environment/file/network/subprocess/registration/import tripwires",
+      "status": 0
+    },
+    {
+      "codes": [],
+      "name": "installed public launcher Brand/help/startup/alias probes",
+      "status": 0
+    },
+    {
+      "codes": [],
+      "name": "installed SDK resources, direct/MCP/worker-backed ASGI, launcher names",
+      "status": 0
+    }
+  ],
+  "npm_sha256": "17be04205f928e8b4636ec3665ae03fa21f610c24307624a95b7c7b21f0e4585",
+  "npm_version": "0.6.3",
+  "positive_metadata_provenance": "installed metadata and package resource agree",
+  "python": "3.11.17",
+  "python_version": "0.6.3",
+  "raw_receipt_sha256": "33e035713929b3ef439f7749593128730c518aff2bf28e8e966749c8c9efe135",
+  "redaction": "Only fixed public case names/status/codes and provenance retained; runner paths, stdout/stderr and process details excluded.",
+  "schema": "arras.installed-doctor-review-safe/1",
+  "source_job_id": 121342057335,
+  "source_run_id": 40250804621,
+  "source_tree": "493f656fcccdb7fd3455e4ec8574acf2ccf84417",
+  "status": "passed",
+  "tripwires": "passed",
+  "wheel": {
+    "filename": "arras-0.6.3-py3-none-any.whl",
+    "sha256": "ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d",
+    "version": "0.6.3"
+  }
+}

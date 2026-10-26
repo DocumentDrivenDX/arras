@@ -1,0 +1,92 @@
+{
+  "artifact_id": 12620726236,
+  "artifact_zip_sha256": "2466de1cc06f25e8054059c2e2eff2b611ebd7543116c42c7ae8b804a9380fc3",
+  "candidate_artifact_id": 12620322540,
+  "candidate_artifact_server_digest": "sha256:ffdd5bd403bebad9f1973fc5ca93b9b5d5c553a3f1e0fffb81e94857b3e11637",
+  "candidate_wheel_sha256": "ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d",
+  "cleanup_projection": {
+    "ambiguous_process_count": 0,
+    "claim_limit": "Counts only; no forced group cleanup claim.",
+    "known_owned_process_count": 1503,
+    "owned_process_group_cleanup_complete": null,
+    "remaining_process_count": 0,
+    "remaining_temp_root_count": 0
+  },
+  "excluded": [
+    "raw artifact ZIP from governed export",
+    "signed download URL",
+    "verifier stdout/stderr",
+    "runner-local paths",
+    "process identifiers",
+    "WAN-private targets, credentials, authorization material, and catalog contents"
+  ],
+  "files": {
+    "README.md": {
+      "bytes": 1207,
+      "sha256": "3828c9cb25c002cd0cfcbfc403ea21cda573d2f63aadd41aa80fcdaf596edf86"
+    },
+    "candidate-wheel-provenance.json": {
+      "bytes": 547,
+      "sha256": "0327df47b2036d23b80594b68f3a9e2077821eae56bc2c15c103b786df3f3006"
+    },
+    "macos-arm64.find-links.html": {
+      "bytes": 1957,
+      "sha256": "a04f0e579585e30cc8a33830290ff66695bbe8fab264a3367ea0709152b8a40e"
+    },
+    "macos-arm64.json": {
+      "bytes": 4383,
+      "sha256": "724a5d033e4b34a20340bf35264729068b972428278bf5c51c96f410e99e3841"
+    },
+    "native-macos-cleanup-summary.json": {
+      "bytes": 357,
+      "sha256": "189cc97f02944ef7169b51a18d2585f5fa134a5e26efb0ed2b70547a998ffbf7"
+    },
+    "native-macos-cohort-binding.safe.json": {
+      "bytes": 681,
+      "sha256": "f00b2fc70d37b98f16206aeb30672909d8bf84df3a4e33b60c73004cb2b0d0f1"
+    },
+    "native-macos-cohort.bound.json": {
+      "bytes": 4506,
+      "sha256": "723d4f34829d57bd1b5bfb3d4ee047a3009754faf244a20d0e28f713a7fb70ea"
+    },
+    "native-macos-consumer-provenance.json": {
+      "bytes": 2273,
+      "sha256": "64a550f821d2412bd112df61cdbedbb90083edac8f3391d7f6da1799ed2056fb"
+    },
+    "native-macos-verification.safe.json": {
+      "bytes": 372292,
+      "sha256": "f71936a8426cb2f94fdcce0185491e7c48885f845624d34dd6863ffc3e138c14"
+    }
+  },
+  "native_verification_projection": {
+    "all_results_retained": true,
+    "graphql_core_version": "3.3.1",
+    "payload_parity_file_count": 172,
+    "projection": "Removed runner-local path fields; redacted runner-local file URLs; preserved public archive URLs without query/fragment; retained all case outcomes, limits, native-wheel hashes, and payload hashes.",
+    "result_count": 72,
+    "result_status_counts": {
+      "limit": 8,
+      "passed": 64
+    },
+    "skipped_case_count": 7,
+    "system_dynamic_link_audit": "not performed"
+  },
+  "original_source_file_sha256": {
+    "candidate-wheel-provenance.json": "0327df47b2036d23b80594b68f3a9e2077821eae56bc2c15c103b786df3f3006",
+    "macos-arm64.find-links.html": "a04f0e579585e30cc8a33830290ff66695bbe8fab264a3367ea0709152b8a40e",
+    "macos-arm64.json": "724a5d033e4b34a20340bf35264729068b972428278bf5c51c96f410e99e3841",
+    "native-macos-cleanup-observation.json": "6b11ee4317ba62cbc5a14456eef85db22646b771bf87e4238506f19835b85758",
+    "native-macos-cohort-binding.json": "4aae419e193c9182bfa201b488df8c4c11aedda0ac779a2ce98cd64093d00424",
+    "native-macos-cohort.bound.json": "723d4f34829d57bd1b5bfb3d4ee047a3009754faf244a20d0e28f713a7fb70ea",
+    "native-macos-consumer-provenance.json": "c0ad8685a499d9d4b66bab22fac66f26467e7999d7056aafd0a7ffc0eb469787",
+    "native-macos-verification.json": "43e6c21e03221625b8a3979bbc24ea051ff47eab2b7b685fb167cda943475af2"
+  },
+  "pull_request_head_sha": "0d306a92d49853c10adbe079b2f4d3708fcf4ede",
+  "python_patch_version": "3.11.9 (native Mac consumer provenance); verifier runtime reports 3.11",
+  "raw_native_verification_sha256": "43e6c21e03221625b8a3979bbc24ea051ff47eab2b7b685fb167cda943475af2",
+  "schema": "arras.native-macos-review-safe-export/1",
+  "source_job_id": 121342462706,
+  "source_run_id": 40250804621,
+  "source_sha": "eb6327dec23c149515892f2295acb82f72657411",
+  "source_tree_sha": "493f656fcccdb7fd3455e4ec8574acf2ccf84417"
+}
