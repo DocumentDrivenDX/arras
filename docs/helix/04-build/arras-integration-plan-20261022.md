@@ -2332,3 +2332,21 @@ the subsequent immutable-tag/public-download/registry receipts are separate
 controls; publication status belongs to the [versioned release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.2)
 and publisher workflow, not the historical 0.6.1 receipts. No open upstream
 0.10.2 or PR10/PWS03 cohort is adopted, and latest-only runtime support remains.
+
+
+### 0.6.2 doctor refusal and 0.6.3 correction — 2026-10-26
+
+PR12 merged as `30b49d5f8e1873c29d2c3152fa6e24bbbb2373cc`; immutable tag
+`v0.6.2` is object `b087d3ea5738df237d41e967f1eb2ac81d0c0c21`. Its release run
+`40249110726` passed the exact selected wheel guard and distribution rebuild,
+but the installed doctor correctly refused carried catalog versions 0.6.1
+against package/UI 0.6.2. No GitHub release or registry upload happened. The
+[failed doctor receipt](../05-deploy/evidence/registry-publication-20261025/release062-failed-doctor.safe.json)
+preserves that result. Prior Mac/WAN passes remain observations of their exact
+bytes and do not establish a completed release.
+
+The correction uses a new 0.6.3 version without moving the failed tag. Source
+catalog, project, lock and active example identity agree; a source regression
+and actual installed-wheel doctor gate now precede CI candidate admission.
+Dependency versions, latest-only runtime policy and registry grants remain
+unchanged. A new qualified wheel and its required release gates remain necessary.

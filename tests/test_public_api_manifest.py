@@ -48,12 +48,24 @@ def resolve_dotted(name: str) -> object:
     raise AssertionError(f"cannot resolve {name}")
 
 
+def test_catalog_distribution_versions_match_project_metadata() -> None:
+    import tomllib
+
+    root = Path(__file__).parents[1]
+    with (root / "pyproject.toml").open("rb") as stream:
+        project_version = tomllib.load(stream)["project"]["version"]
+    distribution = catalog()["distribution"]
+    exact(distribution["version"], project_version, "Python catalog version")
+    exact(distribution["npm"]["version"], project_version, "npm catalog version")
+
+
 def test_manifest_versions_and_public_imports_are_exact() -> None:
     manifest = catalog()
     assert manifest["schema_version"] == 1
     import tomllib
 
-    with (Path(__file__).parents[1] / "pyproject.toml").open("rb") as stream:
+    root = Path(__file__).parents[1]
+    with (root / "pyproject.toml").open("rb") as stream:
         project = tomllib.load(stream)["project"]
     distribution = manifest["distribution"]
     exact(distribution["python_requires"], project["requires-python"], "Python requirement")

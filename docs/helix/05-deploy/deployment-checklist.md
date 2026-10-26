@@ -243,3 +243,14 @@ The release workflow's strict wheel guard binds these bytes; any rebuild
 mismatch blocks publication. Exact-tag Release/public-download and registry
 OIDC/byte/install receipts remain distinct required controls, recorded with the
 [versioned release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.2).
+
+
+### 0.6.2 publication refused; 0.6.3 required — 2026-10-26
+
+The qualified 0.6.2 wheel failed the separate installed doctor release gate:
+carried catalog versions were stale. No publication occurred and its tag is
+unchanged. Its earlier Mac/WAN passes do not supersede that failure; see the
+[explicit failed record](evidence/registry-publication-20261025/release062-failed-doctor.safe.json).
+For 0.6.3, require source catalog/project identity agreement and an actual
+built-wheel doctor pass before candidate/native admission, then qualify the
+new exact wheel and complete normal tag/public-download/registry gates.

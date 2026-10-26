@@ -91,6 +91,21 @@ def test_release_builds_ui_before_running_integration_and_keeps_current_run_gate
     assert "verify_registry_publication.py pypi-metadata" in job_text(workflow, "build")
 
 
+def test_ci_qualifies_the_built_wheel_doctor_before_candidate_admission() -> None:
+    workflow = (ROOT / ".github/workflows/ci.yml").read_text()
+    check = job_text(workflow, "check")
+    doctor = "uv run --no-sync python tools/verify_doctor.py"
+    assert "name: Verify installed doctor against the built wheel" in check
+    assert doctor in check
+    assert check.index("uv build --wheel && uv build --sdist") < check.index(doctor)
+    assert check.index(doctor) < check.index("Verify installed extension host")
+    assert check.index(doctor) < check.index("Verify installed UMF admission")
+    assert "name: arras-doctor-installed" in check
+    assert "path: artifacts/doctor-installed.json" in check
+    candidate_artifact = check.split("name: arras-installed-candidate-artifacts", 1)[1]
+    assert "artifacts/doctor-installed.json" not in candidate_artifact
+
+
 def test_registry_publishing_is_separate_oidc_only_after_public_release_gates() -> None:
     workflow_path = ROOT / ".github/workflows/publish-registries.yml"
     workflow = workflow_path.read_text()

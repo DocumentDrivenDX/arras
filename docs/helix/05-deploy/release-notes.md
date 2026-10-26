@@ -17,7 +17,26 @@ ddx:
 
 # Arras release notes
 
-## 0.6.2 registry compatibility
+## 0.6.3 catalog correction
+
+The Python and wheel-carried npm versions in `public-api.json` now agree with
+`pyproject.toml`. CI checks source catalog/version consistency and runs the real
+installed-wheel doctor before accepting a candidate, with a separate retained
+receipt. The qualified dependency versions and runtime behavior are unchanged.
+This patch completes the registry compatibility work below with corrected
+package identity. Its new artifact requires its own qualification and exact-tag
+publication gates; earlier 0.6.2 observations do not qualify new wheel bytes.
+
+## 0.6.2 failed before publication
+
+The [exact-tag release run 40249110726](https://github.com/DocumentDrivenDX/arras/actions/runs/40249110726)
+passed the PostgreSQL, wheel guard and distribution rebuild gates, then the
+installed doctor refused the stale carried catalog (0.6.1 versus package 0.6.2).
+No GitHub release or registry upload occurred. The immutable tag remains as a
+failed build record. The [failure receipt](evidence/registry-publication-20261025/release062-failed-doctor.safe.json)
+keeps the failure separate from the passing Mac/WAN observations below. The
+correction ships as 0.6.3.
+
 
 This release makes the Python distributions acceptable to PyPI by replacing the
 optional UMF direct URL with the exact version pin `umf-core==0.10.0`. The
@@ -50,9 +69,8 @@ public-download gates succeed. Registry byte conflicts, missing access and
 failed fresh installs fail publication. Main-only `pypi` and `npm` environments
 and their exact publisher grants are configured; no registry publishing tokens
 are stored. The unchanged npm 0.6.1 tarball is already published and verified by
-an anonymous clean consumer. Current 0.6.2 tag and registry delivery outcomes are
-recorded in the [versioned release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.2)
-and the [publisher workflow receipts](https://github.com/DocumentDrivenDX/arras/actions/workflows/publish-registries.yml).
+an anonymous clean consumer. The failed 0.6.2 tag outcome is recorded above; successful registry delivery
+requires its own [publisher workflow receipts](https://github.com/DocumentDrivenDX/arras/actions/workflows/publish-registries.yml).
 
 ## 0.6.1 published
 
