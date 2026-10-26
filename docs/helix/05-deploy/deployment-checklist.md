@@ -54,8 +54,10 @@ pass.
 - Validate explicit consumer configuration and identity-conflict controls. The
   offline doctor reads only declared inputs, never ambient tokens or live hosts.
 - Check wheel and sdist dependency metadata for every direct-reference scheme,
-  including optional extras. The 0.6.3 PyPI receipt is historical base-install
-  evidence only. Every future PyPI qualification must run a separate clean
+  including optional extras. The original 0.6.3 PyPI publication receipt is
+  historical base-install evidence; separate hosted public-extras checks have
+  since passed on Linux x86_64 and macOS arm64. Every future PyPI qualification
+  must run a separate clean
   `pip install 'arras[truss,umf]'` against `https://pypi.org/simple`, with no
   wheelhouse, extra index, pip configuration, or cache. Require the full selected
   closure to report public PyPI origins, no installed direct-URL references,
@@ -80,7 +82,7 @@ pass.
 | Tag and assets | Mandatory exact-tag source/native/UI/downstream/build gates precede GitHub publication. Attach wheel, sdist, wheel-carried npm tarball, receipt and `SHA256SUMS`; registry publishers use those same verified bytes. |
 | Downloaded release | Download the public release assets into a new directory, verify digests and repeat installed consumer/skeleton/doctor checks. A local build alone does not pass this gate. |
 | Official UMF qualification (0.6.0+) | The exact final wheel passes the installed admission/metadata gate with pinned official UMF 0.10.0: all 139 ordered reference and separate fresh-empty production Registry comparisons, six base and ten extra-enabled controls, zero skips, and verified cleanup. Repeat against the exact public-download wheel in a fresh environment; retain distinct receipts. The 0.5.1 candidate receipt is historical and cannot close this gate. |
-| Public PyPI extras (future registry qualifications) | After PyPI publication, install exact `arras[truss,umf]` in fresh isolated Python 3.11 environments on Linux x86_64 and macOS arm64 from `pypi.org/simple` only. Verify all report origins, reject direct-URL closure, run `pip check`, installed Arras doctor and official UMF document smoke, and compare installed Arras/UMF/Truss/Weft artifact digests to the selected Arras release and qualified GitHub pins, including the platform-specific Weft archive. Historical 0.6.3 base-only receipts remain base-only evidence. |
+| Public PyPI extras (future registry qualifications) | After PyPI publication, install exact `arras[truss,umf]` in fresh isolated Python 3.11 environments on Linux x86_64 and macOS arm64 from `pypi.org/simple` only. Verify all report origins, reject direct-URL closure, run `pip check`, installed Arras doctor and official UMF document smoke, and compare installed Arras/UMF/Truss/Weft artifact digests to the selected Arras release and qualified GitHub pins, including the platform-specific Weft archive. The original 0.6.3 publication receipt remains base-only evidence; the separate 0.6.3 extras qualification now passes on both named hosted platforms ([receipt](evidence/public-pypi-extras-20261026/README.md)). |
 | Public assembly (0.6.0+) | Use release-evidence schema v2: include the mandatory safe UMF receipt projection as asset 17, bind it to the exact wheel, and repeat UMF qualification after public download. Keep v1/sixteen-asset evidence for historical releases unchanged. |
 | Truss 0.0.50 adoption / PR 9 | Before merge or tagging, retain and independently review the fresh-installed exact-cohort proof and full actual Lakebase receipt: LB-ADMISSION, LB-INSTALL, LB-PERSON, LB-CUSTODY, LB-SETTLEMENT, LB-ACL and MP-01–06 all pass, with independent owned-cleanup confirmation. Bind the managed receipt to the executed harness/fixture hashes, actual installed Truss archive/manifests and exact final Arras wheel, which must also pass the complete fresh-installed macOS campaign. Require the tagged-build and public wheel SHA-256 to match both original campaign bindings; any byte change requires both campaigns rebound and rerun. Document exact source correspondence to the release artifact; source-local checks, bootstrap evidence, partial schedules and earlier candidate artifacts cannot close this gate. |
 
@@ -350,6 +352,21 @@ stored registry tokens or per-release approval. npm postflight now allows up to
 600 seconds for visibility within a 20-minute job limit; PyPI retains 180 seconds.
 Only absence is retried; conflicting bytes and other errors still fail
 immediately. The published 0.6.3 runtime, tag and all 17 release assets are
-unchanged. Optional UMF/Truss extras retain the qualified wheelhouse boundary;
-the PyPI fresh-install claim covers the base package. Runtime support remains
-latest-only with forward migration for admitted UMF 0.10 lineages.
+unchanged. That publisher run's PyPI consumer check covered the base package;
+the separate public-extras gate and receipt are recorded below. Runtime support
+remains latest-only with forward migration for admitted UMF 0.10 lineages.
+
+### 0.6.3 public PyPI extras qualification complete — 2026-10-26
+
+Hosted [workflow run 40370325928](https://github.com/DocumentDrivenDX/arras/actions/runs/40370325928)
+passed the separate `arras[truss,umf]==0.6.3` public-index installation on Linux
+x86_64 / CPython 3.11.17 and macOS arm64 / CPython 3.11.9. Both reports show 19
+selected distributions from `files.pythonhosted.org`, zero installed direct-URL
+references, passing `pip check`, Arras doctor/import, Truss and Weft imports,
+Weft support, and complete UMF document admission. The installed Arras, UMF,
+Truss and platform-specific Weft bytes match their release pins. The original
+base-only publication receipts remain unchanged; the [separate final extras
+record](evidence/public-pypi-extras-20261026/README.md) includes the Linux and
+hosted macOS artifacts and digests. The local macOS result is supplemental.
+This qualifies only the named 0.6.3 cohort and platforms; it does not qualify
+Windows, managed deployment or native/provider behavior.

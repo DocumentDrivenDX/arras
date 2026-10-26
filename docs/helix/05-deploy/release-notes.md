@@ -78,14 +78,30 @@ stored registry tokens or per-release approval. npm postflight now allows up to
 600 seconds for visibility within a 20-minute job limit; PyPI retains 180 seconds.
 Only absence is retried; conflicting bytes and other errors still fail
 immediately. The published 0.6.3 runtime, tag and all 17 release assets are
-unchanged. Its PyPI fresh-install receipt covers only the base package; it does
-not establish that either optional extra resolves from PyPI. Future PyPI release
+unchanged. That run's PyPI fresh-install receipt covered only the base package;
+the separate public-extras qualification is recorded below. Future PyPI release
 qualifications require a separate post-publication fresh install of both
 `arras[truss,umf]` from the public PyPI index with no wheelhouse or extra index,
 exact digest checks for the selected qualified UMF/Truss/Weft GitHub assets,
 installed-origin/direct-URL checks, `pip check`, and public import, doctor and
 UMF document smokes. Runtime support remains latest-only with forward migration
 for admitted UMF 0.10 lineages.
+
+### 0.6.3 public PyPI extras qualification complete — 2026-10-26
+
+Hosted [workflow run 40370325928](https://github.com/DocumentDrivenDX/arras/actions/runs/40370325928)
+passed the separate `arras[truss,umf]==0.6.3` public-index install on Linux
+x86_64 / CPython 3.11.17 and macOS arm64 / CPython 3.11.9. Each hosted job
+resolved 19 selected distributions from `files.pythonhosted.org`, reported zero
+direct-URL references, passed `pip check`, and passed the Arras import/doctor,
+Truss and Weft import/support, and UMF document admission checks. Arras, UMF,
+Truss and platform-specific Weft digests matched the selected release assets.
+The [final receipt set](evidence/public-pypi-extras-20261026/README.md) records
+both hosted platform artifacts and hashes; the separate local macOS result is
+supplemental. This result qualifies only the named 0.6.3 cohort and those two
+platforms. It does not qualify Windows, managed deployment or native/provider
+behavior, and it does not change the latest-only runtime or forward-migration
+policy.
 
 ## 0.6.2 failed before publication
 
