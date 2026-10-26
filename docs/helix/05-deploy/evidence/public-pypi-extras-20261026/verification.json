@@ -1,5 +1,7 @@
 {
+  "api_artifact_metadata_snapshot_sha256": "7631edd4573cd1d5564b157a20baa6d6c720a4ce69d94294d3e25c865b6c2fb8",
   "hosted_linux": {
+    "artifact_created_at_utc": "2026-10-26T18:13:17Z",
     "artifact_id": 12675076918,
     "artifact_members_sha256": {
       "pypi-extras-install-report.json": "7dc56958d5a16de6a0c38e4c4b5ec3f9ee29f087e2dc214b65cd077462b09145",
@@ -7,6 +9,8 @@
       "pypi-postflight.json": "8a6923eae7111cff3c65a175e9d1f1dac8d0e2fa1b87aa967897199a57c09d93",
       "pypi-publication-receipt.json": "cc074b3cf2811f02daf072b3dfcb48bafc2179f011f92f9ea9c2797c452ff4ae"
     },
+    "artifact_name": "registry-pypi-extras-0.6.3-linux-x86_64",
+    "artifact_size_bytes": 77834,
     "artifact_zip_sha256": "7cbd539d2f6ff929e0550c569b9135f520eff2c31f5d75ca107dff3a9a8120bc",
     "checks": {
       "all_reported_distributions_from_files_pythonhosted_org": true,
@@ -41,16 +45,61 @@
       "weft_support": "passed"
     },
     "status": "passed",
+    "workflow_commit": "dab5884ec45b5e82b9908ad540e8cb67960f6bba",
     "workflow_run_id": 40370325928
   },
   "hosted_macos": {
-    "note": "Hosted macOS extras evidence was queued when this evidence set was assembled; no hosted macOS pass is claimed.",
-    "status": "pending"
+    "artifact_created_at_utc": "2026-10-26T18:50:22Z",
+    "artifact_id": 12679008357,
+    "artifact_members_sha256": {
+      "pypi-extras-install-report.json": "ee5b4a144a589b31dc497cfe312300b8f99dbe92c4de5b9863da44c652bd121c",
+      "pypi-extras-qualification.json": "ce43f7588b3e4c037fcabd991d80725906fc344f97bcd4dfc70142156a75409a",
+      "pypi-postflight.json": "8a6923eae7111cff3c65a175e9d1f1dac8d0e2fa1b87aa967897199a57c09d93",
+      "pypi-publication-receipt.json": "cc074b3cf2811f02daf072b3dfcb48bafc2179f011f92f9ea9c2797c452ff4ae"
+    },
+    "artifact_name": "registry-pypi-extras-0.6.3-macos-arm64",
+    "artifact_size_bytes": 77805,
+    "artifact_zip_sha256": "dbb42ea10f8f23482b5cc993eb8e7f58aded05bbb757ddb831120c91de9f4d69",
+    "checks": {
+      "all_reported_distributions_from_files_pythonhosted_org": true,
+      "all_reported_install_entries_non_direct": true,
+      "arras_truss_umf_weft_hashes_match_qualified_github_assets": true,
+      "pip_check_and_arras_doctor_truss_weft_umf_smokes_passed": true,
+      "postflight_files_match": true,
+      "public_index_install": true,
+      "publication_receipt_passed_and_registry_bytes_verified": true
+    },
+    "index": "https://pypi.org/simple",
+    "installed_direct_url_references": 0,
+    "job_id": 121757573895,
+    "origins": [
+      "files.pythonhosted.org"
+    ],
+    "pip_check": "passed",
+    "platform": {
+      "machine": "arm64",
+      "python": "3.11.9",
+      "system": "macOS"
+    },
+    "selected_distribution_count": 19,
+    "smoke": {
+      "arras_import": "passed",
+      "doctor": "passed",
+      "toolkit_version": "0.0.50",
+      "truss_import": "passed",
+      "umf_distribution_version": "0.10.0",
+      "umf_document_admission": "valid_and_complete",
+      "weft_import": "passed",
+      "weft_support": "passed"
+    },
+    "status": "passed",
+    "workflow_commit": "dab5884ec45b5e82b9908ad540e8cb67960f6bba",
+    "workflow_run_id": 40370325928
   },
   "limitations": [
-    "No all-platform or hosted-macOS acceptance claim is made while the hosted macOS job remains pending.",
-    "This evidence covers the exact Arras 0.6.3 extras install and selected published dependency cohort only.",
-    "No native/provider campaign or database-backed behavior is qualified by these public-package install receipts."
+    "Evidence covers only the exact Arras 0.6.3 public-PyPI extras install on the named Linux x86_64 and macOS arm64 CI runners with their recorded Python versions.",
+    "No Windows platform, native/provider campaign, or database-backed behavior is qualified by these package-install receipts.",
+    "The separate local macOS check remains supplemental and is not used to replace the hosted macOS job result."
   ],
   "local_macos_arm64": {
     "checks": {
@@ -105,6 +154,12 @@
       "pypi-postflight.json": "8a6923eae7111cff3c65a175e9d1f1dac8d0e2fa1b87aa967897199a57c09d93",
       "pypi-publication-receipt.json": "cc074b3cf2811f02daf072b3dfcb48bafc2179f011f92f9ea9c2797c452ff4ae"
     },
+    "hosted_macos": {
+      "pypi-extras-install-report.json": "ee5b4a144a589b31dc497cfe312300b8f99dbe92c4de5b9863da44c652bd121c",
+      "pypi-extras-qualification.json": "ce43f7588b3e4c037fcabd991d80725906fc344f97bcd4dfc70142156a75409a",
+      "pypi-postflight.json": "8a6923eae7111cff3c65a175e9d1f1dac8d0e2fa1b87aa967897199a57c09d93",
+      "pypi-publication-receipt.json": "cc074b3cf2811f02daf072b3dfcb48bafc2179f011f92f9ea9c2797c452ff4ae"
+    },
     "local_macos_arm64": {
       "local-extras-install-report.json": "6ea7041361a2d5fc28e1a797e9bb6a35e9fbcf14569717fd2f445c811bef7368",
       "local-extras-qualification.json": "8d95335a66178f1a57b56abefc47313ef2a2cb85dd6fc20d0bc41e84ba21ef87",
@@ -112,7 +167,7 @@
     }
   },
   "schema": "arras.public-pypi-extras-evidence/1",
-  "scope": "Exact Arras 0.6.3 public-PyPI extras qualification evidence; hosted Linux is complete, local macOS is supplemental, hosted macOS remains pending.",
+  "scope": "Exact Arras 0.6.3 public-PyPI extras qualification evidence; hosted Linux x86_64 and macOS arm64 jobs passed, with local macOS evidence retained as supplemental.",
   "source": {
     "commit": "81d560310f46f1d2c105e6635d70b0eeb97d4684",
     "driver_commit": "dab5884ec45b5e82b9908ad540e8cb67960f6bba",
