@@ -54,14 +54,20 @@ pass.
 - Validate explicit consumer configuration and identity-conflict controls. The
   offline doctor reads only declared inputs, never ambient tokens or live hosts.
 - Check wheel and sdist dependency metadata for every direct-reference scheme,
-  including optional extras. Plain PyPI install qualification covers the base
-  package. Extras with off-index upstream dependencies retain explicit verified
-  wheelhouse instructions and separate installed-cohort evidence; do not claim
-  that plain `pip install arras[umf]` or `arras[truss]` resolves from PyPI.
+  including optional extras. The 0.6.3 PyPI receipt is historical base-install
+  evidence only. Every future PyPI qualification must run a separate clean
+  `pip install 'arras[truss,umf]'` against `https://pypi.org/simple`, with no
+  wheelhouse, extra index, pip configuration, or cache. Require the full selected
+  closure to report public PyPI origins, no installed direct-URL references,
+  `pip check`, installed Arras/Truss/Weft imports, complete official UMF document
+  admission, and the installed Arras doctor. Verify UMF 0.10.0, Truss 0.0.50,
+  and the selected Weft 0.4.51 wheel by SHA-256 against the qualified GitHub
+  release assets, not version strings alone. A missing upstream PyPI release or
+  mismatched byte fails the gate; do not defer or substitute a wheelhouse.
 
 ## Validation Gates
 
-| Gate | Required evidence before publication |
+| Gate | Required evidence before publication or before closing its postpublication gate |
 | --- | --- |
 | Source quality | Full Ruff/format, strict Pyright with the selected interpreter, default Python suite, module/import boundaries and public catalog checks pass on the final source. |
 | Native behavior | Full native Arras suite and installed public conformance helper pass against the exact released Truss/Weft/PostgreSQL cohort; GitHub Linux tag gates pass. |
@@ -74,6 +80,7 @@ pass.
 | Tag and assets | Mandatory exact-tag source/native/UI/downstream/build gates precede GitHub publication. Attach wheel, sdist, wheel-carried npm tarball, receipt and `SHA256SUMS`; registry publishers use those same verified bytes. |
 | Downloaded release | Download the public release assets into a new directory, verify digests and repeat installed consumer/skeleton/doctor checks. A local build alone does not pass this gate. |
 | Official UMF qualification (0.6.0+) | The exact final wheel passes the installed admission/metadata gate with pinned official UMF 0.10.0: all 139 ordered reference and separate fresh-empty production Registry comparisons, six base and ten extra-enabled controls, zero skips, and verified cleanup. Repeat against the exact public-download wheel in a fresh environment; retain distinct receipts. The 0.5.1 candidate receipt is historical and cannot close this gate. |
+| Public PyPI extras (future registry qualifications) | After PyPI publication, install exact `arras[truss,umf]` in fresh isolated Python 3.11 environments on Linux x86_64 and macOS arm64 from `pypi.org/simple` only. Verify all report origins, reject direct-URL closure, run `pip check`, installed Arras doctor and official UMF document smoke, and compare installed Arras/UMF/Truss/Weft artifact digests to the selected Arras release and qualified GitHub pins, including the platform-specific Weft archive. Historical 0.6.3 base-only receipts remain base-only evidence. |
 | Public assembly (0.6.0+) | Use release-evidence schema v2: include the mandatory safe UMF receipt projection as asset 17, bind it to the exact wheel, and repeat UMF qualification after public download. Keep v1/sixteen-asset evidence for historical releases unchanged. |
 | Truss 0.0.50 adoption / PR 9 | Before merge or tagging, retain and independently review the fresh-installed exact-cohort proof and full actual Lakebase receipt: LB-ADMISSION, LB-INSTALL, LB-PERSON, LB-CUSTODY, LB-SETTLEMENT, LB-ACL and MP-01–06 all pass, with independent owned-cleanup confirmation. Bind the managed receipt to the executed harness/fixture hashes, actual installed Truss archive/manifests and exact final Arras wheel, which must also pass the complete fresh-installed macOS campaign. Require the tagged-build and public wheel SHA-256 to match both original campaign bindings; any byte change requires both campaigns rebound and rerun. Document exact source correspondence to the release artifact; source-local checks, bootstrap evidence, partial schedules and earlier candidate artifacts cannot close this gate. |
 

@@ -46,7 +46,7 @@ Terms. A backend is a named store with the roles `reader` and `provider` (CONTRA
 - In scope: starting, the backends and the placement, the connection sources, the administrative principal, the installing connection, install-or-verify, per-backend availability, the public-name boundary, mounting the console.
 - Out of scope: the operations (CONTRACT-001 to CONTRACT-003), the backend contract (CONTRACT-004), the console's endpoints (CONTRACT-006), provisioning database resources and Unity Catalog access. Running against a local PostgreSQL for development (EMB-05) and the Truss adapter's install-or-verify on the qualified PostgreSQL 18.6 are verified by the test plan (`docs/helix/03-test/test-plan.md`); they add no contract surface.
 - Owning system or team: Arras; each embedding host owns its integration.
-- Runtime: Python 3.11 or later. The base install requires no Truss or psycopg. The Truss adapter is an optional extra that requires Arras's selected public driver tuple: `truss-toolkit[native,query]==0.0.50`, `weft-sql==0.4.51`, native runtime `truss-catalog-runtime/0.74-candidate`, manifest SHA-256 `288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4`, psycopg and psycopg-binary 3.3.6 with libpq 18.6, PostgreSQL 18.6, on Linux x86_64 or macOS arm64 (Windows is not supported by the extra). Truss refuses a connection to a different server or driver version when it adopts it. This selected tuple does not qualify a managed deployment. Distribution: neither `truss-toolkit` nor `weft-sql` is on PyPI, so a host that installs the extra vendors the pinned wheels (truss-toolkit, weft-sql, psycopg-binary and their pure-Python closure) into its own build, or passes the same find-links (`tools/find-links/index.html`, which carries the release digests). The extra's metadata is in the published wheel either way.
+- Runtime: Python 3.11 or later. The base install requires no Truss or psycopg. The Truss adapter is an optional extra that requires Arras's selected public driver tuple: `truss-toolkit[native,query]==0.0.50`, `weft-sql==0.4.51`, native runtime `truss-catalog-runtime/0.74-candidate`, manifest SHA-256 `288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4`, psycopg and psycopg-binary 3.3.6 with libpq 18.6, PostgreSQL 18.6, on Linux x86_64 or macOS arm64 (Windows is not supported by the extra). Truss refuses a connection to a different server or driver version when it adopts it. This selected tuple does not qualify a managed deployment. Distribution: the requested `arras[truss,umf]` installation must resolve the exact selected Truss/Weft/UMF tuple from public PyPI, without a wheelhouse or extra index. The 0.6.3 PyPI receipt covers only the base package; public extras acceptance remains pending until a fresh isolated public-index install verifies origins, absence of direct-URL dependencies, `pip check`, installed consumers and exact artifact digests against the qualified GitHub release assets. `tools/find-links/index.html` retains the upstream release digests as provenance pins, not as an installation fallback for this gate. The optional-extra metadata remains version-pinned in the published wheel.
 
 ### Distribution and public API catalog — EX-01
 
@@ -345,12 +345,18 @@ same-version variant. After upload, verify anonymous registry-served digests and
 a fresh isolated registry installation with explicit consumer checks. Record
 registry delivery separately from GitHub publication and native qualification.
 
-Plain-index PyPI delivery qualifies the base package. An optional extra whose
-upstream dependencies are not on PyPI MUST document its qualified wheelhouse
-route and retain the exact upstream digests. Version-only dependency metadata
-MUST NOT imply plain-index availability of those extras. Keep their separate
-installed-cohort qualification; do not remove supported features or adopt a new
-upstream producer solely to make an upload succeed.
+Every future PyPI qualification MUST include a separate fresh isolated install
+of `arras[truss,umf]` from `https://pypi.org/simple`, with no wheelhouse, extra
+index, pip configuration or cache. It MUST verify public package origins,
+reject installed direct-URL dependencies, pass `pip check` and the installed
+consumer/doctor/UMF document checks, and compare the Arras, UMF, Truss and Weft
+artifact digests to the selected Arras release and qualified upstream GitHub
+assets. The 0.6.3 receipt remains base-only historical evidence; public extras
+acceptance is pending until a passing receipt records these checks. A missing
+upstream PyPI release or byte mismatch fails the gate; a wheelhouse is not a
+substitute. Retain the exact upstream digests, selected installed cohort and
+the existing version/platform support limits; do not remove supported features
+or adopt a new upstream producer solely to make an upload succeed.
 
 Workflow tests check the actual dependency graph and exact tool/input wiring.
 Execute the actual extracted comparison/download shell with temporary trusted/

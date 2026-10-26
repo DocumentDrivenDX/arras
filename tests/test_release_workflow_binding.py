@@ -176,8 +176,8 @@ def test_registry_publishing_is_separate_oidc_only_after_public_release_gates() 
     assert "--provenance" in workflow and "gh-action-pypi-publish@release/v1" in workflow
     assert "check-npm" in workflow and "check-pypi" in workflow
     assert "npm install --prefix" in workflow and "python3 -m venv" in workflow
-    assert workflow.count("ref: ${{ github.workflow_sha }}") == 5
-    assert workflow.count('test "$(git rev-parse HEAD)" = "$EXPECTED_DRIVER_SHA"') == 5
+    assert workflow.count("ref: ${{ github.workflow_sha }}") == 6
+    assert workflow.count('test "$(git rev-parse HEAD)" = "$EXPECTED_DRIVER_SHA"') == 6
     assert workflow.count("--wait-for-present") == 2
     npm_publish = job_text(workflow, "npm-publish")
     pypi_publish = job_text(workflow, "pypi-publish")
