@@ -17,6 +17,43 @@ ddx:
 
 # Arras release notes
 
+## 0.6.2 registry compatibility
+
+This release makes the Python distributions acceptable to PyPI by replacing the
+optional UMF direct URL with the exact version pin `umf-core==0.10.0`. The
+qualified UMF wheel and its digest remain unchanged. Plain-index PyPI support
+covers the base package; UMF and Truss extras continue to use the documented
+qualified wheelhouse. Truss remains 0.0.50, Weft 0.4.51 and UMF core 0.10.0.
+Runtime support remains latest-only with forward migration for admitted UMF
+0.10 lineages and no pre-0.10 compatibility.
+
+The selected wheel SHA-256 is
+`82cd5ef7e7284ded7bb7af98934fe0c3f6840450948205e3430d99ff0478f176`.
+[CI run 40244842788](https://github.com/DocumentDrivenDX/arras/actions/runs/40244842788)
+passed all five jobs. Its fresh macOS arm64 / CPython 3.11.9 installation passed
+64 cases, retained eight declared limits and excluded seven replica-only cases;
+172 payload files and cleanup matched. The separate CPython 3.11.17 WAN
+installation used the exact prior dependency cohort and passed all twelve
+Lakebase cases. Original cleanup removed five resources; archive collection,
+independent read-only audit, targeted parent/supervisor/worker process and group
+census, and custody handback passed. The first authorization-reference refusal
+had no target effects and remains a separate failed record. The official UMF
+installed gate matched 139 reference and 139 fresh-empty Registry cases plus
+six base and ten extra controls, with zero skips and passing cleanup.
+The [retained qualification index](evidence/registry-publication-20261025/qualification-062-index.json)
+binds these scoped observations, including each platform's actual dependency
+versions and an explicit correction to one frozen evidence label.
+
+Future tagged releases publish the exact qualified GitHub assets to PyPI and npm
+through trusted GitHub OIDC publishers after all ten Release jobs and complete
+public-download gates succeed. Registry byte conflicts, missing access and
+failed fresh installs fail publication. Main-only `pypi` and `npm` environments
+and their exact publisher grants are configured; no registry publishing tokens
+are stored. The unchanged npm 0.6.1 tarball is already published and verified by
+an anonymous clean consumer. Current 0.6.2 tag and registry delivery outcomes are
+recorded in the [versioned release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.2)
+and the [publisher workflow receipts](https://github.com/DocumentDrivenDX/arras/actions/workflows/publish-registries.yml).
+
 ## 0.6.1 published
 
 This release selects public Truss 0.0.50 and preserves Weft 0.4.51 and official UMF

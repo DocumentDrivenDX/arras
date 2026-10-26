@@ -1,0 +1,536 @@
+name: Publish registries
+
+on:
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      publication_run_id:
+        description: Successful Release workflow run whose immutable assets will be verified.
+        required: true
+        type: string
+      release_tag:
+        description: Exact vX.Y.Z tag from the successful Release run.
+        required: true
+        type: string
+      expected_source_sha:
+        description: Exact source commit peeled from the release tag.
+        required: true
+        type: string
+      expected_tag_object_sha:
+        description: Exact annotated tag object (or lightweight tag commit) from the release provenance.
+        required: true
+        type: string
+      expected_sums_sha256:
+        description: SHA-256 of the release's SHA256SUMS file.
+        required: true
+        type: string
+      expected_wheel_sha256:
+        description: SHA-256 of the exact release wheel.
+        required: true
+        type: string
+      target:
+        description: Registry to backfill or publish.
+        required: true
+        type: choice
+        options: [npm, pypi, both]
+        default: npm
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: registry-publication-${{ inputs.release_tag || github.event.workflow_run.head_branch || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  verify-release:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      target: ${{ steps.identity.outputs.target }}
+      version: ${{ steps.identity.outputs.version }}
+      tag: ${{ steps.identity.outputs.tag }}
+      source_sha: ${{ steps.identity.outputs.source_sha }}
+      wheel_name: ${{ steps.identity.outputs.wheel_name }}
+      wheel_sha256: ${{ steps.identity.outputs.wheel_sha256 }}
+      sums_sha256: ${{ steps.identity.outputs.sums_sha256 }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+      - name: Assert checked-out publisher driver matches the workflow SHA
+        env:
+          EXPECTED_DRIVER_SHA: ${{ github.workflow_sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_DRIVER_SHA"
+      - name: Require manual backfills to run from the default branch
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: test "$GITHUB_REF" = "refs/heads/$DEFAULT_BRANCH"
+      - name: Select the original Release run and requested registry target
+        id: request
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_RUN_ID: ${{ github.event.workflow_run.id }}
+          INPUT_RUN_ID: ${{ inputs.publication_run_id }}
+          INPUT_TARGET: ${{ inputs.target }}
+          EXPECTED_TAG: ${{ inputs.release_tag }}
+          EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+          EXPECTED_TAG_OBJECT_SHA: ${{ inputs.expected_tag_object_sha }}
+          EXPECTED_SUMS_SHA256: ${{ inputs.expected_sums_sha256 }}
+          EXPECTED_WHEEL_SHA256: ${{ inputs.expected_wheel_sha256 }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = workflow_run ]; then
+            echo "run_id=$EVENT_RUN_ID" >> "$GITHUB_OUTPUT"
+            echo "target=both" >> "$GITHUB_OUTPUT"
+          else
+            [[ "$INPUT_RUN_ID" =~ ^[1-9][0-9]{0,19}$ ]]
+            case "$INPUT_TARGET" in npm|pypi|both) ;; *) echo "invalid registry target" >&2; exit 1 ;; esac
+            [[ "$EXPECTED_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
+            [[ "$EXPECTED_SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+            [[ "$EXPECTED_TAG_OBJECT_SHA" =~ ^[0-9a-f]{40}$ ]]
+            [[ "$EXPECTED_SUMS_SHA256" =~ ^[0-9a-f]{64}$ ]]
+            [[ "$EXPECTED_WHEEL_SHA256" =~ ^[0-9a-f]{64}$ ]]
+            echo "run_id=$INPUT_RUN_ID" >> "$GITHUB_OUTPUT"
+            echo "target=$INPUT_TARGET" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-driver-provenance
+          run-id: ${{ steps.request.outputs.run_id }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          path: original/provenance
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-assets
+          run-id: ${{ steps.request.outputs.run_id }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          path: original/release-assets
+      - name: Fetch original run, all jobs, workflow, tag and public release metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_ID: ${{ steps.request.outputs.run_id }}
+        run: |
+          set -euo pipefail
+          mkdir -p original/api
+          gh api "repos/$GH_REPO/actions/runs/$RUN_ID" > original/api/run.json
+          gh api --paginate --slurp "repos/$GH_REPO/actions/runs/$RUN_ID/jobs?per_page=100" > original/api/job-pages.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          pages = json.loads(Path("original/api/job-pages.json").read_text(encoding="utf-8"))
+          if not isinstance(pages, list) or not pages:
+              raise SystemExit("GitHub returned no workflow job pages")
+          jobs = []
+          counts = set()
+          for page in pages:
+              if not isinstance(page, dict) or not isinstance(page.get("jobs"), list):
+                  raise SystemExit("GitHub workflow jobs response is malformed")
+              counts.add(page.get("total_count"))
+              jobs.extend(page["jobs"])
+          if len(counts) != 1 or next(iter(counts)) != len(jobs):
+              raise SystemExit("GitHub workflow jobs pagination was incomplete")
+          Path("original/api/jobs.json").write_text(json.dumps({"total_count": len(jobs), "jobs": jobs}, indent=2) + "\n", encoding="utf-8")
+          run = json.loads(Path("original/api/run.json").read_text(encoding="utf-8"))
+          Path("original/api/workflow-id").write_text(str(run["workflow_id"]), encoding="ascii")
+          provenance = json.loads(Path("original/provenance/release-driver-provenance.json").read_text(encoding="utf-8"))
+          tag = provenance["target"]["tag"]
+          if not isinstance(tag, str) or not __import__("re").fullmatch(r"v(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)", tag):
+              raise SystemExit("release-driver provenance has an invalid tag")
+          Path("original/api/tag").write_text(tag, encoding="ascii")
+          PY
+          WORKFLOW_ID="$(cat original/api/workflow-id)"
+          TAG="$(cat original/api/tag)"
+          gh api "repos/$GH_REPO/actions/workflows/$WORKFLOW_ID" > original/api/workflow.json
+          gh api "repos/$GH_REPO/git/ref/tags/$TAG" > original/api/tag-ref.json
+          TAG_TYPE="$(python3 -c 'import json; print(json.load(open("original/api/tag-ref.json"))["object"]["type"])')"
+          if [ "$TAG_TYPE" = tag ]; then
+            TAG_SHA="$(python3 -c 'import json; print(json.load(open("original/api/tag-ref.json"))["object"]["sha"])')"
+            gh api "repos/$GH_REPO/git/tags/$TAG_SHA" > original/api/tag-object.json
+          fi
+          gh api "repos/$GH_REPO/releases/tags/$TAG" > original/api/release.json
+      - name: Validate exact source, successful ten-gate run, tag, assets and manual pins
+        id: identity
+        env:
+          GH_REPO: ${{ github.repository }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch || github.event.workflow_run.repository.default_branch }}
+          RUN_ID: ${{ steps.request.outputs.run_id }}
+          TARGET: ${{ steps.request.outputs.target }}
+          EXPECTED_TAG: ${{ inputs.release_tag }}
+          EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+          EXPECTED_TAG_OBJECT_SHA: ${{ inputs.expected_tag_object_sha }}
+          EXPECTED_SUMS_SHA256: ${{ inputs.expected_sums_sha256 }}
+          EXPECTED_WHEEL_SHA256: ${{ inputs.expected_wheel_sha256 }}
+        run: |
+          set -euo pipefail
+          args=(
+            validate-release
+            --run original/api/run.json
+            --jobs original/api/jobs.json
+            --workflow original/api/workflow.json
+            --provenance original/provenance/release-driver-provenance.json
+            --tag-ref original/api/tag-ref.json
+            --release original/api/release.json
+            --assets original/release-assets
+            --repository "$GH_REPO"
+            --default-branch "$DEFAULT_BRANCH"
+            --run-id "$RUN_ID"
+            --output registry-publication-identity.json
+          )
+          if [ -f original/api/tag-object.json ]; then args+=(--tag-object original/api/tag-object.json); fi
+          if [ -n "$EXPECTED_TAG" ]; then args+=(--expected-tag "$EXPECTED_TAG"); fi
+          if [ -n "$EXPECTED_SOURCE_SHA" ]; then args+=(--expected-source-sha "$EXPECTED_SOURCE_SHA"); fi
+          if [ -n "$EXPECTED_TAG_OBJECT_SHA" ]; then args+=(--expected-tag-object-sha "$EXPECTED_TAG_OBJECT_SHA"); fi
+          if [ -n "$EXPECTED_SUMS_SHA256" ]; then args+=(--expected-sums-sha256 "$EXPECTED_SUMS_SHA256"); fi
+          if [ -n "$EXPECTED_WHEEL_SHA256" ]; then args+=(--expected-wheel-sha256 "$EXPECTED_WHEEL_SHA256"); fi
+          python3 .github/scripts/verify_registry_publication.py "${args[@]}"
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          from pathlib import Path
+          identity = json.loads(Path("registry-publication-identity.json").read_text(encoding="utf-8"))
+          print(f"version={identity['version']}")
+          print(f"tag={identity['tag']}")
+          print(f"source_sha={identity['source_sha']}")
+          print(f"wheel_name={identity['wheel']}")
+          print(f"wheel_sha256={identity['wheel_sha256']}")
+          print(f"sums_sha256={identity['sums_sha256']}")
+          import os
+          print(f"target={os.environ['TARGET']}")
+          PY
+      - name: Download the exact release assets without credentials and verify every byte
+        env:
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ steps.identity.outputs.tag }}
+          VERSION: ${{ steps.identity.outputs.version }}
+          WHEEL: ${{ steps.identity.outputs.wheel_name }}
+          WHEEL_SHA256: ${{ steps.identity.outputs.wheel_sha256 }}
+          SUMS_SHA256: ${{ steps.identity.outputs.sums_sha256 }}
+        run: |
+          set -euo pipefail
+          mkdir -p public-release-assets
+          curl --disable --fail --silent --show-error --location --proto '=https' --proto-redir '=https' \
+            --max-time 60 --output public-release-assets/SHA256SUMS \
+            "https://github.com/$GH_REPO/releases/download/$TAG/SHA256SUMS"
+          python3 .github/scripts/verify_public_release_assets.py plan \
+            --trusted-dir original/release-assets --public-dir public-release-assets \
+            --expected-version "$VERSION" --expected-wheel "$WHEEL" \
+            --expected-wheel-sha256 "$WHEEL_SHA256" --expected-sums-sha256 "$SUMS_SHA256" \
+            --output "$RUNNER_TEMP/registry-release-plan.txt"
+          while IFS= read -r asset; do
+            test -n "$asset"
+            curl --disable --fail --silent --show-error --location --proto '=https' --proto-redir '=https' \
+              --max-time 90 --output "public-release-assets/$asset" \
+              "https://github.com/$GH_REPO/releases/download/$TAG/$asset"
+          done < "$RUNNER_TEMP/registry-release-plan.txt"
+          python3 .github/scripts/verify_public_release_assets.py verify \
+            --trusted-dir original/release-assets --public-dir public-release-assets \
+            --expected-version "$VERSION" --expected-wheel "$WHEEL" \
+            --expected-wheel-sha256 "$WHEEL_SHA256" --expected-sums-sha256 "$SUMS_SHA256" \
+            --output public-input-verification.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: registry-verified-release-${{ steps.identity.outputs.version }}
+          path: |
+            registry-publication-identity.json
+            public-input-verification.json
+            public-release-assets/*
+          if-no-files-found: error
+          retention-days: 30
+
+  npm-preflight:
+    if: needs.verify-release.outputs.target != 'pypi'
+    needs: [verify-release]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      status: ${{ steps.registry.outputs.status }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+      - name: Assert checked-out publisher driver matches the workflow SHA
+        env:
+          EXPECTED_DRIVER_SHA: ${{ github.workflow_sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_DRIVER_SHA"
+      - uses: actions/download-artifact@v4
+        with:
+          name: registry-verified-release-${{ needs.verify-release.outputs.version }}
+          path: verified
+      - name: Refuse npm version collisions against the exact public tarball
+        id: registry
+        env:
+          VERSION: ${{ needs.verify-release.outputs.version }}
+        run: |
+          TARBALL="verified/public-release-assets/documentdrivendx-arras-ui-$VERSION.tgz"
+          test -f "$TARBALL"
+          NPM_SHA256="$(sha256sum "$TARBALL" | cut -d' ' -f1)"
+          python3 .github/scripts/verify_registry_publication.py check-npm \
+            --version "$VERSION" --sha256 "$NPM_SHA256" --output npm-preflight.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: registry-npm-preflight-${{ needs.verify-release.outputs.version }}
+          path: npm-preflight.json
+          if-no-files-found: error
+          retention-days: 90
+
+  npm-publish:
+    if: needs.verify-release.outputs.target != 'pypi' && needs.npm-preflight.result == 'success'
+    needs: [verify-release, npm-preflight]
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+      - name: Assert checked-out publisher driver matches the workflow SHA
+        env:
+          EXPECTED_DRIVER_SHA: ${{ github.workflow_sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_DRIVER_SHA"
+      - uses: actions/download-artifact@v4
+        with:
+          name: registry-verified-release-${{ needs.verify-release.outputs.version }}
+          path: verified
+      - uses: actions/download-artifact@v4
+        with:
+          name: registry-npm-preflight-${{ needs.verify-release.outputs.version }}
+          path: npm-preflight
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Require npm CLI with trusted publishing support
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import re, subprocess
+          value = subprocess.check_output(["npm", "--version"], text=True).strip()
+          match = re.fullmatch(r"(\d+)\.(\d+)\.(\d+)(?:[-+].*)?", value)
+          if match is None or tuple(map(int, match.groups())) < (11, 5, 1):
+              raise SystemExit("npm 11.5.1 or later is required for OIDC trusted publishing")
+          print(f"npm CLI {value} supports trusted publishing")
+          PY
+      - name: Recheck npm absence or exact bytes under the publisher workflow
+        id: upload-check
+        env:
+          VERSION: ${{ needs.verify-release.outputs.version }}
+        run: |
+          TARBALL="verified/public-release-assets/documentdrivendx-arras-ui-$VERSION.tgz"
+          NPM_SHA256="$(sha256sum "$TARBALL" | cut -d' ' -f1)"
+          python3 .github/scripts/verify_registry_publication.py check-npm \
+            --version "$VERSION" --sha256 "$NPM_SHA256" --output npm-upload-check.json
+      - name: Publish the exact npm tarball with GitHub OIDC trusted publishing
+        id: npm-upload
+        if: steps.upload-check.outputs.status == 'absent'
+        env:
+          VERSION: ${{ needs.verify-release.outputs.version }}
+        run: |
+          npm publish "verified/public-release-assets/documentdrivendx-arras-ui-$VERSION.tgz" \
+            --access public --provenance --registry https://registry.npmjs.org/
+      - name: Verify registry-served npm bytes and a fresh package install
+        env:
+          VERSION: ${{ needs.verify-release.outputs.version }}
+          NPM_UPLOAD_OUTCOME: ${{ steps.npm-upload.outcome }}
+          PUBLISHER_WORKFLOW_SHA: ${{ github.workflow_sha }}
+        run: |
+          set -euo pipefail
+          TARBALL="verified/public-release-assets/documentdrivendx-arras-ui-$VERSION.tgz"
+          NPM_SHA256="$(sha256sum "$TARBALL" | cut -d' ' -f1)"
+          GITHUB_OUTPUT=/dev/null python3 .github/scripts/verify_registry_publication.py check-npm \
+            --version "$VERSION" --sha256 "$NPM_SHA256" --wait-for-present \
+            --visibility-timeout 180 --output npm-postflight.json
+          npm install --prefix "$RUNNER_TEMP/npm-registry-smoke" --ignore-scripts --no-audit --no-fund \
+            --registry https://registry.npmjs.org/ "@documentdrivendx/arras-ui@$VERSION"
+          NPM_SMOKE_NODE_MODULES="$RUNNER_TEMP/npm-registry-smoke/node_modules" node --input-type=module -e '
+            import { createRequire } from "node:module";
+            import { join } from "node:path";
+            import { pathToFileURL } from "node:url";
+            const root = join(process.env.NPM_SMOKE_NODE_MODULES, "@documentdrivendx", "arras-ui");
+            const require = createRequire(import.meta.url);
+            const manifest = require(join(root, "package.json"));
+            if (manifest.version !== process.env.VERSION) throw new Error("installed npm version differs");
+            const ui = await import(pathToFileURL(join(root, "dist", "index.js")).href);
+            if (Object.keys(ui).length === 0) throw new Error("installed npm package exports are empty");
+          '
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          identity = json.loads(Path("verified/registry-publication-identity.json").read_text(encoding="utf-8"))
+          tarball = Path(f"verified/public-release-assets/documentdrivendx-arras-ui-{os.environ['VERSION']}.tgz")
+          receipt = {
+              "schema_version": 1,
+              "status": "passed",
+              "registry": "npm",
+              "version": os.environ["VERSION"],
+              "tag": identity["tag"],
+              "publisher_workflow_sha": os.environ["PUBLISHER_WORKFLOW_SHA"],
+              "source_sha": identity["source_sha"],
+              "wheel_sha256": identity["wheel_sha256"],
+              "tarball_sha256": hashlib.sha256(tarball.read_bytes()).hexdigest(),
+              "publication_mode": "oidc_upload" if os.environ["NPM_UPLOAD_OUTCOME"] == "success" else "existing_exact_bytes",
+              "oidc_trusted_publisher": os.environ["NPM_UPLOAD_OUTCOME"] == "success",
+              "registry_bytes_verified": True,
+              "fresh_install_smoke": "passed",
+          }
+          Path("npm-publication-receipt.json").write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: registry-publication-npm-${{ needs.verify-release.outputs.version }}
+          path: |
+            npm-preflight/npm-preflight.json
+            npm-upload-check.json
+            npm-postflight.json
+            npm-publication-receipt.json
+          if-no-files-found: error
+          retention-days: 90
+
+  pypi-preflight:
+    if: needs.verify-release.outputs.target != 'npm'
+    needs: [verify-release]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      status: ${{ steps.registry.outputs.status }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+      - name: Assert checked-out publisher driver matches the workflow SHA
+        env:
+          EXPECTED_DRIVER_SHA: ${{ github.workflow_sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_DRIVER_SHA"
+      - uses: actions/download-artifact@v4
+        with:
+          name: registry-verified-release-${{ needs.verify-release.outputs.version }}
+          path: verified
+      - name: Reject PyPI-incompatible direct URL metadata
+        run: |
+          python3 .github/scripts/verify_registry_publication.py pypi-metadata \
+            --wheel "verified/public-release-assets/${{ needs.verify-release.outputs.wheel_name }}" \
+            --sdist "verified/public-release-assets/arras-${{ needs.verify-release.outputs.version }}.tar.gz"
+      - name: Build exact PyPI file digest manifest
+        env:
+          VERSION: ${{ needs.verify-release.outputs.version }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          root = Path("verified/public-release-assets")
+          names = [f"arras-{os.environ['VERSION']}-py3-none-any.whl", f"arras-{os.environ['VERSION']}.tar.gz"]
+          sums = {}
+          for line in (root / "SHA256SUMS").read_text(encoding="ascii").splitlines():
+              digest, name = line.split("  ", 1)
+              sums[name] = digest
+          files = {name: sums[name] for name in names}
+          Path("pypi-expected-files.json").write_text(json.dumps({"files": files}, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+      - name: Refuse PyPI version collisions and download the original artifacts
+        id: registry
+        env:
+          VERSION: ${{ needs.verify-release.outputs.version }}
+        run: |
+          python3 .github/scripts/verify_registry_publication.py check-pypi \
+            --version "$VERSION" --expected-files pypi-expected-files.json \
+            --output pypi-preflight.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: registry-pypi-preflight-${{ needs.verify-release.outputs.version }}
+          path: |
+            pypi-preflight.json
+            pypi-expected-files.json
+          if-no-files-found: error
+          retention-days: 90
+
+  pypi-publish:
+    if: needs.verify-release.outputs.target != 'npm' && needs.pypi-preflight.result == 'success'
+    needs: [verify-release, pypi-preflight]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+      - name: Assert checked-out publisher driver matches the workflow SHA
+        env:
+          EXPECTED_DRIVER_SHA: ${{ github.workflow_sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_DRIVER_SHA"
+      - uses: actions/download-artifact@v4
+        with:
+          name: registry-verified-release-${{ needs.verify-release.outputs.version }}
+          path: verified
+      - uses: actions/download-artifact@v4
+        with:
+          name: registry-pypi-preflight-${{ needs.verify-release.outputs.version }}
+          path: pypi-preflight
+      - name: Recheck version and metadata under the upload job
+        id: recheck
+        env:
+          VERSION: ${{ needs.verify-release.outputs.version }}
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/verify_registry_publication.py pypi-metadata \
+            --wheel "verified/public-release-assets/${{ needs.verify-release.outputs.wheel_name }}" \
+            --sdist "verified/public-release-assets/arras-${{ needs.verify-release.outputs.version }}.tar.gz"
+          python3 .github/scripts/verify_registry_publication.py check-pypi \
+            --version "$VERSION" --expected-files pypi-preflight/pypi-expected-files.json
+      - name: Stage only the verified Python distributions
+        run: |
+          mkdir -p dist
+          cp verified/public-release-assets/*.whl verified/public-release-assets/*.tar.gz dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        if: steps.recheck.outputs.status == 'absent'
+      - name: Verify PyPI-served bytes and a fresh install
+        env:
+          VERSION: ${{ needs.verify-release.outputs.version }}
+          PUBLISHER_WORKFLOW_SHA: ${{ github.workflow_sha }}
+        run: |
+          set -euo pipefail
+          GITHUB_OUTPUT=/dev/null python3 .github/scripts/verify_registry_publication.py check-pypi \
+            --version "$VERSION" --expected-files pypi-preflight/pypi-expected-files.json \
+            --wait-for-present --visibility-timeout 180 --output pypi-postflight.json
+          python3 -m venv "$RUNNER_TEMP/pypi-registry-smoke"
+          "$RUNNER_TEMP/pypi-registry-smoke/bin/python" -m pip install \
+            --disable-pip-version-check --no-cache-dir --index-url https://pypi.org/simple \
+            "arras==$VERSION"
+          "$RUNNER_TEMP/pypi-registry-smoke/bin/python" -c \
+            'import importlib.metadata, arras, os; assert importlib.metadata.version("arras") == os.environ["VERSION"]'
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          identity = json.loads(Path("verified/registry-publication-identity.json").read_text(encoding="utf-8"))
+          files = json.loads(Path("pypi-preflight/pypi-expected-files.json").read_text(encoding="utf-8"))["files"]
+          Path("pypi-publication-receipt.json").write_text(json.dumps({
+              "schema_version": 1, "status": "passed", "registry": "pypi",
+              "version": os.environ["VERSION"], "tag": identity["tag"],
+              "publisher_workflow_sha": os.environ["PUBLISHER_WORKFLOW_SHA"],
+              "source_sha": identity["source_sha"], "wheel_sha256": identity["wheel_sha256"],
+              "files": files, "registry_bytes_verified": True,
+              "install_scope": "plain-index-base", "fresh_install_smoke": "passed"
+          }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: registry-publication-pypi-${{ needs.verify-release.outputs.version }}
+          path: |
+            pypi-postflight.json
+            pypi-publication-receipt.json
+          if-no-files-found: error
+          retention-days: 90

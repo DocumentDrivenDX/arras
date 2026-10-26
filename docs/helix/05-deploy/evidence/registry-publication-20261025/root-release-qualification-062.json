@@ -1,0 +1,53 @@
+{
+  "macos": {
+    "cleanup": "passed",
+    "declared_limits": 8,
+    "export_manifest_sha256": "c0c204ce9005503df35a07aca2d5880201f6520e391597132b4276658b27080e",
+    "graphql_core": "3.3.1",
+    "macos": "15.7.9",
+    "passed": 64,
+    "python": "3.11.9",
+    "replica_only_inapplicable": 7
+  },
+  "publication_scope": "PyPI plain-index base only; optional UMF and Truss use the qualified wheelhouse",
+  "remaining_release_controls": "Final source CI, normal merge and immutable tag, exact-tag ten-job Release and public-download gates, exact-asset OIDC registry uploads plus registry-byte and fresh-install verification.",
+  "runtime_support": "latest-only; admitted UMF0.10 lineages migrate forward; no pre0.10 compatibility",
+  "schema": "arras.062-root-release-qualification/1",
+  "source": {
+    "all_five_required_jobs": "passed",
+    "ci_run_id": 40244842788,
+    "ci_synthetic_checkout": "3563e12cc6c5229cfd38fc08a5b5aa05eeb67d9d",
+    "commit": "66f2e0f624d046489fd0c2d5177063240853054d",
+    "tree": "1ffa5d07610574c28794897ba9bba3176001d472"
+  },
+  "status": "selected_wheel_prepublication_gates_passed",
+  "umf": {
+    "base_controls": 6,
+    "cleanup": "passed",
+    "extra_controls": 10,
+    "fresh_empty_registry_cases": 139,
+    "receipt_sha256": "c16ff703be2d115f74b9d0683335c96acfc716c2e319efd9260a2201b53224f0",
+    "reference_cases": 139,
+    "skips": 0,
+    "version": "0.10.0"
+  },
+  "wan": {
+    "archive_collection": "complete;6retained;0issues",
+    "blocked": 0,
+    "custody_returned": true,
+    "failed": 0,
+    "graphql_core": "3.3.0",
+    "independent_read_only_audit": "passed",
+    "original_cleanup_resources": 5,
+    "passed": 12,
+    "projection_sha256": "1bb4b909b94cfa9be17253b5a4e7d881e888c292bd06cd87e5c4b694bee3e0c8",
+    "python": "3.11.17",
+    "targeted_process_identity_and_group_census": "parent, audit supervisor, worker all absent"
+  },
+  "wheel": {
+    "bytes": 5155393,
+    "filename": "arras-0.6.2-py3-none-any.whl",
+    "payload_files": 172,
+    "sha256": "82cd5ef7e7284ded7bb7af98934fe0c3f6840450948205e3430d99ff0478f176"
+  }
+}

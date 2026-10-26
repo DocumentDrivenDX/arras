@@ -33,6 +33,7 @@ UMF_URL = (
 UMF_SHA256 = "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9"
 UMF_FILENAME = "umf_core-0.10.0-py3-none-any.whl"
 UMF_REQUIREMENT = f"umf-core @ {UMF_URL}#sha256={UMF_SHA256}"
+UMF_VERSION_REQUIREMENT = "umf-core==0.10.0"
 CORPUS_SHA256 = "bb008a98b8448050748e65f867e7863475ccad9501a5b9229ae9e6d336691544"
 METADATA_SHA256 = "da883657baefe7b7a4ab8654f78e7d84ef1e281eea7bc7cee48f8662007cd687"
 SCHEMA = "arras.umf-admission-installed/1"
@@ -182,7 +183,7 @@ def _wheel_details(path: Path, *, expected: str) -> dict[str, Any]:
         if normalized != "arras" or path.name != f"arras-{version}-py3-none-any.whl":
             raise VerificationError("arras-wheel", "unexpected-distribution-identity")
         requirements = metadata.get_all("Requires-Dist", [])
-        found = [line for line in requirements if line.lower().startswith("umf-core @")]
+        found = [line for line in requirements if _is_umf_requirement(line)]
         if len(found) != 1 or not _requirement_matches(found[0]):
             raise VerificationError("arras-wheel", "optional-extra-not-pinned")
     elif normalized != "umf-core" or version != "0.10.0":
@@ -208,10 +209,20 @@ def _requirement_matches(line: str) -> bool:
     if ";" not in requirement:
         return False
     reference, marker = requirement.split(";", 1)
-    return reference.strip() == UMF_REQUIREMENT and marker.strip().lower() in (
-        'extra == "umf"',
-        "extra == 'umf'",
+    pin = re.fullmatch(r"([A-Za-z0-9._-]+)\s*==\s*([^\s]+)", reference.strip(), re.IGNORECASE)
+    exact_pin = False
+    if pin is not None:
+        name = re.sub(r"[-_.]+", "-", pin.group(1)).lower()
+        exact_pin = name == "umf-core" and f"{name}=={pin.group(2)}" == UMF_VERSION_REQUIREMENT
+    exact_requirement = reference.strip() == UMF_REQUIREMENT or exact_pin
+    exact_marker = (
+        re.fullmatch(r"extra\s*==\s*(['\"])umf\1", marker.strip(), re.IGNORECASE) is not None
     )
+    return exact_requirement and exact_marker
+
+
+def _is_umf_requirement(line: str) -> bool:
+    return re.match(r"^\s*umf[-_.]core(?=\s|@|[<>=!~;\[])", line, re.IGNORECASE) is not None
 
 
 def _validate_corpus(raw: bytes) -> tuple[dict[str, Any], tuple[str, ...]]:
@@ -374,6 +385,9 @@ def _install_requirement(
     report: Path,
 ) -> None:
     requirement = f"arras{'[umf]' if extra else ''} @ {arras_wheel.as_uri()}"
+    requirements = [requirement]
+    if extra:
+        requirements.append(UMF_REQUIREMENT)
     _run(
         [
             str(python),
@@ -388,7 +402,7 @@ def _install_requirement(
             PUBLIC_INDEX,
             "--report",
             str(report),
-            requirement,
+            *requirements,
         ],
         cwd=cwd,
         env=env,

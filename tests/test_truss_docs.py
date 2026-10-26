@@ -83,19 +83,17 @@ def test_no_bun_is_named_or_passed_anywhere() -> None:
     assert "setup-bun" not in ci and "bun-version" not in ci
 
 
-def test_release_assets_are_gated_and_registry_publishing_is_opt_in() -> None:
+def test_release_assets_are_gated_and_registry_publishing_follows_publication_gates() -> None:
     release = (ROOT / ".github/workflows/release.yml").read_text()
     truss, build, umf_admission = (
         release_job(release, name) for name in ("truss", "build", "umf-admission")
     )
-    github, assemble, public_download, pypi, npm = (
+    github, assemble, public_download = (
         release_job(release, name)
         for name in (
             "github-release",
             "assemble-evidence",
             "downloaded-release",
-            "publish-pypi",
-            "publish-npm",
         )
     )
     assert "uv sync --locked --extra truss --group truss-test" in truss
@@ -110,8 +108,7 @@ def test_release_assets_are_gated_and_registry_publishing_is_opt_in() -> None:
     assert re.search(r"(?m)^    needs: check$", truss)
     assert re.search(r"(?m)^    needs: \[check, truss\]$", build)
 
-    # GitHub asset creation has only required gates. Both registry jobs follow that release and
-    # remain skipped unless their separate repository opt-in is exactly true.
+    # GitHub asset creation has only required gates; registry publication lives in another workflow.
     assert re.search(
         r"(?m)^    needs: \[check, truss, build, umf-admission, ui-qualification, installed-native, assemble-evidence\]$",
         github,
@@ -147,11 +144,7 @@ def test_release_assets_are_gated_and_registry_publishing_is_opt_in() -> None:
     assert "GH_TOKEN" not in public_download and "gh release download" not in public_download
     assert "verify_public_release_assets.py plan" in public_download
     assert "verify_public_release_assets.py verify" in public_download
-    assert re.search(r"(?m)^    if: vars\.ARRAS_PUBLISH_PYPI == 'true'$", pypi)
-    assert re.search(r"(?m)^    if: vars\.ARRAS_PUBLISH_NPM == 'true'$", npm)
-    assert "needs: [github-release, installed-downstream, downloaded-release]" in pypi
-    assert "needs: [github-release, installed-downstream, downloaded-release]" in npm
-    assert "secrets.NPM_TOKEN" not in github and "pypa/gh-action-pypi-publish" not in github
+    assert "ARRAS_PUBLISH_PYPI" not in release and "ARRAS_PUBLISH_NPM" not in release
 
     # The checksum covers each release member. PyPI stages only wheel/sdist into its publisher
     # directory; npm publishes the already-extracted wheel payload instead of rebuilding it.
@@ -159,9 +152,7 @@ def test_release_assets_are_gated_and_registry_publishing_is_opt_in() -> None:
         "sha256sum *.whl *.tar.gz *.tgz distribution-verification.json doctor-installed.json > SHA256SUMS"
         in build
     )
-    assert "sha256sum -c SHA256SUMS" in github and "sha256sum -c SHA256SUMS" in npm
-    assert "cp release-assets/*.whl release-assets/*.tar.gz dist/" in pypi
-    assert "npm publish ./release-assets/*.tgz --access public --provenance" in npm
+    assert "sha256sum -c SHA256SUMS" in github
     assert "gh release create" in github and "release-assets/*" in github
     assert "pip install arras" not in github
     assert 'ARRAS_REQUIRE_WEFT: "1"' in build
@@ -177,6 +168,27 @@ def test_release_assets_are_gated_and_registry_publishing_is_opt_in() -> None:
         in build
     )
     assert "setup-bun" not in release
+
+
+def test_registry_publication_is_separate_and_oidc_only() -> None:
+    workflow = (ROOT / ".github/workflows/publish-registries.yml").read_text()
+    npm = release_job(workflow, "npm-publish")
+    pypi = release_job(workflow, "pypi-publish")
+    assert 'workflows: ["Release"]' in workflow
+    assert "workflow_run:" in workflow and "workflow_dispatch:" in workflow
+    assert "verify_public_release_assets.py plan" in workflow
+    assert "verify_public_release_assets.py verify" in workflow
+    assert "needs: [verify-release, npm-preflight]" in npm
+    assert "needs: [verify-release, pypi-preflight]" in pypi
+    assert "environment: npm" in npm and "id-token: write" in npm
+    assert "environment: pypi" in pypi and "id-token: write" in pypi
+    assert 'npm publish "verified/public-release-assets/' in npm
+    assert "pypa/gh-action-pypi-publish@release/v1" in pypi
+    assert (
+        "cp verified/public-release-assets/*.whl verified/public-release-assets/*.tar.gz dist/"
+        in pypi
+    )
+    assert "NODE_AUTH_TOKEN" not in workflow and "NPM_TOKEN" not in workflow
 
 
 def test_github_release_rechecks_the_tag_and_uses_tagged_notes() -> None:
@@ -198,6 +210,7 @@ def test_github_release_rechecks_the_tag_and_uses_tagged_notes() -> None:
 
 def test_release_requires_ui_and_public_downstream_qualification() -> None:
     release = (ROOT / ".github/workflows/release.yml").read_text()
+    registry = (ROOT / ".github/workflows/publish-registries.yml").read_text()
     ui_release = release_job(release, "ui-qualification")
     downstream = release_job(release, "installed-downstream")
     public_download = release_job(release, "downloaded-release")
@@ -263,12 +276,8 @@ def test_release_requires_ui_and_public_downstream_qualification() -> None:
     assert "public-umf-admission-installed.json" in public_download
     assert "name: release-assets" in assembled
     assert "name: public-release-qualification" in public_download
-    assert "needs: [github-release, installed-downstream, downloaded-release]" in release_job(
-        release, "publish-pypi"
-    )
-    assert "needs: [github-release, installed-downstream, downloaded-release]" in release_job(
-        release, "publish-npm"
-    )
+    assert "needs: [verify-release, pypi-preflight]" in release_job(registry, "pypi-publish")
+    assert "needs: [verify-release, npm-preflight]" in release_job(registry, "npm-publish")
 
 
 def test_the_requirements_note_names_the_corpus_limits_the_harness_pins() -> None:

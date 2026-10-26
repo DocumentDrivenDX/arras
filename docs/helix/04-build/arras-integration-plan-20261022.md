@@ -2272,3 +2272,63 @@ not supported application runtimes, and no pre-0.10 compatibility is added. The
 separate PR10 actions/UMF cohort and Truss PWS03 temporal-access integration remain
 deferred to their own qualified cohorts; neither is folded into this frozen PR9
 release.
+
+### Registry publication continuation — 2026-10-25
+
+The human requests automatic registry publication for future releases and chose
+unchanged npm 0.6.1 plus a new Python 0.6.2 release. The original 0.6.1 Python
+wheel declares a direct UMF URL, which PyPI rejects even under an optional extra.
+Its GitHub assets and immutable tag remain unchanged; no same-version metadata
+variant is permitted. The 0.6.2 preparation changes dependency metadata to the
+same qualified UMF core 0.10.0 version and digest, without adopting the separate
+open producer or changing latest-only runtime support.
+
+The one-time scope-owner npm 0.6.1 publication is complete. Anonymous registry
+download matches tarball SHA-256
+`9c741538b1a32f21b37afcd39f10c24285a1728194a7073cbac9cda2d93e2285`;
+a fresh unauthenticated consumer has all 321 package files byte-identical,
+imports the UI and testkit, and resolves browser, shell and CSS exports. This
+Node 26.12.1 / npm 11.20.0 proof does not rerun or broaden the original browser
+or native campaigns, and it does not attest an OIDC upload. The [retained registry receipts](../05-deploy/evidence/registry-publication-20261025/) preserve both phases.
+
+The publisher workflow must verify the original successful release and complete
+public-download gates, use exact GitHub assets and OIDC, refuse conflicting
+registry versions, and verify registry bytes plus clean installs. Main-only
+GitHub environments `pypi` and `npm` are configured under explicit human
+approval. Both exact trusted-publisher grants are configured and recorded in
+[the safe configuration receipt](../05-deploy/evidence/registry-publication-20261025/trusted-publishers.safe.json).
+The temporary npm CLI bootstrap login was revoked after verification. Hosted
+publisher execution still requires completion evidence. The PyPI base route is plain-index; UMF/Truss
+extras retain the qualified upstream wheelhouse route until their dependencies
+have separate registry publication. Python 0.6.2 is not yet published or
+qualified by the historical 0.6.1 receipt alone.
+
+
+### Python 0.6.2 prepublication qualification — 2026-10-26
+
+The selected new wheel is `82cd5ef7e7284ded7bb7af98934fe0c3f6840450948205e3430d99ff0478f176`,
+built by CI `40244842788` from synthetic checkout `3563e12cc6c5229cfd38fc08a5b5aa05eeb67d9d`,
+PR head `66f2e0f624d046489fd0c2d5177063240853054d`, shared tree
+`1ffa5d07610574c28794897ba9bba3176001d472`. All five required CI jobs passed.
+The new Mac gate passed 64 cases with eight unchanged limits, seven replica-only
+cases inapplicable, 172 payload files and cleanup verified. Its observed
+GraphQL dependency is 3.3.1; the separate WAN install retains the prior exact
+GraphQL 3.3.0 cohort. Neither is silently generalized to other cohorts.
+
+The original full12 WAN run passed 12/12 with no failures or blocked cases.
+Original cleanup removed all five owned resources; the independent read-only
+audit passed without restoration mutations, archive collection retained six
+owned archives with no issues, and actual targeted process/group inspection
+confirmed parent, audit supervisor and worker absent before custody handback.
+The earlier oversized authorization reference was refused before fixture import
+or target effects and remains a separate failed record. The immutable source
+freeze's mislabeled cohort-binding digest is transparently clarified in the
+projection; checked cohort and payload bytes did not change.
+
+The [qualification index](../05-deploy/evidence/registry-publication-20261025/qualification-062-index.json)
+retains the new source/wheel-bound Mac, full12, official UMF and metadata records.
+The exact-wheel release guard now selects this 0.6.2 wheel. Final-source CI and
+the subsequent immutable-tag/public-download/registry receipts are separate
+controls; publication status belongs to the [versioned release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.2)
+and publisher workflow, not the historical 0.6.1 receipts. No open upstream
+0.10.2 or PR10/PWS03 cohort is adopted, and latest-only runtime support remains.

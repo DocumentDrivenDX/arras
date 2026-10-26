@@ -13,7 +13,7 @@ wheels = [
 
 [[package]]
 name = "arras"
-version = "0.6.1"
+version = "0.6.2"
 source = { editable = "." }
 dependencies = [
     { name = "graphql-core" },
@@ -51,7 +51,7 @@ requires-dist = [
     { name = "graphql-core", specifier = ">=3.3,<3.4" },
     { name = "opentelemetry-api", marker = "extra == 'otel'", specifier = ">=1.27,<2" },
     { name = "truss-toolkit", extras = ["native", "query"], marker = "extra == 'truss'", specifier = "==0.0.50" },
-    { name = "umf-core", marker = "extra == 'umf'", url = "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/umf_core-0.10.0-py3-none-any.whl" },
+    { name = "umf-core", marker = "extra == 'umf'", specifier = "==0.10.0" },
     { name = "uvicorn", marker = "extra == 'devhost'", specifier = ">=0.30" },
 ]
 provides-extras = ["otel", "devhost", "truss", "umf"]
