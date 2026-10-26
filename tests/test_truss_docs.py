@@ -227,7 +227,7 @@ def test_release_requires_ui_and_public_downstream_qualification() -> None:
         "npm run build:lib",
         "npm run check:externals",
         "npm run e2e -- --project=chromium --project=schema-admin --project=browser",
-        "npm run qualify:downstream -- ../release-assets/${{ needs.build.outputs.wheel_name }}",
+        "node scripts/release-driver/run-downstream-qualification.mjs",
         "tools/check_public_content.py",
         "tools/verify_extension_host.py",
         "hashlib.sha256(wheel.read_bytes()).hexdigest()",
@@ -255,7 +255,7 @@ def test_release_requires_ui_and_public_downstream_qualification() -> None:
         "tools/verify_distribution.py",
         "tools/verify_doctor.py",
         "tools/verify_extension_host.py",
-        "npm run qualify:downstream -- ../public-release-assets/${{ needs.build.outputs.wheel_name }}",
+        "node scripts/release-driver/run-downstream-qualification.mjs",
         "name: public-release-qualification",
         "public-input-verification.json",
     ):
@@ -267,7 +267,7 @@ def test_release_requires_ui_and_public_downstream_qualification() -> None:
         public_download.index("tools/verify_distribution.py")
         < public_download.index("tools/verify_doctor.py")
         < public_download.index("tools/verify_extension_host.py")
-        < public_download.index("npm run qualify:downstream -- ../public-release-assets/")
+        < public_download.index("node scripts/release-driver/run-downstream-qualification.mjs")
     )
     assert "continue-on-error" not in public_download
     assert "if: always()" in public_download

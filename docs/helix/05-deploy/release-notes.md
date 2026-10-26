@@ -40,6 +40,17 @@ and the retained prelaunch static refusal. The release guard selects wheel
 Exact-tag release, public-download and registry OIDC/byte/install gates remain
 separate required evidence; their status is recorded by the release workflows.
 
+The first exact-tag 0.6.3 run (`40254727933`) stopped in a repository-only packed-theme
+fixture: its copied peer pin remained 0.6.1. The exact-wheel guard, doctor,
+source/sdist rebuild, Linux native, UMF, Chromium and fresh extension-host gates
+had passed. No GitHub release or registry upload occurred. The
+[orchestration refusal record](evidence/registry-publication-20261025/release063-failed-theme.safe.json)
+retains that result. A reviewed recovery driver binds only the temporary theme
+fixture copy to the exact wheel-carried npm version and records its source/helper
+identity. Both the initial and anonymous public-download theme gates use that
+driver. The immutable 0.6.3 tag, package version, source and wheel stay unchanged;
+all ten release gates and subsequent registry checks remain required.
+
 ## 0.6.2 failed before publication
 
 The [exact-tag release run 40249110726](https://github.com/DocumentDrivenDX/arras/actions/runs/40249110726)

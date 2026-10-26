@@ -19,10 +19,18 @@ import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { bindNeutralThemePeer } from "./bind-downstream-theme.mjs";
 
-const ui = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const ui = resolve(
+  process.env.ARRAS_DOWNSTREAM_UI_DIR ?? resolve(dirname(fileURLToPath(import.meta.url)), ".."),
+);
 const repo = resolve(ui, "..");
-const wheel = resolve(process.argv[2] ?? join(repo, "dist/arras-0.6.1-py3-none-any.whl"));
+const defaultDist = join(repo, "dist");
+const defaultWheels = existsSync(defaultDist)
+  ? readdirSync(defaultDist).filter((name) => /^arras-.+\.whl$/.test(name))
+  : [];
+assert.ok(process.argv[2] || defaultWheels.length === 1, "pass one exact wheel or provide one wheel in dist/");
+const wheel = resolve(process.argv[2] ?? join(defaultDist, defaultWheels[0]));
 for (const arg of process.argv.slice(3))
   assert.ok(
     ["--update-baselines", "--update-canonical-baselines", "--narrow-only"].includes(arg),
@@ -62,6 +70,7 @@ execFileSync("tar", ["-xzf", tarballPath, "-C", tarTemp, "--strip-components=1"]
 const pkg = JSON.parse(readFileSync(join(tarTemp, "package.json"), "utf8"));
 assert.equal(catalog.distribution.npm.version_source, "pyproject.toml");
 assert.equal(pkg.name, catalog.distribution.npm.name);
+assert.equal(pkg.version, catalog.distribution.npm.version);
 const metadataFile = readdirSync(extracted).find((name) => name.endsWith(".dist-info"));
 const wheelMetadata = readFileSync(join(extracted, metadataFile, "METADATA"), "utf8");
 assert.match(
@@ -104,7 +113,17 @@ execFileSync(
   ],
   { cwd: hostRoot, env: npmConfig, stdio: "inherit" },
 );
+const sourceThemeManifestBytes = readFileSync(join(themePackageSource, "package.json"));
 cpSync(themePackageSource, themePackage, { recursive: true });
+const themeManifestPath = join(themePackage, "package.json");
+const sourceThemeManifest = JSON.parse(sourceThemeManifestBytes.toString("utf8"));
+const boundThemeManifest = bindNeutralThemePeer(sourceThemeManifest, pkg.version);
+writeFileSync(themeManifestPath, JSON.stringify(boundThemeManifest, null, 2) + "\n");
+assert.deepEqual(
+  readFileSync(join(themePackageSource, "package.json")),
+  sourceThemeManifestBytes,
+  "the checked-in neutral-theme fixture must remain unchanged",
+);
 execFileSync(
   process.execPath,
   [join(modules, "typescript/bin/tsc"), "-p", join(themePackage, "tsconfig.json")],
