@@ -3,11 +3,11 @@
 // the injected `RefInput`, a list one value per line, a record as JSON. Errors are associated with
 // their field by `aria-describedby` (the widgets wire it from `error` and `hint`).
 
-import { type ComponentType, type ReactNode, useEffect } from "react";
+import { type ComponentType, type ReactNode, useEffect, useId, useRef } from "react";
 import { shortName } from "../api/gql";
 import type { InputSpec, Violation } from "../api/types";
 import { Select, TextArea, TextField } from "../ds";
-import { takeInputFocus } from "../lib/formFocus";
+import { takeInputFocus, useFormFocus } from "../lib/formFocus";
 import { type FieldValue, isMany, isRequired, violationsByField } from "../lib/inputs";
 import { KeyRefInput, type RefInputProps } from "./RefInput";
 
@@ -202,15 +202,22 @@ export function ActionFields({
   onChange,
   onBlur,
   RefInput = KeyRefInput,
-  idPrefix = "f",
+  idPrefix: givenPrefix,
 }: ActionFieldsProps) {
+  const generatedPrefix = useId();
+  const idPrefix = givenPrefix ?? generatedPrefix;
+  const root = useRef<HTMLDivElement>(null);
+  const formFocus = useFormFocus();
   const { byField } = violationsByField(violations);
   useEffect(() => {
-    const name = takeInputFocus(action);
-    if (name) document.getElementById(`${idPrefix}-${name}`)?.focus();
-  }, [action, idPrefix]);
+    const name = takeInputFocus(formFocus, action);
+    if (name)
+      Array.from(root.current?.querySelectorAll<HTMLElement>("[id]") ?? [])
+        .find((element) => element.id === `${idPrefix}-${name}`)
+        ?.focus();
+  }, [action, idPrefix, formFocus]);
   return (
-    <div className="space-y-3" data-testid="action-fields">
+    <div ref={root} className="space-y-3" data-testid="action-fields">
       {specs.map((spec) => {
         const text = textOf(values[spec.name]);
         const message = messageFor(

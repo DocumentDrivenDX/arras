@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ApiError } from "../api/errors";
 import { shortName } from "../api/gql";
 import type { ActionInfo, InputSpec, Receipt } from "../api/types";
 import { ErrorPanel, Spinner } from "../components/ui";
-import { takeInputFocus } from "../lib/formFocus";
+import { takeInputFocus, useFormFocus } from "../lib/formFocus";
 import { Field } from "./ActionField";
 import {
   ConfirmBar,
@@ -75,14 +75,19 @@ function ReviewSections({ form, info }: { form: Form; info: ActionInfo }) {
  * the module revision the form was built from.
  */
 export function ActionForm({ onViewInGraph, ...args }: ActionFormProps) {
+  const root = useRef<HTMLFormElement>(null);
+  const formFocus = useFormFocus();
   const form = useActionForm(args);
   const { m, info, meta } = form;
   // A property's "Change" control asks for its input to take the focus when the form opens.
   const name = info?.name;
   useEffect(() => {
-    const input = name ? takeInputFocus(name) : undefined;
-    if (input) document.getElementById(`f-${input}`)?.focus();
-  }, [name]);
+    const input = name ? takeInputFocus(formFocus, name) : undefined;
+    if (input)
+      Array.from(root.current?.querySelectorAll<HTMLElement>("[data-action-input]") ?? [])
+        .find((element) => element.dataset.actionInput === input)
+        ?.focus();
+  }, [name, formFocus]);
   if (meta.isPending) return <Spinner label="Loading action" />;
   if (meta.error) return <ErrorPanel error={meta.error} />;
   if (!m || !info) return <ErrorPanel error={new ApiError(404, { message: "not found" })} />;
@@ -90,6 +95,7 @@ export function ActionForm({ onViewInGraph, ...args }: ActionFormProps) {
   return (
     <form
       key={form.epoch}
+      ref={root}
       className="max-w-[600px] p-3"
       aria-label={`Action ${info.name}`}
       onSubmit={(e) => {

@@ -351,7 +351,9 @@ conflicting explicit identity, API bases, headers, cache or page-effect settings
 throw. Use an explicit nested provider for an independent session. Supplied
 caches are cancelled/cleared when their last Arras owner unmounts. Independent
 providers default to private caches, and component labels/SVG IDs and navigation
-focus requests are scoped to their instances.
+focus requests are scoped to their instances. Action-input focus handoffs belong
+to their provider, form labels use instance-local IDs, and each UMF schema view
+observes the theme of its own host.
 
 ```tsx
 import {

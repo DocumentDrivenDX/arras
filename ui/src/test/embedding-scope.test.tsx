@@ -7,10 +7,14 @@ import { describe, expect, it, vi } from "vitest";
 import { ArrasConsole } from "../ArrasConsole";
 import { ArrasProvider, createQueryClient, useClient, useRefusals } from "../api/context";
 import { ApiError } from "../api/errors";
+import { Field } from "../areas/ActionField";
 import { GraphBrowser } from "../browser/GraphBrowser";
 import type { ExploreLocation } from "../browser/location";
+import { ActionFields } from "../kit";
+import { requestInputFocus, useFormFocus } from "../lib/formFocus";
 import { ArrasApp } from "../shell";
 import { stageBrowser } from "./browserFake";
+import { defined } from "./defined";
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -300,4 +304,80 @@ describe("host page ownership", () => {
       expect(scroll).not.toHaveBeenCalled();
     },
   );
+});
+
+it("keeps matching action focus requests and default field IDs local to each provider", async () => {
+  function FormHost({ label }: { label: string }) {
+    const scope = useFormFocus();
+    const [open, setOpen] = useState(false);
+    return (
+      <section aria-label={label}>
+        <button type="button" onClick={() => requestInputFocus(scope, "catalog.Do", "name")}>
+          Queue focus
+        </button>
+        <button type="button" onClick={() => setOpen(true)}>
+          Open form
+        </button>
+        {open && (
+          <ActionFields
+            action="catalog.Do"
+            module="catalog"
+            specs={[
+              {
+                name: "name",
+                type: "string",
+                kind: "scalar",
+                cardinality: "one",
+              },
+            ]}
+            values={{}}
+            onChange={() => undefined}
+          />
+        )}
+      </section>
+    );
+  }
+  render(
+    <>
+      <ArrasProvider identity="a">
+        <FormHost label="First form" />
+      </ArrasProvider>
+      <ArrasProvider identity="b">
+        <FormHost label="Second form" />
+      </ArrasProvider>
+    </>,
+  );
+  const first = within(screen.getByRole("region", { name: "First form" }));
+  const second = within(screen.getByRole("region", { name: "Second form" }));
+  fireEvent.click(first.getByRole("button", { name: "Queue focus" }));
+  fireEvent.click(second.getByRole("button", { name: "Open form" }));
+  expect(second.getByLabelText(/name/)).not.toHaveFocus();
+  fireEvent.click(first.getByRole("button", { name: "Open form" }));
+  expect(first.getByLabelText(/name/)).toHaveFocus();
+  const ids = Array.from(document.querySelectorAll("[id]"), (element) => element.id);
+  expect(new Set(ids).size).toBe(ids.length);
+});
+
+it("keeps action field labels associated with their own form instance", async () => {
+  const field = () => (
+    <Field
+      spec={{ name: "name", type: "string", kind: "scalar", cardinality: "one" }}
+      value=""
+      serverErrors={[]}
+      disabled={false}
+      onChange={() => undefined}
+      onBlur={() => undefined}
+    />
+  );
+  render(
+    <>
+      {field()}
+      {field()}
+    </>,
+  );
+  const controls = screen.getAllByLabelText(/^name/);
+  expect(controls).toHaveLength(2);
+  expect(controls[0]?.id).not.toBe(controls[1]?.id);
+  await userEvent.click(defined(screen.getAllByText("name")[1], "second field label"));
+  expect(controls[1]).toHaveFocus();
 });

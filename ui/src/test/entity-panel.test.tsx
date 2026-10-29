@@ -8,7 +8,6 @@ import type { ActionInfo, InputSpec } from "../api/types";
 import { ActionForm } from "../areas/ActionForm";
 import { EntityPanel } from "../areas/EntityPanel";
 import type { Entry } from "../areas/entity";
-import { requestInputFocus, takeInputFocus } from "../lib/formFocus";
 import { catalog, decl, err, type FakeApi, seedCatalog, stage } from "./fake";
 import { qc, renderPart } from "./render";
 
@@ -197,18 +196,30 @@ describe("Entity panel: property to action hints", () => {
     const p = await open();
     await userEvent.click(await p.findByRole("button", { name: "Change coverageLevel" }));
     expect(onAction).toHaveBeenCalled();
-    expect(takeInputFocus("catalog.CorrectSolution")).toBe("level");
   });
 
   it("the form focuses the requested input when it opens", async () => {
-    requestInputFocus("catalog.CorrectSolution", "level");
-    renderPart(
-      <ActionForm
-        module="catalog"
-        action="catalog.CorrectSolution"
-        prefill={{ solution: "sol-1" }}
-      />,
-    );
+    function Host() {
+      const [action, setAction] = useState(false);
+      return action ? (
+        <ActionForm
+          module="catalog"
+          action="catalog.CorrectSolution"
+          prefill={{ solution: "sol-1" }}
+        />
+      ) : (
+        <EntityPanel
+          module="catalog"
+          trail={[sol]}
+          onTrail={() => undefined}
+          onClose={() => undefined}
+          onAction={() => setAction(true)}
+        />
+      );
+    }
+    renderPart(<Host />);
+    const p = await open();
+    await userEvent.click(await p.findByRole("button", { name: "Change coverageLevel" }));
     const input = await screen.findByLabelText(/^level/);
     await waitFor(() => expect(input).toHaveFocus());
   });

@@ -71,10 +71,19 @@ The corrected candidate in CI `40966444386` passes Python, lint/types/build,
 installed doctor, official UMF, full live UI integration and packed Chromium
 embedding. Its fresh-installed macOS native qualification passed on the same
 wheel. The full CI run passed all five required jobs, including the PostgreSQL adapter.
-The fresh managed campaign remains in progress.
+The corrected managed campaign on this earlier wheel passed all twelve cases,
+and independent read-only cleanup passed all checks. These results remain
+bound to that earlier wheel; final integrated bytes require fresh qualification.
 
 A candidate build is not publication; no 0.6.4 artifact is claimed available yet. Historical 0.6.3 and
 native/managed qualification receipts retain their original scope.
+
+The final multi-instance audit additionally replaced the remaining global action
+input-focus handoff with a provider-owned scope, generated default form input
+IDs per instance, and anchored UMF theme observation to each view's own host.
+Regressions exercise two forms with the same action, local label activation,
+actual property-to-action focus navigation, and independent schema-view themes.
+These changes require the final wheel and carried npm archive to be rebuilt.
 
 ### Upstream Ashlar composition and release source
 

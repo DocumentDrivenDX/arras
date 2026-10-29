@@ -13,6 +13,7 @@ import {
 } from "react";
 import { Scope } from "../components/Scope";
 import { type Brand, BrandProvider } from "../lib/brand";
+import { createFormFocus, FormFocusContext } from "../lib/formFocus";
 import { PageEffects } from "../lib/pageEffects";
 import { CacheLease } from "./cacheScope";
 import {
@@ -105,6 +106,7 @@ export function ArrasProvider(props: ProviderProps) {
 const ScopeConfig = createContext<ProviderProps | null>(null);
 
 function ProviderScope(props: ProviderProps) {
+  const formFocus = useRef(createFormFocus()).current;
   const live = useRef(true);
   useLayoutEffect(() => {
     live.current = true;
@@ -195,7 +197,9 @@ function ProviderScope(props: ProviderProps) {
               <RefusalCtx.Provider value={refusalValue}>
                 <SignInCtx.Provider value={signIn}>
                   <QueryClientProvider client={qc}>
-                    <BrandProvider brand={props.brand}>{children}</BrandProvider>
+                    <FormFocusContext.Provider value={formFocus}>
+                      <BrandProvider brand={props.brand}>{children}</BrandProvider>
+                    </FormFocusContext.Provider>
                   </QueryClientProvider>
                 </SignInCtx.Provider>
               </RefusalCtx.Provider>
