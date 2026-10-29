@@ -2578,3 +2578,74 @@ immediately. The published 0.6.3 runtime, tag and all 17 release assets are
 unchanged. Optional UMF/Truss extras retain the qualified wheelhouse boundary;
 the PyPI fresh-install claim covers the base package. Runtime support remains
 latest-only with forward migration for admitted UMF 0.10 lineages.
+
+
+### AS-0 exact-boundary API and AS-2 page preparation — 2026-10-29
+
+The continuing Arras branch preserves commit `162e352`. The Truss owner has now
+specified `reached_at_feed_receipt_in_transaction(..., boundary=FeedAckReceipt)`
+in its existing receipt-position proposal/CONTRACT-006 and implementation plan.
+A bare unsigned cursor is insufficient. The candidate reuses authoritative
+committed action-receipt admission and exact immutable source-retained ACK receipt
+correspondence, comparing the selected original target inside Truss rather than
+today's ACK. A typed conditional boundary result becomes replica reached only
+after Ashlar binds the exact held publication, complete predecessor/seed/no-op
+coverage and current person. Unretained/pre-ACK seeds remain unknown. This is a
+specified future native API, not an operation implemented by Truss0.0.51; it
+requires explicit new runtime recipe/profile, preserving forward migration and
+ordinary-person/native/installed gates. No historical runtime SQL was changed.
+
+The owning query extension point is now explicit:
+`ashlar_host.managed_current_weft_binding.managed_current_sdk_pages_request`
+(accepted source bundle + original receipt.weftBindingInputs + unchanged SQL +
+STRING parameter carriers) -> Weft `compile_engine_page_json` under
+`weft.engine-page/0.1` / `ashlar-spark4-pages` -> UMF
+`EngineRead.from_original` -> existing `AshlarTarget.page`. The managed builder
+already selects the exact `.4-xxhash64` Backend02 identity; no new Weft dialect,
+parser or generic compiler API is needed for this first subset. Required
+facetless singleton STRING fields and authored keys are the selected subset;
+other types/shape/navigation claims stay open. Original source/model/catalog and
+physical manifest/UUID/vector identities are provided by the owning builder.
+
+`arras.adapters.ashlar.pages.prepare_managed_page` now implements the preparation
+composition with unchanged Statement SQL, exact STRING parameter carriers and
+strict owner-supplied parameter/result models. It verifies model values were not
+normalized, bounds page size and original request/program bytes, consumes the
+original compiler program through UMF, and checks complete original request
+correspondence. It never executes SQL, discovers credentials, creates a policy,
+changes dependency pins or qualifies a managed host. Raw private request/program
+carriers are retained only in the internal result, whose repr is disabled.
+
+Boundary adoption adds one exact reviewed SDK edge: this private page helper may
+import only `EngineRead` from `umf_access.engine_catalog`; its module-root,
+other-symbol, sibling-module and dynamic-import negative controls remain denied.
+All other UMF root/codegen/access imports retain the existing rules. Both
+`ashlar` and `ashlar_host` count as engine imports confined to adapters. The base
+import remains free of them. Public catalog, host factory and capabilities are
+unchanged. Focused source controls and failed initial attempts are retained in
+[page verification](evidence/ashlar-as0-20261029/page-composition-verification.json);
+[owner inspection](evidence/ashlar-as0-20261029/page-owner-inspection.json)
+binds the actual inspected modules. These are non-native doubles/static checks.
+Final page/boundary controls passed 43 cases in 1.22 seconds, zero skips;
+Ruff, formatting and strict selected-source Pyright passed. No native compiler
+was invoked.
+
+**One precise upstream execution gap:** existing `ManagedCurrentReadOwner`
+requires `ManagedCurrentSourceOracle`, schedule/step and `expected_rows`, and
+`authorize_result` enforces equality to those fixture rows. That campaign owner
+must remain unchanged. Ashlar needs a separate person-authenticated managed
+read-session/policy owner for the existing resolver/pins/AshlarTarget, enforcing
+current UC row/column permissions, original source/publication/vector, bounded
+deadlines and final release without requiring a campaign oracle. Stack received
+this exact requirement. Arras must not invent expected results, relax the oracle
+assertion or substitute a permissive policy. Once available, compose this prepared
+entry with that owner, map only its admitted module/catalog and returned native
+carriers/position, and run the bounded reader corpus when authorized.
+
+Ashlar's reported advancing-empty-interval/no-op coverage work (41 focused local
+checks) remains an uncommitted owner candidate at this inspection. Await its
+actual commit and original evidence; do not overwrite the earlier AS-0 source
+receipts or treat that report as installed/managed proof. Truss0.0.50 support pins
+remain selected until separately authorized installed0.0.51 qualification.
+The shared heavy budget remains exhausted; no native/installed/Actions/cloud,
+release, new agents/chats or reset attempts were launched here.

@@ -119,6 +119,19 @@ def test_only_private_engine_bridge_imports_the_official_umf_sdk() -> None:
         assert official_umf_import_violations({"arras._umf_engine": f"import {blocked}\n"})
 
 
+def test_ashlar_page_bridge_loads_only_the_reviewed_engine_catalog_owner() -> None:
+    allowed = "from umf_access.engine_catalog import EngineRead\n"
+    assert official_umf_import_violations({"arras.adapters.ashlar.pages": allowed}) == []
+    assert official_umf_import_violations({"arras.adapters.ashlar.other": allowed})
+    for source in (
+        "import umf_access\n",
+        "from umf_access.engine_catalog import EngineRead, Other\n",
+        "from umf_access.engine_catalog import _private\n",
+        "import importlib\nimportlib.import_module('umf_access.engine_catalog')\n",
+    ):
+        assert official_umf_import_violations({"arras.adapters.ashlar.pages": source})
+
+
 def test_a_module_in_no_group_is_reported() -> None:
     assert violations({"other.thing": ""}) == ["other.thing: belongs to no group"]
 
@@ -299,7 +312,7 @@ def test_only_a_binding_or_the_dev_host_may_import_an_adapter() -> None:
         assert violations(mods) == []
 
 
-_ENGINE_LIBRARIES = ("truss", "psycopg", "weft", "ashlar")
+_ENGINE_LIBRARIES = ("truss", "psycopg", "weft", "ashlar", "ashlar_host")
 
 
 def _loads_engine_library(text: str) -> bool:
@@ -331,7 +344,8 @@ def test_the_base_import_loads_no_engine_library() -> None:
     code = (
         f"import sys; sys.path.insert(0, {str(SRC)!r});"
         " import arras, arras.adapters, arras.adapters.truss, arras.adapters.ashlar;"
-        " assert not {'truss', 'psycopg', 'weft', 'ashlar'} & set(sys.modules), sorted(sys.modules)"
+        " assert not {'truss', 'psycopg', 'weft', 'ashlar', 'ashlar_host'}"
+        " & set(sys.modules), sorted(sys.modules)"
     )
     done = subprocess.run([sys.executable, "-I", "-c", code], capture_output=True, text=True)
     assert done.returncode == 0, done.stderr
