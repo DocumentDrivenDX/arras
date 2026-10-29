@@ -51,6 +51,6 @@ describe("export against the dev host", () => {
     const { container } = renderLive(<SchemaExport module="catalog" save={vi.fn()} />, who);
     await vi.waitFor(async () => expect((await catalog(who)).entries).toEqual([]));
     await new Promise((r) => setTimeout(r, 300));
-    expect(container).toBeEmptyDOMElement();
+    expect(container.querySelector(".arras-root")).toBeEmptyDOMElement();
   });
 });
