@@ -6,6 +6,8 @@ import { useEffect } from "react";
 import { shortName } from "../api/gql";
 import { checkText, useSearch } from "../api/search";
 import type { ModuleInfo } from "../api/types";
+import { usePageEffects } from "../lib/pageEffects";
+import { useBrowser } from "./context";
 import { ExportGraph } from "./ExportGraph";
 import { Icon } from "./icons";
 import { readViewState } from "./location";
@@ -60,11 +62,13 @@ function TypeCards({ entries, onPick }: { entries: TypeEntry[]; onPick: (type: s
 
 /** Restore the scroll position the reader left the Entry at (US-071-AC4), once the page has content. */
 function useRestoreScroll(ready: boolean) {
+  const { ownsHistory } = useBrowser();
+  const pageEffects = usePageEffects();
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || ownsHistory === false || !pageEffects) return;
     const y = readViewState().scroll;
     if (y) window.scrollTo(0, y);
-  }, [ready]);
+  }, [ready, ownsHistory, pageEffects]);
 }
 
 export function Entry({ module, text, types, onTypes, after }: EntryProps) {

@@ -135,6 +135,62 @@ Its evidence is limited to the actual Python/platform and dependency cohort repo
 
 ## Mounting the interface in a host
 
+### Serve only the API and bundle the components
+
+The host can embed the core without the prebuilt UI. Mount the independent ASGI
+bindings using the same `Arras` instance and the host's principal mapping:
+
+```python
+from arras import console, operate
+
+app.mount(
+    "/ontology/console",
+    console.create_app(
+        arras,
+        base_path="/ontology/console",
+        principal_for_request=principal_for_request,
+    ),
+)
+app.mount(
+    "/ontology/operate",
+    operate.create_app(
+        arras,
+        base_path="/ontology/operate",
+        principal_for_request=principal_for_request,
+        authorize_operator=operate.operators_in_groups("operators"),
+    ),
+)
+# Optional: only mount where schema administration is offered.
+app.mount(
+    "/ontology/schema",
+    operate.create_schema_app(
+        arras,
+        base_path="/ontology/schema",
+        principal_for_request=principal_for_request,
+        authorize_operator=operate.operators_in_groups("schema-authors"),
+        authorize_schema=authorize_schema,
+    ),
+)
+```
+
+A host owns `Arras.start`/`close`, authentication, connections, grants, API prefixes
+and proxy/origin policy. Add `authorize_action` for per-action approval. The core
+imports no HTTP handler or UI; its registration checks still require GraphQL
+servable types. No Node runtime is needed by these bindings. They can run without
+loading `arras.ui` or its static assets.
+
+In the host UI, install the matching `@documentdrivendx/arras-ui` release and import
+its compiled components and `styles.css`. `/browser` exports `GraphBrowser` and
+`/shell` exports `ArrasApp`; the root exports the console, individual areas,
+`ArrasProvider` and the replaceable design-system provider. Supply the API bases,
+a person/tenant/session `identity`, host-controlled routes and `pageEffects={false}`.
+See the [component integration guide](ui/README.md#embed-in-a-host) for cache,
+CSS, routing, visibility and UMF runtime-asset ownership. Public exports are the
+supported extension points; internal imports remain private. Python and npm are
+separate installable artifacts with one release version, not separate core/API
+Python distributions.
+
+
 The wheel carries the UI two ways (ADR-027), built from `ui/` at release, so the UI's version is the
 library's. A host that pins the wheel pins both.
 

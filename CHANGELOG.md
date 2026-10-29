@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.6.4 — embedding isolation
+
+Adds explicit identity/API session boundaries and optional `pageEffects=false`
+for compiled React consumers. Resets cached data, refusals, forms, drafts and
+viewer modes across sessions; guards shared-cache ownership and conflicting
+nested configuration. Controlled Explore preserves host history and scroll.
+Individual areas get a CSS scope, and instance-local labels, SVG resources,
+focus requests and edit portals avoid cross-widget collisions. Documents API-only
+ASGI hosting and compiled public npm entrypoints. Native/UMF pins and HTTP
+contract versions are unchanged. Publication is pending qualification.
+
 ## 0.6.1 — release candidate
 
 Adopts exact public Truss 0.0.50 while keeping Weft 0.4.51 and official UMF

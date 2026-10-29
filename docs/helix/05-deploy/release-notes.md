@@ -17,6 +17,27 @@ ddx:
 
 # Arras release notes
 
+## 0.6.4 embedded composition candidate
+
+The 0.6.4 candidate completes session and host-page ownership for embedders:
+identity/API changes reset Arras-owned UI state, shared caches refuse different
+security/API scopes, individual public areas get scoped CSS, and controlled
+Explore preserves host history and scroll. `pageEffects=false` leaves title,
+window scroll and global shortcuts with the host. Accessibility IDs, SVG
+resources, navigation focus and edit portals remain local to their instances.
+
+The Python core and independently mountable API factories remain in `arras`;
+compiled ESM/types/CSS and root/browser/shell exports remain in the matching
+`@documentdrivendx/arras-ui` package. Private source imports remain unsupported.
+See the [integration guide](../../../ui/README.md#embed-in-a-host) and
+[API-only hosting example](../../../README.md#serve-only-the-api-and-bundle-the-components).
+Existing HTTP contract versions and native/UMF pins are unchanged.
+
+Publication is pending exact-artifact qualification. PyPI/npm 0.6.3 remain the
+published versions until the new release and public registry checks pass. The
+release workflow's immutable 0.6.3 wheel binding must not be reused as proof for
+changed 0.6.4 bytes; required native/managed evidence must bind the final wheel.
+
 ## 0.6.3 catalog correction
 
 The Python and wheel-carried npm versions in `public-api.json` now agree with

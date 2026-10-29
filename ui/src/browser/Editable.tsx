@@ -130,6 +130,7 @@ export function Editable({
   const { editing } = useBrowser();
   const [open, setOpen] = useState(false);
   const pencil = useRef<HTMLButtonElement>(null);
+  const portalRoot = useRef<Element | null>(null);
   const giveBack = useRef(false);
   const close = () => {
     giveBack.current = true;
@@ -158,7 +159,7 @@ export function Editable({
             title={`Edit ${plan.fields.map((f) => labelOf(target.entry, f.property)).join(", ")}`}
             onClose={close}
           />,
-          document.querySelector(".gb") ?? document.body,
+          portalRoot.current ?? document.body,
         )}
       </>
     );
@@ -178,7 +179,10 @@ export function Editable({
             : `Edit ${field.label}`
         }
         aria-haspopup={plan.form ? "dialog" : undefined}
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          portalRoot.current = pencil.current?.closest(".gb") ?? null;
+          setOpen(true);
+        }}
       >
         <EditGlyph name="pencil" size={12} />
       </button>

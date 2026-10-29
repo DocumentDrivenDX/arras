@@ -89,6 +89,25 @@ Governing sources: [Architecture](architecture.md), [embedding CONTRACT-005](con
 and [design system ADR-029](adr/ADR-029-the-ui-draws-through-a-pluggable-design-system-seam-with-a-built-in-default.md).
 Exact new interfaces belong in the affected contracts before implementation.
 
+## Embedded composition ownership
+
+CONTRACT-005's embedded API/compiled UI surface governs the 0.6.4 candidate.
+Python core, independent ASGI bindings and public React entrypoints remain one
+release cohort. Hosts can serve only the APIs and bundle only their selected UI
+components. Runtime assets for UMF source viewing remain an explicit host task.
+
+Identity/API changes replace all Arras-owned UI state before new-session render;
+shared caches are allowed only within the same identity/API scope. Controlled
+Explore owns no host history state. Page effects can be disabled, and individual
+areas receive a CSS root through the provider. Accessibility IDs, focus requests
+and edit-dialog portals must remain within their component instance.
+
+The supported distribution boundary is the deliberate public catalog, Python
+boundary checker and npm export map. Publishing extra internal modules or
+separate Python core/API wheels is not required for flexibility. The
+[component guide](../../../ui/README.md#embed-in-a-host) demonstrates composition;
+qualification and publication status belong in the build plan and release notes.
+
 ## Coverage and remaining boundaries
 
 | Concern | Queue / governing specification | Delivered seam and acceptance | Remaining boundary |

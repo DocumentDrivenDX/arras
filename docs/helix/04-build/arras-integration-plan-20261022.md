@@ -25,6 +25,29 @@ ddx:
 
 # Arras integration build plan
 
+## Embedded composition completion — 2026-10-29
+
+The operator requests complete core/API/UI embedding, documented visibility and
+scope ownership, and publication for downstream consumers. Work starts from
+upstream `2dbaf40`, preserving local documentation changes in the older checkout.
+The candidate is 0.6.4, with unchanged native/UMF pins and public export names.
+
+- Govern exact session/page ownership in CONTRACT-005; keep core/API/UI boundaries
+  and one Python/npm release cohort, without exporting private implementation.
+- Replace UI session state on identity/API-base changes; guard shared-cache scope,
+  inherited configuration and stale responses. Preserve same-scope cache sharing.
+- Keep controlled navigation, accessibility IDs, focus requests and edit portals
+  local to each instance. Supply CSS scope for individually composed public areas.
+- Document independent API mounting, compiled npm consumption, host ownership,
+  runtime UMF assets, public entrypoints and design-system integration.
+- Run source regressions, full UI unit/types/lint, packed exports, real browser
+  tests and fresh distribution consumers. Qualify final release bytes through
+  existing exact-tag/public-download/registry gates before claiming publication.
+
+Source implementation and local checks are in progress. A candidate build is
+not publication; no 0.6.4 artifact is claimed available yet. Historical 0.6.3 and
+native/managed qualification receipts retain their original scope.
+
 ## Scope
 
 Adopt official UMF semantics and the generated client's public transport in

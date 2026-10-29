@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
+
 import { useEffect } from "react";
+import { usePageEffects } from "../lib/pageEffects";
 import { isSingleKey, type KeyIntent, keyIntent } from "../lib/shortcuts";
 import type { Mode } from "./modeRoute";
 import type { ShellState } from "./ShellState";
@@ -24,7 +26,9 @@ function shellActs(intent: KeyIntent | null, where: "explore" | "operate", keys:
  */
 export function useShellShortcuts(mode: Mode, keys: Keys) {
   const { singleKeys, openHelp, openPalette } = keys;
+  const pageEffects = usePageEffects();
   useEffect(() => {
+    if (!pageEffects) return;
     const where = mode === "admin" ? "operate" : "explore";
     const on = (e: KeyboardEvent) => {
       if (e.defaultPrevented) return;
@@ -36,5 +40,5 @@ export function useShellShortcuts(mode: Mode, keys: Keys) {
     };
     window.addEventListener("keydown", on);
     return () => window.removeEventListener("keydown", on);
-  }, [mode, singleKeys, openHelp, openPalette]);
+  }, [mode, singleKeys, openHelp, openPalette, pageEffects]);
 }

@@ -289,6 +289,23 @@ remains intact, and no cycle or module-length ceiling is waived.
 
 ### UI module boundaries (`ui/src/`)
 
+API hosting and React composition are independent: a host mounts `console`,
+`operate` and optional schema ASGI factories without `ui`; the npm root, browser
+and shell are compiled public UI entrypoints. `ui` is a convenience composition
+of those APIs and runtime assets, never a core dependency. One Python/npm version
+pins the release cohort. Core registration retains the GraphQL servable check.
+
+`api/context` owns the identity/API session boundary, private default caches,
+shared-cache leases and inherited entry configuration. Scope changes replace the
+whole subtree before cached data or viewer modes can cross identities. Shared
+clients require the identical identity/API scope; final release cancels and
+clears them. Provider roots scope CSS even for individual public areas.
+`lib/pageEffects` holds page-effect ownership; controlled Explore keeps view
+state in memory, and `pageEffects=false` disables title, window scroll and global
+shortcuts. Browser focus state, accessibility IDs and portal targets belong to
+individual instances. Internal modules remain private to their existing group.
+
+
 The UI's groups follow the same rule: a group imports only the groups listed, `tests` guard it (`ui/src/test/`), and the two modes never import each other (SD-011, SD-013).
 
 | Module | Responsibility / Owned Types | Allowed Dependencies | Forbidden Dependencies |

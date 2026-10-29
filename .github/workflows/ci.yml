@@ -560,6 +560,8 @@ jobs:
       # The visual project (screenshots) is macOS only and is left out of the Linux run
       # (ui/README.md, "Visual baselines"). Locally `npm run e2e` runs every project.
       - run: npx playwright test --project=chromium --project=schema-admin --project=browser
+      - name: Qualify compiled components in an independent embedding host
+        run: npm run build:wheel && npm run test:packed-browser
       - uses: actions/upload-artifact@v4
         if: always()
         with:

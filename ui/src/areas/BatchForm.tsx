@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import { useQueryClient } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { useClient, useRefusals } from "../api/context";
 import { ApiError } from "../api/errors";
 import { useModule } from "../api/queries";
@@ -171,6 +171,7 @@ const isRefusalKind = (e: ApiError) => e.kind === "no_access" || e.kind === "not
 
 /** US-062 batch: up to 100 items of one action from a pasted JSON array, atomic or independent. */
 export function BatchForm({ module: name, action }: { module: string; action: string }) {
+  const itemsId = useId();
   const client = useClient();
   const qc = useQueryClient();
   const { module: m, meta } = useModule(name);
@@ -243,11 +244,11 @@ export function BatchForm({ module: name, action }: { module: string; action: st
         run; every item is checked as it is applied.
       </p>
       {refusal && <RefusalNotice refusal={refusal} />}
-      <label htmlFor="batch-items" className="mb-0.5 mt-2 block font-medium">
+      <label htmlFor={itemsId} className="mb-0.5 mt-2 block font-medium">
         Items
       </label>
       <textarea
-        id="batch-items"
+        id={itemsId}
         className="arras-mono w-full rounded border border-strong bg-surface p-2 text-fg"
         rows={8}
         value={text}

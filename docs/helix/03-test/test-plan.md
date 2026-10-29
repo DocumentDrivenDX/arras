@@ -867,3 +867,24 @@ evidence, with cleanup/audit/custody records preserved separately.
 Source `20db67822b20c822ee91c6823a3fe73ebc3ae932` / tree `5ef9170c03e0f9575649757850fe15e03ce94c7c` binds the canonical Arras wheel SHA-256 `259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`. CI run `40221099126` passed all five jobs. Fresh-installed macOS arm64 / CPython 3.11.9 passed 64 cases, retained eight declared limits, marked seven replica-only cases inapplicable and passed cleanup.
 
 The repaired fresh baseline passed 6/6. The separate original full twelve-case Lakebase campaign passed 12/12 with zero failures or blocked cases; original cleanup, independent audit, process census and custody handback passed. Source-bound safe evidence is retained under `../04-build/evidence/truss050-adoption-20261024/`. The supplemental scoped OS census found all three known process groups absent, zero exact owned-script matches and zero inspection denials. It did not capture the direct supervisor PGID; no forced-cleanup claim is made. The initial post-resume 2d failure and D11/D12 failures remain preserved as historical failed evidence. Gate execution passed; final review, exact-commit CI, release build, merge/tag and publication remain open.
+
+## Embedded component isolation — CONTRACT-005
+
+Exercise a host that mounts API factories independently of `arras.ui` and imports
+only catalogued Python names. Compile the npm consumer through root, browser and
+shell export maps; reject deep internal imports and Node dependencies in
+production entries. Keep runtime/type/style exports and peer identity checks.
+
+Regression controls in `ui/src/test/embedding-scope.test.tsx` cover identity/API
+replacement, late read completion, form/refusal/viewer reset, separate-provider
+cache isolation, same-scope sharing, cross-scope shared-cache refusal, inherited
+configuration conflicts and raw-area CSS scope. Two controlled embedded views
+must preserve host hash/history/scroll/title/shortcuts and use unique local
+accessibility IDs. Run the full UI unit suite and actual packed browser
+qualification, not only source imports. UI `canEdit` does not replace API policy
+or backend grants; retain server refusal and principal tests.
+
+Registry acceptance must install the exact new Python and npm versions from
+public registries, compare their artifact digests with the qualified release and
+run the existing fresh downstream checks. Reusing 0.6.3 receipts does not qualify
+changed 0.6.4 bytes. Keep browser/platform and native/managed evidence separate.

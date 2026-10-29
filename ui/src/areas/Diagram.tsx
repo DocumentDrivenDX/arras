@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
+import { useId } from "react";
 import { moduleOf, shortName } from "../api/gql";
 import type { ModuleInfo } from "../api/types";
 
@@ -61,6 +62,7 @@ function edgePoint(n: Node, tx: number, ty: number) {
 
 /** Types as boxes, relationships as labelled arrows with their multiplicities (US-060). */
 export function Diagram({ module }: { module: ModuleInfo }) {
+  const marker = useId();
   const { nodes, width, height } = layout(module);
   const byId = new Map(nodes.map((n) => [n.id, n]));
   const edges: {
@@ -107,7 +109,7 @@ export function Diagram({ module }: { module: ModuleInfo }) {
       >
         <defs>
           <marker
-            id="arras-arrow"
+            id={marker}
             viewBox="0 0 10 10"
             refX="9"
             refY="5"
@@ -130,7 +132,7 @@ export function Diagram({ module }: { module: ModuleInfo }) {
                   fill="none"
                   stroke="var(--fg-muted)"
                   strokeWidth="1.3"
-                  markerEnd="url(#arras-arrow)"
+                  markerEnd={`url(#${marker})`}
                 />
                 <text x={x + 34} y={y + 4} fontSize="11" fill="var(--fg)">
                   {e.label} ({e.mult[0]} → {e.mult[1]})
@@ -157,7 +159,7 @@ export function Diagram({ module }: { module: ModuleInfo }) {
                 y2={b.y + py}
                 stroke="var(--fg-muted)"
                 strokeWidth="1.3"
-                markerEnd="url(#arras-arrow)"
+                markerEnd={`url(#${marker})`}
               />
               <text
                 x={mx}

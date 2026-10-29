@@ -21,6 +21,7 @@ import { useSearchPause } from "../api/search";
 import type { ModuleInfo } from "../api/types";
 import { Scope } from "../components/Scope";
 import type { LinkTo } from "../kit";
+import { usePageEffects } from "../lib/pageEffects";
 import { BrowserProvider, useBrowser } from "./context";
 import { Entry } from "./Entry";
 import {
@@ -40,6 +41,8 @@ import { usePageTitle } from "./useBrowserTitle";
 import { stateOf } from "./useNode";
 
 export interface GraphBrowserProps extends LocationProps {
+  identity?: ProviderProps["identity"];
+  pageEffects?: ProviderProps["pageEffects"];
   operateBase?: ProviderProps["operateBase"];
   consoleBase?: ProviderProps["consoleBase"];
   /** A host's own auth headers, read on every request. The browser stores no credential. */
@@ -94,21 +97,26 @@ interface Search {
 }
 
 /** The search text and chosen types, kept in the history entry's own state (never in the URL). */
-function useSearchState(locKey: string): Search {
-  const [draft, setDraft] = useState(() => readViewState().text ?? "");
-  const [types, setTypes] = useState<string[]>(() => readViewState().types ?? []);
+function useSearchState(locKey: string, ownsHistory: boolean): Search {
+  const [draft, setDraft] = useState(() => (ownsHistory ? (readViewState().text ?? "") : ""));
+  const [types, setTypes] = useState<string[]>(() =>
+    ownsHistory ? (readViewState().types ?? []) : [],
+  );
   const latest = useRef({ draft, types });
   latest.current = { draft, types };
   // Arriving at an entry: take what it saved (Back), or give it what the reader has.
   useEffect(() => {
+    if (!ownsHistory) return;
     void locKey;
     const saved = readViewState();
     if (saved.text !== undefined || saved.types !== undefined) {
       setDraft(saved.text ?? "");
       setTypes(saved.types ?? []);
     } else saveViewState({ text: latest.current.draft, types: latest.current.types });
-  }, [locKey]);
-  useEffect(() => saveViewState({ text: draft, types }), [draft, types]);
+  }, [locKey, ownsHistory]);
+  useEffect(() => {
+    if (ownsHistory) saveViewState({ text: draft, types });
+  }, [draft, types, ownsHistory]);
   return { draft, setDraft, types, setTypes };
 }
 
@@ -173,19 +181,23 @@ function Browser(props: GraphBrowserProps) {
   const toOperate = props.links?.toOperate;
   const metaQ = useBrowserMeta();
   const router = useBrowserLocation({ location, onLocation });
+  const ownsHistory = location === undefined;
+  const focus = useRef({ list: false, entity: false }).current;
+  const pageEffects = usePageEffects();
   const locKey = JSON.stringify(router.parsed);
-  const search = useSearchState(locKey);
+  const search = useSearchState(locKey, ownsHistory);
   const text = useSearchPause(search.draft);
   const meta = metaQ.data;
   const resolved = meta ? resolveLocation(meta, router.parsed) : undefined;
   const { setTypes, setDraft } = search;
   const open = useCallback(
     (loc: ExploreLocation, opts?: { replace?: boolean }) => {
-      saveViewState({ scroll: window.scrollY });
+      if (ownsHistory && pageEffects) saveViewState({ scroll: window.scrollY });
       router.go(loc, opts);
-      if (loc.key !== undefined && !opts?.replace) window.scrollTo(0, 0);
+      if (ownsHistory && pageEffects && loc.key !== undefined && !opts?.replace)
+        window.scrollTo(0, 0);
     },
-    [router],
+    [router, ownsHistory, pageEffects],
   );
   const hasSearch = search.draft.trim() !== "";
   const go = useCallback(
@@ -206,8 +218,9 @@ function Browser(props: GraphBrowserProps) {
   const setEditing = lock.set;
   const editing = edit && lock.on;
   const ctx = useMemo(
-    () => (meta ? { meta, go, canEdit: edit, editing, setEditing, toOperate } : null),
-    [meta, go, edit, editing, setEditing, toOperate],
+    () =>
+      meta ? { meta, go, canEdit: edit, editing, setEditing, toOperate, ownsHistory, focus } : null,
+    [meta, go, edit, editing, setEditing, toOperate, ownsHistory, focus],
   );
   const current = resolved && moduleOf(resolved);
   usePageTitle(meta, resolved);
@@ -233,7 +246,7 @@ function Browser(props: GraphBrowserProps) {
         toolbar={toolbar}
         slashFocus={singleKeys}
       />
-      <main className="gb-main" id="gb-main" aria-busy={metaQ.isPending}>
+      <main className="gb-main" aria-busy={metaQ.isPending}>
         {ctx && resolved ? (
           <BrowserProvider value={ctx}>
             <Body resolved={resolved} search={search} text={text} />

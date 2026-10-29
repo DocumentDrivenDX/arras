@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
+
 import { useEffect } from "react";
 import { useSingleKeys } from "../components/SingleKeys";
+import { usePageEffects } from "../lib/pageEffects";
 import { keyIntent } from "../lib/shortcuts";
 
 /**
@@ -10,8 +12,9 @@ import { keyIntent } from "../lib/shortcuts";
  */
 export function usePaletteShortcut(onOpen: () => void, enabled = true) {
   const singleKeys = useSingleKeys();
+  const pageEffects = usePageEffects();
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || !pageEffects) return;
     const on = (e: KeyboardEvent) => {
       if (e.defaultPrevented) return;
       const intent = keyIntent(e, "operate");
@@ -21,5 +24,5 @@ export function usePaletteShortcut(onOpen: () => void, enabled = true) {
     };
     window.addEventListener("keydown", on);
     return () => window.removeEventListener("keydown", on);
-  }, [onOpen, singleKeys, enabled]);
+  }, [onOpen, singleKeys, enabled, pageEffects]);
 }

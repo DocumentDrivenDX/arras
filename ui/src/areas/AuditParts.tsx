@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import type { FormEvent } from "react";
+import { useId } from "react";
 import { shortName } from "../api/gql";
 import { useModule, useStatus } from "../api/queries";
 import type { ChangesQuery, ModuleInfo } from "../api/types";
@@ -139,6 +140,7 @@ interface FilterProps {
 }
 
 function ChangeFilters({ form, setForm, m, keyError, onDate }: FilterProps) {
+  const keyMessage = useId();
   const set = (field: keyof AuditForm) => (e: { target: { value: string } }) =>
     setForm({ ...form, [field]: e.target.value });
   const setDate = (field: "since" | "until") => (e: { target: { value: string } }) =>
@@ -162,11 +164,11 @@ function ChangeFilters({ form, setForm, m, keyError, onDate }: FilterProps) {
           className={inputCls}
           value={form.key}
           aria-invalid={keyError}
-          aria-describedby={keyError ? "audit-key-msg" : undefined}
+          aria-describedby={keyError ? keyMessage : undefined}
           onChange={set("key")}
         />
         {keyError && (
-          <span id="audit-key-msg" role="alert" className="block text-[11px] text-bad">
+          <span id={keyMessage} role="alert" className="block text-[11px] text-bad">
             Choose the key's type too.
           </span>
         )}
