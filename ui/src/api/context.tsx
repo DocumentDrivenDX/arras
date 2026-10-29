@@ -6,6 +6,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -104,6 +105,14 @@ export function ArrasProvider(props: ProviderProps) {
 const ScopeConfig = createContext<ProviderProps | null>(null);
 
 function ProviderScope(props: ProviderProps) {
+  const live = useRef(true);
+  useLayoutEffect(() => {
+    live.current = true;
+    return () => {
+      live.current = false;
+    };
+  }, []);
+
   const {
     operateBase = "/api/operate",
     consoleBase = "/api/console",
@@ -120,9 +129,16 @@ function ProviderScope(props: ProviderProps) {
     const cfg: ClientConfig = {
       operateBase,
       consoleBase,
-      getHeaders: () => getHeaders.current?.() ?? {},
-      onUnauthorized: () => onUnauthorized.current?.(),
-      onRevisionChanged: () => revisionChanged.current(),
+      getHeaders: () => {
+        if (!live.current) throw new Error("Arras session has been released");
+        return getHeaders.current?.() ?? {};
+      },
+      onUnauthorized: () => {
+        if (live.current) onUnauthorized.current?.();
+      },
+      onRevisionChanged: () => {
+        if (live.current) revisionChanged.current();
+      },
     };
     return createClient(cfg);
   }, [operateBase, consoleBase]);
@@ -132,8 +148,13 @@ function ProviderScope(props: ProviderProps) {
         operateBase,
         consoleBase,
         schemaBase,
-        getHeaders: () => getHeaders.current?.() ?? {},
-        onUnauthorized: () => onUnauthorized.current?.(),
+        getHeaders: () => {
+          if (!live.current) throw new Error("Arras session has been released");
+          return getHeaders.current?.() ?? {};
+        },
+        onUnauthorized: () => {
+          if (live.current) onUnauthorized.current?.();
+        },
       }),
     [operateBase, consoleBase, schemaBase],
   );
@@ -156,7 +177,12 @@ function ProviderScope(props: ProviderProps) {
   );
   const hasSignIn = props.onUnauthorized !== undefined;
   const signIn = useMemo(
-    () => (hasSignIn ? () => onUnauthorized.current?.() : undefined),
+    () =>
+      hasSignIn
+        ? () => {
+            if (live.current) onUnauthorized.current?.();
+          }
+        : undefined,
     [hasSignIn],
   );
   const refusalValue = useMemo(() => ({ refusals, refuse }), [refusals, refuse]);

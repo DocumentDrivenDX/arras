@@ -340,7 +340,8 @@ export upstream when a host needs another reusable capability. The reviewed
 
 Identity/API changes remount the provider's children before they can render old
 cached data, refusals, viewer modes, forms or query drafts. Late reads stay in the
-old scope. Pending server-side actions may already have committed; changing
+old scope; released scopes no longer acquire headers or deliver sign-in/revision
+callbacks to the host. Pending server-side actions may already have committed; changing
 identity does not undo them. Credential refresh for the same session need not
 change identity. Reset any host-owned `querySession` along with identity.
 

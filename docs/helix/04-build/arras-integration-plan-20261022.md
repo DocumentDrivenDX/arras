@@ -44,8 +44,25 @@ The candidate is 0.6.4, with unchanged native/UMF pins and public export names.
   tests and fresh distribution consumers. Qualify final release bytes through
   existing exact-tag/public-download/registry gates before claiming publication.
 
-Source implementation and local checks are in progress. A candidate build is
-not publication; no 0.6.4 artifact is claimed available yet. Historical 0.6.3 and
+Implementation is in [draft PR 20](https://github.com/DocumentDrivenDX/arras/pull/20).
+The expanded UI suite passes 1,462 cases, including StrictMode and late 401
+callback controls; TypeScript/Biome pass. The default Python run passed 3,325
+cases, with socket-blocked devhost cases rerun successfully (13 server cases).
+Public API-only construction, module/catalog boundaries and fixture checks pass.
+The first local wheel passed packed ESM/type/deep-import checks, Chromium 153
+embedding against a real local API, source/sdist installed parity, official UMF
+and macOS native qualification. Those receipts bind their original wheel;
+callback corrections and the extension-example 0.6.4 pin require rebuilt bytes.
+
+The user authorized a fresh disposable Lakebase qualification target and four
+temporary identities with project-scoped grants and two-hour keychain credentials.
+Project creation succeeded with 0.5–1 CU and 300-second autosuspend. The active
+development profile lacks workspace-admin permission for identity creation;
+Databricks refused before any service principal or secret was created. The
+identity setup and managed campaign await an authorized admin profile or admin
+provisioning. No old authorization/managed receipt is reused.
+
+A candidate build is not publication; no 0.6.4 artifact is claimed available yet. Historical 0.6.3 and
 native/managed qualification receipts retain their original scope.
 
 ## Scope

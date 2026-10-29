@@ -918,7 +918,9 @@ identity when the person, tenant or authorization session changes; a credential
 refresh for the same session need not change it. Changing identity or any API
 base MUST synchronously replace the rendered session boundary: old query data,
 refusals, forms, viewer modes and drafts MUST NOT appear in the new session.
-Late results from the old session MUST NOT populate the new cache. The default
+Late results from the old session MUST NOT populate the new cache. Released
+scopes MUST stop acquiring authentication headers and suppress late sign-in
+and revision callbacks to the host. The default
 cache is private to a provider scope. A supplied `queryClient` is an exclusive
 Arras cache, not the host application's general cache; it MAY be shared by providers with identical identity and API bases, but MUST
 refuse concurrent use across different scopes. On final release it is cancelled

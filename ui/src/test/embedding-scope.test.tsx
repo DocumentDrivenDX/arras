@@ -2,7 +2,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useState } from "react";
+import { StrictMode, useEffect, useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { ArrasConsole } from "../ArrasConsole";
 import { ArrasProvider, createQueryClient, useClient, useRefusals } from "../api/context";
@@ -44,6 +44,55 @@ function Probe({ load }: { load: () => Promise<string> }) {
 }
 
 describe("embedding session ownership", () => {
+  it.each([false, true])(
+    "survives StrictMode effect replay with a supplied cache: %s",
+    async (supplied) => {
+      const client = supplied ? createQueryClient() : undefined;
+      render(
+        <StrictMode>
+          <ArrasProvider queryClient={client}>
+            <Probe load={async () => "strict-data"} />
+          </ArrasProvider>
+        </StrictMode>,
+      );
+      expect(await screen.findByText("strict-data")).toBeInTheDocument();
+    },
+  );
+
+  it("does not deliver an old identity's late sign-in callback to the host", async () => {
+    const response = deferred<Response>();
+    vi.spyOn(globalThis, "fetch").mockImplementation(() => response.promise);
+    const signIn = vi.fn();
+    function ViewerRead() {
+      const client = useClient();
+      useEffect(() => {
+        void client.viewer().catch(() => {});
+      }, [client]);
+      return null;
+    }
+    const { rerender } = render(
+      <ArrasProvider identity="old" onUnauthorized={signIn}>
+        <ViewerRead />
+      </ArrasProvider>,
+    );
+    rerender(
+      <ArrasProvider identity="new" onUnauthorized={signIn}>
+        <span>New identity</span>
+      </ArrasProvider>,
+    );
+    await act(async () =>
+      response.resolve(
+        new Response(
+          JSON.stringify({
+            error: { type: "Refused", reason: "token_expired", message: "expired" },
+          }),
+          { status: 401, headers: { "content-type": "application/json" } },
+        ),
+      ),
+    );
+    expect(signIn).not.toHaveBeenCalled();
+  });
+
   it("replaces cached data, refusals and form state before rendering a new identity", async () => {
     const bob = deferred<string>();
     const { rerender, container } = render(
