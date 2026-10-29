@@ -56,11 +56,22 @@ callback corrections and the extension-example 0.6.4 pin require rebuilt bytes.
 
 The user authorized a fresh disposable Lakebase qualification target and four
 temporary identities with project-scoped grants and two-hour keychain credentials.
-Project creation succeeded with 0.5–1 CU and 300-second autosuspend. The active
-development profile lacks workspace-admin permission for identity creation;
-Databricks refused before any service principal or secret was created. The
-identity setup and managed campaign await an authorized admin profile or admin
-provisioning. No old authorization/managed receipt is reused.
+Project creation succeeded with 0.5–1 CU and 300-second autosuspend. After the
+operator activated PIM and the development login was refreshed, all four
+identities and project-only grants were created. Lakebase API-created roles
+receive replication privileges; the unchanged ordinary-person admission refused
+them before installation. The test roles were recreated with the documented
+login-only OAuth SQL provisioner, then independently checked for no superuser,
+role/database creation, bypass-RLS, replication or effective elevated privileges.
+The frozen full managed campaign now binds the exact CI wheel
+`c69eb11da743f736c3c6151e29f0c20eef50777fe5742a641ada9bdf556eb524`.
+No old authorization or managed result is reused. Cleanup remains mandatory.
+
+The corrected candidate in CI `40966444386` passes Python, lint/types/build,
+installed doctor, official UMF, full live UI integration and packed Chromium
+embedding. Its fresh-installed macOS native qualification passed on the same
+wheel. The full CI run passed all five required jobs, including the PostgreSQL adapter.
+The fresh managed campaign remains in progress.
 
 A candidate build is not publication; no 0.6.4 artifact is claimed available yet. Historical 0.6.3 and
 native/managed qualification receipts retain their original scope.

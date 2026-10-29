@@ -65,7 +65,7 @@ ddx:
 
 **Goals**: Show that every read states its freshness, every change is a declared, atomic, attributed action, every backend call is made with the person's own token, and the catalog meets its latency targets inside the host. Quality gates are in Build Handoff.
 
-The repository holds no test code, conformance corpus or benchmark harness yet. This plan states what must be built and what each part proves; it makes no claim that any test exists or passes.
+The repository now carries Python, UI, browser and installed-artifact qualification suites. This plan defines their required behavior; dated execution evidence in the integration build plan and release checklist records which exact versions and artifacts passed. Planned coverage alone is not an execution result.
 
 Arras is the interface through which an organization's applications read and change the ontology. It is a Python library embedded in a host app such as a workflow application (a Databricks app) over named backends; in production Truss (an open-source property-graph engine on Lakebase, Databricks' managed Postgres) and Ashlar (an open-source toolkit for property-graph ontologies on Unity Catalog, Databricks' governance layer for tables and access). Types and actions are defined in UMF (the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions). MCP is the Model Context Protocol, Anthropic's open protocol for agent tools. ADR means architecture decision record; p95 is the 95th-percentile latency.
 
