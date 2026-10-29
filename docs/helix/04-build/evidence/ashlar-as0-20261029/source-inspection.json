@@ -1,0 +1,97 @@
+{
+  "scope": "Source identity inspection only. No installed/native/managed acceptance run.",
+  "repositories": [
+    {
+      "repository": "/Users/erik/Projects/ashlar",
+      "head": "63f5cd890a0bdc6f80ade9402c63b0d36c473396",
+      "baseline": "5174a1fe9317cc550f9d67b52edca371ccae33be",
+      "files": [
+        {
+          "path": "src/ashlar/access.py",
+          "sha256": "d1a0599d9d4b81f0715c5006af655cdf50426996d64a83e10a95c9b0040751f2",
+          "baseline_sha256": "d1a0599d9d4b81f0715c5006af655cdf50426996d64a83e10a95c9b0040751f2",
+          "matches_baseline": true
+        },
+        {
+          "path": "src/ashlar/publication.py",
+          "sha256": "bba7a4ff4e204d08ec2a1817888d2e40dc1d491be658c8ad6f79afbc57d812c8",
+          "baseline_sha256": "bba7a4ff4e204d08ec2a1817888d2e40dc1d491be658c8ad6f79afbc57d812c8",
+          "matches_baseline": true
+        },
+        {
+          "path": "src/ashlar/singleton.py",
+          "sha256": "91d1addf13d4f309251c08372dd678e22f9984fd8b0f738b0acefe124349fbaa",
+          "baseline_sha256": "91d1addf13d4f309251c08372dd678e22f9984fd8b0f738b0acefe124349fbaa",
+          "matches_baseline": true
+        },
+        {
+          "path": "src/ashlar/truss_native_feed.py",
+          "sha256": "1abfc6e3677f2f8743001f69eba52c035bf1625b1b530f84f9c699c7e7bf8488",
+          "baseline_sha256": "1abfc6e3677f2f8743001f69eba52c035bf1625b1b530f84f9c699c7e7bf8488",
+          "matches_baseline": true
+        },
+        {
+          "path": "src/ashlar/source_checkpoint.py",
+          "sha256": "32360d70ea708cb1cffe8e6c3c7533a57f153748f54f782182f8a34e13f92d34",
+          "baseline_sha256": "32360d70ea708cb1cffe8e6c3c7533a57f153748f54f782182f8a34e13f92d34",
+          "matches_baseline": true
+        },
+        {
+          "path": "src/ashlar/truss_publication.py",
+          "sha256": "3b28fa37e708a35a30e761f00fb0af521e01ca8e335f8b7a8c839b275bdb1cd5",
+          "baseline_sha256": "3b28fa37e708a35a30e761f00fb0af521e01ca8e335f8b7a8c839b275bdb1cd5",
+          "matches_baseline": true
+        },
+        {
+          "path": "src/ashlar_host/truss_feed_sessions.py",
+          "sha256": "99ece4770acb02d9cfbef5c90a024b615b3fffabb85faa75de0a0ae88b3e1550",
+          "baseline_sha256": "99ece4770acb02d9cfbef5c90a024b615b3fffabb85faa75de0a0ae88b3e1550",
+          "matches_baseline": true
+        },
+        {
+          "path": "src/ashlar_host/truss_continue.py",
+          "sha256": "31bddfe6f673ae6268f99bc47919102f38636baa23ae12c5557b641599a4ff18",
+          "baseline_sha256": "31bddfe6f673ae6268f99bc47919102f38636baa23ae12c5557b641599a4ff18",
+          "matches_baseline": true
+        },
+        {
+          "path": "src/ashlar_host/managed_current_receipt_read.py",
+          "sha256": "3622f68156cda0604e70e0c615870b01a8b8b49ce6924619ea7cea9b33a7ad40",
+          "baseline_sha256": "3622f68156cda0604e70e0c615870b01a8b8b49ce6924619ea7cea9b33a7ad40",
+          "matches_baseline": true
+        }
+      ]
+    },
+    {
+      "repository": "/private/tmp/arras-pypi-extras-20261026/truss",
+      "head": "9d15a263e3dc9d4494338e449e11cf96a2de89d0",
+      "baseline": "26c1b9171718ad0f6291b82f65c8cef0406886fb",
+      "files": [
+        {
+          "path": "packages/python/src/truss/catalog_runtime.py",
+          "sha256": "553e7aed35561321ea53fa387f878790ea0f93bf1f6f9314050ecdb193589683",
+          "baseline_sha256": "553e7aed35561321ea53fa387f878790ea0f93bf1f6f9314050ecdb193589683",
+          "matches_baseline": true
+        },
+        {
+          "path": "packages/python/src/truss/feed.py",
+          "sha256": "0f5e5146368c254ea83b2d34229920a1b8bfa70fb3df000edaa7b7f5a820714c",
+          "baseline_sha256": "0f5e5146368c254ea83b2d34229920a1b8bfa70fb3df000edaa7b7f5a820714c",
+          "matches_baseline": true
+        },
+        {
+          "path": "packages/python/src/truss/receipt_visibility.py",
+          "sha256": "49a9a078104f740a6257c9f1c82a4f3a56f054dcd361ada3c8f3468c179e4852",
+          "baseline_sha256": "49a9a078104f740a6257c9f1c82a4f3a56f054dcd361ada3c8f3468c179e4852",
+          "matches_baseline": true
+        },
+        {
+          "path": "packages/python/src/truss/_catalog_runtime/feed.sql",
+          "sha256": "ebfa70c3b91221aff15c953130c437667f3c40748a6e76a9467a55e1d76c4787",
+          "baseline_sha256": "ebfa70c3b91221aff15c953130c437667f3c40748a6e76a9467a55e1d76c4787",
+          "matches_baseline": true
+        }
+      ]
+    }
+  ]
+}

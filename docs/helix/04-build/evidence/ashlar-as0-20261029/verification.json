@@ -1,0 +1,173 @@
+{
+  "scope": "Serial focused non-native checks; no heavy job, Actions or cloud.",
+  "initial_attempt_summary": "43 passed,1 failed: new isolated import probe inserted src.parent instead of src. Corrected probe path; lint passed, format initially required two files. Initial tool outputs were not saved as raw files.",
+  "checks": [
+    {
+      "name": "bridge-and-boundaries",
+      "command": [
+        "/Users/erik/Projects/arras/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_ashlar_singleton.py",
+        "tests/test_modules.py",
+        "tests/test_boundary.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 4.817,
+      "stdout": "..............................................................           [100%]\n62 passed in 4.62s\n",
+      "stderr": ""
+    },
+    {
+      "name": "lint",
+      "command": [
+        "/Users/erik/Projects/arras/.venv/bin/ruff",
+        "check",
+        "src/arras/adapters/ashlar",
+        "tests/test_ashlar_singleton.py",
+        "tests/test_modules.py"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.018,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "name": "format",
+      "command": [
+        "/Users/erik/Projects/arras/.venv/bin/ruff",
+        "format",
+        "--check",
+        "src/arras/adapters/ashlar",
+        "tests/test_ashlar_singleton.py",
+        "tests/test_modules.py"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.017,
+      "stdout": "4 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "name": "types",
+      "command": [
+        "/Users/erik/Projects/arras/.venv/bin/pyright",
+        "src/arras/adapters/ashlar/singleton.py",
+        "tests/test_ashlar_singleton.py"
+      ],
+      "exit_code": 1,
+      "duration_seconds": 0.721,
+      "stdout": "/private/tmp/arras-ashlar-integration-20261029/src/arras/adapters/ashlar/singleton.py\n  /private/tmp/arras-ashlar-integration-20261029/src/arras/adapters/ashlar/singleton.py:67:12 - error: Return type is unknown (reportUnknownVariableType)\n/private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:7:8 - error: Import \"pytest\" could not be resolved (reportMissingImports)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:30:49 - error: Type of parameter \"monkeypatch\" is unknown (reportUnknownParameterType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:30:62 - error: Type of \"MonkeyPatch\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:32:9 - error: Type of \"fail\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:34:5 - error: Type of \"setattr\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:36:10 - error: Type of \"raises\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:40:2 - error: Type of \"mark\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:40:2 - error: Type of \"parametrize\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:40:2 - error: Untyped function decorator obscures type of function; ignoring decorator (reportUntypedFunctionDecorator)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:42:5 - error: Type of parameter \"monkeypatch\" is unknown (reportUnknownParameterType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:42:18 - error: Type of \"MonkeyPatch\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:69:5 - error: Type of \"setattr\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:77:14 - error: Type of \"raises\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:81:43 - error: Type of parameter \"monkeypatch\" is unknown (reportUnknownParameterType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:81:56 - error: Type of \"MonkeyPatch\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:89:5 - error: Type of \"setattr\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:89:63 - error: Return type of lambda, \"(*a: Unknown, **kw: Unknown) -> None\", is partially unknown (reportUnknownLambdaType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:89:71 - error: Type of parameter \"a\" is partially unknown (reportUnknownLambdaType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:89:76 - error: Type of parameter \"kw\" is partially unknown (reportUnknownLambdaType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:97:2 - error: Type of \"mark\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:97:2 - error: Type of \"parametrize\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:98:2 - error: Type of \"mark\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:98:2 - error: Type of \"parametrize\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:98:2 - error: Untyped function decorator obscures type of function; ignoring decorator (reportUntypedFunctionDecorator)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:100:5 - error: Type of parameter \"monkeypatch\" is unknown (reportUnknownParameterType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:100:18 - error: Type of \"MonkeyPatch\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:123:5 - error: Type of \"setattr\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:125:10 - error: Type of \"raises\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:125:37 - error: Type of \"found\" is unknown (reportUnknownVariableType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:127:32 - error: Type of \"value\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:127:32 - error: Argument type is unknown\n  \u00a0\u00a0Argument corresponds to parameter \"object\" in function \"__new__\" (reportUnknownArgumentType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:127:73 - error: Type of \"value\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:127:73 - error: Argument type is unknown\n  \u00a0\u00a0Argument corresponds to parameter \"object\" in function \"__new__\" (reportUnknownArgumentType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:128:19 - error: Type of \"value\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:133:44 - error: Type of parameter \"monkeypatch\" is unknown (reportUnknownParameterType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:133:57 - error: Type of \"MonkeyPatch\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:138:9 - error: Type of \"fail\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:140:5 - error: Type of \"setattr\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:141:10 - error: Type of \"raises\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:141:40 - error: Type of \"found\" is unknown (reportUnknownVariableType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:143:12 - error: Type of \"value\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:143:12 - error: Type of \"reason\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:144:38 - error: Type of \"value\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:144:38 - error: Argument type is unknown\n  \u00a0\u00a0Argument corresponds to parameter \"object\" in function \"__new__\" (reportUnknownArgumentType)\n45 errors, 0 warnings, 0 informations\n",
+      "stderr": ""
+    },
+    {
+      "name": "types-selected-interpreter",
+      "command": [
+        "/Users/erik/Projects/arras/.venv/bin/pyright",
+        "--pythonpath",
+        "/Users/erik/Projects/arras/.venv/bin/python",
+        "src/arras/adapters/ashlar/singleton.py",
+        "tests/test_ashlar_singleton.py"
+      ],
+      "exit_code": 1,
+      "duration_seconds": 0.495,
+      "stdout": "/private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:9:6 - error: Import \"arras.adapters.ashlar\" could not be resolved (reportMissingImports)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:9:35 - error: Type of \"singleton\" is unknown (reportUnknownVariableType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:14:1 - error: Type of \"SELECTION\" is unknown (reportUnknownVariableType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:14:13 - error: Type of \"Selection\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:17:5 - error: Return type is unknown (reportUnknownParameterType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:17:18 - error: Type of \"Session\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:18:12 - error: Type of \"Session\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:18:12 - error: Return type is unknown (reportUnknownVariableType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:34:25 - error: Argument type is unknown\n  \u00a0\u00a0Argument corresponds to parameter \"target\" in function \"setattr\" (reportUnknownArgumentType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:35:5 - error: Type of \"reads\" is unknown (reportUnknownVariableType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:35:13 - error: Type of \"SingletonReads\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:37:9 - error: Type of \"lookup\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:45:5 - error: Type of \"ports\" is unknown (reportUnknownVariableType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:48:9 - error: Return type, \"Generator[Unknown, Any, None]\", is partially unknown (reportUnknownParameterType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:54:25 - error: Type of \"executor\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:54:41 - error: Type of \"backend\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:54:56 - error: Type of \"pins\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:54:68 - error: Type of \"vector\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:54:82 - error: Type of \"policy\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:62:24 - error: Type of \"context\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:69:25 - error: Argument type is unknown\n  \u00a0\u00a0Argument corresponds to parameter \"target\" in function \"setattr\" (reportUnknownArgumentType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:70:5 - error: Type of \"out\" is unknown (reportUnknownVariableType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:70:11 - error: Type of \"SingletonReads\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:70:11 - error: Type of \"lookup\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:72:12 - error: Type of \"publication_id\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:72:34 - error: Type of \"publication_id\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:73:12 - error: Type of \"row\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:76:16 - error: Type of \"row\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:76:40 - error: Type of \"row\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:85:9 - error: Return type, \"Generator[Unknown, Any, None]\", is partially unknown (reportUnknownParameterType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:92:25 - error: Argument type is unknown\n  \u00a0\u00a0Argument corresponds to parameter \"target\" in function \"setattr\" (reportUnknownArgumentType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:93:5 - error: Type of \"reads\" is unknown (reportUnknownVariableType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:93:13 - error: Type of \"SingletonReads\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:94:5 - error: Type of \"lookup\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:96:5 - error: Type of \"lookup\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:111:9 - error: Return type, \"Generator[Unknown, Any, None]\", is partially unknown (reportUnknownParameterType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:126:25 - error: Argument type is unknown\n  \u00a0\u00a0Argument corresponds to parameter \"target\" in function \"setattr\" (reportUnknownArgumentType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:129:9 - error: Type of \"SingletonReads\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:129:9 - error: Type of \"lookup\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:143:25 - error: Argument type is unknown\n  \u00a0\u00a0Argument corresponds to parameter \"target\" in function \"setattr\" (reportUnknownArgumentType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:145:9 - error: Type of \"SingletonReads\" is unknown (reportUnknownMemberType)\n  /private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py:145:9 - error: Type of \"lookup\" is unknown (reportUnknownMemberType)\n42 errors, 0 warnings, 0 informations\n",
+      "stderr": ""
+    },
+    {
+      "name": "types-current-source",
+      "command": [
+        "/Users/erik/Projects/arras/.venv/bin/pyright",
+        "--pythonpath",
+        "/Users/erik/Projects/arras/.venv/bin/python",
+        "--project",
+        "/private/tmp/arras-ashlar-integration-20261029/docs/helix/04-build/evidence/ashlar-as0-20261029/pyright-focused.json"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.286,
+      "stdout": "0 errors, 0 warnings, 0 informations\n",
+      "stderr": "Ignoring path \"/private/tmp/arras-ashlar-integration-20261029/src/arras/adapters/ashlar\" in \"include\" array because it is not relative.\nIgnoring path \"/private/tmp/arras-ashlar-integration-20261029/tests/test_ashlar_singleton.py\" in \"include\" array because it is not relative.\n",
+      "accepted": false,
+      "disposition": "No credit: absolute include paths were ignored."
+    },
+    {
+      "name": "types-relative-current-source",
+      "command": [
+        "/Users/erik/Projects/arras/.venv/bin/pyright",
+        "--pythonpath",
+        "/Users/erik/Projects/arras/.venv/bin/python",
+        "--project",
+        "/private/tmp/arras-ashlar-integration-20261029/docs/helix/04-build/evidence/ashlar-as0-20261029/pyright-focused.json"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.491,
+      "stdout": "0 errors, 0 warnings, 0 informations\n",
+      "stderr": ""
+    },
+    {
+      "name": "final-bridge-and-boundaries",
+      "command": [
+        "/Users/erik/Projects/arras/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_ashlar_singleton.py",
+        "tests/test_modules.py",
+        "tests/test_boundary.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 1.811,
+      "stdout": "...............................................................          [100%]\n63 passed in 1.66s\n",
+      "stderr": ""
+    },
+    {
+      "name": "final-lint",
+      "command": [
+        "/Users/erik/Projects/arras/.venv/bin/ruff",
+        "check",
+        "src/arras/adapters/ashlar",
+        "tests/test_ashlar_singleton.py",
+        "tests/test_modules.py"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.014,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "name": "final-format",
+      "command": [
+        "/Users/erik/Projects/arras/.venv/bin/ruff",
+        "format",
+        "--check",
+        "src/arras/adapters/ashlar",
+        "tests/test_ashlar_singleton.py",
+        "tests/test_modules.py"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.016,
+      "stdout": "4 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "name": "final-types",
+      "command": [
+        "/Users/erik/Projects/arras/.venv/bin/pyright",
+        "--pythonpath",
+        "/Users/erik/Projects/arras/.venv/bin/python",
+        "--project",
+        "/private/tmp/arras-ashlar-integration-20261029/docs/helix/04-build/evidence/ashlar-as0-20261029/pyright-focused.json"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.561,
+      "stdout": "0 errors, 0 warnings, 0 informations\n",
+      "stderr": ""
+    }
+  ],
+  "verified_payload": {
+    "src/arras/adapters/ashlar/__init__.py": "d36e8c19f28f05182ffdfd512a46d643c0e305ecb43f6dbedc04e0f32fc80181",
+    "src/arras/adapters/ashlar/singleton.py": "968866f3fce5c913c0b864dd64b0954a1cd3969a476a0b25a415bb8e43e28483",
+    "tests/test_ashlar_singleton.py": "233b6e7b4305a379ac1dfdc43ec284faac99aa10af17f96a3d4c82c4460f604b",
+    "tests/test_modules.py": "6627e2de616272dcfee1c3e0ec7eaccf0f561161b2102daff9ba0d48f0012815"
+  },
+  "review": "Local semantic review: no receipt/cursor interpretation, no Position/lag fabrication, no environment/credential fallback, no data returned after failed release; compound outage plus cleanup denial stays unavailable. Independent/native review remains open."
+}

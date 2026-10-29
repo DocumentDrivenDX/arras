@@ -271,7 +271,8 @@ def official_umf_import_violations(mods: Mapping[str, str]) -> list[str]:
     """Enforce the selected SDK source boundary for direct and literal dynamic imports.
 
     This is a source-level AST rule for literal import targets, not a sandbox for computed names.
-    The official SDK root is loaded only by the private engine bridge.
+    The official SDK root is loaded only by the private engine bridge. The
+    Ashlar page bridge may load only the reviewed EngineRead owner class.
     """
     out: list[str] = []
     for importer, source in sorted(mods.items()):
@@ -306,6 +307,14 @@ def official_umf_import_violations(mods: Mapping[str, str]) -> list[str]:
                     roots.add(node.args[0].value.partition(".")[0])
             for root in sorted(roots & _UMF_ROOTS):
                 if root == "umf" and importer == "arras._umf_engine":
+                    continue
+                if (
+                    importer == "arras.adapters.ashlar.pages"
+                    and isinstance(node, ast.ImportFrom)
+                    and node.level == 0
+                    and node.module == "umf_access.engine_catalog"
+                    and [alias.name for alias in node.names] == ["EngineRead"]
+                ):
                     continue
                 out.append(f"{importer}:{line_number}: unauthorized official UMF import {root}")
     return out
