@@ -76,6 +76,23 @@ The fresh managed campaign remains in progress.
 A candidate build is not publication; no 0.6.4 artifact is claimed available yet. Historical 0.6.3 and
 native/managed qualification receipts retain their original scope.
 
+### Upstream Ashlar composition and release source
+
+Upstream PR21 added private Ashlar preparation/read bridges during release
+qualification. Their optional owner imports were absent from the production
+dependency declarations, so integrated CI refused the source. The bridges now
+accept explicit host-supplied owners: `SingletonReads(..., read_singleton=...)`
+and `prepare_managed_page(..., owners=(request_builder, from_original))`.
+No undeclared package is discovered or imported. Missing owners produce the
+existing typed unavailable result before session/compiler work. The base install
+and public catalog remain unchanged; a qualified Ashlar factory and installed
+owner cohort remain unfinished. Original AS-0 source-local receipts retain their
+original source scope. Fresh composition controls cover explicit forwarding.
+
+The integrated source adds Python wheel members, so the earlier embedding wheel
+and managed results cannot qualify the final release bytes. A new exact CI wheel,
+fresh macOS qualification and a fresh complete managed invocation are required.
+
 ## Scope
 
 Adopt official UMF semantics and the generated client's public transport in
