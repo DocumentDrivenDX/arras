@@ -23,6 +23,8 @@ The [Arras integration build plan](04-build/arras-integration-plan-20261022.md)
 coordinates official UMF adoption, generated-client transport and the existing
 Truss follow-up work. It records the current cohort, owners, first bounded change
 and remaining native qualification; planned integration is not delivered support.
+Its [Ashlar integration queue](04-build/arras-integration-plan-20261022.md#ashlar-adapter-and-truss-replication-queue)
+records the authorized AS-0 through AS-3 work and its unclosed qualification gates.
 Its separate EX queue tracks the generic
 [downstream extensibility design](02-design/downstream-extensibility.md). The
 implemented candidate includes credential/grant safety, schema authorization,

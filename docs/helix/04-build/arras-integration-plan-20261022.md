@@ -210,6 +210,142 @@ destination visibility.
 Publication/receipt/freshness contract design can proceed now without a new seed,
 scale trial or cloud run. Separate seed/scale approvals do not block that design.
 
+
+### Ashlar adapter and Truss replication queue
+
+Queued by the human on 2026-10-29. Both capabilities remain required product work:
+[FR-24/27](../01-frame/prd.md),
+[FEAT-004 BE-03/04/06](../01-frame/features/FEAT-004-backends.md),
+[US-023](../01-frame/user-stories/US-023-serve-bounded-reads-from-ashlar.md),
+[US-026](../01-frame/user-stories/US-026-see-how-far-behind-a-replica-is.md),
+CONTRACT-001/002/004 and TP-001 govern acceptance. This expands the existing P2
+entry into ordered work; it does not demote the product requirements or make
+these capabilities prerequisites for the already published Arras release.
+
+| Slice | Owning area | Dependency | Deliverable and acceptance evidence |
+| --- | --- | --- | --- |
+| AS-0: receipt and publication agreement | Existing Arras coordinator with Ashlar and Truss maintainers | Current public contracts and exact API/cohort inspection | Resolve the existing [feed-position questions](../02-design/ashlar-feed-position-question.md): opaque receipt mapping, complete transactions including no-ops, source/epoch identity, publication snapshot, person-scoped disclosure and zero-wait inclusion. Record unsupported or missing APIs explicitly before dependent code. |
+| AS-1: Truss-to-Ashlar replication feed | Truss source-feed and Ashlar ingestion/publication owners; Arras consumes their public boundary | AS-0; qualified source-feed and destination publication APIs | Implement a bounded incremental path from committed Truss changes to published Ashlar state. Verify seed/resume, multi-member transaction completeness, no-op coverage, duplicate delivery, interrupted publication/restart and source epoch changes. Applied progress must describe the state readers actually see; delivery or source ACK alone cannot advance visibility. |
+| AS-2: Arras Ashlar reader adapter | Existing Arras implementation owner, coordinated with Ashlar owner `01a15c6c-3938-71e2-8a35-bdb7ed8d9867` | AS-0; agreed projection, Weft target and installed runtime cohort | Add the read-only adapter, host construction/placement and its conformance Harness. First prove one bounded publication-pinned lookup/page with the current person's token. Then qualify declared query profiles, freshness/status/lag and receipt checks; refuse writes and unsupported profiles. Run the shared reader corpus without weakening assertions. |
+| AS-3: replicated read acceptance | Arras integration owner with source/destination owners | AS-1 and AS-2 | Through the public host, commit a Truss action and use its receipt against Ashlar: demonstrably behind before publication, included after publication, unknown when evidence is missing/incomparable. Prove rows and progress share a snapshot, revocation/row-column restrictions, pagination bounds and cleanup. Record exact installed artifacts, hashes, dependencies and platform with each result. |
+
+AS-1 and AS-2 may proceed independently after their AS-0 dependencies are
+settled; AS-2's read-only fixture does not establish working replication. Neither
+waits for every optional action or cross-module feature. The existing owners keep
+their scopes; this queue creates no new chat, agent, tracker or parallel test lane.
+The human subsequently authorized implementation on 2026-10-29 in Stack chat
+`01a17418-5d70-7c60-bd3f-af32c98cf22c`, turn
+`01a18988-f3e3-7d02-a742-a9dd71055b36` ("Get this work in flight.").
+The existing Arras owner executes AS-0 through AS-3; no new owner or test lane
+is created. Release, Actions, cloud and spending remain outside this authorization.
+
+AS-0 reconciliation is recorded below; dependent implementation proceeds only
+where the actual owning APIs support it. Historical candidate
+versions above are inspection leads, not selected support pins. Transport,
+bootstrap/recovery details and latency budgets remain open until that reconciliation.
+No service identity may substitute for a person's read credentials. Unknown
+progress/lag stays unknown, and opaque tokens must never be numerically ordered.
+
+Verification starts with the smallest affected contract cases and reuses valid
+unchanged evidence. Before native execution, record the selected cases, cumulative
+time/attempt allowance and shared-machine admission mechanism in continuation
+evidence. Use one expensive job at a time and at most two CPU-heavy workers across
+participating owners; a resume does not reset the allowance. No heavy test starts
+without that admission. Token cost is currently unknown; no new spending, cloud
+dispatch or Actions run is authorized by this queue. Keep required native and
+managed authorization evidence open until separately authorized and actually run;
+local doubles do not close it. Preserve failures and stop at the allowance rather
+than raising caps, reducing assertions or rerunning unchanged full suites.
+
+
+### AS-0 API reconciliation and implementation continuation — 2026-10-29
+
+**Authorization and source custody.** Implementation authorization is recorded
+above. Work is isolated on `codex/arras-ashlar-integration` in
+`/private/tmp/arras-ashlar-integration-20261029`, based on main
+`2dbaf400de3d6415a6dd80a464261afd27b8b9b4`. The original checkout's uncommitted
+plan/index edits are untouched and backed up under
+`/private/tmp/arras-ashlar-as0-20261029`; its stale whole-file patch was not applied.
+Only the AS queue was reconciled into current main, preserving the newer managed
+page-profile correction and all historical release records.
+
+Inspection baseline: Truss released `v0.0.51` source
+`26c1b9171718ad0f6291b82f65c8cef0406886fb`; Ashlar local source
+`63f5cd890a0bdc6f80ade9402c63b0d36c473396`, origin/main
+`5174a1fe9317cc550f9d67b52edca371ccae33be`. The inspected Ashlar modules below
+have no differences between those two Ashlar commits. This is source inspection,
+not installation or native qualification. File identities are retained in
+[evidence](evidence/ashlar-as0-20261029/source-inspection.json).
+
+| Existing question | Actual owning APIs / observation | Supported decision and remaining operation |
+| --- | --- | --- |
+| 1. Opaque receipt mapping | Truss `Assembly.reached_in_transaction(transaction, token, consumer_id=...)` calls `truss.feed_reached`, which compares an authoritative issued receipt to the consumer's current committed ACK checkpoint. Ashlar `source_checkpoint.truss_checkpoint` retains original opaque before/after cursors, page digest and batch identity. | Arras does not decode receipts or order cursor/xid fields. Source ACK is not destination visibility. An owning comparison against the **exact held Ashlar publication**, with original source receipt and complete published coverage, is still needed. No generic numeric `minimumProgress` mapping is implemented. |
+| 2. Complete transactions and no-ops | Ashlar `truss_native_feed.native_feed_batch` validates the original native transaction page and members. `TrussFeedSessions` admits only `FeedPage.outcome == transaction`; `continue_truss_graph` stops at `empty_interval`. | Reuse transaction publication and original bytes; do not split groups or reconstruct synthetic events. Empty-interval/no-op coverage cannot currently advance published evidence through this composition. Source and destination owners must define/implement durable complete coverage, including no-op receipts, without treating every empty interval as a no-op receipt. |
+| 3. Epoch/restore/fork | Native feed admission and continuation bind installation, source epoch, consumer and registration. Continuation refuses changed identities. | Keep old epochs incomparable. No automatic old-token inclusion, reseed or lineage authority is inferred. Cross-epoch seed/lineage proof remains an explicit upstream operation and acceptance case. |
+| 4. Person and snapshot | `resolve_publication` authorizes before descriptor disclosure, validates exact manifest and native UUID/version. `read_singleton` holds the whole pin vector, binds descriptor policy and applies current row policy, including absence; it rechecks admission before release. `AshlarTarget.read/page` uses the corresponding pinned Weft owner boundary. | Supply fresh host ports authenticated as the requesting person on every call; no ambient/service fallback. Missing evidence is unknown; typed denial is refusal. Publication-pinned rows are implementable now. Receipt checks must use that same publication, not a separately selected latest descriptor. |
+| 5. Zero-wait | Truss receipt comparison is one read-only operation and never waits. Ashlar's resolver/singleton execute once; `AshlarTarget` requires an explicit deadline owner. Generic Ashlar `minimumProgress`/`waitMs` is not an implemented callable here. | Arras retains retry ownership and no internal polling is added. SQL warehouse cost/latency and token cost are unknown; no cheap/interactive guarantee is claimed. The host must supply bounded native deadlines before a real session is admitted. |
+| 6. Unseen tokens | Truss returns typed receipt availability/reasons; private `_receipt_position` decoding proves syntax only. Current Ashlar receipt-reopen APIs validate original publication/ACK custody, not arbitrary unseen action-token issuance. | Only authoritative evidence can yield false or invalid. Missing/expired evidence, foreign installation/epoch and unobservable tokens stay unavailable. A false result requires a proved issued token and comparable complete publication coverage. |
+
+The current `AshlarTarget` managed `.4-xxhash64` allowlist is already present;
+there is no allowlist repair in this change. `managed_current_receipt_read` opens
+an **original destination ACK receipt** under configured custody; it is not a
+generic `reached(action_token)` implementation. `TrussFeedSessions` already
+provides publication-before-ACK, exact retained destination receipts and read-only
+reconciliation. AS-1 extends those owning operations rather than duplicating a
+publisher inside Arras. Current Ashlar source cohort admission names Truss through
+0.0.50; rename-only Truss 0.0.51 still needs explicit upstream cohort admission
+and installed evidence. No dependency pin changes are made here.
+
+**Upstream handoff.** Stack was sent the exact comparison, no-op coverage and
+cohort-admission gaps in its existing chat. It routes work to the existing owning
+sessions. Those gaps block dependent receipt/replication acceptance, not the
+person-scoped read bridge. Required comparison results remain included,
+authoritatively issued-and-behind, authoritative invalid, and unknown/refused;
+publication ID/full vector and current-person authority must bind the answer.
+
+**AS-2 first code slice.** `arras.adapters.ashlar.singleton` is an internal
+bridge to the existing public `ashlar.singleton.read_singleton` operation. The
+host supplies fresh person-authenticated executor/backend/pins/vector/policy,
+context and explicit supported profiles/revisions. Missing tokens are refused
+before SDK/session access. Native carriers stay unchanged; a result is returned
+only after both pin and host-session release. Failures return no rows and expose
+fixed safe diagnostics. It creates no Position from a row timestamp and makes
+no receipt, lag, full Backend, host-factory or supported-installation claim.
+
+Boundary adoption uses the existing architecture `adapters` group: foundation,
+domain, contract and adapter imports only; core, doubles and bindings remain
+forbidden. The helper has no public catalog entry. `tests/test_modules.py` now
+recognizes Ashlar as an engine import and checks that the base/package imports
+load no SDK. The existing forbidden-edge and cycle controls remain required.
+`tests/test_ashlar_singleton.py` covers exact person/port/selection forwarding,
+unchanged scalar carriers, absence, fresh sessions, missing-token priority,
+open/read/close denial/outage and unavailable SDK. These are bridge unit controls,
+not native policy or provider evidence.
+
+**Observed verification.** The final serial focused campaign passed 63 bridge,
+module-boundary and host-boundary cases in 1.66 seconds, with zero skips; Ruff,
+formatting and strict Pyright passed. The focused Pyright configuration preserves
+the project's Python version/strict rules and resolves this isolated source plus
+the existing selected interpreter. Initial import-path/type-environment failures
+and an ignored-include invocation are retained without acceptance credit in
+[verification](evidence/ashlar-as0-20261029/verification.json). Local semantic
+review added a compound-failure control: a release denial cannot reclassify a
+read outage as refusal. Independent/native review remains open. These checks
+exercise doubles and source boundaries, not actual warehouse authorization,
+managed deadlines, installed artifact compatibility or replica convergence.
+
+**Execution limits and next slice.** No expensive tests may start: the shared
+20-minute/two-attempt native allowance is exhausted and is not reset here. No
+Actions, cloud, spending, deployment, publication or new agent/chat is authorized.
+Only bounded non-native affected checks run serially. Token estimate/metering is
+unknown; no additional spending is authorized. Native, managed, shared reader
+corpus and AS-3 receipt-before/after-publication gates stay open. Next implement
+the read-only Backend's admitted Weft query/catalog and publication-position
+binding after inspecting the existing Weft compilation/typed target contract;
+refuse unsupported profiles. No string parsing of SQL or permissive policy
+shim is an acceptable substitute. Complete paging and host placement follow;
+AS-3 waits for owning receipt/coverage operations and actual native authorization.
+
 Public Truss 0.0.49 and Weft 0.4.51 are available. The separate Arras adoption
 branch pins those exact artifacts; its [local qualification](evidence/truss049-adoption-20261023/local-qualification.json)
 records 199 adapter cases and two transaction-mode cases on editable source

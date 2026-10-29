@@ -299,7 +299,7 @@ def test_only_a_binding_or_the_dev_host_may_import_an_adapter() -> None:
         assert violations(mods) == []
 
 
-_ENGINE_LIBRARIES = ("truss", "psycopg", "weft")
+_ENGINE_LIBRARIES = ("truss", "psycopg", "weft", "ashlar")
 
 
 def _loads_engine_library(text: str) -> bool:
@@ -318,6 +318,7 @@ def test_only_the_adapters_load_the_engine_libraries() -> None:
     assert [m for m in loaders if not m.startswith("arras.adapters")] == []
     assert _loads_engine_library("def f():\n    import psycopg\n")
     assert _loads_engine_library("from truss import Ok\n")
+    assert _loads_engine_library("def f():\n    from ashlar.singleton import read_singleton\n")
     assert not _loads_engine_library(
         "from typing import TYPE_CHECKING\nif TYPE_CHECKING:\n    import truss\n"
     )
@@ -328,8 +329,9 @@ def test_the_base_import_loads_no_engine_library() -> None:
     import sys
 
     code = (
-        "import sys, arras, arras.adapters, arras.adapters.truss;"
-        " assert not {'truss', 'psycopg', 'weft'} & set(sys.modules), sorted(sys.modules)"
+        f"import sys; sys.path.insert(0, {str(SRC)!r});"
+        " import arras, arras.adapters, arras.adapters.truss, arras.adapters.ashlar;"
+        " assert not {'truss', 'psycopg', 'weft', 'ashlar'} & set(sys.modules), sorted(sys.modules)"
     )
     done = subprocess.run([sys.executable, "-I", "-c", code], capture_output=True, text=True)
     assert done.returncode == 0, done.stderr
