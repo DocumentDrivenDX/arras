@@ -26,6 +26,9 @@ Homepage = "https://github.com/DocumentDrivenDX/arras"
 Repository = "https://github.com/DocumentDrivenDX/arras"
 Issues = "https://github.com/DocumentDrivenDX/arras/issues"
 
+[project.scripts]
+arras = "arras.cli:run"
+
 [project.optional-dependencies]
 otel = [
     "opentelemetry-api>=1.27,<2",

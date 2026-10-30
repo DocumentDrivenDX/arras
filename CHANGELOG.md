@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+Adds an `arras` console script. `arras doctor`, `arras devhost` and `arras mcp` run
+`python -m arras.doctor`, `python -m arras.devhost` and `python -m arras.mcp` with the rest of the
+command line, and `arras --version` prints the installed version. The module entry points and the
+launcher functions a distribution calls (`arras.devhost.main`, `arras.mcp.launch`) are unchanged.
+
 ## 0.6.4 — embedding isolation
 
 Adds explicit identity/API session boundaries and optional `pageEffects=false`
