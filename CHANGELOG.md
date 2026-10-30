@@ -1,5 +1,83 @@
 # Changelog
 
+## 0.6.5 — downstream integration
+
+Python 3.11 is the supported release profile. Later interpreters remain permitted
+by the installer minimum but are outside the supported qualification scope.
+
+The development host takes the groups its operator surface is offered to:
+`--operator-group NAME` (repeatable) on the command line, or `operator_groups=` on
+`arras.devhost.main` and `arras.devhost.DevHost`. The sandbox's operators join each
+named group; the default stays `admins` and `builders`.
+
+A key set under both a distribution's `env_prefix` and `ARRAS_` to different
+values (`EXAMPLE_DEV_USER=alice`, `ARRAS_DEV_USER=bob`) still uses the
+distribution's value, and now says so: `Config.warnings` and one stderr line per
+conflict (at most eight) name both variables, never a value. Token and
+token-file conflicts continue to refuse.
+
+- The official-engine cases in `tests/test_umf_projection.py` skip without the `umf` extra, and fail
+  under `ARRAS_REQUIRE_UMF=1`, as the other UMF tests do.
+
+The development host's Truss URL variable, credentials variable and per-user
+directory follow the distribution's `env_prefix`: `<PREFIX>_TRUSS_DEV_URL`,
+`<PREFIX>_TRUSS_DEV_CREDENTIALS` and `~/.<prefix>/` (`truss-dev.env`,
+`truss-dev-credentials/`), with the `ARRAS_` names and `~/.arras/` as fallbacks.
+`--help` prints the selected names. The default distribution is unchanged.
+
+- The Graph Browser's reset of its controls (`font` and `color` inherited) carries no specificity, so a host's
+  one-class button rule, or the class a design-system widget draws, is no longer overridden by it.
+  Restores the reviewed default typography of the Explore/Operate switch after an earlier reset changed it.
+
+The development host's default `--ui` falls back to the build the wheel carries
+(`arras.ui.STATIC`) when there is no source-tree `ui/dist`. An installed wheel's
+`python -m arras.devhost` served only the API and a "UI is not built" page; it now serves the page
+and its assets. A source build still takes precedence, and a directory named with `--ui` is served
+as given.
+
+Adds an `arras` console script. `arras doctor`, `arras devhost` and `arras mcp` run
+`python -m arras.doctor`, `python -m arras.devhost` and `python -m arras.mcp` with the rest of the
+command line, and `arras --version` prints the installed version. The module entry points and the
+launcher functions a distribution calls (`arras.devhost.main`, `arras.mcp.launch`) are unchanged.
+
+Fixes `ui.create_app`, `console.create_app` and the operate apps under a framework
+mount: with Starlette or FastAPI `Mount("/ontology", ui.create_app(..., base_path="/ontology"))`
+returned 404 for every path, because the prefix was removed twice. `base_path` equal to
+the mount prefix and `base_path=""` now serve the same URLs. Adds Starlette, FastAPI and
+httpx to the development group for the mount tests.
+
+- `arras.ui.assets.build_theme_manifest` and `python -m arras.ui theme-manifest` build a runtime
+  theme bundle (stylesheet, favicon, fonts and a validated `theme-manifest.json`) for
+  `create_app(theme_manifest=...)`.
+
+- `arras.backend` is a catalogued host module (`Backend`, `Provider`, `Migrates` and the names their
+  signatures use), and `arras.conformance.HarnessBase` is a supported base for a corpus harness, so a
+  backend written outside the package imports no internal module. `InMemory.person` takes `admin`
+  and `InMemory.set_available` takes a `reason`.
+
+- A runtime theme manifest may declare `entry.appearance` (`"light"` or `"dark"`): the served page's `<html>`
+  then carries `data-appearance`, so a theme that supplies one appearance's role tokens no longer breaks contrast
+  on a viewer whose system prefers the other. A theme without it must supply both. Documented: the prebuilt page
+  draws `Brand(logo="theme")` with the built-in mark; a theme-supplied mark is a host-built UI feature.
+
+- The acceptance testkit's `createAcceptanceConfig` takes `hostAppearanceProvider` (default `false`) for a host that
+  installs its own appearance provider: the `host-isolation` specs that assume a bare host are skipped, and the one
+  that asserts the library installs no appearance checks the Arras subtree alone.
+
+- `arras.alias.alias_package(name, *, target="arras", modules=None)` lets a thin package under
+  another import name serve `arras` itself: same module objects, canonical `__spec__`, working
+  `importlib.resources` and `python -m`, with an optional closed list of modules.
+
+- The acceptance testkit no longer refuses to build its config on macOS without `baselineDir`: only the `visual`
+  project compares screenshots, and it fails at its start, naming the missing directory, when none was given. A
+  run of the nonvisual projects needs none.
+
+- `arras-ui-qualify --host-build` names the host-fixture requirement a page misses (a marked widget, the controls
+  region, the keyboard opener, the app's Mark, a gradient or opacity behind a focus ring) on its error output and in
+  the failure receipt, and points to the fixture contract now written in `support/QUALIFICATION.md`.
+  `WidgetControls` in `@documentdrivendx/arras-ui/testkit/host` renders the controls region from the design system
+  in context.
+
 ## 0.6.4 — embedding isolation
 
 Adds explicit identity/API session boundaries and optional `pageEffects=false`

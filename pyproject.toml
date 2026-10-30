@@ -2,7 +2,7 @@
 license = "MIT OR Apache-2.0"
 license-files = ["LICENSE.md", "LICENSE-MIT", "LICENSE-APACHE"]
 name = "arras"
-version = "0.6.4"
+version = "0.6.5"
 description = "The interface to an ontology: UMF types and actions, freshness-stating reads, Truss and Ashlar backends."
 readme = "README.md"
 keywords = ["ontology", "umf", "truss", "ashlar", "graphql", "data-access", "freshness"]
@@ -11,11 +11,11 @@ classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
     "Topic :: Database",
     "Typing :: Typed",
 ]
+# Python 3.11 is the supported release profile. This installer floor permits
+# later interpreters; it does not qualify them for support.
 requires-python = ">=3.11"
 dependencies = [
     "graphql-core>=3.3,<3.4",
@@ -25,6 +25,9 @@ dependencies = [
 Homepage = "https://github.com/DocumentDrivenDX/arras"
 Repository = "https://github.com/DocumentDrivenDX/arras"
 Issues = "https://github.com/DocumentDrivenDX/arras/issues"
+
+[project.scripts]
+arras = "arras.cli:run"
 
 [project.optional-dependencies]
 otel = [
@@ -69,6 +72,9 @@ dev = [
     "hypothesis>=6.100",
     "opentelemetry-sdk>=1.27,<2",
     "uvicorn>=0.30",
+    "starlette>=0.40",
+    "fastapi>=0.115",
+    "httpx>=0.27",
 ]
 # The local PostgreSQL 18.6 the Truss test harness runs on (pgserver-pg18, from the same find-links
 # page). Never part of `dev`: only the `truss` job and a developer running `pytest -m truss` need it.

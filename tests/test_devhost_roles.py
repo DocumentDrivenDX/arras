@@ -264,3 +264,73 @@ def test_the_sandbox_readers_are_not_operators_and_made_up_people_are(app: DevHo
         assert call(app, "POST", "/api/schema/validate", {"document": DOC}, user=user)[1] == refused
     for who in ({"user": "vic", "role": "viewer"}, {"user": "nil", "role": "none"}):
         assert call(app, "GET", "/api/operate/viewer", **who)[1]["modes"] == ["user", "admin"]
+
+
+# -- the operator groups
+def _with_ops_person(tmp_path: Path, **kw: Any) -> DevHost:
+    """A host whose sandbox has `erin`, who may write `catalog` and belongs to the group `ops`."""
+    from dataclasses import replace
+
+    box = Sandbox().seed()
+    erin = box.access.grant("erin", "catalog", "read", "write")
+    box.people["erin"] = replace(erin, groups=("ops",))
+    return DevHost(box, port=PORT, ui_dir=tmp_path, **kw)
+
+
+def test_the_default_operator_groups_are_unchanged(tmp_path: Path) -> None:
+    app = _with_ops_person(tmp_path)
+    assert app.operator_groups == ("admins", "builders")
+    assert validate(app, user="alice") == 200 and validate(app, user="bob") == 200
+    assert validate(app, user="erin") == 403  # not in a default group
+
+
+def test_a_host_names_the_operator_groups(tmp_path: Path) -> None:
+    app = _with_ops_person(tmp_path, operator_groups=("ops",))
+    assert app.operator_groups == ("ops",)
+    assert validate(app, user="erin") == 200  # a member of a named group
+    # the sandbox's operators belong to each named group, the others still do not
+    assert validate(app, user="alice") == 200 and validate(app, user="bob") == 200
+    assert validate(app, user="zed", role="editor") == 200  # made up: an operator as before
+    assert validate(app, user="carol") == 403
+    assert "ops" in app.who(_request("alice")).groups  # type: ignore[union-attr]
+    assert app.who(_request("carol")).groups == ()  # type: ignore[union-attr]
+
+
+def _request(name: str) -> Any:
+    from types import SimpleNamespace
+
+    return SimpleNamespace(headers={"x-arras-user": name})
+
+
+@pytest.mark.parametrize("groups", [(), "ops", ("",), ("a b",), ("a,b",), ("x" * 65,)])
+def test_unusable_operator_groups_are_refused(tmp_path: Path, groups: Any) -> None:
+    with pytest.raises(ValueError, match="operator_groups"):
+        DevHost(Sandbox().seed(), port=PORT, ui_dir=tmp_path, operator_groups=groups)
+
+
+def test_the_flag_replaces_the_default_and_beats_the_distribution_default(
+    monkeypatch, tmp_path: Path
+) -> None:
+    import sys
+    import types
+
+    from arras.devhost import main
+
+    runs: list[dict[str, Any]] = []
+    mod = types.ModuleType("uvicorn")
+    mod.run = lambda app, **kw: runs.append({"app": app, **kw})  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "uvicorn", mod)
+    ui = ["--no-demo", "--ui", str(tmp_path)]
+    main(ui)
+    main([*ui, "--operator-group", "ops", "--operator-group", "owners"])
+    main(ui, operator_groups=("maintainers",))
+    main([*ui, "--operator-group", "ops"], operator_groups=("maintainers",))
+    assert [r["app"].operator_groups for r in runs] == [
+        ("admins", "builders"),
+        ("ops", "owners"),
+        ("maintainers",),
+        ("ops",),
+    ]
+    with pytest.raises(SystemExit) as e:
+        main([*ui, "--operator-group", "a b"])
+    assert e.value.code == 2 and len(runs) == 4

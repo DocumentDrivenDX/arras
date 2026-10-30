@@ -65,7 +65,7 @@ and catalog version 1. No runtime keys are introduced for either. Python distrib
 and npm package versions follow `pyproject.toml`; they remain separate from the
 manifest schema, contract versions and the `arras.view` vocabulary version. The packagable host
 surface includes `arras.telemetry.dropped()` and the scoped naming composition values below,
-while emitters, operation/span objects and exporter internals remain private. The conformance selection is `Harness`, `Limit`, `Result`, `Report` and `run_corpus`; corpus
+while emitters, operation/span objects and exporter internals remain private. The conformance selection is `Harness`, `HarnessBase`, `Limit`, `Result`, `Report` and `run_corpus`, and `arras.backend` is a host module (`Backend`, `Provider`, `Migrates` and the names their signatures use); corpus
 loading helpers are not host API. Development-host and credential helpers are classified as
 development tooling, separately from the host import allowlist.
 
@@ -412,6 +412,21 @@ This is a development-tool seam, not an import for a production host. Mocked
 uvicorn tests must assert the exact selected value reaches the constructed app
 and banner without starting a database or server.
 
+`arras.alias.alias_package(name, *, target="arras", modules=None) -> None` serves `arras`
+under another import name for a downstream distribution that kept an older one. The
+distribution ships a thin package whose `__init__.py` calls `alias_package(__name__)`; every
+module imported below it (`name.model`, `name.ui.assets`) is then the `arras` module object itself,
+loaded once, so `name.X is arras.X`, `__name__` and `__spec__` stay canonical, and no second copy is
+created. The finder is inserted at the front of `sys.meta_path` (a repeated call replaces the
+earlier finder for the same name), the loader restores the module's `__spec__` after the import
+system replaces it, so `importlib.resources` works, and the loader has `get_code` and the spec an
+origin, so `python -m name.x` runs the real module. A module the alias package itself contains
+(`name/__main__.py`, a renamed launcher) is never replaced. `name` also forwards attribute access
+to `arras` (`name.Arras is arras.Arras`). `modules`, when given, closes the set: only the listed
+dotted submodules (`"model"`, `"ui.assets"`) and the packages leading to them import, and any other
+`name.<module>` is `ModuleNotFoundError`. It renames nothing on the wire: contract, vocabulary,
+action and CSS identities remain canonical.
+
 `arras.mcp.launch(argv=None, *, distribution=None, telemetry_factory=None) -> None` is the supported
 callable launcher for a thin downstream command. `argv` is a sequence of strings,
 or the process arguments when absent. It supports only `-h`/`--help` in this cut;
@@ -633,11 +648,32 @@ The manifest itself is not a hashed member of `files`.
 A theme bundle uses the same envelope with `kind: "theme"`, its own package
 identity, `contracts` matching its supported Arras surfaces, and
 `entry: {stylesheet: <listed CSS path>, fonts?: [<listed font paths>],
-favicon?: <listed image path>}`. It additionally requires
+favicon?: <listed image path>, appearance?: "light" | "dark"}`. It additionally requires
 `ui_versions: [<exact compatible UI versions>]`, a nonempty unique string list;
 the active page package version must be listed. A theme has no HTML/JavaScript
 entry, executable widget reference or schema_browser field. The stylesheet and
 optional font/favicon are trusted host-supplied assets, not module input.
+`appearance` declares that the theme supplies the values of one appearance only: the
+served page's `<html>` element then carries `data-appearance="<value>"` (replacing any
+the page had), which the stylesheet's nearest-ancestor rule reads (ADR-029), so the
+library's derived tokens follow the theme and not the system's preference. Without it
+the page follows the system, and the theme must supply the role tokens for both
+appearances (the dark ones under `@media (prefers-color-scheme: dark)`, or by
+`light-dark()`); a `color-scheme` in the theme's stylesheet is not an appearance the
+library reads. Any other value refuses the manifest.
+
+`arras.ui.assets.build_theme_manifest(output, *, stylesheet, favicon=None, fonts=(),
+package_name="theme", package_version="1", ui_versions=None) -> Path` builds such a
+bundle: it copies the stylesheet, optional favicon and fonts into `output` under their own
+file names, writes `theme-manifest.json` with each file's SHA-256, size and MIME type and the
+contract versions this build serves, defaults `ui_versions` to the installed Arras version, and
+reads the result back with `load_manifest(..., kind="theme")` before returning it. A bundle it
+returns is one `create_app(theme_manifest=...)` accepts; anything the loader would refuse
+(a missing or unsupported file, a repeated file name, a stylesheet that is not CSS) raises
+`ValueError` and leaves no manifest. `python -m arras.ui theme-manifest --css FILE --out DIR
+[--favicon FILE] [--font FILE]... [--package-name N] [--package-version V] [--ui-version V]...`
+is the same operation and prints the manifest path. Theme assets are served by manifest digest,
+as above.
 
 Manifest input is bounded to 1 MiB and 10,000 file entries; each file to 32 MiB
 and total listed bytes to 64 MiB. Paths are canonical relative POSIX paths with
@@ -670,8 +706,10 @@ Two downstream routes are supported:
   fonts, light/dark values and favicon. React/ReactDOM remain single host peers;
   downstream private design-system dependencies never enter Arras metadata.
 - A prebuilt page uses the theme manifest for CSS tokens/fonts/favicon and the
-  existing Brand name/title/wordmark/mark selection. It uses built-in widgets;
-  replacing React widgets requires the host-build route, not runtime code loading.
+  existing Brand name/title/wordmark selection. It uses built-in widgets, including
+  the built-in Mark: `Brand(logo="theme")` shows that mark there, and a theme-supplied
+  mark or replaced React widgets require the host-build route (a `Mark` in a
+  `DesignSystemProvider`), not runtime code loading.
 
 The neutral downstream proof includes an actual consumer-owned theme package,
 not only inline widget functions or a stylesheet directory. Its minimal shape is:
@@ -756,7 +794,14 @@ contract version 1: one `.arras-root` containing a region labelled
 `Downstream widget controls` with all six replacement markers
 `data-theme-button`, `data-theme-text-field`, `data-theme-text-area`,
 `data-theme-select`, `data-theme-notice`, `data-theme-mark`, and a
-`[data-arras-app]` subtree holding the actual public app. The actual app must use
+`.arras-root` holding the actual public app (`.gb`, or `[data-testid="console-header"]`
+with `--console`). The region holds the Button, TextField, TextArea and Select in
+that tab order. Focus-ring contrast is measured against the composited
+background colours of the controls' ancestors, so a background image, gradient or
+opacity on any of them is refused. A failed fixture requirement is reported by name
+(printed and recorded as `requirement`); the shipped `support/QUALIFICATION.md`
+states the full fixture contract, and `WidgetControls()` in the testkit host export
+renders the region from the design system in context. The actual app must use
 the replacement Mark plus an app-owned replacement Button/TextField: open its
 Command palette through the normal shortcut, fill its labelled combobox, close
 by Escape and verify focus restoration. Showcase-only markers or a root hook
@@ -800,12 +845,13 @@ opt-in subpaths, keeping existing production runtime/type/style entries unchange
 | Subpath | Export | Boundary |
 | --- | --- | --- |
 | `@documentdrivendx/arras-ui/testkit` | `createAcceptanceConfig(options)` plus `AcceptanceConfigOptions` (type) | Node-only Playwright configuration factory; never a production/browser import |
-| `@documentdrivendx/arras-ui/testkit/host` | `AcceptanceHost()` | Browser acceptance-fixture component reusing the canonical development-host toolbar/shell; no Node or Playwright in its browser graph |
+| `@documentdrivendx/arras-ui/testkit/host` | `AcceptanceHost()`, `WidgetControls()` | Browser acceptance-fixture components: the canonical development-host toolbar/shell, and the labelled region of the six widgets drawn from the design system in context (the `--host-build` fixture's controls); no Node or Playwright in its browser graph |
 
 The factory takes one strict object with required `baseURL: string`,
 `schemaBaseURL: string`, `outputDir: string`, and optional `themeId: string =
 "default"`, `expectedBrand` (existing Brand shape, default `{name: "Arras"}`),
-`expectedSurface: {light: string, dark: string}` and `baselineDir: string`.
+`expectedSurface: {light: string, dark: string}`, `baselineDir: string` and
+`hostAppearanceProvider: boolean = false`.
 Unknown keys, wrong types, empty values and unsafe URLs refuse configuration.
 Both URLs are credential/query/fragment-free HTTP(S) root origins with no path
 prefix in acceptance profile v1, and must differ because schema-administration
@@ -817,6 +863,12 @@ Output/baseline directories are explicit host-owned paths. Color expectations
 are opaque `rgb(r, g, b)` strings with integer channels from 0 through 255; normalize
 spacing before exact computed-color comparison. Use the existing documented
 default surfaces when omitted.
+`hostAppearanceProvider: true` states that the host installs its own appearance
+provider above the Arras root (`data-appearance` or an inline `color-scheme`, or a
+design-system provider that sets them). The `host-isolation` specs that plant their own
+appearance providers and read the system's preference then skip, because their
+premise is a bare host, and the appearance spec still asserts that nothing on or
+beneath the Arras root sets an appearance. It is the only assertion the flag relaxes.
 The selected expected Brand and surfaces parameterize the existing exact assertions,
 not exemptions from them. Hosts provide expectations matching their selected theme.
 
@@ -825,7 +877,10 @@ by the source suite. It requires all existing nonvisual projects (`chromium`,
 `schema-admin`, `browser`) without caller-supplied test filtering, skip lists,
 selector scripts or assertion callbacks. On Darwin it also runs the existing
 visual project with an explicit per-theme `baselineDir`; absent/missing/different
-baselines fail. Other platforms omit only the visual project and report that fact.
+baselines fail. The factory does not require `baselineDir` to build the config:
+only the visual project compares screenshots, so only it needs the directory, and
+it fails at its start, naming it, when none was given. A run of the nonvisual
+projects alone needs none. Other platforms omit only the visual project and report that fact.
 No automatic baseline rewrite is enabled. Generating/updating snapshots is an
 explicit developer Playwright action in a selected directory and is never an
 automatic CI recovery. Retain each test's viewport, contrast, incomplete-review,
@@ -963,7 +1018,7 @@ must not determine its appearance or theme-change subscription.
 | `Arras.session(principal)` | `-> Ontology` | yes | CONTRACT-001. | |
 | `Arras.close()` | `-> None` | yes | Releases anything Arras holds. It does not close the host's pool or connections. | |
 | Public names | `arras.__all__` and the deliberate host/launcher module names in the carried public catalog | yes | The host MUST import only its selected catalogued names, including the narrow launcher subset above. Arras MUST NOT import any module of the host. A build check fails on a violation in either direction. | CI check in each repository; concrete promised-seam import/composition smoke. |
-| `arras.testing.InMemory()`, `example_module()` | the memory adapter's two backends, `memory` (reader and provider) and `memory_replica` (reader), the people they know, and a `Arras` over them | no (host tests) | The only public way to get in-memory backends; `arras.fakes` is internal. It follows the backend contract and passes its conformance corpus: refusals, freshness, outages and attribution behave as on the other adapters. The replica copies `memory` only on `sync()`. `person(user, module, *modes)` grants access, `register`, `import_records` and `start(backends=...)` act as the administrator, and `set_available(backend, up)` takes a backend down. Access is a grant table, not Postgres roles or Unity Catalog. It places its modules itself (record store `memory`, replica `memory_replica`). | A host's own tests use it; it measures neither latency, migration nor connection sources. |
+| `arras.testing.InMemory()`, `example_module()` | the memory adapter's two backends, `memory` (reader and provider) and `memory_replica` (reader), the people they know, and a `Arras` over them | no (host tests) | The only public way to get in-memory backends; `arras.fakes` is internal. It follows the backend contract and passes its conformance corpus: refusals, freshness, outages and attribution behave as on the other adapters. The replica copies `memory` only on `sync()`. `person(user, module, *modes, admin=False)` grants access, `register`, `import_records` and `start(backends=...)` act as the administrator, and `set_available(backend, up, *, reason="unreachable")` takes a backend down, saying why. Access is a grant table, not Postgres roles or Unity Catalog. It places its modules itself (record store `memory`, replica `memory_replica`). | A host's own tests use it; it measures neither latency, migration nor connection sources. |
 | `arras.console.create_app(arras, *, principal_for_request, base_path="")` | `-> ASGIApp` | yes (P1) | See CONTRACT-006. | |
 | `python -m arras.mcp` | stdio MCP server | no | The only code that reads the environment, in one module (`arras.mcp.config`): it builds a `Arras` from its own configuration and one `Principal` from the user's token. See CONTRACT-007. | A host that embeds the library never goes through it. |
 
@@ -1376,8 +1431,8 @@ change Truss 0.0.45, or permit reads/actions as an installing identity.
 | `TrussBox(..., credential_source=None)` | Forward the source. Assign each initial registrar/module membership only when the person role or that membership's target managed role was newly created by this instance. Startup, restart and repeated `load()` of an existing module MUST NOT regrant revoked access, reset expiry or remove independent memberships. Existing modules attach without default-grant reconciliation; empty-state seeding is separate from identity bootstrap. |
 | Explicit sandbox selection, `TrussBox.person(name, role)` | Reconcile only the installing role's direct grants of known managed reader/writer/auditor roles and the current installation's registrar role, across hosts rather than only this process's `minted` map. Preserve independent grantors' rows, unrelated memberships, inherited rights and role attributes. A selected sandbox label does not promise exclusive effective privileges: PostgreSQL's full current authorization remains authoritative. Ordinary startup and principal reads MUST NOT invoke reconciliation implicitly. Existing explicit grant/revoke/expiry development controls remain explicit; no broad grantor/inheritance revocation is added. |
 | Persistent `set_password` / `use_token` | Refuse credential replacement; these development helpers remain usable on throwaways. Coordinated persistent rotation is outside EX-06. Never change a shared database password behind the source or another host's principal. |
-| Devhost composition | `devhost.build(..., credential_source=None)` forwards an explicitly supplied source; persistent programmatic construction without it refuses rather than reading or creating files implicitly. CLI composition alone constructs the file source below: `--truss-credentials PATH`, then `ARRAS_TRUSS_DEV_CREDENTIALS`, then the default. Core/adapter do not read ambient environment or credential files. An explicit path option without persistent Truss is a startup argument error. |
-| Shared credential file | Default `~/.arras/truss-dev-credentials/<scope>.json`; `scope` is a stable hash of credential-free host/port and installer role, excluding database because roles span databases. Aliased endpoints are not automatically equated: sharing hosts must select the same file. Version 1 contains a role-to-password map. The host-owned source atomically gets/creates independent random per-role passwords only when `create=True`; `create=False` never creates a missing file/entry. |
+| Devhost composition | `devhost.build(..., credential_source=None)` forwards an explicitly supplied source; persistent programmatic construction without it refuses rather than reading or creating files implicitly. CLI composition alone constructs the file source below: `--truss-credentials PATH`, then `<PREFIX>_TRUSS_DEV_CREDENTIALS` (the distribution's `env_prefix`; absent for `ARRAS`), then `ARRAS_TRUSS_DEV_CREDENTIALS`, then the default. Core/adapter do not read ambient environment or credential files. An explicit path option without persistent Truss is a startup argument error. |
+| Shared credential file | Default `~/.arras/truss-dev-credentials/<scope>.json` (`~/.<prefix>/...` for a distribution whose `env_prefix` is not `ARRAS`); `scope` is a stable hash of credential-free host/port and installer role, excluding database because roles span databases. Aliased endpoints are not automatically equated: sharing hosts must select the same file. Version 1 contains a role-to-password map. The host-owned source atomically gets/creates independent random per-role passwords only when `create=True`; `create=False` never creates a missing file/entry. |
 | File integrity/concurrency | Hold an exclusive stable sidecar process lock across read/validate/get-or-create and atomic same-directory replacement; locking a replaced data inode is insufficient. Use current-user ownership, private parent directory and 0600 regular data/lock files; refuse symlinks, unsafe existing permissions, malformed/unknown-version/duplicate-key data and oversized input without clobbering. Check existing ancestors before making missing directories, then validate the resulting parent; an unsafe ancestor must not create children behind its link. Open paths so nonregular FIFO/device entries cannot block validation. Bound reads to 64 KiB, flush writes before publishing, and release locks on failure. Never log contents, passwords, source exception text or credential-bearing URLs. |
 
 Existing development roles whose old generated passwords were not retained need

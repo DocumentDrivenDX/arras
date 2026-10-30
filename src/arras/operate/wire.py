@@ -30,6 +30,7 @@ from arras.http import (
     Response,
     Scope,
     Send,
+    mounted_path,
     origin_in,
     parse_origin,
     post_origin_ok,
@@ -201,14 +202,11 @@ class WireApp:
         ]
 
     async def handle(self, scope: Scope, receive: Receive) -> Response:
-        method, path = scope["method"], scope["path"]
-        root = scope.get("root_path") or ""
-        if root and path.startswith(root):
-            path = path[len(root) :] or "/"
-        if self.base:
-            if not (path == self.base or path.startswith(self.base + "/")):
-                return self.json(404, {"error": {"type": "NotFound", "message": "not found"}})
-            path = path[len(self.base) :] or "/"
+        method = scope["method"]
+        resolved = mounted_path(scope, self.base)
+        if resolved is None:
+            return self.json(404, {"error": {"type": "NotFound", "message": "not found"}})
+        path = resolved[0][len(self.base) :] or "/"
         headers: dict[str, str] = {}
         repeated: set[str] = set()
         for k, v in scope.get("headers", []):

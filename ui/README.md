@@ -160,7 +160,7 @@ const options: AcceptanceConfigOptions = {
   themeId: "neutral-theme",
   expectedBrand: { name: "Neutral Host", title: "Neutral Host Console", logo: "theme" },
   expectedSurface: { light: "rgb(248, 250, 252)", dark: "rgb(2, 6, 23)" },
-  // Required on Darwin; points to reviewed, theme-specific snapshots.
+  // Needed on Darwin only by the visual project; points to reviewed, theme-specific snapshots.
   baselineDir: "./tests/arras-baselines/neutral-theme",
 };
 
@@ -209,10 +209,23 @@ inventory and every file digest, then materializes that verified suite in a temp
 the consumer project so Node resolves its installed peers and module type normally. A global teardown
 removes the materialized copy. It never falls back to an Arras checkout. The canonical suite contains
 17 specs and requires all three nonvisual projects (`chromium`, `schema-admin`, `browser`); the `visual`
-project runs on Darwin only and compares theme-specific snapshots. Darwin callers must supply
-`baselineDir`. Linux reports visual comparison as skipped while still running every nonvisual project.
+project runs on Darwin only and compares theme-specific snapshots, so `baselineDir` is needed by that project
+alone: the factory builds the config on Darwin without it, and a run that selects only the nonvisual projects
+(`--project=chromium --project=schema-admin --project=browser`) compares no screenshot and needs none. A run
+that includes the `visual` project without a `baselineDir` fails at its start with a message that names it.
+Linux reports visual comparison as skipped while still running every nonvisual project.
 Snapshot updates are disabled by the factory. Create or change baselines only through an explicit,
 reviewed update workflow; do not reuse the default-theme snapshots for a different theme.
+
+The `host-isolation` spec assumes a bare host: it plants its own `data-appearance` and `color-scheme` providers
+around the Arras root and checks that the root follows the nearest one, then the system's preference, so it only
+means something where nothing above the root already says an appearance. A host that sets `data-appearance` or
+an inline `color-scheme` above the root (or wraps a design-system provider that does) sets
+`hostAppearanceProvider: true`: the two specs that plant providers are then skipped, and the appearance spec
+keeps its half that does not depend on the host: no element on or beneath the Arras root carries
+`data-appearance`, `data-theme` or an inline `color-scheme`, whichever way the system's preference goes. Arras
+installs none either way. The default is `false`, and the host's own appearance
+behaviour is then a matter for the host's own tests.
 
 `baseURL` and `schemaBaseURL` must be distinct credential-free root HTTP(S) origins. `outputDir` is
 consumer-owned and should be unique for simultaneous runs. `themeId` defaults to `default`; `expectedBrand` defaults to `{ name: "Arras" }`, and
@@ -220,6 +233,13 @@ consumer-owned and should be unique for simultaneous runs. `themeId` defaults to
 step: provision Chromium using the consumer's normal Playwright setup. The `AcceptanceHost` browser
 entry is intended for a consumer-owned compiled host; the suite itself exercises its public HTTP
 surface and does not depend on private Arras source modules.
+
+`arras-ui-qualify --host-build` (checked by the package's `support/QUALIFICATION.md`) is a separate, narrower
+check with its own fixture contract: a first `.arras-root` with six widgets marked `data-theme-*`, a region labelled
+`Downstream widget controls` with the four controls in tab order, the public app drawn through the host's widgets, and
+no gradient, image or opacity behind the focus rings. The runner names the first requirement a fixture misses; the
+contract is the section "Host-build fixture contract" of that file, and `WidgetControls` from
+`@documentdrivendx/arras-ui/testkit/host` renders the region from the design system in context.
 
 ### Visual baselines
 
@@ -686,6 +706,24 @@ check leaves fresh registry installation and publication qualification separate.
 dev host, and `src/embed.tsx`, the page `arras.ui` serves) use the built-in design system and load no
 theme. Nothing in the library sets an attribute, a class, a style or a storage entry on the host's document.
 
+**A runtime theme (the prebuilt page).** `arras.ui.create_app(theme_manifest=...)` links a host's stylesheet,
+favicon and fonts into the page the wheel carries (CONTRACT-005); that page draws with the built-in widgets, so
+a runtime theme is tokens and CSS only. Three limits follow:
+
+- *Both appearances, or one declared.* A theme that sets the role tokens for one appearance only (say the
+  eighteen light values) breaks on a viewer whose system prefers dark: the derived tokens (the alternate row
+  colour, the error ink, the shadow, `color-scheme`) follow `prefers-color-scheme` while the theme's text stays
+  dark, and axe reports `color-contrast` on the Operate view. A `color-scheme` set in the theme's stylesheet is
+  not read; the library reads only `data-appearance` on an ancestor or an inline `color-scheme` on one. A theme
+  therefore either supplies both sets of values (the dark one under `@media (prefers-color-scheme: dark)`, or with
+  `light-dark()`), or declares its appearance in the manifest, `"entry": {"stylesheet": "theme.css",
+  "appearance": "light"}` (`"light"` or `"dark"`), and the served page's `<html>` then carries
+  `data-appearance="light"` whatever the system prefers.
+- *The mark.* `Brand(logo="theme")` draws the design system's `Mark`; the prebuilt page has only the built-in
+  one, so it shows the built-in mark. A theme-supplied mark needs the host-built route: a `Mark` widget in a
+  `DesignSystemProvider`. The theme manifest has no mark entry.
+- *Widgets.* Replacing a widget (`Button`, `TextField`, ...) is the host-built route as well.
+
 **Accessibility.** The built-in text and control colours meet WCAG 2.1 AA in both appearances (4.5:1 for text, 3:1
 for control borders and the focus ring); every control has a visible focus ring on `:focus-visible`; a field's
 label, hint and error are tied to it by `for`, `id` and `aria-describedby`; a `Notice` carries a role and a glyph
@@ -819,6 +857,10 @@ fails if a built stylesheet has a selector outside the root; CI runs it on the l
 - **Cascade.** The rules stay in Tailwind's layers, with the `.arras-*` classes unlayered above them.
   A host's layered rules (its own Tailwind) do not override the root's, which are the more specific; a host's
   *unlayered* element rule (`button { ... }`) outranks the layered ones inside the root.
+  The Graph Browser's reset of its own controls (`font` and `color` inherited by `button`, `input` and `select`) is
+  unlayered but carries no specificity (`:where(.arras-root .gb) :where(...)`), so a host's rule on its own control
+  class, or the class a design-system widget draws, wins over it without `!important`, whatever its order in the
+  page; the `.arras-btn` widgets and the `.gb-*` classes are unaffected.
 - **Tests.** `src/test/scope-css.test.ts` for the scoper; `e2e/host-isolation.spec.ts` for the built page
   with a host's markup and rules planted around the root: the host's elements keep their browser defaults,
   its same-named tokens do not reach the root, the appearance follows the host's `data-appearance`, then the OS,

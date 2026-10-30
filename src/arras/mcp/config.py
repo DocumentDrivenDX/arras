@@ -44,6 +44,7 @@ from arras.names import BACKEND_NAME
 DEFAULT_USER_CLAIMS = ("preferred_username", "email", "sub")
 LOG_LEVELS = ("DEBUG", "INFO", "WARNING", "ERROR")
 DEFAULT_CONFIG_DIR = "config"
+MAX_WARNINGS = 8
 
 Owner = Literal["ops", "dev"]
 
@@ -129,6 +130,9 @@ class Config:
     config_dir: str = DEFAULT_CONFIG_DIR
     sources: tuple[str, ...] = ()
     distribution: DistributionConfig = field(default_factory=DistributionConfig)
+    warnings: tuple[str, ...] = ()
+    """What the environment did that a deployer may not intend (never a value): at most
+    `MAX_WARNINGS` lines, such as a custom-prefix key shadowing a different `ARRAS_` value."""
     """The files actually read, lowest precedence first (for the startup diagnostic)."""
 
     @classmethod
@@ -139,8 +143,9 @@ class Config:
         `ConfigError` naming every file and key that cannot be used."""
         selected = distribution or DistributionConfig()
         problems: list[str] = []
+        warnings: list[str] = []
         env = _normalize_environment(
-            os.environ if env is None else env, selected.env_prefix, problems
+            os.environ if env is None else env, selected.env_prefix, problems, warnings
         )
 
         def get(key: str) -> str | None:
@@ -213,6 +218,7 @@ class Config:
             config_dir=config_dir,
             sources=tuple(sources),
             distribution=effective_distribution,
+            warnings=_bounded(warnings),
         )
 
     def startup_line(self) -> str:
@@ -336,10 +342,24 @@ def _unknown(path: str, dotted: str, name: str) -> str:
     return f"{path}: {dotted}: unknown key"
 
 
+def _bounded(warnings: list[str]) -> tuple[str, ...]:
+    """At most `MAX_WARNINGS` lines; the rest are counted, not listed."""
+    if len(warnings) <= MAX_WARNINGS:
+        return tuple(warnings)
+    return (*warnings[:MAX_WARNINGS], f"and {len(warnings) - MAX_WARNINGS} more alias conflicts")
+
+
 def _normalize_environment(
-    raw_env: Mapping[str, str], prefix: str, problems: list[str]
+    raw_env: Mapping[str, str],
+    prefix: str,
+    problems: list[str],
+    warnings: list[str] | None = None,
 ) -> dict[str, str]:
-    """Normalize known canonical and selected-prefix aliases, retaining safe diagnostics."""
+    """Normalize known canonical and selected-prefix aliases, retaining safe diagnostics.
+
+    A key set under the selected prefix and under `ARRAS_` to different nonblank values is
+    reported as a warning naming both variables and which one is used, never a value. The
+    credential keys are the exception: they refuse (below)."""
     canonical_values: dict[str, list[tuple[str, str]]] = {}
     normalized: dict[str, str] = {}
     for original, raw_value in raw_env.items():
@@ -371,6 +391,15 @@ def _normalize_environment(
                 fallback = next((v for _, v in values if v), None)
             if fallback is not None:
                 normalized[canonical] = fallback
+        if (
+            canonical not in ("ARRAS_TOKEN", "ARRAS_TOKEN_FILE")
+            and warnings is not None
+            and len({value for _, value in values if value}) > 1
+        ):
+            used = next(name for name, value in values if value and name != canonical)
+            warnings.append(
+                f"{used} and {canonical} are both set to different values; {used} is used"
+            )
         if (
             canonical in ("ARRAS_TOKEN", "ARRAS_TOKEN_FILE")
             and len({value for _, value in values if value}) > 1

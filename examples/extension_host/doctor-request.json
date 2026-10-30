@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "expected_packages": {
-    "arras": "0.6.4",
-    "@documentdrivendx/arras-ui": "0.6.4"
+    "arras": "0.6.5",
+    "@documentdrivendx/arras-ui": "0.6.5"
   },
   "expected_contracts": {
     "CONTRACT-004": 6,

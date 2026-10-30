@@ -14,8 +14,8 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
-import { describe, expect, it } from "vitest";
-import { normalizeAcceptanceOptions } from "../testkit/config";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { createAcceptanceConfig, normalizeAcceptanceOptions } from "../testkit/config";
 import { CANONICAL_SPECS } from "../testkit/inventory";
 import { resolveAcceptanceTestDir } from "../testkit/layout";
 import { materializePackedAcceptanceSuite } from "../testkit/resources";
@@ -75,6 +75,83 @@ describe("the portable acceptance profile", () => {
       expectedBrand: { name: "Example", title: "Example Console", logo: "theme" },
       expectedSurface: { light: "rgb(1, 2, 3)", dark: "rgb(255, 254, 253)" },
       baselineDir: expect.stringContaining("baselines/example"),
+    });
+  });
+
+  it("carries hostAppearanceProvider only when the host sets it, and refuses a non-boolean", () => {
+    expect(normalizeAcceptanceOptions(valid)).not.toHaveProperty("hostAppearanceProvider");
+    expect(
+      normalizeAcceptanceOptions({ ...valid, hostAppearanceProvider: false }),
+    ).not.toHaveProperty("hostAppearanceProvider");
+    expect(normalizeAcceptanceOptions({ ...valid, hostAppearanceProvider: true })).toMatchObject({
+      hostAppearanceProvider: true,
+    });
+    expect(() => normalizeAcceptanceOptions({ ...valid, hostAppearanceProvider: "yes" })).toThrow(
+      "hostAppearanceProvider must be a boolean",
+    );
+  });
+
+  it("makes the host-isolation spec's bare-host assumption explicit and skippable, and keeps its Arras-installs-none assertion", () => {
+    const spec = readFileSync(
+      join(import.meta.dirname, "../../e2e/host-isolation.spec.ts"),
+      "utf8",
+    );
+    expect(spec).toContain("Assumption: the host installs no appearance provider");
+    // the two specs that plant their own providers skip for such a host; the appearance spec still checks Arras's own subtree
+    expect(spec.match(/test\.skip\(HOST_APPEARANCE_PROVIDER, SKIP_BARE_HOST\)/g)).toHaveLength(2);
+    expect(spec).toContain("if (HOST_APPEARANCE_PROVIDER) {");
+    expect(spec).toContain(".arras-root, .arras-root *");
+  });
+
+  describe("the visual project's baselineDir", () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      Reflect.deleteProperty(process.env, "ARRAS_ACCEPTANCE_RUNTIME");
+    });
+    const onPlatform = (platform: string) => {
+      const real = process.platform;
+      Object.defineProperty(process, "platform", { value: platform });
+      return () => Object.defineProperty(process, "platform", { value: real });
+    };
+    const projectNames = (options: Parameters<typeof createAcceptanceConfig>[0]) =>
+      (createAcceptanceConfig(options).projects ?? []).map((p) => p.name);
+
+    it("is not needed to build a config on macOS: the nonvisual projects run without it", () => {
+      const restore = onPlatform("darwin");
+      try {
+        expect(projectNames(valid)).toEqual(["chromium", "schema-admin", "browser", "visual"]);
+        expect(createAcceptanceConfig(valid).metadata?.arrasAcceptance.visualComparison).toBe(
+          "enabled-requires-baselineDir",
+        );
+      } finally {
+        restore();
+      }
+    });
+
+    it("is carried into the config when given, and the visual project is absent elsewhere", () => {
+      const restore = onPlatform("darwin");
+      try {
+        const withDir = createAcceptanceConfig({ ...valid, baselineDir: "./baselines/example" });
+        expect(withDir.metadata?.arrasAcceptance.visualComparison).toBe(
+          "enabled-with-reviewed-baselines",
+        );
+        expect(withDir.snapshotPathTemplate).toContain("baselines/example");
+      } finally {
+        restore();
+      }
+      const restoreLinux = onPlatform("linux");
+      try {
+        expect(projectNames(valid)).toEqual(["chromium", "schema-admin", "browser"]);
+      } finally {
+        restoreLinux();
+      }
+    });
+
+    it("is required by the visual spec itself, which fails with a message that names it", () => {
+      const spec = readFileSync(join(import.meta.dirname, "../../e2e/visual.spec.ts"), "utf8");
+      expect(spec).toMatch(
+        /if \(!acceptance\.baselineDir\)\s+throw new Error\(\s*"The visual project/,
+      );
     });
   });
 

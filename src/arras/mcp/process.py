@@ -102,6 +102,8 @@ def _run(
         for problem in e.problems:
             print(f"{label}: configuration: {problem}", file=sys.stderr)
         raise SystemExit(2) from None
+    for warning in config.warnings:
+        print(f"{label}: configuration: warning: {warning}", file=sys.stderr)
     config.configure_logging(sys.stderr)
     try:
         context = telemetry._make_context(  # pyright: ignore[reportPrivateUsage]

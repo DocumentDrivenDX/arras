@@ -2755,3 +2755,127 @@ receipts or treat that report as installed/managed proof. Truss0.0.50 support pi
 remain selected until separately authorized installed0.0.51 qualification.
 The shared heavy budget remains exhausted; no native/installed/Actions/cloud,
 release, new agents/chats or reset attempts were launched here.
+
+### Downstream integration release0.6.5 — local execution authority
+
+The human directed review, normal merging and the next Arras release for the
+fifteen downstream changes. The existing Stack owner accepted their source
+review, subject to the PR23 empty-operator-groups correction and combined actual
+qualification. The integration preserves all fifteen original head ancestors;
+older PR10 UMF actions are excluded from this batch pending a separate comparison.
+
+The candidate includes explicit operator groups and development namespace/path
+selection, safe alias conflict diagnostics, wheel-carried development UI,
+console entrypoints, real framework mount prefixes, theme manifests/appearance,
+backend conformance support, explicit host-isolation assumptions, public alias
+packages and strict visual-baseline selection. Explicit empty operator defaults
+must refuse before startup; an explicit flag retains precedence.
+
+All overlap resolutions preserve the original requirements and tests: changelog
+entries, namespace-warning and development-path rules, installed devhost and CLI
+gates, backend/alias catalog exports and both host-isolation/visual test groups.
+Routine CI remains lean; full qualification remains explicitly selected. No
+unreviewed baseline is regenerated to obtain a green result, and host-provider
+opt-in is not enabled to hide a bare-host failure. Mandatory UMF qualification uses ARRAS_REQUIRE_UMF=1.
+
+Version0.6.5 selects unchanged qualified Truss0.0.50, Weft0.4.51 and official
+Python Core0.10.0. It does not request Access. Truss0.0.52's separate actual
+Accessdev8 runtime-identity failure is preserved in its owning plan and does not
+qualify or block an unrelated unchanged Arras dependency cohort.
+
+The human authorized local qualification/publication with existing credentials,
+without Actions, cloud provisioning, new grants or spending. The coordinator
+recorded4504seconds under the existing shared lock:3600qualification,
+900publication/public-consumer verification and two runner reserves. Previous
+usage and failed attempts remain intact. One expensive job at a time, at most
+two heavy workers, original command assertions/timeouts, no automatic retries or
+allowance borrowing apply. The estimate uses1842seconds of serial0.6.4 release
+jobs plus matrix, local emulation and fresh public-consumer work; fit is not yet
+measured. At the ceiling, retain actual results and remaining gates.
+
+The first visual campaign at `2e5d0b4` passed 57 cases and failed 10 operator views.
+The [retained Chromium diagnostic](evidence/arras-0.6.5-local-20261030/mode-switch-cascade/binding-receipt.json)
+measures both actual 0.6.4 and first 0.6.5 wheel styles at `12px/20px/600`; the explicitly
+reconstructed reset preceding `f7e0015` (October 22) and proposed mode-only
+`font:inherit` yield `15px/22px/400`. This earlier change predates PR27. Existing
+Stack review accepted restoring the checked-in visual contract through only the
+mode control, retaining PR27's zero-specificity host reset and all 67 canonical
+baseline bytes, masks, counts and thresholds. The draft mockup's `12px/600` segmented control
+still differs from that reviewed contract; full prototype/design alignment
+remains open. Canonical goldens remain unchanged. The CSS correction requires
+new package bytes and fresh artifact-bound proofs; earlier passing installed
+receipts retain their original hashes and do not qualify the rebuilt artifact.
+
+The packed-host campaign at `d962966` retained 262 passes and 10 visual failures:
+its neutral-theme goldens expected compact `12px/20px/600`, conflicting with the
+canonical `15px/22px/400` contract. The existing Stack owner and release owner
+reviewed every affected light/dark, wide/narrow pair and accepted only the mode
+text and its two-pixel flow change. The [pair review](evidence/arras-0.6.5-local-20261030/neutral-mode-baseline-review.json)
+binds ten actual captured images to their original hashes; original bytes and the
+failed campaign remain retained. Only those ten neutral-theme images change;
+the other 57 themed and all 67 canonical images, masks, thresholds and counts
+stay unchanged, with no theme-specific CSS. The original full campaign remains
+failed. The evidence assembler requires a fresh complete producer receipt, so a
+new whole themed campaign must pass; a synthetic combination of partial runs
+cannot replace it. Rebuild the sdist for these changed test-source bytes and
+verify the already qualified wheel/npm bytes remain identical.
+
+Ordered qualification:
+
+1. Freeze the combined source, exact reviewed heads and resolutions. Run public
+   content, module/manifest, Ruff, formatting, strict types and the complete
+   Python 3.11 suite, including real framework mounts and alias identity/entrypoints.
+2. Run UI lint/type/unit/integration, public manifest, CSS/external and canonical
+   browser/themed/packed-host qualification with original assertions/baselines.
+3. Build wheel, sdist and wheel-carried npm0.6.5 from the frozen product source.
+   Replace the historical0.6.4 release-wheel guard only with the measured0.6.5
+   artifact selection, preserving mismatch/missing-archive controls. Rebuild and
+   establish final-source/sdist/wheel payload correspondence before release.
+4. Verify fresh installed doctor, development host, extension host, UMF139+139
+   comparisons, source Truss and installed Linux native profiles/cleanup against
+   exact artifacts. Keep original platform limits. Managed/Mac native reuse
+   requires explicit unchanged qualified input correspondence and reviewed
+   source delta; no whole-candidate/unrun pass can be inferred from old receipts.
+5. After review and the normal integration merge, bind the exact source/tag and
+   immutable17-asset schema-v2 bundle. Temporarily prevent automatic release
+   workflow events before tagging/publication, retaining prior workflow states
+   and safe restoration; every head and merge uses a skip-ci marker.
+6. Publish the exact qualified bytes locally. Verify anonymous GitHub/PyPI/npm
+   served bodies and fresh base/npm/public-PyPI extras consumers on their actual
+   named platforms. Keep distinct pre-publication/public-recheck receipts.
+
+No qualification, public merge, tag or publication success is claimed by this
+source preparation. The existing release checklist/contract requirements remain
+binding, with the human's local publication path replacing Actions transport for
+this release only.
+
+
+### Python support scope correction — 2026-10-30
+
+The human narrowed Python support to 3.11: “I don't care about python outside
+3.11”. This supersedes the remaining 3.13 qualification prerequisite. The prepared
+420-second continuation is cancelled without a launch or additional allowance.
+Existing 3.12 results are incidental evidence; 3.13 remains unqualified. Original
+failed attempts, elapsed accounting and cleanup observations remain retained.
+The separate 900-second publication/public-consumer allowance is unchanged.
+
+The candidate declares only the Python 3.11 classifier. The `>=3.11` installer
+minimum remains permissive; later-version installation permission is not a
+support claim. Routine CI and the release workflow already select 3.11 and stay
+unchanged. Every existing required product, UI, native, UMF and public-consumer
+assertion remains in scope on its named platform.
+
+The existing Linux CPython 3.11.17 source receipt has 3,452 passes; its two
+installed-wheel cases pass separately. The source-native suite has 202 passes
+and the installed native campaign has 64 passes plus eight declared limits.
+These receipts qualify their original wheel
+`ebeb45b0b3e6a2fff5fc18094f355fd451a996171d76e2c48286c5b579170c1f`.
+Removing classifiers and changing the packaged README requires new wheel/sdist
+bytes. Preserve every original receipt, rebuild into a separate owned directory,
+and verify complete runtime/UI/npm byte equality against that wheel. Permit only
+the exact reviewed package-metadata changes and their RECORD hashes; retain
+source-archive correspondence and a new explicit artifact-binding receipt.
+No old receipt may acquire a substituted wheel digest or a fabricated fresh-run
+claim. Review the finite rebuild/parity/fresh-installed operation before running
+it, then update the strict selected-wheel guards to the actual measured digest.
+Publication and normal merge remain pending the resulting final packet review.

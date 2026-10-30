@@ -34,6 +34,14 @@ Earlier explicitly deferred releases retain their historical delivery scope.
 Do not advertise a registry install until its download and clean consumer checks
 pass.
 
+## Python release profile
+
+Python 3.11 is the supported and required qualification profile, per the human
+scope decision on October 30, 2026. Later versions permitted by `>=3.11` are
+unqualified and add no release prerequisite. Preserve all required source,
+installed-artifact, UI, native, UMF and public-consumer checks for the named
+platforms. Historical results keep their original versions and artifact hashes.
+
 ## Before Deploy
 
 - Sol reviews Luna's final feature and release changes; blocking findings are
