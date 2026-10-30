@@ -40,7 +40,7 @@ from arras.branding import BRAND_CAPS as BRAND_CAPS
 from arras.branding import Brand
 from arras.core import Arras
 from arras.distribution import DistributionConfig
-from arras.http import Receive, Request, Scope, Send
+from arras.http import Receive, Request, Scope, Send, mounted_path
 from arras.operate import schema_app
 from arras.types import Principal
 from arras.ui._brand_page import branded as branded
@@ -232,12 +232,10 @@ class UI:
     async def _dispatch(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http":
             return
-        root = scope.get("root_path") or ""
-        path = scope["path"]
-        if root and path.startswith(root):
-            path = path[len(root) :] or "/"  # a host's mount keeps the prefix in the path
-        if self.base and not (path == self.base or path.startswith(self.base + "/")):
+        resolved = mounted_path(scope, self.base)
+        if resolved is None:
             return await self._send(send, 404, "text/plain", b"not found")
+        path, root = resolved
         rel = path[len(self.base) :]
         if rel == "" and self.base:
             qs = scope.get("query_string", b"").decode()

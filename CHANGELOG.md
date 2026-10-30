@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+Fixes `ui.create_app`, `console.create_app` and the operate apps under a framework
+mount: with Starlette or FastAPI `Mount("/ontology", ui.create_app(..., base_path="/ontology"))`
+returned 404 for every path, because the prefix was removed twice. `base_path` equal to
+the mount prefix and `base_path=""` now serve the same URLs. Adds Starlette, FastAPI and
+httpx to the development group for the mount tests.
+
 ## 0.6.4 — embedding isolation
 
 Adds explicit identity/API session boundaries and optional `pageEffects=false`
