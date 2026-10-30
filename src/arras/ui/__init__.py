@@ -21,7 +21,12 @@ answers 401 to a viewer with no principal. They are served under a Content-Secur
 `<title>` becomes `brand.title or brand.name` and a `<meta name="arras-brand">` tag carries the brand
 as HTML-escaped JSON for the UI to read (the policy forbids inline scripts, so nothing else is
 injected). A wordmark is text or an `https://` URL (its origin joins `img-src`, nothing else does); anything else is a `ValueError`. `logo="theme"` shows
-the active theme's mark before the name (a wordmark takes precedence); any other value is a `ValueError`.
+the design system's mark before the name (a wordmark takes precedence); this page has the built-in mark only, a
+mark of the host's own comes with a host-built UI; any other value is a `ValueError`.
+
+`theme_manifest` links a host's stylesheet, favicon and fonts into the page (`entry.appearance`, `"light"` or
+`"dark"`, puts `data-appearance` on `<html>` for a theme that supplies one appearance's role tokens; without it the
+theme supplies both, as the page follows the system's preference).
 A field longer than its cap (`BRAND_CAPS`: name 80, title 120, wordmark 2048, tagline 200, counted as the
 browser counts) is a `ValueError`, so the page never shows a field cut short. The default brand is
 `Brand()`, "Arras".
@@ -32,6 +37,7 @@ from __future__ import annotations
 import hashlib
 import html
 import importlib.metadata
+import re
 from collections.abc import Callable
 from pathlib import Path
 
@@ -77,6 +83,24 @@ _TYPES = {  # not left to the platform's table, which differs (a .js as text/pla
     ".html": "text/html; charset=utf-8",
     ".json": "application/json",
 }
+
+
+_HTML_TAG = re.compile(rb"<html(?=[\s>])([^>]*)>", re.IGNORECASE)
+_APPEARANCE_ATTRIBUTE = re.compile(
+    rb"""\sdata-appearance(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?""", re.IGNORECASE
+)
+
+
+def _with_appearance(page: bytes, appearance: str) -> bytes:
+    """The page's `<html>` element carrying the theme's declared `data-appearance` (the theme manifest's
+    `entry.appearance`): the served page is the host here, and a stylesheet's own `color-scheme` is not an
+    appearance the library reads."""
+
+    def tag(match: re.Match[bytes]) -> bytes:
+        attributes = _APPEARANCE_ATTRIBUTE.sub(b"", match.group(1))
+        return b"<html" + attributes + b' data-appearance="' + appearance.encode() + b'">'
+
+    return _HTML_TAG.sub(tag, page, count=1)
 
 
 def not_built_page(brand: Brand, hint: bytes) -> bytes:
@@ -335,6 +359,9 @@ class UI:
                     body = body.replace(b"</head>", link.encode() + b"</head>", 1)
                 else:
                     body = body.replace(b"</title>", b"</title>" + link.encode(), 1)
+                appearance = self.theme_manifest.entry.get("appearance")
+                if appearance:
+                    body = _with_appearance(body, str(appearance))
             return 200, "text/html; charset=utf-8", body
         ctype = str(metadata["mime"])
         if ctype.startswith("text/") or ctype == "application/json":

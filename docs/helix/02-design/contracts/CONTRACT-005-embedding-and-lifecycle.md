@@ -633,11 +633,19 @@ The manifest itself is not a hashed member of `files`.
 A theme bundle uses the same envelope with `kind: "theme"`, its own package
 identity, `contracts` matching its supported Arras surfaces, and
 `entry: {stylesheet: <listed CSS path>, fonts?: [<listed font paths>],
-favicon?: <listed image path>}`. It additionally requires
+favicon?: <listed image path>, appearance?: "light" | "dark"}`. It additionally requires
 `ui_versions: [<exact compatible UI versions>]`, a nonempty unique string list;
 the active page package version must be listed. A theme has no HTML/JavaScript
 entry, executable widget reference or schema_browser field. The stylesheet and
 optional font/favicon are trusted host-supplied assets, not module input.
+`appearance` declares that the theme supplies the values of one appearance only: the
+served page's `<html>` element then carries `data-appearance="<value>"` (replacing any
+the page had), which the stylesheet's nearest-ancestor rule reads (ADR-029), so the
+library's derived tokens follow the theme and not the system's preference. Without it
+the page follows the system, and the theme must supply the role tokens for both
+appearances (the dark ones under `@media (prefers-color-scheme: dark)`, or by
+`light-dark()`); a `color-scheme` in the theme's stylesheet is not an appearance the
+library reads. Any other value refuses the manifest.
 
 Manifest input is bounded to 1 MiB and 10,000 file entries; each file to 32 MiB
 and total listed bytes to 64 MiB. Paths are canonical relative POSIX paths with
@@ -670,8 +678,10 @@ Two downstream routes are supported:
   fonts, light/dark values and favicon. React/ReactDOM remain single host peers;
   downstream private design-system dependencies never enter Arras metadata.
 - A prebuilt page uses the theme manifest for CSS tokens/fonts/favicon and the
-  existing Brand name/title/wordmark/mark selection. It uses built-in widgets;
-  replacing React widgets requires the host-build route, not runtime code loading.
+  existing Brand name/title/wordmark selection. It uses built-in widgets, including
+  the built-in Mark: `Brand(logo="theme")` shows that mark there, and a theme-supplied
+  mark or replaced React widgets require the host-build route (a `Mark` in a
+  `DesignSystemProvider`), not runtime code loading.
 
 The neutral downstream proof includes an actual consumer-owned theme package,
 not only inline widget functions or a stylesheet directory. Its minimal shape is:

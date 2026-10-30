@@ -686,6 +686,24 @@ check leaves fresh registry installation and publication qualification separate.
 dev host, and `src/embed.tsx`, the page `arras.ui` serves) use the built-in design system and load no
 theme. Nothing in the library sets an attribute, a class, a style or a storage entry on the host's document.
 
+**A runtime theme (the prebuilt page).** `arras.ui.create_app(theme_manifest=...)` links a host's stylesheet,
+favicon and fonts into the page the wheel carries (CONTRACT-005); that page draws with the built-in widgets, so
+a runtime theme is tokens and CSS only. Three limits follow:
+
+- *Both appearances, or one declared.* A theme that sets the role tokens for one appearance only (say the
+  eighteen light values) breaks on a viewer whose system prefers dark: the derived tokens (the alternate row
+  colour, the error ink, the shadow, `color-scheme`) follow `prefers-color-scheme` while the theme's text stays
+  dark, and axe reports `color-contrast` on the Operate view. A `color-scheme` set in the theme's stylesheet is
+  not read; the library reads only `data-appearance` on an ancestor or an inline `color-scheme` on one. A theme
+  therefore either supplies both sets of values (the dark one under `@media (prefers-color-scheme: dark)`, or with
+  `light-dark()`), or declares its appearance in the manifest, `"entry": {"stylesheet": "theme.css",
+  "appearance": "light"}` (`"light"` or `"dark"`), and the served page's `<html>` then carries
+  `data-appearance="light"` whatever the system prefers.
+- *The mark.* `Brand(logo="theme")` draws the design system's `Mark`; the prebuilt page has only the built-in
+  one, so it shows the built-in mark. A theme-supplied mark needs the host-built route: a `Mark` widget in a
+  `DesignSystemProvider`. The theme manifest has no mark entry.
+- *Widgets.* Replacing a widget (`Button`, `TextField`, ...) is the host-built route as well.
+
 **Accessibility.** The built-in text and control colours meet WCAG 2.1 AA in both appearances (4.5:1 for text, 3:1
 for control borders and the focus ring); every control has a visible focus ring on `:focus-visible`; a field's
 label, hint and error are tied to it by `for`, `id` and `aria-describedby`; a `Notice` carries a role and a glyph
