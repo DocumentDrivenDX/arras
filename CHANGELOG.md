@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.5 — downstream integration
 
 The development host takes the groups its operator surface is offered to:
 `--operator-group NAME` (repeatable) on the command line, or `operator_groups=` on

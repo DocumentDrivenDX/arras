@@ -2755,3 +2755,69 @@ receipts or treat that report as installed/managed proof. Truss0.0.50 support pi
 remain selected until separately authorized installed0.0.51 qualification.
 The shared heavy budget remains exhausted; no native/installed/Actions/cloud,
 release, new agents/chats or reset attempts were launched here.
+
+### Downstream integration release0.6.5 — local execution authority
+
+The human directed review, normal merging and the next Arras release for the
+fifteen downstream changes. The existing Stack owner accepted their source
+review, subject to the PR23 empty-operator-groups correction and combined actual
+qualification. The integration preserves all fifteen original head ancestors;
+older PR10 UMF actions are excluded from this batch pending a separate comparison.
+
+The candidate includes explicit operator groups and development namespace/path
+selection, safe alias conflict diagnostics, wheel-carried development UI,
+console entrypoints, real framework mount prefixes, theme manifests/appearance,
+backend conformance support, explicit host-isolation assumptions, public alias
+packages and strict visual-baseline selection. Explicit empty operator defaults
+must refuse before startup; an explicit flag retains precedence.
+
+All overlap resolutions preserve the original requirements and tests: changelog
+entries, namespace-warning and development-path rules, installed devhost and CLI
+gates, backend/alias catalog exports and both host-isolation/visual test groups.
+Routine CI remains lean; full qualification remains explicitly selected. No
+baseline is regenerated to obtain a green result or host-provider opt-in enabled
+to hide a bare-host failure. Mandatory UMF qualification uses ARRAS_REQUIRE_UMF=1.
+
+Version0.6.5 selects unchanged qualified Truss0.0.50, Weft0.4.51 and official
+Python Core0.10.0. It does not request Access. Truss0.0.52's separate actual
+Accessdev8 runtime-identity failure is preserved in its owning plan and does not
+qualify or block an unrelated unchanged Arras dependency cohort.
+
+The human authorized local qualification/publication with existing credentials,
+without Actions, cloud provisioning, new grants or spending. The coordinator
+recorded4504seconds under the existing shared lock:3600qualification,
+900publication/public-consumer verification and two runner reserves. Previous
+usage and failed attempts remain intact. One expensive job at a time, at most
+two heavy workers, original command assertions/timeouts, no automatic retries or
+allowance borrowing apply. The estimate uses1842seconds of serial0.6.4 release
+jobs plus matrix, local emulation and fresh public-consumer work; fit is not yet
+measured. At the ceiling, retain actual results and remaining gates.
+
+Ordered qualification:
+
+1. Freeze the combined source, exact reviewed heads and resolutions. Run public
+   content, module/manifest, Ruff, formatting, strict types and the complete
+   Python matrix, including real framework mounts and alias identity/entrypoints.
+2. Run UI lint/type/unit/integration, public manifest, CSS/external and canonical
+   browser/themed/packed-host qualification with original assertions/baselines.
+3. Build wheel, sdist and wheel-carried npm0.6.5 from the frozen product source.
+   Replace the historical0.6.4 release-wheel guard only with the measured0.6.5
+   artifact selection, preserving mismatch/missing-archive controls. Rebuild and
+   establish final-source/sdist/wheel payload correspondence before release.
+4. Verify fresh installed doctor, development host, extension host, UMF139+139
+   comparisons, source Truss and installed Linux native profiles/cleanup against
+   exact artifacts. Keep original platform limits. Managed/Mac native reuse
+   requires explicit unchanged qualified input correspondence and reviewed
+   source delta; no whole-candidate/unrun pass can be inferred from old receipts.
+5. After review and the normal integration merge, bind the exact source/tag and
+   immutable17-asset schema-v2 bundle. Temporarily prevent automatic release
+   workflow events before tagging/publication, retaining prior workflow states
+   and safe restoration; every head and merge uses a skip-ci marker.
+6. Publish the exact qualified bytes locally. Verify anonymous GitHub/PyPI/npm
+   served bodies and fresh base/npm/public-PyPI extras consumers on their actual
+   named platforms. Keep distinct pre-publication/public-recheck receipts.
+
+No qualification, public merge, tag or publication success is claimed by this
+source preparation. The existing release checklist/contract requirements remain
+binding, with the human's local publication path replacing Actions transport for
+this release only.

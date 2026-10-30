@@ -715,7 +715,11 @@ def main(
     args = p.parse_args(argv)
     try:
         args.operator_groups = checked_operator_groups(
-            args.operator_groups or operator_groups or OPERATOR_GROUPS
+            args.operator_groups
+            if args.operator_groups is not None
+            else operator_groups
+            if operator_groups is not None
+            else OPERATOR_GROUPS
         )
     except ValueError as e:
         p.error(str(e))
