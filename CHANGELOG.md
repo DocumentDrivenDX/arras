@@ -52,6 +52,11 @@ httpx to the development group for the mount tests.
   backend written outside the package imports no internal module. `InMemory.person` takes `admin`
   and `InMemory.set_available` takes a `reason`.
 
+- A runtime theme manifest may declare `entry.appearance` (`"light"` or `"dark"`): the served page's `<html>`
+  then carries `data-appearance`, so a theme that supplies one appearance's role tokens no longer breaks contrast
+  on a viewer whose system prefers the other. A theme without it must supply both. Documented: the prebuilt page
+  draws `Brand(logo="theme")` with the built-in mark; a theme-supplied mark is a host-built UI feature.
+
 ## 0.6.4 — embedding isolation
 
 Adds explicit identity/API session boundaries and optional `pageEffects=false`

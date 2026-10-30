@@ -20,6 +20,7 @@ MAX_MANIFEST = 1024 * 1024
 MAX_FILES = 10_000
 MAX_FILE = 32 * 1024 * 1024
 MAX_TOTAL = 64 * 1024 * 1024
+THEME_APPEARANCES = ("light", "dark")
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
 _MIMES = {
     ".html": "text/html",
@@ -205,9 +206,13 @@ def load_manifest(path: Path, *, kind: Literal["page", "theme"]) -> AssetManifes
         schema_browser = MappingProxyType(sb)
         ui_versions: tuple[str, ...] = ()
     else:
-        allowed = {"stylesheet", "fonts", "favicon"}
+        allowed = {"stylesheet", "fonts", "favicon", "appearance"}
         if not set(entry) <= allowed or "stylesheet" not in entry:
-            raise _fail(path, "theme entry requires stylesheet and allows only fonts/favicon")
+            raise _fail(
+                path, "theme entry requires stylesheet and allows only fonts/favicon/appearance"
+            )
+        if "appearance" in entry and entry["appearance"] not in THEME_APPEARANCES:
+            raise _fail(path, 'entry.appearance must be "light" or "dark"')
         stylesheet = _relpath(entry["stylesheet"], path, "entry.stylesheet")
         if stylesheet not in checked or Path(stylesheet).suffix.lower() != ".css":
             raise _fail(path, "entry.stylesheet must name a declared CSS file")
