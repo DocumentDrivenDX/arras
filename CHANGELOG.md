@@ -26,6 +26,12 @@ directory follow the distribution's `env_prefix`: `<PREFIX>_TRUSS_DEV_URL`,
   one-class button rule, or the class a design-system widget draws, is no longer overridden by it; the built-in
   look is unchanged.
 
+The development host's default `--ui` falls back to the build the wheel carries
+(`arras.ui.STATIC`) when there is no source-tree `ui/dist`. An installed wheel's
+`python -m arras.devhost` served only the API and a "UI is not built" page; it now serves the page
+and its assets. A source build still takes precedence, and a directory named with `--ui` is served
+as given.
+
 ## 0.6.4 — embedding isolation
 
 Adds explicit identity/API session boundaries and optional `pageEffects=false`

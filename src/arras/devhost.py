@@ -54,8 +54,10 @@ from arras.http import Receive, Request, Scope, Send
 from arras.sandbox import ROLES, Box, Sandbox, read_steps
 from arras.types import Principal
 from arras.ui import (  # noqa: F401  (the policy its page is measured under)
+    PAGE,
     PAGE_CSP,
     PAGE_HEADERS,
+    STATIC,
     branded,
     not_built_page,
 )
@@ -72,6 +74,8 @@ OPERATOR_GROUPS = ("admins", "builders")
 # each of them as well, and carol and dave stay outside.
 _GROUP_NAME = re.compile(r"[^\s,]{1,64}")
 MODES = ("read", "write", "journal", "schema")
+# A source checkout serves its own `ui/dist`; with no build there (an installed wheel, which has no
+# `ui/`) the default is the build the wheel carries, `arras.ui.STATIC`.
 DEFAULT_UI = Path(__file__).resolve().parents[2] / "ui" / "dist"
 _LOCKED = (
     "apply",
@@ -195,7 +199,9 @@ class DevHost:
         self.distribution = distribution or DistributionConfig()
         self.telemetry_context = telemetry._context_for(telemetry_context, distribution)
         self.box: Any = serialized(sandbox)
-        self.ui = ui_dir
+        # Only the default falls back: a directory named with `--ui` is served as given.
+        has_source_build = (ui_dir / "index.html").is_file()
+        self.ui = STATIC if ui_dir == DEFAULT_UI and not has_source_build else ui_dir
         origins = [f"http://127.0.0.1:{port}", f"http://localhost:{port}"]
         dev = ("http://127.0.0.1:5173", "http://localhost:5173")  # the Vite dev server
         self.own_origins = {*origins, *dev}  # the proxy keeps the page's Origin on the control
@@ -351,6 +357,8 @@ class DevHost:
         """A file of the built UI, or its index for a route of the app; never a path outside it.
         Without `fallback` a missing file is a 404, not the app's page."""
         index = self.ui / "index.html"
+        if not index.is_file():
+            index = self.ui / PAGE  # the wheel's build names its page `embed.html`
         if not index.is_file():
             return (
                 200,
@@ -627,7 +635,12 @@ def _parser(distribution: DistributionConfig | None = None) -> argparse.Argument
     )
     p = argparse.ArgumentParser(prog="python -m arras.devhost", description=description)
     p.add_argument("--port", type=int, default=8000)
-    p.add_argument("--ui", type=Path, default=DEFAULT_UI, help="the built UI (ui/dist)")
+    p.add_argument(
+        "--ui",
+        type=Path,
+        default=DEFAULT_UI,
+        help="the built UI (default: ui/dist, else the build the wheel carries)",
+    )
     p.add_argument(
         "--demo",
         action=argparse.BooleanOptionalAction,
