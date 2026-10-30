@@ -160,7 +160,7 @@ const options: AcceptanceConfigOptions = {
   themeId: "neutral-theme",
   expectedBrand: { name: "Neutral Host", title: "Neutral Host Console", logo: "theme" },
   expectedSurface: { light: "rgb(248, 250, 252)", dark: "rgb(2, 6, 23)" },
-  // Required on Darwin; points to reviewed, theme-specific snapshots.
+  // Needed on Darwin only by the visual project; points to reviewed, theme-specific snapshots.
   baselineDir: "./tests/arras-baselines/neutral-theme",
 };
 
@@ -209,8 +209,11 @@ inventory and every file digest, then materializes that verified suite in a temp
 the consumer project so Node resolves its installed peers and module type normally. A global teardown
 removes the materialized copy. It never falls back to an Arras checkout. The canonical suite contains
 17 specs and requires all three nonvisual projects (`chromium`, `schema-admin`, `browser`); the `visual`
-project runs on Darwin only and compares theme-specific snapshots. Darwin callers must supply
-`baselineDir`. Linux reports visual comparison as skipped while still running every nonvisual project.
+project runs on Darwin only and compares theme-specific snapshots, so `baselineDir` is needed by that project
+alone: the factory builds the config on Darwin without it, and a run that selects only the nonvisual projects
+(`--project=chromium --project=schema-admin --project=browser`) compares no screenshot and needs none. A run
+that includes the `visual` project without a `baselineDir` fails at its start with a message that names it.
+Linux reports visual comparison as skipped while still running every nonvisual project.
 Snapshot updates are disabled by the factory. Create or change baselines only through an explicit,
 reviewed update workflow; do not reuse the default-theme snapshots for a different theme.
 
