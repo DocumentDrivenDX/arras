@@ -180,6 +180,8 @@ jobs:
           name: arras-doctor-installed
           path: artifacts/doctor-installed.json
           if-no-files-found: warn
+      - name: The installed dev host serves the wheel's page
+        run: ARRAS_WHEEL="$(ls dist/arras-*.whl)" uv run --no-sync pytest -q tests/test_devhost_installed.py
       - name: The wheel installs on a clean interpreter and carries the UI
         run: |
           uv run --no-project --isolated --with dist/*.whl python -c "import importlib.util, arras, arras.ui, arras.adapters.truss; assert importlib.util.find_spec('truss') is None, 'the base wheel must not need Truss'; print(arras.CONTRACT_VERSIONS, arras.ui.npm_package().name); assert (arras.ui.STATIC / arras.ui.PAGE).is_file()"
