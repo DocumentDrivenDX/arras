@@ -83,6 +83,7 @@ GROUPS: dict[str, str] = {
     "arras.mcp.server": "mcp",
     "arras.mcp.__main__": "mcp",
     "arras.boundary": "tooling",
+    "arras.cli": "cli",
     "arras": "root",
 }
 
@@ -127,6 +128,7 @@ ALLOWED: dict[str, frozenset[str]] = {
         }
     ),
     "tooling": frozenset({"root", "tooling"}),
+    "cli": frozenset({"foundation", "doctor", "devhost", "mcp", "cli"}),
     "config_validation": frozenset({"foundation", "domain", "config_validation"}),
     "asset_validation": frozenset({"asset_validation"}),
     "native_conformance": frozenset(
