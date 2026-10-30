@@ -247,9 +247,7 @@ label.gb-mod small {
   border: 0;
   background: var(--surface);
   cursor: pointer;
-  font-size: 12px;
-  line-height: 20px;
-  font-weight: 600;
+  font: inherit;
 }
 .gb-seg button[aria-pressed="true"] {
   background: var(--accent);
