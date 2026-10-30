@@ -244,6 +244,86 @@ def test_external_theme_is_digest_served_same_origin_and_version_pinned(
     assert call(app, "GET", f"{BASE}/theme-assets/{digest}/font.woff2", user=None)[0] == 503
 
 
+def _theme_manifest(directory: Path, **entry: Any) -> Path:
+    css = b".arras-root{--arras-color-text:#111}"
+    (directory / "theme.css").write_bytes(css)
+    path = directory / "theme.json"
+    path.write_text(
+        json.dumps(
+            {
+                "format": "arras.ui.assets",
+                "version": 1,
+                "kind": "theme",
+                "package": {"name": "theme", "version": "1"},
+                "contracts": {"console": 2, "operate": 2, "schema": 1, "browser": 1},
+                "ui_versions": [UI_VERSION],
+                "entry": {"stylesheet": "theme.css", **entry},
+                "files": {
+                    "theme.css": {
+                        "sha256": hashlib.sha256(css).hexdigest(),
+                        "size": len(css),
+                        "mime": "text/css",
+                    }
+                },
+            }
+        )
+    )
+    return path
+
+
+def _themed_app(static: Path, manifest: Path):
+    (static / ui.PAGE).write_text(
+        '<!doctype html><html lang="en"><head><title>Arras</title></head><body></body></html>'
+    )
+    refresh_page_manifest(static)
+    return ui.create_app(
+        Sandbox().seed().arras,
+        principal_for_request=lambda _request: None,
+        base_path=BASE,
+        static_dir=static,
+        theme_manifest=manifest,
+    )
+
+
+@pytest.mark.parametrize("appearance", ["light", "dark"])
+def test_a_theme_that_declares_its_appearance_puts_it_on_the_served_page(
+    static: Path, tmp_path: Path, appearance: str
+) -> None:
+    """A runtime theme that supplies one set of role tokens needs the page to say which appearance it is:
+    a `color-scheme` in its stylesheet is not read, and the derived tokens would follow the OS."""
+    app = _themed_app(static, _theme_manifest(tmp_path, appearance=appearance))
+    status, _, body = call(app, "GET", f"{BASE}/", user=None)
+    assert status == 200
+    assert f'<html lang="en" data-appearance="{appearance}">'.encode() in body
+    assert body.count(b"data-appearance") == 1
+
+
+def test_a_theme_without_an_appearance_leaves_it_to_the_os(static: Path, tmp_path: Path) -> None:
+    app = _themed_app(static, _theme_manifest(tmp_path))
+    status, _, body = call(app, "GET", f"{BASE}/", user=None)
+    assert status == 200 and b"theme-assets/" in body
+    assert b"data-appearance" not in body and b'<html lang="en">' in body
+
+
+def test_a_declared_appearance_replaces_the_one_the_page_has(static: Path, tmp_path: Path) -> None:
+    manifest = _theme_manifest(tmp_path, appearance="light")
+    app = _themed_app(static, manifest)
+    (static / ui.PAGE).write_text(
+        "<!doctype html><HTML data-appearance='dark' lang=en><head><title>Arras</title></head></HTML>"
+    )
+    refresh_page_manifest(static)
+    status, _, body = call(app, "GET", f"{BASE}/", user=None)
+    assert status == 200
+    assert b'<html lang=en data-appearance="light">' in body and b"dark" not in body
+
+
+@pytest.mark.parametrize("bad", ["auto", "Light", "", None, 1, ["light"]])
+def test_a_theme_appearance_is_light_or_dark_only(static: Path, tmp_path: Path, bad: Any) -> None:
+    manifest = _theme_manifest(tmp_path, appearance=bad)
+    with pytest.raises(ValueError, match="entry.appearance"):
+        load_manifest(manifest, kind="theme")
+
+
 def test_invalid_and_wrong_cohort_theme_manifests_refuse(static: Path, tmp_path: Path) -> None:
     path = tmp_path / "theme.json"
     body = b"a{}"
