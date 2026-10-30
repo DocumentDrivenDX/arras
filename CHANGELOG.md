@@ -13,6 +13,9 @@ distribution's value, and now says so: `Config.warnings` and one stderr line per
 conflict (at most eight) name both variables, never a value. Token and
 token-file conflicts continue to refuse.
 
+- The official-engine cases in `tests/test_umf_projection.py` skip without the `umf` extra, and fail
+  under `ARRAS_REQUIRE_UMF=1`, as the other UMF tests do.
+
 ## 0.6.4 — embedding isolation
 
 Adds explicit identity/API session boundaries and optional `pageEffects=false`
