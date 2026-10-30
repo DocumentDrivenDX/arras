@@ -770,6 +770,11 @@
             "name": "telemetry_factory",
             "kind": "KEYWORD_ONLY",
             "default": null
+          },
+          {
+            "name": "operator_groups",
+            "kind": "KEYWORD_ONLY",
+            "default": null
           }
         ]
       },
@@ -1199,6 +1204,11 @@
             "name": "telemetry_context",
             "kind": "KEYWORD_ONLY",
             "default": null
+          },
+          {
+            "name": "operator_groups",
+            "kind": "KEYWORD_ONLY",
+            "default": "admins, builders"
           }
         ]
       },
@@ -1507,6 +1517,7 @@
       "--truss-url",
       "--truss-reset",
       "--truss-credentials",
+      "--operator-group",
       "--records",
       "--also"
     ],
