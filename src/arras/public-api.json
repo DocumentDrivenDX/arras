@@ -238,10 +238,24 @@
         "kind": "package",
         "names": [
           "Harness",
+          "HarnessBase",
           "Limit",
           "Result",
           "Report",
           "run_corpus"
+        ]
+      },
+      "arras.backend": {
+        "kind": "module",
+        "names": [
+          "Answer",
+          "Backend",
+          "BackendInfo",
+          "Migrates",
+          "Plan",
+          "Provider",
+          "Reason",
+          "TextMatch"
         ]
       },
       "arras.branding": {
@@ -1382,6 +1396,7 @@
       "arras",
       "arras.adapters",
       "arras.adapters.truss",
+      "arras.backend",
       "arras.branding",
       "arras.conformance",
       "arras.conformance.truss",
