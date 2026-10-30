@@ -13,7 +13,10 @@
 .gb *::after {
   box-sizing: border-box;
 }
-.gb :where(button:not(.arras-btn), input, select) {
+/* The controls' reset carries no specificity of its own (the whole selector is `:where`), so a host's rule on
+   its own button class, or a design system's widget class, wins without `!important`. It still outranks the
+   layered preflight and utilities, as before. */
+:where(.arras-root .gb) :where(button:not(.arras-btn), input, select) {
   font: inherit;
   color: inherit;
 }
