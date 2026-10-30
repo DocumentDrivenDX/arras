@@ -546,12 +546,7 @@ def _installed_console_script_fixture(tmp_path: Path, case: str) -> SimpleNamesp
 
 def _console_record_for_case(fixture: SimpleNamespace, case: str) -> tuple[Path, str]:
     venv, site, scripts, script = fixture.venv, fixture.site, fixture.scripts, fixture.script
-    script_bytes, rows, wheel, dist_info = (
-        fixture.script_bytes,
-        fixture.rows,
-        fixture.wheel,
-        fixture.dist_info,
-    )
+    script_bytes, rows, dist_info = fixture.script_bytes, fixture.rows, fixture.dist_info
     record_path = Path(os.path.relpath(script, site)).as_posix()
     if case == "noncanonical":
         record_path = "../../../bin/../bin/arras"
@@ -575,7 +570,7 @@ def _console_record_for_case(fixture: SimpleNamespace, case: str) -> tuple[Path,
         script.symlink_to(target)
     selected_scripts = scripts
     if case == "scripts-outside":
-        selected_scripts = tmp_path / "outside"
+        selected_scripts = venv.parent / "outside"
         selected_scripts.mkdir()
     elif case == "scripts-symlink":
         selected_scripts = venv / "linked-bin"
