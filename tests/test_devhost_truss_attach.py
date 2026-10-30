@@ -18,6 +18,7 @@ pytest.importorskip("psycopg")
 
 import arras.devhost as devhost
 from arras.devhost import main, truss_attachment, truss_url
+from arras.distribution import DistributionConfig
 
 PASSWORD = "s3cr3t-pa55"
 URL = f"postgresql://arras_installer:{PASSWORD}@localhost:5432/arras_truss"
@@ -253,3 +254,116 @@ def test_a_persistent_truss_needs_no_local_postgresql(monkeypatch) -> None:
         pytest.skip("the truss extra is not installed")
     assert "truss-test group" in (devhost._truss_missing() or "")
     assert "truss-test group" not in (devhost._truss_missing(persistent=True) or "")
+
+
+# -- a distribution's own names (env_prefix) with the ARRAS names as fallbacks
+EXAMPLE = DistributionConfig(env_prefix="EXAMPLE")
+EXAMPLE_VAR = "EXAMPLE_TRUSS_DEV_URL"
+
+
+@pytest.fixture
+def home(monkeypatch, tmp_path) -> Path:
+    """A throwaway home: no URL in the environment, no `~/.arras` or `~/.example` files."""
+    for name in (
+        VAR,
+        EXAMPLE_VAR,
+        devhost.TRUSS_CREDENTIALS_VARIABLE,
+        "EXAMPLE_TRUSS_DEV_CREDENTIALS",
+    ):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setattr(devhost, "TRUSS_URL_FILE", Path("~/.arras/truss-dev.env"))  # undo conftest
+    return tmp_path
+
+
+def test_the_distribution_variable_beats_the_arras_fallback(home) -> None:
+    env = {EXAMPLE_VAR: "postgresql://e:pw@h/db", VAR: "postgresql://a:pw@h/db"}
+    assert truss_url(None, env, distribution=EXAMPLE) == (
+        "postgresql://e:pw@h/db",
+        f"the environment variable {EXAMPLE_VAR}",
+    )
+    assert truss_url(None, {VAR: "postgresql://a:pw@h/db"}, distribution=EXAMPLE) == (
+        "postgresql://a:pw@h/db",
+        f"the environment variable {VAR}",
+    )
+    # the default distribution never reads another prefix's variable
+    assert truss_url(None, {EXAMPLE_VAR: "postgresql://e:pw@h/db"}) is None
+
+
+def test_the_distribution_directory_holds_its_env_file_and_arras_is_the_fallback(home) -> None:
+    arras_file = home / ".arras" / "truss-dev.env"
+    arras_file.parent.mkdir()
+    arras_file.write_text(f"{VAR}=postgresql://a:pw@h/db\n")
+    found = truss_url(None, {}, distribution=EXAMPLE)
+    assert found is not None and found[0] == "postgresql://a:pw@h/db"
+    own = home / ".example" / "truss-dev.env"
+    own.parent.mkdir()
+    own.write_text(f"{VAR}=postgresql://x:pw@h/db\n{EXAMPLE_VAR}=postgresql://e:pw@h/db\n")
+    found = truss_url(None, {}, distribution=EXAMPLE)
+    assert found == ("postgresql://e:pw@h/db", f"{EXAMPLE_VAR} in ~/.example/truss-dev.env")
+    # the environment still beats every file
+    env = {VAR: "postgresql://env:pw@h/db"}
+    assert truss_url(None, env, distribution=EXAMPLE) is not None
+    assert truss_url(None, env, distribution=EXAMPLE)[0] == "postgresql://env:pw@h/db"  # type: ignore[index]
+
+
+def test_the_credential_directory_follows_the_prefix(home) -> None:
+    default = devhost.default_truss_credentials_path(URL)
+    named = devhost.default_truss_credentials_path(URL, EXAMPLE)
+    assert default.parent == home / ".arras" / "truss-dev-credentials"
+    assert named.parent == home / ".example" / "truss-dev-credentials"
+    assert named.name == default.name
+    two = DistributionConfig(env_prefix="EXAMPLE_APP")
+    assert devhost.state_directory(two) == home / ".example-app"
+
+
+def test_help_names_the_distribution_variables_and_directory(capsys) -> None:
+    for given, expect, absent in (
+        (EXAMPLE, ("$EXAMPLE_TRUSS_DEV_URL", "~/.example/truss-dev.env"), ("ARRAS_",)),
+        (None, ("$ARRAS_TRUSS_DEV_URL", "~/.arras/truss-dev.env"), ()),
+    ):
+        with pytest.raises(SystemExit) as e:
+            main(["--help"], distribution=given)
+        assert e.value.code == 0
+        text = " ".join(capsys.readouterr().out.split())
+        for name in expect:
+            assert name in text
+        for name in absent:
+            assert name not in text.replace("EXAMPLE_TRUSS_DEV_CREDENTIALS", "")
+
+
+def test_a_distribution_host_attaches_from_its_own_variable_and_credential_file(
+    fake_uvicorn, monkeypatch, home, tmp_path, capsys
+) -> None:
+    monkeypatch.setenv(EXAMPLE_VAR, URL)
+    built = _stand_in(monkeypatch)
+    main(["--truss", "--ui", str(tmp_path)], distribution=EXAMPLE)
+    assert built[0]["truss_url"] == URL
+    assert built[0]["credential_source"].path.parent == home / ".example" / "truss-dev-credentials"
+    out = capsys.readouterr().out
+    assert PASSWORD not in out and f"the environment variable {EXAMPLE_VAR}" in out
+
+
+def test_a_distribution_credentials_variable_names_the_file(
+    fake_uvicorn, monkeypatch, home, tmp_path
+) -> None:
+    monkeypatch.setenv(EXAMPLE_VAR, URL)
+    monkeypatch.setenv("EXAMPLE_TRUSS_DEV_CREDENTIALS", str(tmp_path / "own.json"))
+    monkeypatch.setenv(devhost.TRUSS_CREDENTIALS_VARIABLE, str(tmp_path / "arras.json"))
+    built = _stand_in(monkeypatch)
+    main(["--truss", "--ui", str(tmp_path)], distribution=EXAMPLE)
+    assert built[0]["credential_source"].path == tmp_path / "own.json"
+    monkeypatch.delenv("EXAMPLE_TRUSS_DEV_CREDENTIALS")
+    main(["--truss", "--ui", str(tmp_path)], distribution=EXAMPLE)
+    assert built[1]["credential_source"].path == tmp_path / "arras.json"
+
+
+def test_the_throwaway_and_reset_messages_name_the_distribution_variable(
+    fake_uvicorn, monkeypatch, home, tmp_path, capsys
+) -> None:
+    _stand_in(monkeypatch)
+    main(["--truss", "--ui", str(tmp_path)], distribution=EXAMPLE)
+    assert "--truss-url or EXAMPLE_TRUSS_DEV_URL" in capsys.readouterr().out
+    with pytest.raises(SystemExit):
+        main(["--truss", "--truss-reset"], distribution=EXAMPLE)
+    assert "EXAMPLE_TRUSS_DEV_URL" in capsys.readouterr().err
