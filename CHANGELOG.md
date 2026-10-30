@@ -2,6 +2,9 @@
 
 ## 0.6.5 — downstream integration
 
+Python 3.11 is the supported release profile. Later interpreters remain permitted
+by the installer minimum but are outside the supported qualification scope.
+
 The development host takes the groups its operator surface is offered to:
 `--operator-group NAME` (repeatable) on the command line, or `operator_groups=` on
 `arras.devhost.main` and `arras.devhost.DevHost`. The sandbox's operators join each

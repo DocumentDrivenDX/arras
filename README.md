@@ -32,7 +32,10 @@ The base install needs only `graphql-core`. Extras: `arras[otel]` (OpenTelemetry
 
 ## Quick start
 
-From a source checkout (Python 3.11 or later, with [`uv`](https://docs.astral.sh/uv/)):
+Python 3.11 is the supported and required release-qualification profile. The
+`>=3.11` installer minimum permits later interpreters, whose support is unqualified.
+
+From a source checkout (Python 3.11, with [`uv`](https://docs.astral.sh/uv/)):
 
 ```bash
 uv sync --extra truss

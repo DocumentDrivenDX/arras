@@ -17,6 +17,18 @@ ddx:
 
 # Arras release notes
 
+## 0.6.5 downstream integration candidate
+
+Python 3.11 is the sole supported Python release profile. The installer minimum
+remains `>=3.11`, permitting later interpreters without qualifying their support.
+The completed 3.12 checks remain incidental observations; 3.13 is unqualified
+and is outside this release's required gates. Full UI, native, UMF and public
+consumer qualification remains required on the named platforms.
+
+This candidate is not yet merged or published. Original qualification receipts
+retain their artifact identities; the metadata correction requires a separately
+reviewed rebuild and explicit final-artifact correspondence before publication.
+
 ## 0.6.4 embedded composition
 
 The published 0.6.4 release completes session and host-page ownership for embedders:

@@ -11,11 +11,11 @@ classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
     "Topic :: Database",
     "Typing :: Typed",
 ]
+# Python 3.11 is the supported release profile. This installer floor permits
+# later interpreters; it does not qualify them for support.
 requires-python = ">=3.11"
 dependencies = [
     "graphql-core>=3.3,<3.4",

@@ -2824,7 +2824,7 @@ Ordered qualification:
 
 1. Freeze the combined source, exact reviewed heads and resolutions. Run public
    content, module/manifest, Ruff, formatting, strict types and the complete
-   Python matrix, including real framework mounts and alias identity/entrypoints.
+   Python 3.11 suite, including real framework mounts and alias identity/entrypoints.
 2. Run UI lint/type/unit/integration, public manifest, CSS/external and canonical
    browser/themed/packed-host qualification with original assertions/baselines.
 3. Build wheel, sdist and wheel-carried npm0.6.5 from the frozen product source.
@@ -2848,3 +2848,34 @@ No qualification, public merge, tag or publication success is claimed by this
 source preparation. The existing release checklist/contract requirements remain
 binding, with the human's local publication path replacing Actions transport for
 this release only.
+
+
+### Python support scope correction — 2026-10-30
+
+The human narrowed Python support to 3.11: “I don't care about python outside
+3.11”. This supersedes the remaining 3.13 qualification prerequisite. The prepared
+420-second continuation is cancelled without a launch or additional allowance.
+Existing 3.12 results are incidental evidence; 3.13 remains unqualified. Original
+failed attempts, elapsed accounting and cleanup observations remain retained.
+The separate 900-second publication/public-consumer allowance is unchanged.
+
+The candidate declares only the Python 3.11 classifier. The `>=3.11` installer
+minimum remains permissive; later-version installation permission is not a
+support claim. Routine CI and the release workflow already select 3.11 and stay
+unchanged. Every existing required product, UI, native, UMF and public-consumer
+assertion remains in scope on its named platform.
+
+The existing Linux CPython 3.11.17 source receipt has 3,452 passes; its two
+installed-wheel cases pass separately. The source-native suite has 202 passes
+and the installed native campaign has 64 passes plus eight declared limits.
+These receipts qualify their original wheel
+`ebeb45b0b3e6a2fff5fc18094f355fd451a996171d76e2c48286c5b579170c1f`.
+Removing classifiers and changing the packaged README requires new wheel/sdist
+bytes. Preserve every original receipt, rebuild into a separate owned directory,
+and verify complete runtime/UI/npm byte equality against that wheel. Permit only
+the exact reviewed package-metadata changes and their RECORD hashes; retain
+source-archive correspondence and a new explicit artifact-binding receipt.
+No old receipt may acquire a substituted wheel digest or a fabricated fresh-run
+claim. Review the finite rebuild/parity/fresh-installed operation before running
+it, then update the strict selected-wheel guards to the actual measured digest.
+Publication and normal merge remain pending the resulting final packet review.
