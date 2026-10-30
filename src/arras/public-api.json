@@ -1208,7 +1208,7 @@
           {
             "name": "operator_groups",
             "kind": "KEYWORD_ONLY",
-            "default": "admins, builders"
+            "default": "default operator groups"
           }
         ]
       },
