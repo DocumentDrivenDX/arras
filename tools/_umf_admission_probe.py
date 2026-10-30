@@ -6,10 +6,12 @@ from __future__ import annotations
 
 import argparse
 import base64
+import configparser
 import csv
 import hashlib
 import importlib.metadata
 import json
+import os
 import stat
 import sys
 import sysconfig
@@ -99,6 +101,34 @@ def _metadata_from_installed(name: str) -> tuple[Any, Path]:
     return distribution, root
 
 
+def _console_script_paths(archive: zipfile.ZipFile, dist_info: str, root: Path) -> dict[str, Path]:
+    """Only wheel-declared launchers may live outside site-packages in this venv."""
+    try:
+        raw = archive.read(f"{dist_info}/entry_points.txt").decode("utf-8")
+    except KeyError:
+        return {}
+    parser = configparser.ConfigParser(interpolation=None)
+    parser.optionxform = str
+    try:
+        parser.read_string(raw)
+    except configparser.Error as error:
+        raise VerificationError("payload", "invalid-entry-points") from error
+    if not parser.has_section("console_scripts"):
+        return {}
+    scripts = Path(sysconfig.get_path("scripts"))
+    if scripts.is_symlink() or not _inside(scripts, Path(sys.prefix)):
+        raise VerificationError("payload", "scripts-directory-outside-venv")
+    allowed: dict[str, Path] = {}
+    for name in parser["console_scripts"]:
+        _safe_member(name)
+        if PurePosixPath(name).name != name:
+            raise VerificationError("payload", "invalid-console-script-name")
+        script = scripts / name
+        relative = Path(os.path.relpath(script, root)).as_posix()
+        allowed[relative] = script
+    return allowed
+
+
 def _compare_installed_payload(wheel: Path, distribution_name: str) -> int:
     distribution, root = _metadata_from_installed(distribution_name)
     try:
@@ -109,6 +139,7 @@ def _compare_installed_payload(wheel: Path, distribution_name: str) -> int:
                 for name in (info.filename for info in files)
                 if name.endswith(".dist-info/METADATA")
             )
+            console_scripts = _console_script_paths(archive, dist_info, root)
             compared = 0
             for info in files:
                 name = info.filename
@@ -136,9 +167,19 @@ def _compare_installed_payload(wheel: Path, distribution_name: str) -> int:
     except csv.Error as error:
         raise VerificationError("payload", "installed-record-invalid") from error
     for name, digest, size in rows:
-        _safe_member(name)
-        installed = Path(distribution.locate_file(name)).resolve()
-        if not _inside(installed, root) or not installed.is_file():
+        script = console_scripts.get(name)
+        located = Path(distribution.locate_file(name))
+        if script is None:
+            _safe_member(name)
+        elif (
+            located.is_symlink()
+            or located.resolve() != script.resolve()
+            or not digest.startswith("sha256=")
+            or not size.isdigit()
+        ):
+            raise VerificationError("payload", "installed-console-script-invalid")
+        installed = located.resolve()
+        if (script is None and not _inside(installed, root)) or not installed.is_file():
             raise VerificationError("payload", "installed-record-file-missing")
         if installed.stat().st_size > MAX_CORPUS_BYTES:
             raise VerificationError("payload", "installed-record-file-over-limit")

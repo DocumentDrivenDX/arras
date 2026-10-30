@@ -447,3 +447,110 @@ def test_cleanup_failure_cannot_be_serialized_as_success(
     monkeypatch.setattr(verifier.shutil, "rmtree", fail_cleanup)
     with pytest.raises(verifier.VerificationError, match="owned-temp-cleanup-failed"):
         verifier._remove_owned_temp(temp)
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        "valid",
+        "undeclared",
+        "noncanonical",
+        "absolute",
+        "outside",
+        "symlink",
+        "changed-bytes",
+        "missing-digest",
+        "missing-size",
+        "wrong-digest",
+        "wrong-size",
+        "invalid-name",
+        "scripts-outside",
+        "scripts-symlink",
+    ],
+)
+def test_installed_console_script_is_declared_confined_and_integrity_checked(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, case: str
+) -> None:
+    venv = tmp_path / "venv"
+    site = venv / "lib/python3.11/site-packages"
+    scripts = venv / "bin"
+    site.mkdir(parents=True)
+    scripts.mkdir()
+    script = scripts / "arras"
+    script_bytes = b"#!/venv/bin/python\nfrom arras.cli import run\nrun()\n"
+    script.write_bytes(script_bytes)
+    dist_info = "arras-0.6.5.dist-info"
+    command_name = "../arras" if case == "invalid-name" else "arras"
+    entry_points = (
+        b"[console_scripts]\nother = arras.cli:run\n"
+        if case == "undeclared"
+        else f"[console_scripts]\n{command_name} = arras.cli:run\n".encode()
+    )
+    files = {
+        "arras/__init__.py": b"qualified payload",
+        f"{dist_info}/METADATA": b"Name: arras\nVersion: 0.6.5\n",
+        f"{dist_info}/entry_points.txt": entry_points,
+    }
+    rows: list[list[str]] = []
+    for name, payload in files.items():
+        digest = base64.urlsafe_b64encode(hashlib.sha256(payload).digest()).rstrip(b"=")
+        rows.append([name, f"sha256={digest.decode()}", str(len(payload))])
+        destination = site / name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(payload)
+    rows.append([f"{dist_info}/RECORD", "", ""])
+    buffer = io.StringIO()
+    csv.writer(buffer, lineterminator="\n").writerows(rows)
+    wheel = tmp_path / "arras.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        for name, payload in {**files, f"{dist_info}/RECORD": buffer.getvalue().encode()}.items():
+            archive.writestr(name, payload)
+    record_path = Path(os.path.relpath(script, site)).as_posix()
+    if case == "noncanonical":
+        record_path = "../../../bin/../bin/arras"
+    elif case == "absolute":
+        record_path = str(script)
+    elif case == "outside":
+        record_path = "../../../../outside/arras"
+    digest = base64.urlsafe_b64encode(hashlib.sha256(script_bytes).digest()).rstrip(b"=").decode()
+    script_hash = "" if case == "missing-digest" else f"sha256={digest}"
+    size = "" if case == "missing-size" else str(len(script_bytes))
+    if case == "wrong-digest":
+        script_hash = f"sha256={'0' * 43}"
+    elif case == "wrong-size":
+        size = str(len(script_bytes) + 1)
+    elif case == "changed-bytes":
+        script.write_bytes(b"tampered")
+    elif case == "symlink":
+        target = scripts / "target"
+        target.write_bytes(script_bytes)
+        script.unlink()
+        script.symlink_to(target)
+    selected_scripts = scripts
+    if case == "scripts-outside":
+        selected_scripts = tmp_path / "outside"
+        selected_scripts.mkdir()
+    elif case == "scripts-symlink":
+        selected_scripts = venv / "linked-bin"
+        selected_scripts.symlink_to(scripts, target_is_directory=True)
+    rows.append([record_path, script_hash, size])
+    buffer = io.StringIO()
+    csv.writer(buffer, lineterminator="\n").writerows(rows)
+    installed_record = buffer.getvalue()
+    (site / dist_info / "RECORD").write_text(installed_record)
+
+    class DistributionStub:
+        def locate_file(self, name: str) -> Path:
+            return site / name
+
+        def read_text(self, name: str) -> str | None:
+            return installed_record if name == "RECORD" else None
+
+    monkeypatch.setattr(probe.importlib.metadata, "distribution", lambda _name: DistributionStub())
+    monkeypatch.setattr(probe.sys, "prefix", str(venv))
+    monkeypatch.setattr(probe.sysconfig, "get_path", lambda _name: str(selected_scripts))
+    if case == "valid":
+        assert probe._compare_installed_payload(wheel, "arras") == len(files)
+    else:
+        with pytest.raises(probe.VerificationError):
+            probe._compare_installed_payload(wheel, "arras")
