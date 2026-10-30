@@ -78,6 +78,31 @@ describe("the portable acceptance profile", () => {
     });
   });
 
+  it("carries hostAppearanceProvider only when the host sets it, and refuses a non-boolean", () => {
+    expect(normalizeAcceptanceOptions(valid)).not.toHaveProperty("hostAppearanceProvider");
+    expect(
+      normalizeAcceptanceOptions({ ...valid, hostAppearanceProvider: false }),
+    ).not.toHaveProperty("hostAppearanceProvider");
+    expect(normalizeAcceptanceOptions({ ...valid, hostAppearanceProvider: true })).toMatchObject({
+      hostAppearanceProvider: true,
+    });
+    expect(() => normalizeAcceptanceOptions({ ...valid, hostAppearanceProvider: "yes" })).toThrow(
+      "hostAppearanceProvider must be a boolean",
+    );
+  });
+
+  it("makes the host-isolation spec's bare-host assumption explicit and skippable, and keeps its Arras-installs-none assertion", () => {
+    const spec = readFileSync(
+      join(import.meta.dirname, "../../e2e/host-isolation.spec.ts"),
+      "utf8",
+    );
+    expect(spec).toContain("Assumption: the host installs no appearance provider");
+    // the two specs that plant their own providers skip for such a host; the appearance spec still checks Arras's own subtree
+    expect(spec.match(/test\.skip\(HOST_APPEARANCE_PROVIDER, SKIP_BARE_HOST\)/g)).toHaveLength(2);
+    expect(spec).toContain("if (HOST_APPEARANCE_PROVIDER) {");
+    expect(spec).toContain(".arras-root, .arras-root *");
+  });
+
   it("uses source specs only in the source tree and refuses an unpacked package fallback", () => {
     const source = resolveAcceptanceTestDir(
       "/work/ui/src/testkit",

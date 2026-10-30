@@ -828,7 +828,8 @@ opt-in subpaths, keeping existing production runtime/type/style entries unchange
 The factory takes one strict object with required `baseURL: string`,
 `schemaBaseURL: string`, `outputDir: string`, and optional `themeId: string =
 "default"`, `expectedBrand` (existing Brand shape, default `{name: "Arras"}`),
-`expectedSurface: {light: string, dark: string}` and `baselineDir: string`.
+`expectedSurface: {light: string, dark: string}`, `baselineDir: string` and
+`hostAppearanceProvider: boolean = false`.
 Unknown keys, wrong types, empty values and unsafe URLs refuse configuration.
 Both URLs are credential/query/fragment-free HTTP(S) root origins with no path
 prefix in acceptance profile v1, and must differ because schema-administration
@@ -840,6 +841,12 @@ Output/baseline directories are explicit host-owned paths. Color expectations
 are opaque `rgb(r, g, b)` strings with integer channels from 0 through 255; normalize
 spacing before exact computed-color comparison. Use the existing documented
 default surfaces when omitted.
+`hostAppearanceProvider: true` states that the host installs its own appearance
+provider above the Arras root (`data-appearance` or an inline `color-scheme`, or a
+design-system provider that sets them). The `host-isolation` specs that plant their own
+appearance providers and read the system's preference then skip, because their
+premise is a bare host, and the appearance spec still asserts that nothing on or
+beneath the Arras root sets an appearance. It is the only assertion the flag relaxes.
 The selected expected Brand and surfaces parameterize the existing exact assertions,
 not exemptions from them. Hosts provide expectations matching their selected theme.
 

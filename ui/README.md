@@ -214,6 +214,16 @@ project runs on Darwin only and compares theme-specific snapshots. Darwin caller
 Snapshot updates are disabled by the factory. Create or change baselines only through an explicit,
 reviewed update workflow; do not reuse the default-theme snapshots for a different theme.
 
+The `host-isolation` spec assumes a bare host: it plants its own `data-appearance` and `color-scheme` providers
+around the Arras root and checks that the root follows the nearest one, then the system's preference, so it only
+means something where nothing above the root already says an appearance. A host that sets `data-appearance` or
+an inline `color-scheme` above the root (or wraps a design-system provider that does) sets
+`hostAppearanceProvider: true`: the two specs that plant providers are then skipped, and the appearance spec
+keeps its half that does not depend on the host: no element on or beneath the Arras root carries
+`data-appearance`, `data-theme` or an inline `color-scheme`, whichever way the system's preference goes. Arras
+installs none either way. The default is `false`, and the host's own appearance
+behaviour is then a matter for the host's own tests.
+
 `baseURL` and `schemaBaseURL` must be distinct credential-free root HTTP(S) origins. `outputDir` is
 consumer-owned and should be unique for simultaneous runs. `themeId` defaults to `default`; `expectedBrand` defaults to `{ name: "Arras" }`, and
 `expectedSurface` defaults to the built-in light/dark RGB colors. The testkit has no browser-download
