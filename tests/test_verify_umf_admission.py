@@ -474,6 +474,29 @@ def test_cleanup_failure_cannot_be_serialized_as_success(
 def test_installed_console_script_is_declared_confined_and_integrity_checked(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, case: str
 ) -> None:
+    fixture = _installed_console_script_fixture(tmp_path, case)
+    selected_scripts, installed_record = _console_record_for_case(fixture, case)
+    site, venv, wheel = fixture.site, fixture.venv, fixture.wheel
+
+    class DistributionStub:
+        def locate_file(self, name: str) -> Path:
+            return site / name
+
+        def read_text(self, name: str) -> str | None:
+            return installed_record if name == "RECORD" else None
+
+    monkeypatch.setattr(probe.importlib.metadata, "distribution", lambda _name: DistributionStub())
+    monkeypatch.setattr(probe.sys, "prefix", str(venv))
+    monkeypatch.setattr(probe.sysconfig, "get_path", lambda _name: str(selected_scripts))
+    if case == "valid":
+        assert probe._compare_installed_payload(wheel, "arras") == len(fixture.files)
+    else:
+        with pytest.raises(probe.VerificationError):
+            probe._compare_installed_payload(wheel, "arras")
+
+
+def _installed_console_script_fixture(tmp_path: Path, case: str) -> SimpleNamespace:
+    """A wheel and its fresh installation, with generated launcher bytes kept separate."""
     venv = tmp_path / "venv"
     site = venv / "lib/python3.11/site-packages"
     scripts = venv / "bin"
@@ -508,6 +531,27 @@ def test_installed_console_script_is_declared_confined_and_integrity_checked(
     with zipfile.ZipFile(wheel, "w") as archive:
         for name, payload in {**files, f"{dist_info}/RECORD": buffer.getvalue().encode()}.items():
             archive.writestr(name, payload)
+    return SimpleNamespace(
+        venv=venv,
+        site=site,
+        scripts=scripts,
+        script=script,
+        script_bytes=script_bytes,
+        wheel=wheel,
+        dist_info=dist_info,
+        files=files,
+        rows=rows,
+    )
+
+
+def _console_record_for_case(fixture: SimpleNamespace, case: str) -> tuple[Path, str]:
+    venv, site, scripts, script = fixture.venv, fixture.site, fixture.scripts, fixture.script
+    script_bytes, rows, wheel, dist_info = (
+        fixture.script_bytes,
+        fixture.rows,
+        fixture.wheel,
+        fixture.dist_info,
+    )
     record_path = Path(os.path.relpath(script, site)).as_posix()
     if case == "noncanonical":
         record_path = "../../../bin/../bin/arras"
@@ -547,18 +591,4 @@ def test_installed_console_script_is_declared_confined_and_integrity_checked(
     installed_record = buffer.getvalue()
     (site / dist_info / "RECORD").write_text(installed_record)
 
-    class DistributionStub:
-        def locate_file(self, name: str) -> Path:
-            return site / name
-
-        def read_text(self, name: str) -> str | None:
-            return installed_record if name == "RECORD" else None
-
-    monkeypatch.setattr(probe.importlib.metadata, "distribution", lambda _name: DistributionStub())
-    monkeypatch.setattr(probe.sys, "prefix", str(venv))
-    monkeypatch.setattr(probe.sysconfig, "get_path", lambda _name: str(selected_scripts))
-    if case == "valid":
-        assert probe._compare_installed_payload(wheel, "arras") == len(files)
-    else:
-        with pytest.raises(probe.VerificationError):
-            probe._compare_installed_payload(wheel, "arras")
+    return selected_scripts, installed_record

@@ -159,6 +159,14 @@ def _compare_installed_payload(wheel: Path, distribution_name: str) -> int:
                 compared += 1
     except (OSError, zipfile.BadZipFile, StopIteration) as error:
         raise VerificationError("payload", "installed-payload-unavailable") from error
+    _verify_installed_record(distribution, root, console_scripts)
+    return compared
+
+
+def _verify_installed_record(
+    distribution: Any, root: Path, console_scripts: dict[str, Path]
+) -> None:
+    """Check installed bytes, including each wheel-declared venv launcher exactly once."""
     record = distribution.read_text("RECORD")
     if record is None:
         raise VerificationError("payload", "installed-record-missing")
@@ -202,7 +210,6 @@ def _compare_installed_payload(wheel: Path, distribution_name: str) -> int:
                 raise VerificationError("payload", "installed-record-digest-mismatch")
     if seen_console_scripts != set(console_scripts):
         raise VerificationError("payload", "installed-console-script-missing")
-    return compared
 
 
 def _check_import_paths(packages: dict[str, Any], repository: Path, site: Path) -> dict[str, str]:
