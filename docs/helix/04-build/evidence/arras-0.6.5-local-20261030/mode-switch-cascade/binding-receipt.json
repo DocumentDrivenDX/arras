@@ -1,0 +1,28 @@
+{
+  "inputsManifestSha256": "274a638d3a9e6380bf0194087e4df5d999d9abb7240cc474517185599111a50a",
+  "inputManifest": [
+    {
+      "label": "published064",
+      "wheelSha256": "29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2",
+      "member": "arras/ui/static/assets/index-DO2QCGiC.css",
+      "cssSha256": "932b027e080ef349f32331ff691d28126afe49d3baecb75413a59d9839f620d3"
+    },
+    {
+      "label": "candidate065",
+      "wheelSha256": "05a3f5e6c662b60964698b800b1931791f2644857884c9f4bc60971fa12ad043",
+      "member": "arras/ui/static/assets/index-BQkWlwlt.css",
+      "cssSha256": "9a3a0771e402caa1068ed2d1198741a1bf8f681a13ed149741290e232e49add3"
+    }
+  ],
+  "driverSha256": "09e0fd046bfe575ff8064a62ee9c3fd81db5866d03632a65ff853dbb380e70f5",
+  "computedStyleReceiptSha256": "0e2bf159f1dfa80f76620bd3aa723f7d24a5eb73b5cccd65352189ecfdadc43f",
+  "sharedRun": {
+    "command": [
+      "node",
+      "/private/tmp/arras-065-release-20261029/mode-switch-cascade-diagnostic/probe.mjs"
+    ],
+    "elapsedSeconds": 1.108803333,
+    "exitCode": 0
+  },
+  "note": "Pre-f7 profile is an explicitly reconstructed reset-selector variant of published064CSS, not an original historical artifact; proposed inheritance profile is diagnostic-only, not final built candidate."
+}

@@ -1,0 +1,91 @@
+{
+  "scope": "Actual Chromium computed styles using original064/candidate065 wheel CSS; pre-f7 profile explicitly reconstructed by reverting only the Oct22 reset selector; final profile applies proposed mode-only inheritance fix; no HTTP/DB/network",
+  "rows": [
+    {
+      "profile": "pre-f7-cascade-reconstruction",
+      "measurements": [
+        {
+          "label": "Explore",
+          "fontSize": "15px",
+          "lineHeight": "22px",
+          "fontWeight": "400",
+          "height": 26,
+          "width": 71.046875
+        },
+        {
+          "label": "Operate",
+          "fontSize": "15px",
+          "lineHeight": "22px",
+          "fontWeight": "400",
+          "height": 26,
+          "width": 75.5625
+        }
+      ]
+    },
+    {
+      "profile": "published064",
+      "measurements": [
+        {
+          "label": "Explore",
+          "fontSize": "12px",
+          "lineHeight": "20px",
+          "fontWeight": "600",
+          "height": 24,
+          "width": 64.359375
+        },
+        {
+          "label": "Operate",
+          "fontSize": "12px",
+          "lineHeight": "20px",
+          "fontWeight": "600",
+          "height": 24,
+          "width": 67.71875
+        }
+      ]
+    },
+    {
+      "profile": "candidate065",
+      "measurements": [
+        {
+          "label": "Explore",
+          "fontSize": "12px",
+          "lineHeight": "20px",
+          "fontWeight": "600",
+          "height": 24,
+          "width": 64.359375
+        },
+        {
+          "label": "Operate",
+          "fontSize": "12px",
+          "lineHeight": "20px",
+          "fontWeight": "600",
+          "height": 24,
+          "width": 67.71875
+        }
+      ]
+    },
+    {
+      "profile": "candidate-mode-font-inherit",
+      "measurements": [
+        {
+          "label": "Explore",
+          "fontSize": "15px",
+          "lineHeight": "22px",
+          "fontWeight": "400",
+          "height": 26,
+          "width": 71.046875
+        },
+        {
+          "label": "Operate",
+          "fontSize": "15px",
+          "lineHeight": "22px",
+          "fontWeight": "400",
+          "height": 26,
+          "width": 75.5625
+        }
+      ]
+    }
+  ],
+  "elapsedSeconds": 0.3460117909999999,
+  "browserClosed": true
+}

@@ -23,8 +23,8 @@ directory follow the distribution's `env_prefix`: `<PREFIX>_TRUSS_DEV_URL`,
 `--help` prints the selected names. The default distribution is unchanged.
 
 - The Graph Browser's reset of its controls (`font` and `color` inherited) carries no specificity, so a host's
-  one-class button rule, or the class a design-system widget draws, is no longer overridden by it; the built-in
-  look is unchanged.
+  one-class button rule, or the class a design-system widget draws, is no longer overridden by it.
+  Restores the reviewed default typography of the Explore/Operate switch after an earlier reset changed it.
 
 The development host's default `--ui` falls back to the build the wheel carries
 (`arras.ui.STATIC`) when there is no source-tree `ui/dist`. An installed wheel's

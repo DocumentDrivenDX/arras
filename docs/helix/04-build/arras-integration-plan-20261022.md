@@ -2793,6 +2793,19 @@ allowance borrowing apply. The estimate uses1842seconds of serial0.6.4 release
 jobs plus matrix, local emulation and fresh public-consumer work; fit is not yet
 measured. At the ceiling, retain actual results and remaining gates.
 
+The first visual campaign at `2e5d0b4` passed 57 cases and failed 10 operator views.
+The [retained Chromium diagnostic](evidence/arras-0.6.5-local-20261030/mode-switch-cascade/binding-receipt.json)
+measures both actual 0.6.4 and first 0.6.5 wheel styles at `12px/20px/600`; the explicitly
+reconstructed reset preceding `f7e0015` (October 22) and proposed mode-only
+`font:inherit` yield `15px/22px/400`. This earlier change predates PR27. Existing
+Stack review accepted restoring the checked-in visual contract through only the
+mode control, retaining PR27's zero-specificity host reset and all 67 baseline
+bytes, masks, counts and thresholds. The draft mockup's `12px/600` segmented control
+still differs from that reviewed contract; full prototype/design alignment
+remains open. No golden is replaced to obtain a pass. The CSS correction requires
+new package bytes and fresh artifact-bound proofs; earlier passing installed
+receipts retain their original hashes and do not qualify the rebuilt artifact.
+
 Ordered qualification:
 
 1. Freeze the combined source, exact reviewed heads and resolutions. Run public
