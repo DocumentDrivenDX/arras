@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+The development host's Truss URL variable, credentials variable and per-user
+directory follow the distribution's `env_prefix`: `<PREFIX>_TRUSS_DEV_URL`,
+`<PREFIX>_TRUSS_DEV_CREDENTIALS` and `~/.<prefix>/` (`truss-dev.env`,
+`truss-dev-credentials/`), with the `ARRAS_` names and `~/.arras/` as fallbacks.
+`--help` prints the selected names. The default distribution is unchanged.
+
 ## 0.6.4 — embedding isolation
 
 Adds explicit identity/API session boundaries and optional `pageEffects=false`

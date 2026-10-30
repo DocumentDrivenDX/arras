@@ -598,7 +598,12 @@ def test_configuration_cli_and_resource_inventory_are_declared_separately() -> N
     devhost = importlib.import_module("arras.devhost")
     exact(
         manifest["host_configuration"]["development_environment"]["keys"],
-        [devhost.TRUSS_URL_VARIABLE, devhost.TRUSS_CREDENTIALS_VARIABLE],
+        [
+            devhost.TRUSS_URL_VARIABLE,
+            devhost.TRUSS_CREDENTIALS_VARIABLE,
+            "<PREFIX>_TRUSS_DEV_URL",
+            "<PREFIX>_TRUSS_DEV_CREDENTIALS",
+        ],
         "development host environment keys",
     )
     exact(manifest["ui"]["root_class"], ".arras-root", "CSS root class")

@@ -7,10 +7,11 @@
 It serves the sandbox's fakes to the sandbox's people, or, with `--truss`, a real Truss
 (`arras.devtruss`). Truss mode attaches to a persistent PostgreSQL server when a connection URL is
 available (`--truss-url`, else the environment variable `ARRAS_TRUSS_DEV_URL`, else the same
-variable in `~/.arras/truss-dev.env`): the URL names a role that owns a database and has CREATEROLE
+variable in `~/.arras/truss-dev.env`; a distribution with another `env_prefix` reads
+`<PREFIX>_TRUSS_DEV_URL` and `~/.<prefix>/truss-dev.env` first and these as fallbacks): the URL names a role that owns a database and has CREATEROLE
 and no superuser, and its password; the state then persists across restarts. Starting again reuses
 host-owned credentials from `--truss-credentials`, `ARRAS_TRUSS_DEV_CREDENTIALS` or a scoped file
-under `~/.arras/truss-dev-credentials/`, preserving existing memberships and expiry. New people
+under `~/.arras/truss-dev-credentials/` (`~/.<prefix>/` for a distribution), preserving existing memberships and expiry. New people
 and module roles get the sandbox defaults; explicit role selection reconciles only generated
 module and registrar memberships. Seeding runs only when no module holds an entity yet. Closing
 drops nothing and stops nothing; `--truss-reset` drops what the dev host
@@ -87,6 +88,52 @@ LOOPBACK_HOSTS = ("127.0.0.1", "localhost", "[::1]")
 TRUSS_URL_VARIABLE = "ARRAS_TRUSS_DEV_URL"
 TRUSS_URL_FILE = Path("~/.arras/truss-dev.env")
 TRUSS_CREDENTIALS_VARIABLE = "ARRAS_TRUSS_DEV_CREDENTIALS"
+
+
+def _prefix(distribution: DistributionConfig | None) -> str:
+    return (distribution or DistributionConfig()).env_prefix
+
+
+def truss_url_variables(distribution: DistributionConfig | None = None) -> tuple[str, ...]:
+    """The variables that carry the persistent server's URL, first choice first: the
+    distribution's `<env_prefix>_TRUSS_DEV_URL`, then the `ARRAS_` fallback."""
+    prefix = _prefix(distribution)
+    return (
+        (TRUSS_URL_VARIABLE,)
+        if prefix == "ARRAS"
+        else (f"{prefix}_TRUSS_DEV_URL", TRUSS_URL_VARIABLE)
+    )
+
+
+def truss_credentials_variables(distribution: DistributionConfig | None = None) -> tuple[str, ...]:
+    """The variables that name the shared credential file, first choice first."""
+    prefix = _prefix(distribution)
+    return (
+        (TRUSS_CREDENTIALS_VARIABLE,)
+        if prefix == "ARRAS"
+        else (f"{prefix}_TRUSS_DEV_CREDENTIALS", TRUSS_CREDENTIALS_VARIABLE)
+    )
+
+
+def _directory_name(distribution: DistributionConfig | None) -> str:
+    return "." + _prefix(distribution).lower().replace("_", "-")
+
+
+def state_directory(distribution: DistributionConfig | None = None) -> Path:
+    """The dev host's per-user directory: `~/.arras` by default, else `~/.<env_prefix>` in lower
+    case with `_` as `-` (`EXAMPLE_APP` gives `~/.example-app`)."""
+    return Path.home() / _directory_name(distribution)
+
+
+def truss_url_files(distribution: DistributionConfig | None = None) -> tuple[Path, ...]:
+    """The files that may carry the URL, first choice first: the distribution's own
+    `truss-dev.env`, then the `~/.arras` one."""
+    if _prefix(distribution) == "ARRAS":
+        return (TRUSS_URL_FILE,)
+    own = Path("~") / _directory_name(distribution) / "truss-dev.env"
+    return (own, TRUSS_URL_FILE)
+
+
 B = TypeVar("B", bound=Box)
 
 
@@ -423,39 +470,51 @@ def truss_url(
     given: str | None,
     environ: Mapping[str, str] | None = None,
     file: Path | None = None,
+    *,
+    distribution: DistributionConfig | None = None,
 ) -> tuple[str, str] | None:
     """The persistent server's connection URL and where it came from, or None for a throwaway:
-    `--truss-url`, else `ARRAS_TRUSS_DEV_URL` in the environment, else that variable in the file
-    (`NAME=value` lines, `export` and quotes allowed). The source names a place, never the URL."""
+    `--truss-url`, else the variable in the environment, else the variable in a file (`NAME=value`
+    lines, `export` and quotes allowed). The variable is `<env_prefix>_TRUSS_DEV_URL` of the
+    distribution, then `ARRAS_TRUSS_DEV_URL`; the file is the distribution's own
+    `~/.<env_prefix>/truss-dev.env`, then `~/.arras/truss-dev.env` (`file` names the only one).
+    The source names a place, never the URL."""
     if given:
         return given, "the --truss-url you gave"
+    variables = truss_url_variables(distribution)
     env = os.environ if environ is None else environ
-    if env.get(TRUSS_URL_VARIABLE):
-        return env[TRUSS_URL_VARIABLE], f"the environment variable {TRUSS_URL_VARIABLE}"
-    named = file or TRUSS_URL_FILE
-    path = named.expanduser()
-    try:
-        lines = path.read_text(encoding="utf-8").splitlines()
-    except OSError:
-        return None
-    for line in lines:
-        text = line.strip().removeprefix("export ").strip()
-        name, eq, value = text.partition("=")
-        if eq and name.strip() == TRUSS_URL_VARIABLE:
+    for variable in variables:
+        if env.get(variable):
+            return env[variable], f"the environment variable {variable}"
+    for named in (file,) if file else truss_url_files(distribution):
+        try:
+            lines = named.expanduser().read_text(encoding="utf-8").splitlines()
+        except OSError:
+            continue
+        found = {}
+        for line in lines:
+            text = line.strip().removeprefix("export ").strip()
+            name, eq, value = text.partition("=")
             value = value.strip()
             if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"":
                 value = value[1:-1]
-            if value:
-                return value, f"{TRUSS_URL_VARIABLE} in {named}"
+            if eq and value:
+                found.setdefault(name.strip(), value)
+        for variable in variables:
+            if variable in found:
+                return found[variable], f"{variable} in {named}"
     return None
 
 
-def default_truss_credentials_path(url: str) -> Path:
-    """Credential namespace for a host, port and installer; deliberately exclude the database."""
+def default_truss_credentials_path(
+    url: str, distribution: DistributionConfig | None = None
+) -> Path:
+    """Credential namespace for a host, port and installer; deliberately exclude the database.
+    It lives under the distribution's per-user directory (`state_directory`)."""
     endpoint, installer, _ = parse_credentialed(url)
     identity = f"{endpoint.host}\0{endpoint.port or 5432}\0{installer}"
     digest = hashlib.sha256(identity.encode()).hexdigest()
-    return Path.home() / ".arras" / "truss-dev-credentials" / f"{digest}.json"
+    return state_directory(distribution) / "truss-dev-credentials" / f"{digest}.json"
 
 
 def truss_attachment(url: str, source: str) -> list[str]:
@@ -491,7 +550,12 @@ def _module_and_seed(arg: str) -> tuple[Path, Path | None]:
     return Path(module), Path(seed) if colon else None
 
 
-def _announce_truss(attach: tuple[str, str] | None, *, reset: bool) -> None:
+def _announce_truss(
+    attach: tuple[str, str] | None,
+    *,
+    reset: bool,
+    distribution: DistributionConfig | None = None,
+) -> None:
     """Refuse a Truss mode that cannot run here before anything starts, then say what starts."""
     missing = _truss_missing(persistent=attach is not None)
     if missing:
@@ -499,7 +563,7 @@ def _announce_truss(attach: tuple[str, str] | None, *, reset: bool) -> None:
     if attach is None:
         print(
             "starting a throwaway local Truss: installing, registering and seeding takes a "
-            f"while (a persistent one: --truss-url or {TRUSS_URL_VARIABLE})",
+            f"while (a persistent one: --truss-url or {truss_url_variables(distribution)[0]})",
             flush=True,
         )
         return
@@ -528,9 +592,13 @@ def _display_brand_name(distribution: DistributionConfig | None) -> str:
 
 
 def _parser(distribution: DistributionConfig | None = None) -> argparse.ArgumentParser:
+    selected = distribution or DistributionConfig()
+    url_variable = truss_url_variables(selected)[0]
+    credentials_variable = truss_credentials_variables(selected)[0]
+    url_file = _directory_name(selected) + "/truss-dev.env"
     description = (
         __doc__
-        if (distribution or DistributionConfig()).brand.name == "Arras"
+        if selected.brand.name == "Arras" and selected.env_prefix == "ARRAS"
         else f"{_display_brand_name(distribution)} development host for a locally composed Arras app."
     )
     p = argparse.ArgumentParser(prog="python -m arras.devhost", description=description)
@@ -550,8 +618,8 @@ def _parser(distribution: DistributionConfig | None = None) -> argparse.Argument
         "--truss",
         action="store_true",
         help="serve a real Truss instead of the sandbox's fakes: on the persistent PostgreSQL "
-        "server a connection URL names (--truss-url, else $ARRAS_TRUSS_DEV_URL, else "
-        "~/.arras/truss-dev.env; needs --extra truss), otherwise on a "
+        f"server a connection URL names (--truss-url, else ${url_variable}, else "
+        f"~/{url_file}; needs --extra truss), otherwise on a "
         "throwaway local PostgreSQL (also needs --group truss-test)",
     )
     p.add_argument(
@@ -571,7 +639,7 @@ def _parser(distribution: DistributionConfig | None = None) -> argparse.Argument
         type=Path,
         metavar="PATH",
         help="host-owned file for stable persistent person credentials (or "
-        f"${TRUSS_CREDENTIALS_VARIABLE})",
+        f"${credentials_variable}, else a file under ~/{_directory_name(selected)}/truss-dev-credentials/)",
     )
     p.add_argument(
         "--records",
@@ -603,13 +671,14 @@ def main(
             p.error(f"{flag} needs --module")
     if (args.truss_url or args.truss_reset or args.truss_credentials) and not args.truss:
         p.error("--truss-url, --truss-reset and --truss-credentials need --truss")
-    attach = truss_url(args.truss_url) if args.truss else None
+    selected = distribution or DistributionConfig()
+    attach = truss_url(args.truss_url, distribution=selected) if args.truss else None
     if args.truss_credentials and attach is None:
         p.error("--truss-credentials needs a persistent server URL")
     if args.truss_reset and attach is None:
         p.error(
             "--truss-reset needs a persistent server: give --truss-url or set "
-            f"{TRUSS_URL_VARIABLE} (a throwaway starts clean anyway)"
+            f"{truss_url_variables(selected)[0]} (a throwaway starts clean anyway)"
         )
     if attach is not None:
         try:
@@ -617,7 +686,6 @@ def main(
         except (TypeError, ValueError):
             p.error("--truss-url is refused")
     also = [_module_and_seed(item) for item in args.also]
-    selected = distribution or DistributionConfig()
     try:
         context = telemetry._make_context(selected.telemetry, telemetry_factory)
     except Exception:
@@ -641,13 +709,21 @@ def _run_host(
                 "uvicorn is needed: uv run --extra devhost python -m arras.devhost"
             ) from None
         if args.truss:
-            _announce_truss(attach, reset=args.truss_reset)
+            _announce_truss(attach, reset=args.truss_reset, distribution=distribution)
         try:
             if attach is not None:
-                path = args.truss_credentials or (
-                    Path(os.environ[TRUSS_CREDENTIALS_VARIABLE]).expanduser()
-                    if os.environ.get(TRUSS_CREDENTIALS_VARIABLE)
-                    else default_truss_credentials_path(attach[0])
+                named = next(
+                    (
+                        os.environ[v]
+                        for v in truss_credentials_variables(distribution)
+                        if os.environ.get(v)
+                    ),
+                    None,
+                )
+                path = (
+                    args.truss_credentials
+                    or (Path(named).expanduser() if named else None)
+                    or default_truss_credentials_path(attach[0], distribution)
                 )
                 credential_source = FileCredentialSource(path)
             box = build(
