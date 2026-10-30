@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- `arras.ui.assets.build_theme_manifest` and `python -m arras.ui theme-manifest` build a runtime
+  theme bundle (stylesheet, favicon, fonts and a validated `theme-manifest.json`) for
+  `create_app(theme_manifest=...)`.
+
 ## 0.6.4 — embedding isolation
 
 Adds explicit identity/API session boundaries and optional `pageEffects=false`

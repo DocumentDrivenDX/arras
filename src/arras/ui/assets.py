@@ -5,10 +5,12 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.metadata
 import json
 import re
+import shutil
 import stat
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from types import MappingProxyType
@@ -302,3 +304,73 @@ def validate_cohort(
         or page.package.get("version") not in theme.ui_versions
     ):
         raise ValueError("theme manifest does not match the selected page cohort")
+
+
+THEME_MANIFEST_NAME = "theme-manifest.json"
+_THEME_CONTRACTS = {"console": 2, "operate": 2, "schema": 1, "browser": 1}
+_FAVICON_SUFFIXES = {".svg", ".png", ".jpg", ".jpeg", ".webp", ".ico"}
+
+
+def build_theme_manifest(  # noqa: PLR0913
+    output: Path,
+    *,
+    stylesheet: Path,
+    favicon: Path | None = None,
+    fonts: Sequence[Path] = (),
+    package_name: str = "theme",
+    package_version: str = "1",
+    ui_versions: Sequence[str] | None = None,
+) -> Path:
+    """Write a theme bundle into `output` and return the path of its manifest.
+
+    The stylesheet, optional favicon and fonts are copied into `output` under their own file
+    names, and `theme-manifest.json` records each one's SHA-256, size and MIME type. The manifest
+    names `ui_versions` (default: the installed Arras version) as the page versions it supports.
+    The result is read back with `load_manifest(..., kind="theme")` before it is returned, so a
+    bundle this function returns is one `create_app(theme_manifest=...)` accepts; anything it
+    would refuse raises `ValueError` and leaves no manifest behind."""
+    if ui_versions is None:
+        try:
+            ui_versions = [importlib.metadata.version("arras")]
+        except importlib.metadata.PackageNotFoundError:
+            raise ValueError("ui_versions is required when arras is not installed") from None
+    sources: dict[str, Path] = {}
+    for source in (Path(stylesheet), *map(Path, fonts), *([Path(favicon)] if favicon else [])):
+        if source.name == THEME_MANIFEST_NAME or source.name in sources:
+            raise ValueError(f"theme file name {source.name!r} is reserved or repeated")
+        sources[source.name] = source
+    output = Path(output)
+    output.mkdir(parents=True, exist_ok=True)
+    files: dict[str, dict[str, str | int]] = {}
+    for name, source in sources.items():
+        mime = _MIMES.get(Path(name).suffix.lower())
+        if mime is None or not source.is_file():
+            raise ValueError(f"theme file {name!r} is missing or has an unsupported type")
+        target = output / name
+        if not (target.exists() and target.samefile(source)):
+            shutil.copyfile(source, target)
+        body = target.read_bytes()
+        files[name] = {"sha256": hashlib.sha256(body).hexdigest(), "size": len(body), "mime": mime}
+    entry: dict[str, object] = {"stylesheet": Path(stylesheet).name}
+    if fonts:
+        entry["fonts"] = [Path(font).name for font in fonts]
+    if favicon:
+        entry["favicon"] = Path(favicon).name
+    manifest = {
+        "format": "arras.ui.assets",
+        "version": 1,
+        "kind": "theme",
+        "package": {"name": package_name, "version": package_version},
+        "contracts": dict(_THEME_CONTRACTS),
+        "ui_versions": list(ui_versions),
+        "entry": entry,
+        "files": files,
+    }
+    result = output / THEME_MANIFEST_NAME
+    result.write_text(f"{json.dumps(manifest, indent=2)}\n", encoding="utf-8")
+    try:
+        load_manifest(result, kind="theme")
+    except ValueError:
+        result.unlink(missing_ok=True)
+        raise
+    return result
