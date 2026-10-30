@@ -40,6 +40,10 @@ uv run pytest -q
 uv run --extra devhost python -m arras.devhost      # the console over fake data, on loopback only
 ```
 
+An installed wheel also provides one `arras` command that runs the same module entry points:
+`arras doctor`, `arras devhost`, `arras mcp` (each takes the options of its module) and
+`arras --version`. The `python -m` forms keep working.
+
 Serve one of the examples with its seed:
 
 ```bash
