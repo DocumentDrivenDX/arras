@@ -237,3 +237,30 @@ def test_custom_mcp_help_and_argument_error_use_brand_without_echoing_values(cap
     error = capsys.readouterr().err
     assert error == "Tenant Catalog: only --help is supported\n"
     assert "sensitive-sentinel" not in error
+
+
+def test_conflicting_aliases_start_with_a_warning_naming_the_variables_only() -> None:
+    code = (
+        "from arras.distribution import DistributionConfig\n"
+        "from arras.mcp import launch\n"
+        "launch([], distribution=DistributionConfig(env_prefix='EXAMPLE'))\n"
+    )
+    done = subprocess.run(
+        [sys.executable, "-c", code],
+        env={
+            "PATH": "",
+            "EXAMPLE_DEV_SANDBOX": "1",
+            "EXAMPLE_DEV_USER": "alice",
+            "ARRAS_DEV_USER": "bob-sentinel",
+        },
+        input="",
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert done.returncode == 0 and done.stdout == ""
+    assert (
+        "configuration: warning: EXAMPLE_DEV_USER and ARRAS_DEV_USER are both set to "
+        "different values; EXAMPLE_DEV_USER is used" in done.stderr
+    )
+    assert "bob-sentinel" not in done.stderr

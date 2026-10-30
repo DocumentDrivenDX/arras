@@ -187,7 +187,9 @@ no evidence is relabelled or reassembled across those runs.
 `mcp_server_name`, optional `mcp_tool_prefix` and explicit bootstrap `env_prefix`
 without ambient I/O. ADR-019's typed reader merges committed presentation fields
 and selected aliases. Nonblank custom values override canonical fallback;
-conflicting credentials across both namespaces refuse before source selection.
+conflicting credentials across both namespaces refuse before source selection;
+other keys set to different values in both namespaces use the custom value and
+warn on stderr by variable name, never by value.
 MCP validates exposed names on initialization and registry changes; last-listed
 aliases never silently retarget another action. `arras.mcp.launch` is the callable
 shim entrypoint. Both MCP and development launchers use the selected printable
