@@ -74,7 +74,7 @@ test.describe("host isolation", () => {
     expect(await style(page, ".arras-root", "background-color")).toBe(TOKENS.lightBg);
   });
 
-  test("a host's layered utilities and element rules do not undo the library's", async ({
+  test("a host's layered utilities and element rules do not undo the library's, and its one-class button rule wins over the control reset", async ({
     page,
   }) => {
     await openWithHost(page);
@@ -88,6 +88,32 @@ test.describe("host isolation", () => {
       return { display: getComputedStyle(el).display };
     });
     expect(probe.display).not.toBe("none");
+    // Inside the browser, a design system's themed button (one unlayered class) beats the library's control
+    // reset without `!important`; an unstyled control still takes the text colour it sits in.
+    await page.goto("/#/explore/catalog");
+    await expect(page.locator(".arras-root .gb")).toBeVisible();
+    // A design system's themed button: one class, an accent fill and the text colour that goes with it.
+    await hostCss(
+      page,
+      ".host-btn { background-color: rgb(31, 79, 216); color: rgb(255, 255, 255); font-size: 17px }",
+    );
+    await page.evaluate(() => {
+      const button = document.createElement("button");
+      button.id = "host-btn";
+      button.className = "host-btn";
+      button.textContent = "Themed";
+      document.querySelector(".arras-root .gb")?.append(button);
+    });
+    expect(await style(page, "#host-btn", "color")).toBe("rgb(255, 255, 255)");
+    expect(await style(page, "#host-btn", "font-size")).toBe("17px");
+    // The reset still applies to a control the host did not style: it takes the text colour it sits in.
+    const inherited = await page.evaluate(() => {
+      const plain = document.createElement("button");
+      document.querySelector(".arras-root .gb")?.append(plain);
+      const gb = document.querySelector(".arras-root .gb") as Element;
+      return [getComputedStyle(plain).color, getComputedStyle(gb).color];
+    });
+    expect(inherited[0]).toBe(inherited[1]);
   });
 
   test("appearance follows the host's data-appearance, then the OS, and the library sets none", async ({

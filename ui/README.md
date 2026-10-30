@@ -819,6 +819,10 @@ fails if a built stylesheet has a selector outside the root; CI runs it on the l
 - **Cascade.** The rules stay in Tailwind's layers, with the `.arras-*` classes unlayered above them.
   A host's layered rules (its own Tailwind) do not override the root's, which are the more specific; a host's
   *unlayered* element rule (`button { ... }`) outranks the layered ones inside the root.
+  The Graph Browser's reset of its own controls (`font` and `color` inherited by `button`, `input` and `select`) is
+  unlayered but carries no specificity (`:where(.arras-root .gb) :where(...)`), so a host's rule on its own control
+  class, or the class a design-system widget draws, wins over it without `!important`, whatever its order in the
+  page; the `.arras-btn` widgets and the `.gb-*` classes are unaffected.
 - **Tests.** `src/test/scope-css.test.ts` for the scoper; `e2e/host-isolation.spec.ts` for the built page
   with a host's markup and rules planted around the root: the host's elements keep their browser defaults,
   its same-named tokens do not reach the root, the appearance follows the host's `data-appearance`, then the OS,

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- The Graph Browser's reset of its controls (`font` and `color` inherited) carries no specificity, so a host's
+  one-class button rule, or the class a design-system widget draws, is no longer overridden by it; the built-in
+  look is unchanged.
+
 ## 0.6.4 — embedding isolation
 
 Adds explicit identity/API session boundaries and optional `pageEffects=false`
