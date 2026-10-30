@@ -245,6 +245,12 @@
           "run_corpus"
         ]
       },
+      "arras.alias": {
+        "kind": "module",
+        "names": [
+          "alias_package"
+        ]
+      },
       "arras.backend": {
         "kind": "module",
         "names": [
@@ -1384,6 +1390,24 @@
             "default": "legacy-arras/1"
           }
         ]
+      },
+      "arras.alias.alias_package": {
+        "parameters": [
+          {
+            "name": "name",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "target",
+            "kind": "KEYWORD_ONLY",
+            "default": "arras"
+          },
+          {
+            "name": "modules",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
       }
     },
     "contracts_version_source": "contracts",
@@ -1396,6 +1420,7 @@
       "arras",
       "arras.adapters",
       "arras.adapters.truss",
+      "arras.alias",
       "arras.backend",
       "arras.branding",
       "arras.conformance",

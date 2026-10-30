@@ -412,6 +412,21 @@ This is a development-tool seam, not an import for a production host. Mocked
 uvicorn tests must assert the exact selected value reaches the constructed app
 and banner without starting a database or server.
 
+`arras.alias.alias_package(name, *, target="arras", modules=None) -> None` serves `arras`
+under another import name for a downstream distribution that kept an older one. The
+distribution ships a thin package whose `__init__.py` calls `alias_package(__name__)`; every
+module imported below it (`name.model`, `name.ui.assets`) is then the `arras` module object itself,
+loaded once, so `name.X is arras.X`, `__name__` and `__spec__` stay canonical, and no second copy is
+created. The finder is inserted at the front of `sys.meta_path` (a repeated call replaces the
+earlier finder for the same name), the loader restores the module's `__spec__` after the import
+system replaces it, so `importlib.resources` works, and the loader has `get_code` and the spec an
+origin, so `python -m name.x` runs the real module. A module the alias package itself contains
+(`name/__main__.py`, a renamed launcher) is never replaced. `name` also forwards attribute access
+to `arras` (`name.Arras is arras.Arras`). `modules`, when given, closes the set: only the listed
+dotted submodules (`"model"`, `"ui.assets"`) and the packages leading to them import, and any other
+`name.<module>` is `ModuleNotFoundError`. It renames nothing on the wire: contract, vocabulary,
+action and CSS identities remain canonical.
+
 `arras.mcp.launch(argv=None, *, distribution=None, telemetry_factory=None) -> None` is the supported
 callable launcher for a thin downstream command. `argv` is a sequence of strings,
 or the process arguments when absent. It supports only `-h`/`--help` in this cut;

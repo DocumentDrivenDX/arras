@@ -199,7 +199,7 @@ development internals are not promoted.
 
 | Surface | Classification and guarantee | Current seam / qualification |
 | --- | --- | --- |
-| Python/package identities, types, contract/vocabulary/action IDs and wire codes | (a) Canonical Arras identity | Explicit public shim reexports; no import rewriting |
+| Python/package identities, types, contract/vocabulary/action IDs and wire codes | (a) Canonical Arras identity | Explicit public shim reexports, or `arras.alias.alias_package` for a thin alias package that serves the same module objects; no import rewriting |
 | `.arras-root`, component classes and eighteen `--arras-*` tokens | (a) Stable namespace | Host supplies values/widgets; renaming is a breaking upstream change |
 | Titles, wordmark, tagline, Mark and product-bearing UI text | (b) Host presentation | Shared Brand and escaped runtime injection; no page rebuild |
 | MCP server display name and exposed tool prefix | (b)/(c) Explicit typed presentation/alias | Canonical qualified actions/version meanings remain unchanged |

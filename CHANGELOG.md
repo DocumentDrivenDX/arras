@@ -61,6 +61,10 @@ httpx to the development group for the mount tests.
   installs its own appearance provider: the `host-isolation` specs that assume a bare host are skipped, and the one
   that asserts the library installs no appearance checks the Arras subtree alone.
 
+- `arras.alias.alias_package(name, *, target="arras", modules=None)` lets a thin package under
+  another import name serve `arras` itself: same module objects, canonical `__spec__`, working
+  `importlib.resources` and `python -m`, with an optional closed list of modules.
+
 ## 0.6.4 — embedding isolation
 
 Adds explicit identity/API session boundaries and optional `pageEffects=false`
