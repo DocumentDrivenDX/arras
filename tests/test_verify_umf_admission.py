@@ -466,6 +466,9 @@ def test_cleanup_failure_cannot_be_serialized_as_success(
         "invalid-name",
         "scripts-outside",
         "scripts-symlink",
+        "omitted-record",
+        "missing-file",
+        "duplicate-record",
     ],
 )
 def test_installed_console_script_is_declared_confined_and_integrity_checked(
@@ -533,7 +536,12 @@ def test_installed_console_script_is_declared_confined_and_integrity_checked(
     elif case == "scripts-symlink":
         selected_scripts = venv / "linked-bin"
         selected_scripts.symlink_to(scripts, target_is_directory=True)
-    rows.append([record_path, script_hash, size])
+    if case != "omitted-record":
+        rows.append([record_path, script_hash, size])
+    if case == "missing-file":
+        script.unlink()
+    elif case == "duplicate-record":
+        rows.append([record_path, script_hash, size])
     buffer = io.StringIO()
     csv.writer(buffer, lineterminator="\n").writerows(rows)
     installed_record = buffer.getvalue()

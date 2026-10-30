@@ -166,8 +166,13 @@ def _compare_installed_payload(wheel: Path, distribution_name: str) -> int:
         rows = list(csv.reader(record.splitlines()))
     except csv.Error as error:
         raise VerificationError("payload", "installed-record-invalid") from error
+    seen_console_scripts: set[str] = set()
     for name, digest, size in rows:
         script = console_scripts.get(name)
+        if script is not None:
+            if name in seen_console_scripts:
+                raise VerificationError("payload", "installed-console-script-duplicate")
+            seen_console_scripts.add(name)
         located = Path(distribution.locate_file(name))
         if script is None:
             _safe_member(name)
@@ -195,6 +200,8 @@ def _compare_installed_payload(wheel: Path, distribution_name: str) -> int:
             )
             if expected != actual:
                 raise VerificationError("payload", "installed-record-digest-mismatch")
+    if seen_console_scripts != set(console_scripts):
+        raise VerificationError("payload", "installed-console-script-missing")
     return compared
 
 
