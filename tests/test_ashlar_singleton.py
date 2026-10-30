@@ -66,8 +66,11 @@ def test_exact_person_ports_selection_and_carriers(
         events.append("read")
         return row
 
-    monkeypatch.setattr(singleton, "_read_singleton", lambda: read)
-    out = singleton.SingletonReads("replica", source).lookup(PERSON, SELECTION)
+    def forbidden():
+        pytest.fail("explicit owner must not fall back to dependency discovery")
+
+    monkeypatch.setattr(singleton, "_read_singleton", forbidden)
+    out = singleton.SingletonReads("replica", source, read_singleton=read).lookup(PERSON, SELECTION)
     assert events == [PERSON, "read", "closed"]
     assert out.publication_id == SELECTION.publication_id
     assert out.row == row
@@ -133,18 +136,13 @@ def test_failure_returns_no_row_and_exposes_no_native_details(
     assert events == ([] if phase == "open" else ["close"])
 
 
-def test_missing_sdk_does_not_open_session(monkeypatch: pytest.MonkeyPatch) -> None:
-    def missing():
-        raise ModuleNotFoundError("private path")
-
+def test_missing_owner_does_not_open_session() -> None:
     def forbidden(principal: Principal) -> Any:
-        pytest.fail("missing SDK cannot open a session")
+        pytest.fail("missing owner cannot open a session")
 
-    monkeypatch.setattr(singleton, "_read_singleton", missing)
     with pytest.raises(Unavailable) as found:
         singleton.SingletonReads("replica", forbidden).lookup(PERSON, SELECTION)
     assert found.value.reason == "unsupported_version"
-    assert "private path" not in str(found.value)
 
 
 def test_cleanup_denial_does_not_turn_read_outage_into_refusal(

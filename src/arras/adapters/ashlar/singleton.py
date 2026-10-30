@@ -13,7 +13,7 @@ from collections.abc import Callable, Mapping, Sequence
 from contextlib import AbstractContextManager
 from dataclasses import dataclass, field
 from types import MappingProxyType
-from typing import Any, Literal, cast
+from typing import Any, Literal
 
 from arras.errors import Refused, Unavailable
 from arras.types import Principal
@@ -61,22 +61,27 @@ SessionSource = Callable[[Principal], AbstractContextManager[Session]]
 
 
 def _read_singleton() -> Callable[..., Any]:
-    # Optional engine import stays inside the adapter and the individual call.
-    from ashlar.singleton import read_singleton  # type: ignore[import-not-found]
-
-    return cast(Callable[..., Any], read_singleton)
+    # No unpinned owner package is discovered by the base distribution.
+    raise ImportError("The host must supply the Ashlar read owner")
 
 
 class SingletonReads:
-    def __init__(self, name: str, sessions: SessionSource) -> None:
+    def __init__(
+        self,
+        name: str,
+        sessions: SessionSource,
+        *,
+        read_singleton: Callable[..., Any] | None = None,
+    ) -> None:
         self.name = name
         self.sessions = sessions
+        self._read = read_singleton
 
     def lookup(self, principal: Principal, selection: Selection) -> Observation:
         if not principal.token:
             raise Refused(self.name, "query")
         try:
-            read = _read_singleton()
+            read = self._read if self._read is not None else _read_singleton()
         except ImportError:
             raise Unavailable(
                 self.name, "unsupported_version", "Ashlar read API unavailable"

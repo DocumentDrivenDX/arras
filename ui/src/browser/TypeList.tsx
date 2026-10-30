@@ -2,7 +2,7 @@
 // A type's entities in key order, in pages of at most 50 (US-066-AC2). The list's address carries
 // where it starts (`?after=<key>`); Show next moves that to the page just read, in place, so a
 // refresh or a pasted link opens the list where the reader was.
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { shortName } from "../api/gql";
 import { evaluate, titleOf, valueText } from "../lib/template";
 import { useBrowser } from "./context";
@@ -57,11 +57,12 @@ function useListPosition(entry: TypeEntry, after: string | undefined) {
 
 export function TypeList({ entry, after }: { entry: TypeEntry; after?: string }) {
   const q = useListPosition(entry, after);
-  const heading = `gb-list-${entry.type.name}`;
+  const heading = useId();
+  const { focus } = useBrowser();
   const ready = !q.isPending && !q.error;
   useEffect(() => {
-    if (ready && takeListFocus()) document.getElementById(heading)?.focus();
-  }, [ready, heading]);
+    if (ready && takeListFocus(focus)) document.getElementById(heading)?.focus();
+  }, [ready, heading, focus]);
   if (q.isPending) return <Skeleton />;
   if (q.error) {
     const s = stateOf(q.error);

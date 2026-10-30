@@ -894,6 +894,60 @@ substitute for the packed themed run.
 
 ## Normative Surface
 
+### Embedded API and compiled UI ownership
+
+A host MAY mount `arras.console.create_app`, `arras.operate.create_app` and
+`arras.operate.create_schema_app` independently, without importing `arras.ui` or
+serving the standalone page. The host MUST supply its principal mapping and
+explicit operator/schema/action policies where those surfaces are offered.
+Core MUST NOT depend on HTTP handlers or UI code. Its existing GraphQL schema
+servable check during registration/attachment remains part of admission.
+
+The public component artifact is `@documentdrivendx/arras-ui`: compiled ESM,
+declarations and `styles.css`, with root, `/browser` and `/shell` production
+entrypoints. React and ReactDOM remain host-supplied peers. `/testkit` is Node
+configuration and `/testkit/host` is an opt-in browser acceptance host; neither
+MUST enter production imports. Internal source paths are unsupported. Python
+and npm versions MUST match the verified release cohort; registry publication
+MUST use the exact qualified release artifacts, followed by public installation
+and digest checks. No independent Python core/API/UI wheels are required.
+
+`ArrasProvider`, `ArrasConsole`, `GraphBrowser` and `ArrasApp` accept an optional
+`identity: string` and `pageEffects: boolean` (default true). Hosts MUST change
+identity when the person, tenant or authorization session changes; a credential
+refresh for the same session need not change it. Changing identity or any API
+base MUST synchronously replace the rendered session boundary: old query data,
+refusals, forms, viewer modes and drafts MUST NOT appear in the new session.
+Late results from the old session MUST NOT populate the new cache. Released
+scopes MUST stop acquiring authentication headers and suppress late sign-in
+and revision callbacks to the host. The default
+cache is private to a provider scope. A supplied `queryClient` is an exclusive
+Arras cache, not the host application's general cache; it MAY be shared by providers with identical identity and API bases, but MUST
+refuse concurrent use across different scopes. On final release it is cancelled
+and cleared.
+Nested entry components share the enclosing provider; conflicting explicit
+identity, API bases or query client MUST fail rather than silently bind elsewhere.
+An explicit nested `ArrasProvider` creates an independent integration scope.
+Conflicting explicit headers or page-effect ownership MUST also fail.
+Every provider MUST establish the `.arras-root` stylesheet scope, including for
+hosts composing individual public area components.
+
+When `location`/`onLocation` control Explore, Arras MUST NOT read or write the
+host's URL/history state, restore window scroll or call browser Back. Search
+and type selection remain in local memory. Operate's `route`/`onRoute` retain
+the same URL ownership rule. With `pageEffects=false`, neither mode MUST write
+the document title, scroll the window or install global keyboard shortcuts;
+control-local keyboard behavior remains available. Accessibility IDs, SVG
+resources, focus requests and edit portals MUST be local to each component
+instance. The host owns page title,
+router, scroll container and application shortcuts in this mode.
+
+
+Action-input focus handoffs belong to the provider session rather than a module
+global. Action controls use instance-local IDs and resolve focus within their
+own form. A schema view observes its own host theme ancestry; a sibling view
+must not determine its appearance or theme-change subscription.
+
 | Element | Type / Shape | Required | Rules | Notes |
 |---------|---------------|----------|-------|-------|
 | `ConnectionSource` | `Callable[[Principal], ContextManager[psycopg.Connection]]` | for the Truss adapter | Each call MUST yield a connection to the adapter's database authenticated as that principal, with the principal's own token (ADR-017), closed or returned on exit. The host owns pooling and credential refresh, supplying the person's current credential for each newly acquired connection (ADR-017). Arras MUST NOT read ambient connection variables, create connections itself, or reuse a connection across principals. Connections MUST arrive idle, with autocommit off (psycopg's default), no open transaction, and the session role unset (`SET ROLE` is `none`), and the session authorization unchanged: a source MUST NOT run `SET SESSION AUTHORIZATION`, which only a superuser login may and which the adapter does not check for (it reads `current_setting('role')` only, so a service login switched to a person's authorization would pass), because Postgres gives no portable way to compare the session user with the login identity. A host that connects as a superuser is outside the model: the database's own grants are what bound a person, and a superuser has them all. The adapter sets the isolation level and access mode it needs on each transaction (`SET TRANSACTION`, its first statement, in the transaction the driver opens with it), sets `statement_timeout` with `SET LOCAL` (1 to 60,000 ms, as Truss requires before it adopts the connection; the host sets it with `statement_timeout_ms` on `create_backend`, default 10,000, and an import needs it at or above about 5,000 ms for each 32-record chunk, because Truss's deferred constraint check runs as a single statement at the commit and the adapter does not validate that floor), and MUST commit or roll back every transaction it opens and MUST NOT leave session state: it uses no session-level `SET`, no `conn.read_only` and no `SET ROLE`. When Truss reports a connection quarantined (its `detach()` returns false, or a call reports the transaction unusable), Arras closes that connection and the host's pool MUST discard a closed connection and never return it to service, because Truss keeps the quarantine on the connection object. Arras MUST work whether or not the connection prepares statements; a host behind a transaction-mode pooler MAY disable preparing (`prepare_threshold=None`). | What a person may read or write is what Postgres grants that person's role: membership in a module's reader and writer roles, and registrar membership to register, each granted by the database administrator with `WITH SET FALSE`. Arras holds no mapping from people to roles. |

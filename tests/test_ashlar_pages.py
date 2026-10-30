@@ -49,7 +49,7 @@ def prepare(statement: Statement, **changes: Any) -> pages.PreparedPage:
     return pages.prepare_managed_page("replica", statement, **arguments)
 
 
-def test_statement_and_owner_binding_are_preserved(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_statement_and_owner_binding_are_preserved() -> None:
     sql = "SELECT p.name\nFROM original.Person p WHERE p.name = :name ORDER BY p.name"
     seen: list[object] = []
     source = {"original": {"source": "bytes"}}
@@ -65,8 +65,12 @@ def test_statement_and_owner_binding_are_preserved(monkeypatch: pytest.MonkeyPat
         seen.extend([parameters, result])
         return Entry(raw)
 
-    monkeypatch.setattr(pages, "_owners", lambda: (build, original))
-    out = prepare(Statement(sql, {"name": "'SECRET%_\\"}), source_bundle=source, weft_inputs=inputs)
+    out = prepare(
+        Statement(sql, {"name": "'SECRET%_\\"}),
+        source_bundle=source,
+        weft_inputs=inputs,
+        owners=(build, original),
+    )
     assert source == {"original": {"source": "bytes"}} and inputs == {"manifest": "publication-1"}
     envelope = json.loads(out.request_json)
     assert envelope["request"]["sql"] == sql
@@ -122,3 +126,13 @@ def test_no_parameter_normalization(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(pages, "_owners", lambda: (forbidden, forbidden))
     with pytest.raises(Unavailable):
         prepare(Statement("unchanged", {"name": "original"}), parameters_type=Changed)
+
+
+def test_missing_owners_does_not_reach_compiler() -> None:
+    class ForbiddenCompiler:
+        def compile_engine_page_json(self, raw: str) -> str:
+            pytest.fail("missing owners must not reach the compiler")
+
+    with pytest.raises(Unavailable) as found:
+        prepare(Statement("unchanged"), compiler=ForbiddenCompiler())
+    assert found.value.reason == "unsupported_version"

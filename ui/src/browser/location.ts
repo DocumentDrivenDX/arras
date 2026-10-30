@@ -124,7 +124,9 @@ const current = (): Parsed => parseExplore(window.location.hash);
 
 export function useBrowserLocation({ location, onLocation }: LocationProps): Router {
   const controlled = location !== undefined;
-  const [hashParsed, setHashParsed] = useState<Parsed>(current);
+  const [hashParsed, setHashParsed] = useState<Parsed>(() =>
+    controlled ? { kind: "other" } : current(),
+  );
   useEffect(() => {
     if (controlled) return;
     const on = () => setHashParsed(current());

@@ -23,6 +23,7 @@ const BROWSER_MAY = [
   join(SRC, "kit"),
   join(SRC, "lib/brand"),
   join(SRC, "lib/documentTitle"),
+  join(SRC, "lib/pageEffects"),
 ];
 
 /** Forbidden edges out of the browser: anything outside BROWSER_MAY (its own modules, api/, components/ui, components/Scope, ds/, kit/ and the listed lib/ modules). */

@@ -370,3 +370,27 @@ record](evidence/public-pypi-extras-20261026/README.md) includes the Linux and
 hosted macOS artifacts and digests. The local macOS result is supplemental.
 This qualifies only the named 0.6.3 cohort and platforms; it does not qualify
 Windows, managed deployment or native/provider behavior.
+
+
+### 0.6.4 embedded composition qualified — 2026-10-29
+
+Full CI [40973828432](https://github.com/DocumentDrivenDX/arras/actions/runs/40973828432)
+passed all five required jobs on source `fcd14abc600a9cdcdf9913faba0d072ac50242f4`.
+Selected wheel `29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2` passed the fresh macOS arm64 native campaign
+(64 passed, eight declared limits, seven replica-only cases inapplicable),
+175-member installed payload parity, and independent native cleanup. The exact
+wheel-carried npm archive passed compiled exports/types/deep-import controls
+and real Chromium embedding against the API. The UI suite passes 1,465 cases.
+
+The separate fresh managed campaign passed all twelve required cases. Its
+installed Arras/Truss payload and source observations matched before/after.
+Independent read-only cleanup verified five removed resources, ordinary actor
+privileges, no campaign sessions and restored endpoint bounds. All four
+workspace and account identities, their secrets and keychain entries, and the
+owned disposable project were then removed and independently confirmed.
+The [safe evidence index](evidence/embedding064-20261029/README.md) records exact
+artifact, source, harness and fixture hashes, prior-attempt scope and limits.
+
+The strict release guard now selects these exact 0.6.4 wheel bytes. A new final
+source build must reproduce them before tagging. Tagged-build, anonymous public
+download and both registry OIDC/byte/clean-install gates remain mandatory.

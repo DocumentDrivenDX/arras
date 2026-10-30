@@ -17,6 +17,30 @@ ddx:
 
 # Arras release notes
 
+## 0.6.4 embedded composition
+
+The 0.6.4 candidate completes session and host-page ownership for embedders:
+identity/API changes reset Arras-owned UI state, shared caches refuse different
+security/API scopes, individual public areas get scoped CSS, and controlled
+Explore preserves host history and scroll. `pageEffects=false` leaves title,
+window scroll and global shortcuts with the host. Accessibility IDs, SVG
+resources, navigation focus and edit portals remain local to their instances.
+
+The Python core and independently mountable API factories remain in `arras`;
+compiled ESM/types/CSS and root/browser/shell exports remain in the matching
+`@documentdrivendx/arras-ui` package. Private source imports remain unsupported.
+See the [integration guide](../../../ui/README.md#embed-in-a-host) and
+[API-only hosting example](../../../README.md#serve-only-the-api-and-bundle-the-components).
+Existing HTTP contract versions and native/UMF pins are unchanged.
+
+The selected 0.6.4 wheel `29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2` passed full CI, fresh macOS native
+qualification (64 cases and eight declared limits) and all twelve fresh managed
+Lakebase cases. Independent cleanup and temporary identity/project deletion
+passed. Compiled public exports and the exact wheel-carried npm archive passed
+real Chromium embedding. See the [qualification evidence](evidence/embedding064-20261029/README.md).
+Tagged/public-download and registry publication checks remain required before
+claiming availability; historical 0.6.3 receipts do not qualify these bytes.
+
 ## 0.6.3 catalog correction
 
 The Python and wheel-carried npm versions in `public-api.json` now agree with

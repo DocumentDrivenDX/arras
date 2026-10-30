@@ -2,7 +2,7 @@
 name = "example-extension-host"
 version = "0.1.0"
 requires-python = ">=3.11"
-dependencies = ["arras==0.6.3"]
+dependencies = ["arras==0.6.4"]
 
 [project.scripts]
 extension-host-example = "extension_host.__main__:main"

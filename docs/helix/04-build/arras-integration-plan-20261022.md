@@ -25,6 +25,95 @@ ddx:
 
 # Arras integration build plan
 
+## Embedded composition completion — 2026-10-29
+
+The operator requests complete core/API/UI embedding, documented visibility and
+scope ownership, and publication for downstream consumers. Work starts from
+upstream `2dbaf40`, preserving local documentation changes in the older checkout.
+The candidate is 0.6.4, with unchanged native/UMF pins and public export names.
+
+- Govern exact session/page ownership in CONTRACT-005; keep core/API/UI boundaries
+  and one Python/npm release cohort, without exporting private implementation.
+- Replace UI session state on identity/API-base changes; guard shared-cache scope,
+  inherited configuration and stale responses. Preserve same-scope cache sharing.
+- Keep controlled navigation, accessibility IDs, focus requests and edit portals
+  local to each instance. Supply CSS scope for individually composed public areas.
+- Document independent API mounting, compiled npm consumption, host ownership,
+  runtime UMF assets, public entrypoints and design-system integration.
+- Run source regressions, full UI unit/types/lint, packed exports, real browser
+  tests and fresh distribution consumers. Qualify final release bytes through
+  existing exact-tag/public-download/registry gates before claiming publication.
+
+Implementation is in [draft PR 20](https://github.com/DocumentDrivenDX/arras/pull/20).
+The expanded UI suite passes 1,462 cases, including StrictMode and late 401
+callback controls; TypeScript/Biome pass. The default Python run passed 3,325
+cases, with socket-blocked devhost cases rerun successfully (13 server cases).
+Public API-only construction, module/catalog boundaries and fixture checks pass.
+The first local wheel passed packed ESM/type/deep-import checks, Chromium 153
+embedding against a real local API, source/sdist installed parity, official UMF
+and macOS native qualification. Those receipts bind their original wheel;
+callback corrections and the extension-example 0.6.4 pin require rebuilt bytes.
+
+The user authorized a fresh disposable Lakebase qualification target and four
+temporary identities with project-scoped grants and two-hour keychain credentials.
+Project creation succeeded with 0.5–1 CU and 300-second autosuspend. After the
+operator activated PIM and the development login was refreshed, all four
+identities and project-only grants were created. Lakebase API-created roles
+receive replication privileges; the unchanged ordinary-person admission refused
+them before installation. The test roles were recreated with the documented
+login-only OAuth SQL provisioner, then independently checked for no superuser,
+role/database creation, bypass-RLS, replication or effective elevated privileges.
+The frozen full managed campaign now binds the exact CI wheel
+`c69eb11da743f736c3c6151e29f0c20eef50777fe5742a641ada9bdf556eb524`.
+No old authorization or managed result is reused. Cleanup remains mandatory.
+
+The corrected candidate in CI `40966444386` passes Python, lint/types/build,
+installed doctor, official UMF, full live UI integration and packed Chromium
+embedding. Its fresh-installed macOS native qualification passed on the same
+wheel. The full CI run passed all five required jobs, including the PostgreSQL adapter.
+The corrected managed campaign on this earlier wheel passed all twelve cases,
+and independent read-only cleanup passed all checks. These results remain
+bound to that earlier wheel; final integrated bytes require fresh qualification.
+
+A candidate build is not publication; no 0.6.4 artifact is claimed available yet. Historical 0.6.3 and
+native/managed qualification receipts retain their original scope.
+
+The final multi-instance audit additionally replaced the remaining global action
+input-focus handoff with a provider-owned scope, generated default form input
+IDs per instance, and anchored UMF theme observation to each view's own host.
+Regressions exercise two forms with the same action, local label activation,
+actual property-to-action focus navigation, and independent schema-view themes.
+These changes require the final wheel and carried npm archive to be rebuilt.
+
+### Upstream Ashlar composition and release source
+
+Upstream PR21 added private Ashlar preparation/read bridges during release
+qualification. Their optional owner imports were absent from the production
+dependency declarations, so integrated CI refused the source. The bridges now
+accept explicit host-supplied owners: `SingletonReads(..., read_singleton=...)`
+and `prepare_managed_page(..., owners=(request_builder, from_original))`.
+No undeclared package is discovered or imported. Missing owners produce the
+existing typed unavailable result before session/compiler work. The base install
+and public catalog remain unchanged; a qualified Ashlar factory and installed
+owner cohort remain unfinished. Original AS-0 source-local receipts retain their
+original source scope. Fresh composition controls cover explicit forwarding.
+
+The integrated source adds Python wheel members, so the earlier embedding wheel
+and managed results cannot qualify the final release bytes. A new exact CI wheel,
+fresh macOS qualification and a fresh complete managed invocation are required.
+
+### Final selected embedding artifacts qualified
+
+Source `fcd14abc600a9cdcdf9913faba0d072ac50242f4` passed full CI `40973828432`.
+The selected 0.6.4 wheel is `29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2`. Its carried npm archive, fresh Mac
+native qualification and separate fresh twelve-case managed campaign pass;
+independent cleanup and deletion of all temporary identities, credentials and
+the disposable project are confirmed. The final UI suite passes 1,465 cases.
+Earlier local/candidate results above retain their original bytes and scope.
+The [qualified evidence](../05-deploy/evidence/embedding064-20261029/README.md)
+closes original artifact qualification. Final-source reproduction, tagged/public
+download qualification and registry availability remain release gates.
+
 ## Scope
 
 Adopt official UMF semantics and the generated client's public transport in

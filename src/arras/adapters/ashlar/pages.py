@@ -12,7 +12,7 @@ import copy
 import json
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, cast
+from typing import Any
 
 from arras.errors import Unavailable, Unsupported
 from arras.types import Statement
@@ -27,14 +27,8 @@ class PreparedPage:
 
 
 def _owners() -> tuple[Callable[..., Any], Callable[..., Any]]:
-    import ashlar_host.managed_current_weft_binding as binding  # type: ignore[import-not-found]
-    from umf_access.engine_catalog import EngineRead  # pyright: ignore[reportMissingImports, reportUnknownVariableType]
-
-    # Optional owner packages are absent from the base install. Runtime installed
-    # qualification must bind their exact distribution/source identities.
-    return cast(Callable[..., Any], cast(Any, binding).managed_current_sdk_pages_request), cast(
-        Callable[..., Any], cast(Any, EngineRead).from_original
-    )
+    # Composition supplies both owners from its separately qualified dependency set.
+    raise ImportError("The host must supply the Ashlar and UMF preparation owners")
 
 
 def prepare_managed_page(
@@ -47,6 +41,7 @@ def prepare_managed_page(
     parameters_type: Any,
     result_type: Any,
     page_size: int,
+    owners: tuple[Callable[..., Any], Callable[..., Any]] | None = None,
 ) -> PreparedPage:
     """Compile only; a separate person-scoped held AshlarTarget executes the entry.
 
@@ -59,7 +54,7 @@ def prepare_managed_page(
     if any(type(value) is not str for value in statement.params.values()):
         raise Unsupported("Ashlar page parameters", ["required STRING parameters"])
     try:
-        build, from_original = _owners()
+        build, from_original = owners if owners is not None else _owners()
     except ImportError:
         raise Unavailable(name, "unsupported_version", "Ashlar page APIs unavailable") from None
     try:
