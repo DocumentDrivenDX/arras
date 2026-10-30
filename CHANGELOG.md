@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- `arras.backend` is a catalogued host module (`Backend`, `Provider`, `Migrates` and the names their
+  signatures use), and `arras.conformance.HarnessBase` is a supported base for a corpus harness, so a
+  backend written outside the package imports no internal module. `InMemory.person` takes `admin`
+  and `InMemory.set_available` takes a `reason`.
+
 ## 0.6.4 — embedding isolation
 
 Adds explicit identity/API session boundaries and optional `pageEffects=false`

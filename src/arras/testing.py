@@ -28,7 +28,7 @@ from typing import Literal
 from arras.core import Arras
 from arras.fakes import FakeAccess, MemoryReplica, MemoryStore
 from arras.model import Placement
-from arras.results import ImportResult, RegistryResult
+from arras.results import ImportResult, Reason, RegistryResult
 from arras.types import Principal
 
 Mode = Literal["read", "write", "journal", "schema"]
@@ -83,12 +83,13 @@ class InMemory:
 
     # -- people
 
-    def person(self, user: str, module: str, *modes: Mode) -> Principal:
+    def person(self, user: str, module: str, *modes: Mode, admin: bool = False) -> Principal:
         """A person the backends know, with a token and the given access to `module`.
 
         Called again for the same person it adds to what they may do; a call with no `modes`
-        makes a person who is known but may do nothing, whom the backends refuse."""
-        return self._access.grant(user, module, *modes)
+        makes a person who is known but may do nothing, whom the backends refuse. `admin` makes
+        them an administrative principal, as the host's own administrator is."""
+        return self._access.grant(user, module, *modes, admin=admin)
 
     def expire(self, principal: Principal) -> None:
         """The backends no longer accept this principal's token, as after it lapses."""
@@ -116,7 +117,7 @@ class InMemory:
         """Bring the replica up to the authority's current position."""
         self._replica.feed()
 
-    def set_available(self, backend: str, up: bool) -> None:
-        """Take a backend down (`unreachable`) or bring it back. Operations that need it raise
-        `Unavailable`, and those that do not still work."""
-        self.backends[backend].available = up
+    def set_available(self, backend: str, up: bool, *, reason: Reason = "unreachable") -> None:
+        """Take a backend down, saying why (`unreachable` unless `reason` names another), or bring
+        it back. Operations that need it raise `Unavailable`, and those that do not still work."""
+        self.backends[backend].outage = None if up else reason

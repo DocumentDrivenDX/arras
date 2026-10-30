@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import ast
 import importlib
 import inspect
 import json
@@ -146,6 +147,7 @@ def test_manifest_versions_and_public_imports_are_exact() -> None:
     assert LeafBrand().csp() == ui.PAGE_CSP
     assert set(py["modules"]["arras.conformance"]["names"]) == {
         "Harness",
+        "HarnessBase",
         "Limit",
         "Result",
         "Report",
@@ -740,3 +742,29 @@ def test_catalog_mutations_are_rejected_by_the_wired_parity_checks(
         with pytest.raises((AssertionError, KeyError, TypeError)):
             parity_check()
         monkeypatch.setattr(sys.modules[__name__], "catalog", original_catalog)
+
+
+def test_a_custom_backend_is_written_against_catalogued_modules_only() -> None:
+    """`arras.backend` carries the protocols and every name their signatures use, and a backend
+    test needs no import of `arras.fakes` or `arras.conformance.fakes`."""
+    py = catalog()["python"]
+    assert "arras.backend" in py["host_modules"]
+    names = set(py["modules"]["arras.backend"]["names"])
+    exact(
+        names,
+        {"Answer", "Backend", "BackendInfo", "Migrates", "Plan", "Provider", "Reason", "TextMatch"},
+        "backend module surface",
+    )
+    module = importlib.import_module("arras.backend")
+    exact(set(module.__all__), names, "backend __all__")
+    assert all(hasattr(module, name) for name in names)
+    for private in ("arras.fakes", "arras.conformance.fakes"):
+        assert private not in py["host_modules"]
+    source = (Path(__file__).parent / "test_backend_public_surface.py").read_text()
+    imported = {
+        node.module
+        for node in ast.walk(ast.parse(source))
+        if isinstance(node, ast.ImportFrom) and node.module and node.module.startswith("arras")
+    }
+    allowed = set(py["host_modules"])
+    assert imported <= allowed, sorted(imported - allowed)

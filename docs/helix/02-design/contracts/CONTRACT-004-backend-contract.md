@@ -244,6 +244,25 @@ name executable imports. The harness owns isolated test resources, people,
 installation and cleanup. The packaged corpus is the authority for expectations;
 consumers MUST NOT copy or weaken repository tests to claim conformance.
 
+**Writing a backend outside the package.** A custom backend imports only catalogued
+names. `arras.backend` carries the `Backend`, `Provider` and `Migrates` protocols and
+re-exports the names their signatures use (`Answer`, `BackendInfo`, `Plan`, `Reason`,
+`TextMatch`); the result and value types (`Receipt`, `RegistryResult`, `Principal`,
+`Statement` and the others) come from the `arras` root. `arras.fakes` and
+`arras.conformance.fakes` are internal and not a base for a downstream backend.
+
+A host registers a backend by passing it to `Arras.start`, by the name its modules'
+placements use (`Arras.start({"store": backend, ...}, expected=...)`); the router asks
+`describe().roles` to tell a reader from a provider.
+
+To run the corpus, the adapter supplies a factory for `arras.conformance.Harness`.
+`arras.conformance.HarnessBase` is the optional base: a subclass states `roles` and
+`corpus_version` and implements `issue_token(user, modules, admin)`, `install`, `seed`,
+`write`, `sync`, `outage`, `expire` and `backend`; the base keeps the people (`grant`,
+`principal`, `borrowed`, `foreign_token`). `limits` and `close` remain optional. The
+packaged memory harnesses use the same base, and `tests/test_backend_public_surface.py`
+runs the whole corpus through a harness that imports public names only.
+
 **Optional harness lifecycle.** A factory-created harness MAY supply a callable
 `close()`; it is not a required member of `Harness`. The runner MUST close each
 acquired probe and each acquired case harness exactly once, including newer
