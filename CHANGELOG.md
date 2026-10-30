@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- The acceptance testkit no longer refuses to build its config on macOS without `baselineDir`: only the `visual`
+  project compares screenshots, and it fails at its start, naming the missing directory, when none was given. A
+  run of the nonvisual projects needs none.
+
 ## 0.6.4 — embedding isolation
 
 Adds explicit identity/API session boundaries and optional `pageEffects=false`

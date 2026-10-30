@@ -165,8 +165,6 @@ export function createAcceptanceConfig(options: AcceptanceConfigOptions): Playwr
   const normalized = normalizeAcceptanceOptions(options);
   process.env.ARRAS_ACCEPTANCE_RUNTIME = JSON.stringify(normalized);
   const darwin = process.platform === "darwin";
-  if (darwin && !normalized.baselineDir)
-    throw new TypeError("Darwin acceptance requires baselineDir");
   const acceptanceFiles = canonicalTestFiles(JSON.stringify(normalized));
   const projects: NonNullable<PlaywrightTestConfig["projects"]> = [
     {
@@ -219,7 +217,11 @@ export function createAcceptanceConfig(options: AcceptanceConfigOptions): Playwr
     metadata: {
       arrasAcceptance: {
         themeId: normalized.themeId,
-        visualComparison: darwin ? "enabled-with-reviewed-baselines" : "skipped-non-Darwin",
+        visualComparison: !darwin
+          ? "skipped-non-Darwin"
+          : normalized.baselineDir
+            ? "enabled-with-reviewed-baselines"
+            : "enabled-requires-baselineDir",
       },
     },
   };

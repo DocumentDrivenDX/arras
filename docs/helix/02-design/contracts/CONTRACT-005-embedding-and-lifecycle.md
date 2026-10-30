@@ -825,7 +825,10 @@ by the source suite. It requires all existing nonvisual projects (`chromium`,
 `schema-admin`, `browser`) without caller-supplied test filtering, skip lists,
 selector scripts or assertion callbacks. On Darwin it also runs the existing
 visual project with an explicit per-theme `baselineDir`; absent/missing/different
-baselines fail. Other platforms omit only the visual project and report that fact.
+baselines fail. The factory does not require `baselineDir` to build the config:
+only the visual project compares screenshots, so only it needs the directory, and
+it fails at its start, naming it, when none was given. A run of the nonvisual
+projects alone needs none. Other platforms omit only the visual project and report that fact.
 No automatic baseline rewrite is enabled. Generating/updating snapshots is an
 explicit developer Playwright action in a selected directory and is never an
 automatic CI recovery. Retain each test's viewport, contrast, incomplete-review,
