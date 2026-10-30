@@ -15,7 +15,7 @@ import sys
 import zipfile
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any
+from typing import Any, NamedTuple
 
 import pytest
 
@@ -485,9 +485,15 @@ def test_installed_console_script_is_declared_confined_and_integrity_checked(
         def read_text(self, name: str) -> str | None:
             return installed_record if name == "RECORD" else None
 
-    monkeypatch.setattr(probe.importlib.metadata, "distribution", lambda _name: DistributionStub())
+    def get_distribution(_name: str) -> DistributionStub:
+        return DistributionStub()
+
+    def script_directory(_name: str) -> str:
+        return str(selected_scripts)
+
+    monkeypatch.setattr(probe.importlib.metadata, "distribution", get_distribution)
     monkeypatch.setattr(probe.sys, "prefix", str(venv))
-    monkeypatch.setattr(probe.sysconfig, "get_path", lambda _name: str(selected_scripts))
+    monkeypatch.setattr(probe.sysconfig, "get_path", script_directory)
     if case == "valid":
         assert probe._compare_installed_payload(wheel, "arras") == len(fixture.files)
     else:
@@ -495,7 +501,19 @@ def test_installed_console_script_is_declared_confined_and_integrity_checked(
             probe._compare_installed_payload(wheel, "arras")
 
 
-def _installed_console_script_fixture(tmp_path: Path, case: str) -> SimpleNamespace:
+class _ConsoleInstallation(NamedTuple):
+    venv: Path
+    site: Path
+    scripts: Path
+    script: Path
+    script_bytes: bytes
+    wheel: Path
+    dist_info: str
+    files: dict[str, bytes]
+    rows: list[list[str]]
+
+
+def _installed_console_script_fixture(tmp_path: Path, case: str) -> _ConsoleInstallation:
     """A wheel and its fresh installation, with generated launcher bytes kept separate."""
     venv = tmp_path / "venv"
     site = venv / "lib/python3.11/site-packages"
@@ -531,7 +549,7 @@ def _installed_console_script_fixture(tmp_path: Path, case: str) -> SimpleNamesp
     with zipfile.ZipFile(wheel, "w") as archive:
         for name, payload in {**files, f"{dist_info}/RECORD": buffer.getvalue().encode()}.items():
             archive.writestr(name, payload)
-    return SimpleNamespace(
+    return _ConsoleInstallation(
         venv=venv,
         site=site,
         scripts=scripts,
@@ -544,7 +562,7 @@ def _installed_console_script_fixture(tmp_path: Path, case: str) -> SimpleNamesp
     )
 
 
-def _console_record_for_case(fixture: SimpleNamespace, case: str) -> tuple[Path, str]:
+def _console_record_for_case(fixture: _ConsoleInstallation, case: str) -> tuple[Path, str]:
     venv, site, scripts, script = fixture.venv, fixture.site, fixture.scripts, fixture.script
     script_bytes, rows, dist_info = fixture.script_bytes, fixture.rows, fixture.dist_info
     record_path = Path(os.path.relpath(script, site)).as_posix()
