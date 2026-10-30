@@ -159,7 +159,7 @@ jobs:
             --sdist dist/arras-*.tar.gz
       - name: Require the exact wheel selected for installed and managed qualification
         run: |
-          echo 'a38b27355ae6fe7b0748288b59fb24d2456e9948d078dd676923c9318df79f15  dist/arras-0.6.5-py3-none-any.whl' | sha256sum --check --strict -
+          echo '05a3f5e6c662b60964698b800b1931791f2644857884c9f4bc60971fa12ad043  dist/arras-0.6.5-py3-none-any.whl' | sha256sum --check --strict -
       - name: Verify exact source and sdist-rebuilt artifacts
         run: python tools/verify_distribution.py --output artifacts/distribution-verification.json dist/*.whl dist/*.tar.gz
       - name: Qualify the offline doctor from the installed release wheel
