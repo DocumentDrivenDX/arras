@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- `arras.alias.alias_package(name, *, target="arras", modules=None)` lets a thin package under
+  another import name serve `arras` itself: same module objects, canonical `__spec__`, working
+  `importlib.resources` and `python -m`, with an optional closed list of modules.
+
 ## 0.6.4 — embedding isolation
 
 Adds explicit identity/API session boundaries and optional `pageEffects=false`
