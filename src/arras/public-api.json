@@ -1448,7 +1448,8 @@
       "arras._umf_projection",
       "arras.adapters.truss._conformance",
       "arras.conformance.__main__",
-      "arras.conformance._checks"
+      "arras.conformance._checks",
+      "arras.conformance._harness"
     ],
     "launcher_modules": {
       "arras.mcp": [

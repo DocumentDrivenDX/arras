@@ -112,6 +112,7 @@ def test_manifest_versions_and_public_imports_are_exact() -> None:
             "arras._umf_projection",
             "arras.adapters.truss._conformance",
             "arras.conformance._checks",
+            "arras.conformance._harness",
         },
         "private implementation modules",
     )
