@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+The development host takes the groups its operator surface is offered to:
+`--operator-group NAME` (repeatable) on the command line, or `operator_groups=` on
+`arras.devhost.main` and `arras.devhost.DevHost`. The sandbox's operators join each
+named group; the default stays `admins` and `builders`.
+
 ## 0.6.4 — embedding isolation
 
 Adds explicit identity/API session boundaries and optional `pageEffects=false`

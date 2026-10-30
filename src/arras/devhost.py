@@ -37,7 +37,9 @@ import hashlib
 import json
 import mimetypes
 import os
+import re
 from collections.abc import Callable, Mapping, Sequence
+from dataclasses import replace
 from pathlib import Path
 from typing import Any, TypeVar, overload
 
@@ -61,10 +63,13 @@ USER_HEADER = "x-arras-user"
 ROLE_HEADER = "x-arras-role"  # with a made-up name: the role it holds (`arras.sandbox.ROLES`)
 EXPLORER = "/umf-explorer"
 DEFAULT_USER = "alice"
-# The sandbox's operators are the members of the groups `admins` and `builders` (CONTRACT-010,
-# section E): root is an admin, alice and bob are builders, and carol and dave are readers, so a test
-# sees the refusal as them.
+# By default the sandbox's operators are the members of the groups `admins` and `builders`
+# (CONTRACT-010, section E): root is an admin, alice and bob are builders, and carol and dave are
+# readers, so a test sees the refusal as them.
 OPERATOR_GROUPS = ("admins", "builders")
+# A host or flag may name other groups (`operator_groups`): the sandbox's operators then belong to
+# each of them as well, and carol and dave stay outside.
+_GROUP_NAME = re.compile(r"[^\s,]{1,64}")
 MODES = ("read", "write", "journal", "schema")
 DEFAULT_UI = Path(__file__).resolve().parents[2] / "ui" / "dist"
 _LOCKED = (
@@ -115,6 +120,19 @@ def _host_name(host: str) -> str:
     return host.rsplit(":", 1)[0] if host.count(":") == 1 else host
 
 
+def checked_operator_groups(groups: Sequence[str]) -> tuple[str, ...]:
+    """The operator groups as a tuple of distinct names, or `ValueError`: a bare string, no name, or
+    a name that is empty, has white space or a comma, or is over 64 characters."""
+    if isinstance(groups, str):
+        raise ValueError("operator_groups: a sequence of group names, not one string")
+    names = tuple(dict.fromkeys(groups))
+    if not names or not all(isinstance(n, str) and _GROUP_NAME.fullmatch(n) for n in names):
+        raise ValueError(
+            "operator_groups: one or more names of 1 to 64 characters, no white space or comma"
+        )
+    return names
+
+
 class DevHost:
     def __init__(
         self,
@@ -124,7 +142,9 @@ class DevHost:
         ui_dir: Path = DEFAULT_UI,
         distribution: DistributionConfig | None = None,
         telemetry_context: telemetry.TelemetryContext | None = None,
+        operator_groups: Sequence[str] = OPERATOR_GROUPS,
     ) -> None:
+        self.operator_groups = checked_operator_groups(operator_groups)
         self.distribution = distribution or DistributionConfig()
         self.telemetry_context = telemetry._context_for(telemetry_context, distribution)
         self.box: Any = serialized(sandbox)
@@ -145,7 +165,7 @@ class DevHost:
             base_path="/api/schema",
             public_origin=origins[0],
             allowed_origins=(origins[1], *dev),
-            authorize_operator=operate.operators_in_groups(*OPERATOR_GROUPS),
+            authorize_operator=operate.operators_in_groups(*self.operator_groups),
             **kw,
         )
         self.operate = operate.create_app(
@@ -153,7 +173,7 @@ class DevHost:
             base_path="/api/operate",
             public_origin=origins[0],
             allowed_origins=(origins[1], *dev),
-            authorize_operator=operate.operators_in_groups(*OPERATOR_GROUPS),
+            authorize_operator=operate.operators_in_groups(*self.operator_groups),
             **kw,
         )
 
@@ -162,9 +182,13 @@ class DevHost:
         name = request.headers.get(USER_HEADER, DEFAULT_USER)
         role = request.headers.get(ROLE_HEADER)
         try:
-            return self.box.principal(name) if role is None else self.box.person(name, role)
+            who = self.box.principal(name) if role is None else self.box.person(name, role)
         except (KeyError, ValueError):
             return None
+        if self.operator_groups != OPERATOR_GROUPS and set(OPERATOR_GROUPS) & set(who.groups):
+            # the sandbox's operators are the default groups' members: they join the named ones
+            who = replace(who, groups=tuple(dict.fromkeys((*who.groups, *self.operator_groups))))
+        return who
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         with self.telemetry_context.activate():
@@ -574,6 +598,14 @@ def _parser(distribution: DistributionConfig | None = None) -> argparse.Argument
         f"${TRUSS_CREDENTIALS_VARIABLE})",
     )
     p.add_argument(
+        "--operator-group",
+        action="append",
+        dest="operator_groups",
+        metavar="NAME",
+        help="a group the operator surface is offered to; repeatable, and replaces the default "
+        f"({', '.join(OPERATOR_GROUPS)}). The sandbox's operators belong to each group named",
+    )
+    p.add_argument(
         "--records",
         type=Path,
         help="a graph file (the interface's Export) to load after the seed; needs --module",
@@ -594,9 +626,18 @@ def main(
     distribution: DistributionConfig | None = None,
     telemetry_factory: Callable[[telemetry.TelemetryNames], telemetry.TelemetryContext]
     | None = None,
+    operator_groups: Sequence[str] | None = None,
 ) -> None:
+    """The development host's command line. `operator_groups` is the distribution's default for the
+    groups the operator surface is offered to (`--operator-group` overrides it)."""
     p = _parser(distribution)
     args = p.parse_args(argv)
+    try:
+        args.operator_groups = checked_operator_groups(
+            args.operator_groups or operator_groups or OPERATOR_GROUPS
+        )
+    except ValueError as e:
+        p.error(str(e))
     needs_module = [("--also", args.also), ("--seed", args.seed), ("--records", args.records)]
     for flag, value in needs_module:
         if value and args.module is None:
@@ -681,6 +722,7 @@ def _run_host(
                 ui_dir=args.ui,
                 distribution=distribution,
                 telemetry_context=context,
+                operator_groups=args.operator_groups,
             )
             print(
                 f"{_display_brand_name(distribution)} development host at http://127.0.0.1:{args.port}",

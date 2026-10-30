@@ -522,6 +522,10 @@ def test_callable_parameters_and_published_ui_contracts_stay_in_sync() -> None:
                 from arras.distribution import TelemetryNames
 
                 assert p.default == TelemetryNames()
+            elif declared["default"] == "default operator groups":
+                from arras.devhost import OPERATOR_GROUPS
+
+                assert p.default == OPERATOR_GROUPS
             elif declared["default"] == "default UI directory":
                 from arras.devhost import DEFAULT_UI
 
