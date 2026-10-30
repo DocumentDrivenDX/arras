@@ -222,6 +222,9 @@ surfaces the page calls: `/api/console` (CONTRACT-006), `/api/operate` (CONTRACT
 Content-Security-Policy (`ui.PAGE_CSP`); every read and write is answered by a surface, which refuses a
 viewer with no principal. `/ontology` redirects to `/ontology/`, because the page's URLs are relative so
 that any prefix works. Behind a proxy that rewrites `Host`, pass `public_origin`.
+Starlette and FastAPI keep the mount prefix in the request path and name it in `root_path`; `base_path="/ontology"`
+and `base_path=""` both serve the same URLs under `Mount("/ontology", ...)`. The `console`, `operate` and schema
+apps resolve their paths the same way.
 
 `authorize_schema(principal, module) -> bool` optionally narrows schema validation and registration
 through this same mount. Pass it as `ui.create_app(..., authorize_schema=...)`; it receives the
