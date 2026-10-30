@@ -391,6 +391,20 @@ owned disposable project were then removed and independently confirmed.
 The [safe evidence index](evidence/embedding064-20261029/README.md) records exact
 artifact, source, harness and fixture hashes, prior-attempt scope and limits.
 
-The strict release guard now selects these exact 0.6.4 wheel bytes. A new final
-source build must reproduce them before tagging. Tagged-build, anonymous public
-download and both registry OIDC/byte/clean-install gates remain mandatory.
+The strict release guard selects these exact 0.6.4 wheel bytes. Final-source CI
+[40977136028](https://github.com/DocumentDrivenDX/arras/actions/runs/40977136028)
+reproduced them. Immutable `v0.6.4` selects source `11be778eae8050fd5b2e8b446479e8bea081778a`;
+[Release 40978080176](https://github.com/DocumentDrivenDX/arras/actions/runs/40978080176)
+reproduced the same wheel and carried npm hashes.
+
+[Release 40978080176](https://github.com/DocumentDrivenDX/arras/actions/runs/40978080176)
+passed all ten gates, including anonymous public downloads and fresh consumers.
+[Registry run 40980958496](https://github.com/DocumentDrivenDX/arras/actions/runs/40980958496)
+completed publication of [`arras==0.6.4`](https://pypi.org/project/arras/0.6.4/) and
+[`@documentdrivendx/arras-ui@0.6.4`](https://www.npmjs.com/package/@documentdrivendx/arras-ui/v/0.6.4).
+Public bytes and fresh base/npm installs match; fresh isolated public-PyPI
+`arras[truss,umf]==0.6.4` installs pass on Linux x86_64 and macOS arm64. npm's first
+accepted OIDC upload briefly exposed metadata before its tarball (HTTP 404);
+attempt two skipped upload, verified the existing exact bytes and passed install.
+The original refusal and successful receipts are retained in the publication record.
+See the [publication record](evidence/embedding064-20261029/registry-publication.safe.json).
