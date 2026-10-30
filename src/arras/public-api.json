@@ -1495,7 +1495,9 @@
     "development_environment": {
       "keys": [
         "ARRAS_TRUSS_DEV_URL",
-        "ARRAS_TRUSS_DEV_CREDENTIALS"
+        "ARRAS_TRUSS_DEV_CREDENTIALS",
+        "<PREFIX>_TRUSS_DEV_URL",
+        "<PREFIX>_TRUSS_DEV_CREDENTIALS"
       ],
       "owner": "development host only",
       "precedence": [
