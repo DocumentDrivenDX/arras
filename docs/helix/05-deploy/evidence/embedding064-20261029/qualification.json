@@ -28,6 +28,12 @@
     "status": "failed",
     "wheel_sha256": "c69eb11da743f736c3c6151e29f0c20eef50777fe5742a641ada9bdf556eb524"
   },
+  "final_source_reproduction": {
+    "run_id": 40977136028,
+    "source_sha": "11be778eae8050fd5b2e8b446479e8bea081778a",
+    "status": "passed",
+    "wheel_sha256": "29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2"
+  },
   "fresh_requirements_input_sha256": "9b3f3c2174189fc634b898d4bfaa730cf12c88d907ccd3ace112b06492e54096",
   "full_ci_run": "https://github.com/DocumentDrivenDX/arras/actions/runs/40973828432",
   "independent_cleanup_sha256": "dc99b4e792eaffe04618bd48566ffa8af7f3c950ca82fe468f70fdbe8e686742",
@@ -66,9 +72,17 @@
   },
   "managed_receipt_sha256": "13d5c55f63d014e148e830c0f4d0df5d8b8f0d7c702f166b6a7f2176295e3405",
   "provisioning_cleanup_observation": "All four remote secret deletions succeeded; workspace/account identity and keychain absence, project deletion completion and endpoint removal were independently verified. One account record briefly lagged deletion before the successful full recheck.",
-  "publication": "pending tagged release, public downloads and registry verification",
+  "publication": "passed",
+  "publication_record": "registry-publication.safe.json",
+  "registry_run": "https://github.com/DocumentDrivenDX/arras/actions/runs/40980958496",
+  "release_run": "https://github.com/DocumentDrivenDX/arras/actions/runs/40978080176",
   "requirements_source_review_sha256": "841579af03e375d1bafa1e6a19dc483d9d5ab096fe9a75fd36d834dfb48ee894",
   "schema": "arras.embedding-release-qualification/1",
+  "tag": {
+    "name": "v0.6.4",
+    "object_sha": "5828c7dff4d2f2930fc7f6ae7eaecbc198b6e844",
+    "source_sha": "11be778eae8050fd5b2e8b446479e8bea081778a"
+  },
   "version": "0.6.4",
   "wheel_sha256": "29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2"
 }

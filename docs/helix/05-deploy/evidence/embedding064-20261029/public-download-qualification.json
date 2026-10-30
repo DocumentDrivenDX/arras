@@ -1,0 +1,35 @@
+{
+  "receipts": [
+    {
+      "filename": "public-input-verification.json",
+      "sha256": "a2e5f09745ab2711e539c89d6282a7c5968312cb9d795ac761f16345150d9809"
+    },
+    {
+      "filename": "public-distribution-verification.json",
+      "sha256": "1d1c3ec3f06e80c498d2b57991077d4f6d030906921b12dc5e6258ec8f2b532d"
+    },
+    {
+      "filename": "public-doctor-installed.json",
+      "sha256": "908155e5b07a97e147df0d75ad846fdebe1f176a8b75d1ac641778b2f1579e9a"
+    },
+    {
+      "filename": "public-extension-host-fresh-dependencies.json",
+      "sha256": "c7d025cc89cea1cafc20285fc622d5fe907c26289439203bf83ab95bde1a4d29"
+    },
+    {
+      "filename": "tests/downstream/evidence/linux/qualification-linux.json",
+      "sha256": "7c0dba03e9b43620e7ec863baaeeb5d236a9dd838c149b39275b0da7f22ac64a"
+    },
+    {
+      "filename": "public-umf-admission-installed.json",
+      "sha256": "8c5957c945a3764d49cb03f442faa578f13b94f34e3fcd624ebd124b03bd4b96"
+    }
+  ],
+  "schema_version": 1,
+  "status": "passed",
+  "version": "0.6.4",
+  "wheel": {
+    "filename": "arras-0.6.4-py3-none-any.whl",
+    "sha256": "29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2"
+  }
+}

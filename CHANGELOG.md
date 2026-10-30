@@ -9,7 +9,11 @@ nested configuration. Controlled Explore preserves host history and scroll.
 Individual areas get a CSS scope, and instance-local labels, SVG resources,
 focus requests and edit portals avoid cross-widget collisions. Documents API-only
 ASGI hosting and compiled public npm entrypoints. Native/UMF pins and HTTP
-contract versions are unchanged. Exact artifact qualification passed; tagged/public registry checks remain required before availability is claimed.
+contract versions are unchanged. Published as [v0.6.4](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.4)
+on PyPI and npm. All ten release gates, public-byte checks, fresh installs and
+public PyPI extras checks on Linux x86_64/macOS arm64 passed; the
+[publication record](docs/helix/05-deploy/evidence/embedding064-20261029/registry-publication.safe.json)
+retains exact hashes and npm visibility-retry history.
 
 ## 0.6.1 — release candidate
 

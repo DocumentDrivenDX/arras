@@ -19,7 +19,7 @@ ddx:
 
 ## 0.6.4 embedded composition
 
-The 0.6.4 candidate completes session and host-page ownership for embedders:
+The published 0.6.4 release completes session and host-page ownership for embedders:
 identity/API changes reset Arras-owned UI state, shared caches refuse different
 security/API scopes, individual public areas get scoped CSS, and controlled
 Explore preserves host history and scroll. `pageEffects=false` leaves title,
@@ -38,8 +38,18 @@ qualification (64 cases and eight declared limits) and all twelve fresh managed
 Lakebase cases. Independent cleanup and temporary identity/project deletion
 passed. Compiled public exports and the exact wheel-carried npm archive passed
 real Chromium embedding. See the [qualification evidence](evidence/embedding064-20261029/README.md).
-Tagged/public-download and registry publication checks remain required before
-claiming availability; historical 0.6.3 receipts do not qualify these bytes.
+[Release 40978080176](https://github.com/DocumentDrivenDX/arras/actions/runs/40978080176)
+passed all ten gates, including anonymous public downloads and fresh consumers.
+[Registry run 40980958496](https://github.com/DocumentDrivenDX/arras/actions/runs/40980958496)
+completed publication of [`arras==0.6.4`](https://pypi.org/project/arras/0.6.4/) and
+[`@documentdrivendx/arras-ui@0.6.4`](https://www.npmjs.com/package/@documentdrivendx/arras-ui/v/0.6.4).
+Public bytes and fresh base/npm installs match; fresh isolated public-PyPI
+`arras[truss,umf]==0.6.4` installs pass on Linux x86_64 and macOS arm64. npm's first
+accepted OIDC upload briefly exposed metadata before its tarball (HTTP 404);
+attempt two skipped upload, verified the existing exact bytes and passed install.
+The original refusal and successful receipts are retained in the publication record.
+See the [publication record](evidence/embedding064-20261029/registry-publication.safe.json).
+Historical 0.6.3 receipts retain their original artifact scope.
 
 ## 0.6.3 catalog correction
 

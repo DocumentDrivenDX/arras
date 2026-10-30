@@ -44,7 +44,7 @@ The candidate is 0.6.4, with unchanged native/UMF pins and public export names.
   tests and fresh distribution consumers. Qualify final release bytes through
   existing exact-tag/public-download/registry gates before claiming publication.
 
-Implementation is in [draft PR 20](https://github.com/DocumentDrivenDX/arras/pull/20).
+Implementation was merged in [PR 20](https://github.com/DocumentDrivenDX/arras/pull/20).
 The expanded UI suite passes 1,462 cases, including StrictMode and late 401
 callback controls; TypeScript/Biome pass. The default Python run passed 3,325
 cases, with socket-blocked devhost cases rerun successfully (13 server cases).
@@ -75,7 +75,7 @@ The corrected managed campaign on this earlier wheel passed all twelve cases,
 and independent read-only cleanup passed all checks. These results remain
 bound to that earlier wheel; final integrated bytes require fresh qualification.
 
-A candidate build is not publication; no 0.6.4 artifact is claimed available yet. Historical 0.6.3 and
+At that candidate stage, no 0.6.4 artifact was claimed available. Historical 0.6.3 and
 native/managed qualification receipts retain their original scope.
 
 The final multi-instance audit additionally replaced the remaining global action
@@ -111,8 +111,25 @@ independent cleanup and deletion of all temporary identities, credentials and
 the disposable project are confirmed. The final UI suite passes 1,465 cases.
 Earlier local/candidate results above retain their original bytes and scope.
 The [qualified evidence](../05-deploy/evidence/embedding064-20261029/README.md)
-closes original artifact qualification. Final-source reproduction, tagged/public
-download qualification and registry availability remain release gates.
+closes original artifact qualification. Final-source CI [40977136028](https://github.com/DocumentDrivenDX/arras/actions/runs/40977136028) reproduced the selected wheel byte for byte.
+PR 20 merged as `e1458af83518b801d9c97a9e57d5518b315459f0`. Immutable annotated
+tag `v0.6.4` selects qualified source `11be778eae8050fd5b2e8b446479e8bea081778a`;
+tag object `5828c7dff4d2f2930fc7f6ae7eaecbc198b6e844` remains fixed.
+[Release run 40978080176](https://github.com/DocumentDrivenDX/arras/actions/runs/40978080176)
+reproduced the selected wheel and npm tarball. All ten release gates and registry
+publication now pass.
+
+[Release 40978080176](https://github.com/DocumentDrivenDX/arras/actions/runs/40978080176)
+passed all ten gates, including anonymous public downloads and fresh consumers.
+[Registry run 40980958496](https://github.com/DocumentDrivenDX/arras/actions/runs/40980958496)
+completed publication of [`arras==0.6.4`](https://pypi.org/project/arras/0.6.4/) and
+[`@documentdrivendx/arras-ui@0.6.4`](https://www.npmjs.com/package/@documentdrivendx/arras-ui/v/0.6.4).
+Public bytes and fresh base/npm installs match; fresh isolated public-PyPI
+`arras[truss,umf]==0.6.4` installs pass on Linux x86_64 and macOS arm64. npm's first
+accepted OIDC upload briefly exposed metadata before its tarball (HTTP 404);
+attempt two skipped upload, verified the existing exact bytes and passed install.
+The original refusal and successful receipts are retained in the publication record.
+See the [publication record](../05-deploy/evidence/embedding064-20261029/registry-publication.safe.json).
 
 ## Scope
 

@@ -1,0 +1,16 @@
+{
+  "files": {
+    "SHA256SUMS": "f7289889fc7a0e6bd3741db4b4c7e5e06c997d8ed5ec3b5e3a43566c122848e4",
+    "arras-0.6.4-py3-none-any.whl": "29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2",
+    "arras-0.6.4.tar.gz": "75eaa47514789188fbcb2f2eee97fdb6ae2a60069ae0ab2068d33c431cd27c95",
+    "distribution-verification.json": "0168f5941774906c5b259998975f0759ef101d35eca07e388c8e072da7006d04",
+    "doctor-installed.json": "3819ad38f289b39276a57b0c5fb0667e6e22b8073daf12aa9f130ab87744e77e",
+    "documentdrivendx-arras-ui-0.6.4.tgz": "d9bbc43609f3570eb96e81992b88b8d2c6dc9fa908190316158245f5205f3537"
+  },
+  "run_id": 40978080176,
+  "schema": "arras.tagged-build-correspondence/1",
+  "scope": "Tagged build inputs only; does not establish later release or registry gate outcomes.",
+  "source_sha": "11be778eae8050fd5b2e8b446479e8bea081778a",
+  "status": "artifact_correspondence_passed",
+  "tag": "v0.6.4"
+}

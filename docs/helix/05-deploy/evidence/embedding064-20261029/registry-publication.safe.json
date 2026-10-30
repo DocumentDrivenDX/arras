@@ -1,0 +1,95 @@
+{
+  "jobs": [
+    {
+      "conclusion": "success",
+      "id": 123823571093,
+      "name": "npm-publish"
+    },
+    {
+      "conclusion": "success",
+      "id": 123823571382,
+      "name": "verify-release"
+    },
+    {
+      "conclusion": "success",
+      "id": 123823572027,
+      "name": "pypi-publish"
+    },
+    {
+      "conclusion": "success",
+      "id": 123823572098,
+      "name": "pypi-preflight"
+    },
+    {
+      "conclusion": "success",
+      "id": 123823572306,
+      "name": "npm-preflight"
+    },
+    {
+      "conclusion": "success",
+      "id": 123823572340,
+      "name": "pypi-extras-verify (ubuntu-latest, linux-x86_64)"
+    },
+    {
+      "conclusion": "success",
+      "id": 123823572485,
+      "name": "pypi-extras-verify (macos-15, macos-arm64)"
+    }
+  ],
+  "npm": {
+    "first_postflight": "failed: correct metadata but tarball HTTP 404",
+    "fresh_install_smoke": "passed",
+    "oidc_upload_attempt": 1,
+    "oidc_upload_job_id": 123820765248,
+    "oidc_upload_step": "success",
+    "provenance_transparency_log_index": 3580402109,
+    "registry_bytes_verified": true,
+    "retry_job_id": 123823571093,
+    "retry_mode": "existing_exact_bytes",
+    "retry_upload_step": "skipped"
+  },
+  "npm_tarball_sha256": "d9bbc43609f3570eb96e81992b88b8d2c6dc9fa908190316158245f5205f3537",
+  "publisher_workflow_sha": "e1458af83518b801d9c97a9e57d5518b315459f0",
+  "pypi": {
+    "fresh_base_install": "passed",
+    "public_extras": {
+      "checks": [
+        "artifact hashes",
+        "pip check",
+        "installed doctor",
+        "Truss/Weft imports",
+        "official UMF document admission"
+      ],
+      "index": "https://pypi.org/simple",
+      "installed_direct_url_references": 0,
+      "platforms": [
+        "linux-x86_64",
+        "macos-arm64"
+      ],
+      "selector": "arras[truss,umf]==0.6.4",
+      "status": "passed"
+    },
+    "registry_bytes_verified": true
+  },
+  "receipts_sha256": {
+    "npm-publication-receipt.json": "8e86669047ff8e6dbd1675130d68f3c13bad2402d1010fb041c0e5fe21079661",
+    "public-download-qualification.json": "c72613e0671e26f952573324f798aecb4ff87c73787b81ec948ff12521a868bb",
+    "public-input-verification.json": "a2e5f09745ab2711e539c89d6282a7c5968312cb9d795ac761f16345150d9809",
+    "pypi-extras-linux-x86_64.json": "9dbae5005569aa41e148a65c4f02368705c8b9232b071e328ee36c64e823e62e",
+    "pypi-extras-macos-arm64.json": "c02fc262798613d8cb621355071eab6bcabb0bf904ac73d6dc4981ce0782566d",
+    "pypi-publication-receipt.json": "1aef6ca826464510dd23e75d5428419bb97d13b5d2ff0aed01193b41c6b4c0ae"
+  },
+  "registry_run_id": 40980958496,
+  "release_gates": "all_ten_passed",
+  "release_run_id": 40978080176,
+  "schema": "arras.registry-064-publication/1",
+  "scope": "Exact published 0.6.4 artifacts. Retry verifies the first accepted npm upload; it does not claim another OIDC upload. Named native and managed limits remain unchanged.",
+  "sdist_sha256": "75eaa47514789188fbcb2f2eee97fdb6ae2a60069ae0ab2068d33c431cd27c95",
+  "source_sha": "11be778eae8050fd5b2e8b446479e8bea081778a",
+  "status": "passed",
+  "successful_run_attempt": 2,
+  "sums_sha256": "2b2c1324c1e1f67e157c03d96b367c2a4612ae536c9f3c17f6b4441abcb04c32",
+  "tag": "v0.6.4",
+  "tag_object_sha": "5828c7dff4d2f2930fc7f6ae7eaecbc198b6e844",
+  "wheel_sha256": "29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2"
+}
