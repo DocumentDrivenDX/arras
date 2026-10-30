@@ -197,7 +197,7 @@ def test_native_launcher_and_asset_exports_match_the_selected_catalog() -> None:
     )
     exact(
         set(py["modules"]["arras.ui.assets"]["names"]),
-        {"load_manifest", "AssetManifest"},
+        {"load_manifest", "AssetManifest", "build_theme_manifest"},
         "asset validation public surface",
     )
     exact(
