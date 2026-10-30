@@ -111,7 +111,8 @@ def test_the_installed_wheel_serves_its_own_page(tmp_path: Path) -> None:
         deadline = time.monotonic() + 60
         while True:
             try:
-                page = urllib.request.urlopen(base + "/", timeout=5).read().decode()
+                with urllib.request.urlopen(base + "/", timeout=5) as response:
+                    page = response.read().decode()
                 break
             except (urllib.error.URLError, ConnectionError):
                 assert proc.poll() is None and time.monotonic() < deadline, "dev host did not start"
@@ -119,8 +120,17 @@ def test_the_installed_wheel_serves_its_own_page(tmp_path: Path) -> None:
         assert "not built" not in page
         assert "<title>Arras</title>" in page and 'type="module"' in page
         src = page.split('src="', 1)[1].split('"', 1)[0]
-        asset = urllib.request.urlopen(f"{base}/{src.lstrip('./')}", timeout=5)
-        assert asset.status == 200 and asset.headers["content-type"].startswith("text/javascript")
+        with urllib.request.urlopen(f"{base}/{src.lstrip('./')}", timeout=5) as asset:
+            assert asset.status == 200 and asset.headers["content-type"].startswith("text/javascript")
+            # Finish the request before asking the host to shut down gracefully.
+            assert asset.read()
     finally:
         proc.terminate()
-        proc.wait(timeout=30)
+        try:
+            output, _ = proc.communicate(timeout=30)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            output, _ = proc.communicate(timeout=5)
+            print(output)
+            raise
+        print(output)
