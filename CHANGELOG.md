@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- The acceptance testkit's `createAcceptanceConfig` takes `hostAppearanceProvider` (default `false`) for a host that
+  installs its own appearance provider: the `host-isolation` specs that assume a bare host are skipped, and the one
+  that asserts the library installs no appearance checks the Arras subtree alone.
+
 ## 0.6.4 — embedding isolation
 
 Adds explicit identity/API session boundaries and optional `pageEffects=false`
