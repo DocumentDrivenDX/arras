@@ -273,7 +273,7 @@ design-system dependency is unnecessary. CSS/token identifiers stay canonical.
 
 **Gate/cost:** small remaining exact-tag/public-download delivery work.
 The public Node-only `./testkit` exports `createAcceptanceConfig`; browser-only
-`./testkit/host` exports `AcceptanceHost`. They share all 17 canonical specs and
+`./testkit/host` exports `AcceptanceHost` and `WidgetControls`. They share all 17 canonical specs and
 83 hash-verified resources with upstream source. Explicit standard/schema URLs,
 expected Brand/surfaces, output and per-theme baseline directories remove checkout
 and fixed-origin assumptions. Neither Arras nor the checker requires a private

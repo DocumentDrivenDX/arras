@@ -1673,7 +1673,8 @@
         "createAcceptanceConfig"
       ],
       "./testkit/host": [
-        "AcceptanceHost"
+        "AcceptanceHost",
+        "WidgetControls"
       ]
     },
     "npm_type_exports": {

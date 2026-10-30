@@ -246,7 +246,7 @@ def test_catalog_records_the_packed_ui_acceptance_inventory() -> None:
     )
     exact(
         manifest["ui"]["npm_runtime_exports"]["./testkit/host"],
-        ["AcceptanceHost"],
+        ["AcceptanceHost", "WidgetControls"],
         "testkit host runtime exports",
     )
     exact(

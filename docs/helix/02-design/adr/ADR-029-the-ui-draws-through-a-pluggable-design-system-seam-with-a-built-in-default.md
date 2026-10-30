@@ -60,6 +60,13 @@ only public packed artifacts and neutral synthetic data. These checks qualify
 that exact theme/browser cohort; token presence alone does not establish contrast
 or accessibility. CONTRACT-005 owns the executable asset and acceptance boundary.
 
+The compiled-host check (`arras-ui-qualify --host-build`) has a fixed fixture contract,
+stated in the package's `support/QUALIFICATION.md`: six widgets marked `data-theme-*`, a
+region labelled `Downstream widget controls` with Button, TextField, TextArea and Select
+in tab order, the public app drawn through the host with `logo: "theme"`, and a solid
+background behind the focus rings (no gradient, image or opacity on an ancestor). A host
+with a smaller theme fails with the first requirement named, not a bare phase.
+
 ### The existing acceptance suite runs against a theme overlay
 
 The packed token/axe/widget checker is useful but narrower than the existing

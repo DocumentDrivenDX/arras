@@ -794,7 +794,14 @@ contract version 1: one `.arras-root` containing a region labelled
 `Downstream widget controls` with all six replacement markers
 `data-theme-button`, `data-theme-text-field`, `data-theme-text-area`,
 `data-theme-select`, `data-theme-notice`, `data-theme-mark`, and a
-`[data-arras-app]` subtree holding the actual public app. The actual app must use
+`.arras-root` holding the actual public app (`.gb`, or `[data-testid="console-header"]`
+with `--console`). The region holds the Button, TextField, TextArea and Select in
+that tab order. Focus-ring contrast is measured against the composited
+background colours of the controls' ancestors, so a background image, gradient or
+opacity on any of them is refused. A failed fixture requirement is reported by name
+(printed and recorded as `requirement`); the shipped `support/QUALIFICATION.md`
+states the full fixture contract, and `WidgetControls()` in the testkit host export
+renders the region from the design system in context. The actual app must use
 the replacement Mark plus an app-owned replacement Button/TextField: open its
 Command palette through the normal shortcut, fill its labelled combobox, close
 by Escape and verify focus restoration. Showcase-only markers or a root hook
@@ -838,7 +845,7 @@ opt-in subpaths, keeping existing production runtime/type/style entries unchange
 | Subpath | Export | Boundary |
 | --- | --- | --- |
 | `@documentdrivendx/arras-ui/testkit` | `createAcceptanceConfig(options)` plus `AcceptanceConfigOptions` (type) | Node-only Playwright configuration factory; never a production/browser import |
-| `@documentdrivendx/arras-ui/testkit/host` | `AcceptanceHost()` | Browser acceptance-fixture component reusing the canonical development-host toolbar/shell; no Node or Playwright in its browser graph |
+| `@documentdrivendx/arras-ui/testkit/host` | `AcceptanceHost()`, `WidgetControls()` | Browser acceptance-fixture components: the canonical development-host toolbar/shell, and the labelled region of the six widgets drawn from the design system in context (the `--host-build` fixture's controls); no Node or Playwright in its browser graph |
 
 The factory takes one strict object with required `baseURL: string`,
 `schemaBaseURL: string`, `outputDir: string`, and optional `themeId: string =
