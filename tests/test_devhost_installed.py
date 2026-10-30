@@ -121,7 +121,9 @@ def test_the_installed_wheel_serves_its_own_page(tmp_path: Path) -> None:
         assert "<title>Arras</title>" in page and 'type="module"' in page
         src = page.split('src="', 1)[1].split('"', 1)[0]
         with urllib.request.urlopen(f"{base}/{src.lstrip('./')}", timeout=5) as asset:
-            assert asset.status == 200 and asset.headers["content-type"].startswith("text/javascript")
+            assert asset.status == 200 and asset.headers["content-type"].startswith(
+                "text/javascript"
+            )
             # Finish the request before asking the host to shut down gracefully.
             assert asset.read()
     finally:
