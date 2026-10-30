@@ -43,6 +43,10 @@ returned 404 for every path, because the prefix was removed twice. `base_path` e
 the mount prefix and `base_path=""` now serve the same URLs. Adds Starlette, FastAPI and
 httpx to the development group for the mount tests.
 
+- `arras.ui.assets.build_theme_manifest` and `python -m arras.ui theme-manifest` build a runtime
+  theme bundle (stylesheet, favicon, fonts and a validated `theme-manifest.json`) for
+  `create_app(theme_manifest=...)`.
+
 ## 0.6.4 — embedding isolation
 
 Adds explicit identity/API session boundaries and optional `pageEffects=false`

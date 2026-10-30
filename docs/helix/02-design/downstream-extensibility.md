@@ -262,8 +262,9 @@ versions in one tested cohort.
 1. A host builds from public UI/provider/types plus its packed theme package,
    replacing widgets/Mark and supplying CSS/fonts/favicon.
 2. A prebuilt page consumes an inert runtime theme manifest for CSS/font/favicon
-   and Brand. It retains stock widgets; arbitrary React replacement requires
-   the host-build route.
+   and Brand. `arras.ui.assets.build_theme_manifest` or `python -m arras.ui theme-manifest`
+   builds and validates that manifest from the host's own files. It retains stock widgets;
+   arbitrary React replacement requires the host-build route.
 
 Arras retains layout, routing, dialogs/focus orchestration and API behavior.
 Widgets must preserve labels, descriptions, refs, busy/disabled/error and keyboard

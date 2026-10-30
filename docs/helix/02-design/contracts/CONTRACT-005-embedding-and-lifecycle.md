@@ -639,6 +639,19 @@ the active page package version must be listed. A theme has no HTML/JavaScript
 entry, executable widget reference or schema_browser field. The stylesheet and
 optional font/favicon are trusted host-supplied assets, not module input.
 
+`arras.ui.assets.build_theme_manifest(output, *, stylesheet, favicon=None, fonts=(),
+package_name="theme", package_version="1", ui_versions=None) -> Path` builds such a
+bundle: it copies the stylesheet, optional favicon and fonts into `output` under their own
+file names, writes `theme-manifest.json` with each file's SHA-256, size and MIME type and the
+contract versions this build serves, defaults `ui_versions` to the installed Arras version, and
+reads the result back with `load_manifest(..., kind="theme")` before returning it. A bundle it
+returns is one `create_app(theme_manifest=...)` accepts; anything the loader would refuse
+(a missing or unsupported file, a repeated file name, a stylesheet that is not CSS) raises
+`ValueError` and leaves no manifest. `python -m arras.ui theme-manifest --css FILE --out DIR
+[--favicon FILE] [--font FILE]... [--package-name N] [--package-version V] [--ui-version V]...`
+is the same operation and prints the manifest path. Theme assets are served by manifest digest,
+as above.
+
 Manifest input is bounded to 1 MiB and 10,000 file entries; each file to 32 MiB
 and total listed bytes to 64 MiB. Paths are canonical relative POSIX paths with
 no empty/dot/parent segments, backslashes, query/fragment, URL scheme or leading

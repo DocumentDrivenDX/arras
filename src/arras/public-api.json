@@ -307,7 +307,8 @@
         "kind": "module",
         "names": [
           "load_manifest",
-          "AssetManifest"
+          "AssetManifest",
+          "build_theme_manifest"
         ]
       },
       "arras.umf_admission": {
@@ -1066,6 +1067,43 @@
           {
             "name": "kind",
             "kind": "KEYWORD_ONLY"
+          }
+        ]
+      },
+      "arras.ui.assets.build_theme_manifest": {
+        "parameters": [
+          {
+            "name": "output",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "stylesheet",
+            "kind": "KEYWORD_ONLY"
+          },
+          {
+            "name": "favicon",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "fonts",
+            "kind": "KEYWORD_ONLY",
+            "default": "empty tuple"
+          },
+          {
+            "name": "package_name",
+            "kind": "KEYWORD_ONLY",
+            "default": "theme"
+          },
+          {
+            "name": "package_version",
+            "kind": "KEYWORD_ONLY",
+            "default": "1"
+          },
+          {
+            "name": "ui_versions",
+            "kind": "KEYWORD_ONLY",
+            "default": null
           }
         ]
       },
