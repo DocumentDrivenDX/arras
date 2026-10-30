@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+A key set under both a distribution's `env_prefix` and `ARRAS_` to different
+values (`EXAMPLE_DEV_USER=alice`, `ARRAS_DEV_USER=bob`) still uses the
+distribution's value, and now says so: `Config.warnings` and one stderr line per
+conflict (at most eight) name both variables, never a value. Token and
+token-file conflicts continue to refuse.
+
 ## 0.6.4 — embedding isolation
 
 Adds explicit identity/API session boundaries and optional `pageEffects=false`
