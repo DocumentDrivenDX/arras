@@ -270,6 +270,10 @@ role (viewer, editor, schema author, auditor, maintainer) and any name, take a b
 replica, run one Weft statement at a time against a chosen module at either consistency level (paging
 is written in the statement), invoke actions, and import and export UMF schemas. `ARRAS_DEV_SANDBOX=1 python -m arras.mcp` serves the same sandbox over MCP.
 
+The dev host serves the page from `ui/dist` in a source checkout that has built it (`npm run build` in
+`ui/`). Without that build, as in an installed wheel, it serves the page the wheel carries
+(`arras.ui.STATIC`); `--ui <dir>` serves the named directory as given.
+
 The sandbox has a `catalog` module and five people, named in the `x-arras-user` header and the toolbar: `alice` (read, write, journal and schema on `catalog`; group `builders`), `bob` (read, write and journal; group `builders`), `carol` (read only), `dave` (no access to `catalog`) and `root` (the administrator, group `admins`, who registers modules and is refused every user operation). The operator surface is offered to the groups `admins` and `builders`, so `alice`, `bob` and `root` are operators and `carol` and `dave` are not. By default the dev host also seeds a demonstration catalog of 12 use cases across the work areas `data`, `operations` and `finance`, and 10 solutions (`--no-demo` leaves it out). `--module` and `--seed` replace it with a module of your own, such as `examples/catalog` (see its README) or `examples/pizza`.
 
 With `--truss` the dev host serves a real Truss instead of the fakes: the same people, but their roles and grants are database roles, `expire` is `VALID UNTIL`, `grant` and `revoke` are role membership and `outage` is a real unreachable (or, on a throwaway, refused) connection. A control with no meaning on Truss (`feed`, `search`) answers 400. It needs the `truss` extra.
