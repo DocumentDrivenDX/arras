@@ -2775,8 +2775,8 @@ All overlap resolutions preserve the original requirements and tests: changelog
 entries, namespace-warning and development-path rules, installed devhost and CLI
 gates, backend/alias catalog exports and both host-isolation/visual test groups.
 Routine CI remains lean; full qualification remains explicitly selected. No
-baseline is regenerated to obtain a green result or host-provider opt-in enabled
-to hide a bare-host failure. Mandatory UMF qualification uses ARRAS_REQUIRE_UMF=1.
+unreviewed baseline is regenerated to obtain a green result, and host-provider
+opt-in is not enabled to hide a bare-host failure. Mandatory UMF qualification uses ARRAS_REQUIRE_UMF=1.
 
 Version0.6.5 selects unchanged qualified Truss0.0.50, Weft0.4.51 and official
 Python Core0.10.0. It does not request Access. Truss0.0.52's separate actual
@@ -2799,12 +2799,26 @@ measures both actual 0.6.4 and first 0.6.5 wheel styles at `12px/20px/600`; the 
 reconstructed reset preceding `f7e0015` (October 22) and proposed mode-only
 `font:inherit` yield `15px/22px/400`. This earlier change predates PR27. Existing
 Stack review accepted restoring the checked-in visual contract through only the
-mode control, retaining PR27's zero-specificity host reset and all 67 baseline
-bytes, masks, counts and thresholds. The draft mockup's `12px/600` segmented control
+mode control, retaining PR27's zero-specificity host reset and all 67 canonical
+baseline bytes, masks, counts and thresholds. The draft mockup's `12px/600` segmented control
 still differs from that reviewed contract; full prototype/design alignment
-remains open. No golden is replaced to obtain a pass. The CSS correction requires
+remains open. Canonical goldens remain unchanged. The CSS correction requires
 new package bytes and fresh artifact-bound proofs; earlier passing installed
 receipts retain their original hashes and do not qualify the rebuilt artifact.
+
+The packed-host campaign at `d962966` retained 262 passes and 10 visual failures:
+its neutral-theme goldens expected compact `12px/20px/600`, conflicting with the
+canonical `15px/22px/400` contract. The existing Stack owner and release owner
+reviewed every affected light/dark, wide/narrow pair and accepted only the mode
+text and its two-pixel flow change. The [pair review](evidence/arras-0.6.5-local-20261030/neutral-mode-baseline-review.json)
+binds ten actual captured images to their original hashes; original bytes and the
+failed campaign remain retained. Only those ten neutral-theme images change;
+the other 57 themed and all 67 canonical images, masks, thresholds and counts
+stay unchanged, with no theme-specific CSS. The original full campaign remains
+failed. The evidence assembler requires a fresh complete producer receipt, so a
+new whole themed campaign must pass; a synthetic combination of partial runs
+cannot replace it. Rebuild the sdist for these changed test-source bytes and
+verify the already qualified wheel/npm bytes remain identical.
 
 Ordered qualification:
 
