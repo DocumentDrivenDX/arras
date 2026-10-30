@@ -2,12 +2,21 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, type Page, test } from "@playwright/test";
-import { EXPECTED_SURFACE } from "./acceptance";
+import { EXPECTED_SURFACE, HOST_APPEARANCE_PROVIDER } from "./acceptance";
 
 // The library's styles must not reach a host page, and a host's must not break the library (ADR-027).
 // The built page stands in for a host: markup and rules a host might have are planted around the root.
 // A host's own `:root` tokens use the same names as ours (`--accent`, `--bg`), and its element rules are
 // the kind a design system writes.
+//
+// Assumption: the host installs no appearance provider. The specs that drive the appearance (`data-appearance`
+// on the page, nested providers, inline `color-scheme`, the OS preference) put their own provider around the
+// root, which only means something where nothing above it already says one. A host that sets `data-appearance`
+// or `color-scheme` above the root, or wraps a design-system provider that does, sets
+// `hostAppearanceProvider: true` in `createAcceptanceConfig`: those specs are then skipped, and the one that
+// asserts "the library sets none" checks the Arras subtree alone (the appearance test below).
+const SKIP_BARE_HOST =
+  "the host installs its own appearance provider (hostAppearanceProvider): this spec drives the appearance on a bare host";
 
 const TOKENS = { lightBg: EXPECTED_SURFACE.light, darkBg: EXPECTED_SURFACE.dark };
 // The page the dev host serves loads no theme (ADR-029), so the library's own tokens are what most specs
@@ -95,6 +104,26 @@ test.describe("host isolation", () => {
   }) => {
     await page.emulateMedia({ colorScheme: "light" });
     await openWithHost(page);
+    if (HOST_APPEARANCE_PROVIDER) {
+      // The host's provider owns the appearance, so only what is Arras's own is checked: nothing on or beneath
+      // its root says an appearance, whichever way the OS preference goes.
+      const arrasAppearance = () =>
+        page.evaluate(() =>
+          [
+            document.querySelector(".arras-root")?.hasAttribute("data-appearance"),
+            ...[...document.querySelectorAll(".arras-root, .arras-root *")].map(
+              (e) =>
+                e.hasAttribute("data-appearance") ||
+                e.hasAttribute("data-theme") ||
+                ((e as HTMLElement).style?.colorScheme ?? "") !== "",
+            ),
+          ].some(Boolean),
+        );
+      expect(await arrasAppearance()).toBe(false);
+      await page.emulateMedia({ colorScheme: "dark" });
+      expect(await arrasAppearance()).toBe(false);
+      return;
+    }
     const bg = () => style(page, ".arras-root", "background-color");
     expect(await bg()).toBe(TOKENS.lightBg);
 
@@ -128,6 +157,7 @@ test.describe("host isolation", () => {
   test("the nearest ancestor that gives an appearance decides, however the providers nest", async ({
     page,
   }) => {
+    test.skip(HOST_APPEARANCE_PROVIDER, SKIP_BARE_HOST);
     await page.emulateMedia({ colorScheme: "light" });
     await openWithHost(page);
     const bg = () => style(page, ".arras-root", "background-color");
@@ -181,6 +211,7 @@ test.describe("host isolation", () => {
   test("an inline color-scheme names a scheme only as light or dark, alone or with `only`; the two-value forms leave it to the OS, as the frame's scheme reads them (scheme.vectors.json)", async ({
     page,
   }) => {
+    test.skip(HOST_APPEARANCE_PROVIDER, SKIP_BARE_HOST);
     const vectors = JSON.parse(
       readFileSync(join(import.meta.dirname, "../src/test/scheme.vectors.json"), "utf8"),
     ) as { style: string; os: "light" | "dark"; want: "light" | "dark" }[];
@@ -236,6 +267,8 @@ test.describe("host isolation", () => {
     await choose(null);
     await page.emulateMedia({ colorScheme: "dark" });
     await expect.poll(bg).toBe(THEME.lightBg); // no appearance given: the host's token, whatever the OS says
+    // A host with its own appearance provider has written to its page itself; the bare host has not.
+    if (HOST_APPEARANCE_PROVIDER) return;
     expect(
       await page.evaluate(() => [
         document.documentElement.getAttribute("data-appearance"),
