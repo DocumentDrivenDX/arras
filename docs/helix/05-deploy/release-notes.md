@@ -17,7 +17,7 @@ ddx:
 
 # Arras release notes
 
-## 0.6.4 embedded composition candidate
+## 0.6.4 embedded composition
 
 The 0.6.4 candidate completes session and host-page ownership for embedders:
 identity/API changes reset Arras-owned UI state, shared caches refuse different
@@ -33,10 +33,13 @@ See the [integration guide](../../../ui/README.md#embed-in-a-host) and
 [API-only hosting example](../../../README.md#serve-only-the-api-and-bundle-the-components).
 Existing HTTP contract versions and native/UMF pins are unchanged.
 
-Publication is pending exact-artifact qualification. PyPI/npm 0.6.3 remain the
-published versions until the new release and public registry checks pass. The
-release workflow's immutable 0.6.3 wheel binding must not be reused as proof for
-changed 0.6.4 bytes; required native/managed evidence must bind the final wheel.
+The selected 0.6.4 wheel `29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2` passed full CI, fresh macOS native
+qualification (64 cases and eight declared limits) and all twelve fresh managed
+Lakebase cases. Independent cleanup and temporary identity/project deletion
+passed. Compiled public exports and the exact wheel-carried npm archive passed
+real Chromium embedding. See the [qualification evidence](evidence/embedding064-20261029/README.md).
+Tagged/public-download and registry publication checks remain required before
+claiming availability; historical 0.6.3 receipts do not qualify these bytes.
 
 ## 0.6.3 catalog correction
 

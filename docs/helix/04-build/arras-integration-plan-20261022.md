@@ -102,6 +102,18 @@ The integrated source adds Python wheel members, so the earlier embedding wheel
 and managed results cannot qualify the final release bytes. A new exact CI wheel,
 fresh macOS qualification and a fresh complete managed invocation are required.
 
+### Final selected embedding artifacts qualified
+
+Source `fcd14abc600a9cdcdf9913faba0d072ac50242f4` passed full CI `40973828432`.
+The selected 0.6.4 wheel is `29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2`. Its carried npm archive, fresh Mac
+native qualification and separate fresh twelve-case managed campaign pass;
+independent cleanup and deletion of all temporary identities, credentials and
+the disposable project are confirmed. The final UI suite passes 1,465 cases.
+Earlier local/candidate results above retain their original bytes and scope.
+The [qualified evidence](../05-deploy/evidence/embedding064-20261029/README.md)
+closes original artifact qualification. Final-source reproduction, tagged/public
+download qualification and registry availability remain release gates.
+
 ## Scope
 
 Adopt official UMF semantics and the generated client's public transport in

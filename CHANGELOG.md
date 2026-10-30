@@ -9,7 +9,7 @@ nested configuration. Controlled Explore preserves host history and scroll.
 Individual areas get a CSS scope, and instance-local labels, SVG resources,
 focus requests and edit portals avoid cross-widget collisions. Documents API-only
 ASGI hosting and compiled public npm entrypoints. Native/UMF pins and HTTP
-contract versions are unchanged. Publication is pending qualification.
+contract versions are unchanged. Exact artifact qualification passed; tagged/public registry checks remain required before availability is claimed.
 
 ## 0.6.1 — release candidate
 
