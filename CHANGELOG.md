@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- `arras-ui-qualify --host-build` names the host-fixture requirement a page misses (a marked widget, the controls
+  region, the keyboard opener, the app's Mark, a gradient or opacity behind a focus ring) on its error output and in
+  the failure receipt, and points to the fixture contract now written in `support/QUALIFICATION.md`.
+  `WidgetControls` in `@documentdrivendx/arras-ui/testkit/host` renders the controls region from the design system
+  in context.
+
 ## 0.6.4 — embedding isolation
 
 Adds explicit identity/API session boundaries and optional `pageEffects=false`

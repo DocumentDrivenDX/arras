@@ -221,6 +221,13 @@ step: provision Chromium using the consumer's normal Playwright setup. The `Acce
 entry is intended for a consumer-owned compiled host; the suite itself exercises its public HTTP
 surface and does not depend on private Arras source modules.
 
+`arras-ui-qualify --host-build` (checked by the package's `support/QUALIFICATION.md`) is a separate, narrower
+check with its own fixture contract: a first `.arras-root` with six widgets marked `data-theme-*`, a region labelled
+`Downstream widget controls` with the four controls in tab order, the public app drawn through the host's widgets, and
+no gradient, image or opacity behind the focus rings. The runner names the first requirement a fixture misses; the
+contract is the section "Host-build fixture contract" of that file, and `WidgetControls` from
+`@documentdrivendx/arras-ui/testkit/host` renders the region from the design system in context.
+
 ### Visual baselines
 
 `e2e/visual.spec.ts` screenshots every screen (light and dark, 1280 and 390 wide) and compares each with a
