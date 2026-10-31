@@ -2879,3 +2879,16 @@ No old receipt may acquire a substituted wheel digest or a fabricated fresh-run
 claim. Review the finite rebuild/parity/fresh-installed operation before running
 it, then update the strict selected-wheel guards to the actual measured digest.
 Publication and normal merge remain pending the resulting final packet review.
+
+The first corrected wheel's installed distribution, doctor, extension, UMF and
+two entrypoint checks passed on the canonical CPython 3.11.17 driver. Those
+results retain wheel `bba54479fd2c1b6e2b7558f188ff6eada6a4abe2547949ed0270f6be1d3a44aa`.
+The public catalog still listed three declared Python classifiers, which the
+existing catalog consistency test requires to match `pyproject.toml`. Correct
+only `distribution.declared_python` to `["3.11"]`; retain the separate
+unqualified-version observations. The archive audit finds this catalog only at
+wheel member `arras/public-api.json`, with no corresponding npm member. The npm
+archive and all executable Python, JavaScript, CSS, native and dependency inputs
+stay unchanged. The corrected wheel requires explicit descriptor correspondence
+and fresh artifact-bound checks; the earlier wheel's receipts remain original
+evidence, without substituted hashes or a final-candidate pass claim.
