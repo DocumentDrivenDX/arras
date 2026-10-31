@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import ast
 import importlib
 import inspect
 import json
@@ -111,6 +112,7 @@ def test_manifest_versions_and_public_imports_are_exact() -> None:
             "arras._umf_projection",
             "arras.adapters.truss._conformance",
             "arras.conformance._checks",
+            "arras.conformance._harness",
         },
         "private implementation modules",
     )
@@ -146,6 +148,7 @@ def test_manifest_versions_and_public_imports_are_exact() -> None:
     assert LeafBrand().csp() == ui.PAGE_CSP
     assert set(py["modules"]["arras.conformance"]["names"]) == {
         "Harness",
+        "HarnessBase",
         "Limit",
         "Result",
         "Report",
@@ -197,7 +200,7 @@ def test_native_launcher_and_asset_exports_match_the_selected_catalog() -> None:
     )
     exact(
         set(py["modules"]["arras.ui.assets"]["names"]),
-        {"load_manifest", "AssetManifest"},
+        {"load_manifest", "AssetManifest", "build_theme_manifest"},
         "asset validation public surface",
     )
     exact(
@@ -244,7 +247,7 @@ def test_catalog_records_the_packed_ui_acceptance_inventory() -> None:
     )
     exact(
         manifest["ui"]["npm_runtime_exports"]["./testkit/host"],
-        ["AcceptanceHost"],
+        ["AcceptanceHost", "WidgetControls"],
         "testkit host runtime exports",
     )
     exact(
@@ -522,6 +525,10 @@ def test_callable_parameters_and_published_ui_contracts_stay_in_sync() -> None:
                 from arras.distribution import TelemetryNames
 
                 assert p.default == TelemetryNames()
+            elif declared["default"] == "default operator groups":
+                from arras.devhost import OPERATOR_GROUPS
+
+                assert p.default == OPERATOR_GROUPS
             elif declared["default"] == "default UI directory":
                 from arras.devhost import DEFAULT_UI
 
@@ -598,7 +605,12 @@ def test_configuration_cli_and_resource_inventory_are_declared_separately() -> N
     devhost = importlib.import_module("arras.devhost")
     exact(
         manifest["host_configuration"]["development_environment"]["keys"],
-        [devhost.TRUSS_URL_VARIABLE, devhost.TRUSS_CREDENTIALS_VARIABLE],
+        [
+            devhost.TRUSS_URL_VARIABLE,
+            devhost.TRUSS_CREDENTIALS_VARIABLE,
+            "<PREFIX>_TRUSS_DEV_URL",
+            "<PREFIX>_TRUSS_DEV_CREDENTIALS",
+        ],
         "development host environment keys",
     )
     exact(manifest["ui"]["root_class"], ".arras-root", "CSS root class")
@@ -740,3 +752,29 @@ def test_catalog_mutations_are_rejected_by_the_wired_parity_checks(
         with pytest.raises((AssertionError, KeyError, TypeError)):
             parity_check()
         monkeypatch.setattr(sys.modules[__name__], "catalog", original_catalog)
+
+
+def test_a_custom_backend_is_written_against_catalogued_modules_only() -> None:
+    """`arras.backend` carries the protocols and every name their signatures use, and a backend
+    test needs no import of `arras.fakes` or `arras.conformance.fakes`."""
+    py = catalog()["python"]
+    assert "arras.backend" in py["host_modules"]
+    names = set(py["modules"]["arras.backend"]["names"])
+    exact(
+        names,
+        {"Answer", "Backend", "BackendInfo", "Migrates", "Plan", "Provider", "Reason", "TextMatch"},
+        "backend module surface",
+    )
+    module = importlib.import_module("arras.backend")
+    exact(set(module.__all__), names, "backend __all__")
+    assert all(hasattr(module, name) for name in names)
+    for private in ("arras.fakes", "arras.conformance.fakes"):
+        assert private not in py["host_modules"]
+    source = (Path(__file__).parent / "test_backend_public_surface.py").read_text()
+    imported = {
+        node.module
+        for node in ast.walk(ast.parse(source))
+        if isinstance(node, ast.ImportFrom) and node.module and node.module.startswith("arras")
+    }
+    allowed = set(py["host_modules"])
+    assert imported <= allowed, sorted(imported - allowed)

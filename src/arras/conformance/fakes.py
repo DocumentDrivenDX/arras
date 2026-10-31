@@ -8,37 +8,28 @@ from typing import Any, cast
 
 from arras.actions import Plan
 from arras.backend import Backend
+from arras.conformance import HarnessBase
 from arras.fakes import FakeAccess, MemoryReplica, MemoryStore
 from arras.model import ModuleInfo
 from arras.results import Receipt
-from arras.types import Principal
 
 
-class _Base:
+class _Base(HarnessBase):
     roles: tuple[str, ...] = ()
     corpus_version = 13
 
     def __init__(self) -> None:
+        super().__init__()
         self.access = FakeAccess()
         self.auth = MemoryStore(self.access)
         self.root = self.access.grant("root", "catalog", "read", "write", "schema", admin=True)
-        self.users: dict[str, Principal] = {}
 
-    def grant(self, user: str, modules: Mapping[str, Sequence[str]], admin: bool) -> None:
+    def issue_token(self, user: str, modules: Mapping[str, Sequence[str]], admin: bool) -> str:
         token = f"token-{user}"
         self.access.tokens[token] = user  # known by token, with whatever grants follow
-        self.users[user] = Principal(user, token)
         for module, modes in modules.items():
-            self.users[user] = self.access.grant(user, module, *cast(Any, modes), admin=admin)
-
-    def borrowed(self, user: str, token_owner: str) -> Principal:
-        return Principal(user, self.users[token_owner].token)
-
-    def foreign_token(self) -> str:
-        return "not-a-position"  # a string no backend issued and none can read as a position
-
-    def principal(self, name: str) -> Principal:
-        return Principal("anon", "") if name == "anon" else self.users[name]
+            token = self.access.grant(user, module, *cast(Any, modes), admin=admin).token
+        return token
 
     def install(self, module: ModuleInfo, document: bytes) -> None:
         self.auth.register(self.root, document, module, unknown_endpoint="reject")

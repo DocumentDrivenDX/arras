@@ -32,13 +32,20 @@ The base install needs only `graphql-core`. Extras: `arras[otel]` (OpenTelemetry
 
 ## Quick start
 
-From a source checkout (Python 3.11 or later, with [`uv`](https://docs.astral.sh/uv/)):
+Python 3.11 is the supported and required release-qualification profile. The
+`>=3.11` installer minimum permits later interpreters, whose support is unqualified.
+
+From a source checkout (Python 3.11, with [`uv`](https://docs.astral.sh/uv/)):
 
 ```bash
 uv sync --extra truss
 uv run pytest -q
 uv run --extra devhost python -m arras.devhost      # the console over fake data, on loopback only
 ```
+
+An installed wheel also provides one `arras` command that runs the same module entry points:
+`arras doctor`, `arras devhost`, `arras mcp` (each takes the options of its module) and
+`arras --version`. The `python -m` forms keep working.
 
 Serve one of the examples with its seed:
 
@@ -218,6 +225,9 @@ surfaces the page calls: `/api/console` (CONTRACT-006), `/api/operate` (CONTRACT
 Content-Security-Policy (`ui.PAGE_CSP`); every read and write is answered by a surface, which refuses a
 viewer with no principal. `/ontology` redirects to `/ontology/`, because the page's URLs are relative so
 that any prefix works. Behind a proxy that rewrites `Host`, pass `public_origin`.
+Starlette and FastAPI keep the mount prefix in the request path and name it in `root_path`; `base_path="/ontology"`
+and `base_path=""` both serve the same URLs under `Mount("/ontology", ...)`. The `console`, `operate` and schema
+apps resolve their paths the same way.
 
 `authorize_schema(principal, module) -> bool` optionally narrows schema validation and registration
 through this same mount. Pass it as `ui.create_app(..., authorize_schema=...)`; it receives the
@@ -270,19 +280,24 @@ role (viewer, editor, schema author, auditor, maintainer) and any name, take a b
 replica, run one Weft statement at a time against a chosen module at either consistency level (paging
 is written in the statement), invoke actions, and import and export UMF schemas. `ARRAS_DEV_SANDBOX=1 python -m arras.mcp` serves the same sandbox over MCP.
 
-The sandbox has a `catalog` module and five people, named in the `x-arras-user` header and the toolbar: `alice` (read, write, journal and schema on `catalog`; group `builders`), `bob` (read, write and journal; group `builders`), `carol` (read only), `dave` (no access to `catalog`) and `root` (the administrator, group `admins`, who registers modules and is refused every user operation). The operator surface is offered to the groups `admins` and `builders`, so `alice`, `bob` and `root` are operators and `carol` and `dave` are not. By default the dev host also seeds a demonstration catalog of 12 use cases across the work areas `data`, `operations` and `finance`, and 10 solutions (`--no-demo` leaves it out). `--module` and `--seed` replace it with a module of your own, such as `examples/catalog` (see its README) or `examples/pizza`.
+The dev host serves the page from `ui/dist` in a source checkout that has built it (`npm run build` in
+`ui/`). Without that build, as in an installed wheel, it serves the page the wheel carries
+(`arras.ui.STATIC`); `--ui <dir>` serves the named directory as given.
+
+The sandbox has a `catalog` module and five people, named in the `x-arras-user` header and the toolbar: `alice` (read, write, journal and schema on `catalog`; group `builders`), `bob` (read, write and journal; group `builders`), `carol` (read only), `dave` (no access to `catalog`) and `root` (the administrator, group `admins`, who registers modules and is refused every user operation). The operator surface is offered to the groups `admins` and `builders`, so `alice`, `bob` and `root` are operators and `carol` and `dave` are not. `--operator-group NAME` (repeatable) replaces those groups, and a distribution can pass `operator_groups=` to `arras.devhost.main` as its default; the sandbox's operators (and made-up people) then belong to each named group as well, and `carol` and `dave` stay outside. By default the dev host also seeds a demonstration catalog of 12 use cases across the work areas `data`, `operations` and `finance`, and 10 solutions (`--no-demo` leaves it out). `--module` and `--seed` replace it with a module of your own, such as `examples/catalog` (see its README) or `examples/pizza`.
 
 With `--truss` the dev host serves a real Truss instead of the fakes: the same people, but their roles and grants are database roles, `expire` is `VALID UNTIL`, `grant` and `revoke` are role membership and `outage` is a real unreachable (or, on a throwaway, refused) connection. A control with no meaning on Truss (`feed`, `search`) answers 400. It needs the `truss` extra.
 
-When a connection URL is configured, Truss mode attaches to a persistent PostgreSQL 18.6 server and keeps its state across restarts. The URL is `--truss-url`, else `ARRAS_TRUSS_DEV_URL` in the environment, else the same variable in `~/.arras/truss-dev.env` (keep it there, mode 600, so the password is not on a command line). It names a role that owns the database, has `CREATEROLE` and is not a superuser (an initial Truss installation requires an empty database), and whose password `pg_hba` asks for (a connection that skips the password is refused):
+When a connection URL is configured, Truss mode attaches to a persistent PostgreSQL 18.6 server and keeps its state across restarts. The URL is `--truss-url`, else `ARRAS_TRUSS_DEV_URL` in the environment, else the same variable in `~/.arras/truss-dev.env` (keep it there, mode 600, so the password is not on a command line). A distribution whose `env_prefix` is not `ARRAS` (for example `EXAMPLE`) has its dev host read `EXAMPLE_TRUSS_DEV_URL` and `~/.example/truss-dev.env` first, then the `ARRAS_` variable and `~/.arras/truss-dev.env` as fallbacks, and print those names in `--help`; the directory is the lower-cased prefix with `_` as `-` (`EXAMPLE_APP` gives `~/.example-app`). It names a role that owns the database, has `CREATEROLE` and is not a superuser (an initial Truss installation requires an empty database), and whose password `pg_hba` asks for (a connection that skips the password is refused):
 
 ```bash
 uv run --extra devhost --extra truss python -m arras.devhost --truss
 ```
 
 The CLI shares stable person credentials through a private versioned JSON file. Choose it with
-`--truss-credentials PATH`, else `ARRAS_TRUSS_DEV_CREDENTIALS`; the default is
-`~/.arras/truss-dev-credentials/<scope>.json`, scoped by credential-free server host/port and
+`--truss-credentials PATH`, else `ARRAS_TRUSS_DEV_CREDENTIALS` (`EXAMPLE_TRUSS_DEV_CREDENTIALS`
+first for a distribution with prefix `EXAMPLE`); the default is
+`~/.arras/truss-dev-credentials/<scope>.json` (`~/.example/` for that distribution), scoped by credential-free server host/port and
 installer role. The database is excluded because PostgreSQL roles are cluster-wide. Hosts sharing
 the same identities must share this file, including when using different aliases for the server.
 The source creates random credentials only for absent database roles. Existing roles require a

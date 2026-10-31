@@ -15,7 +15,7 @@ import sys
 import zipfile
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any
+from typing import Any, NamedTuple
 
 import pytest
 
@@ -447,3 +447,161 @@ def test_cleanup_failure_cannot_be_serialized_as_success(
     monkeypatch.setattr(verifier.shutil, "rmtree", fail_cleanup)
     with pytest.raises(verifier.VerificationError, match="owned-temp-cleanup-failed"):
         verifier._remove_owned_temp(temp)
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        "valid",
+        "undeclared",
+        "noncanonical",
+        "absolute",
+        "outside",
+        "symlink",
+        "changed-bytes",
+        "missing-digest",
+        "missing-size",
+        "wrong-digest",
+        "wrong-size",
+        "invalid-name",
+        "scripts-outside",
+        "scripts-symlink",
+        "omitted-record",
+        "missing-file",
+        "duplicate-record",
+    ],
+)
+def test_installed_console_script_is_declared_confined_and_integrity_checked(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, case: str
+) -> None:
+    fixture = _installed_console_script_fixture(tmp_path, case)
+    selected_scripts, installed_record = _console_record_for_case(fixture, case)
+    site, venv, wheel = fixture.site, fixture.venv, fixture.wheel
+
+    class DistributionStub:
+        def locate_file(self, name: str) -> Path:
+            return site / name
+
+        def read_text(self, name: str) -> str | None:
+            return installed_record if name == "RECORD" else None
+
+    def get_distribution(_name: str) -> DistributionStub:
+        return DistributionStub()
+
+    def script_directory(_name: str) -> str:
+        return str(selected_scripts)
+
+    monkeypatch.setattr(probe.importlib.metadata, "distribution", get_distribution)
+    monkeypatch.setattr(probe.sys, "prefix", str(venv))
+    monkeypatch.setattr(probe.sysconfig, "get_path", script_directory)
+    if case == "valid":
+        assert probe._compare_installed_payload(wheel, "arras") == len(fixture.files)
+    else:
+        with pytest.raises(probe.VerificationError):
+            probe._compare_installed_payload(wheel, "arras")
+
+
+class _ConsoleInstallation(NamedTuple):
+    venv: Path
+    site: Path
+    scripts: Path
+    script: Path
+    script_bytes: bytes
+    wheel: Path
+    dist_info: str
+    files: dict[str, bytes]
+    rows: list[list[str]]
+
+
+def _installed_console_script_fixture(tmp_path: Path, case: str) -> _ConsoleInstallation:
+    """A wheel and its fresh installation, with generated launcher bytes kept separate."""
+    venv = tmp_path / "venv"
+    site = venv / "lib/python3.11/site-packages"
+    scripts = venv / "bin"
+    site.mkdir(parents=True)
+    scripts.mkdir()
+    script = scripts / "arras"
+    script_bytes = b"#!/venv/bin/python\nfrom arras.cli import run\nrun()\n"
+    script.write_bytes(script_bytes)
+    dist_info = "arras-0.6.5.dist-info"
+    command_name = "../arras" if case == "invalid-name" else "arras"
+    entry_points = (
+        b"[console_scripts]\nother = arras.cli:run\n"
+        if case == "undeclared"
+        else f"[console_scripts]\n{command_name} = arras.cli:run\n".encode()
+    )
+    files = {
+        "arras/__init__.py": b"qualified payload",
+        f"{dist_info}/METADATA": b"Name: arras\nVersion: 0.6.5\n",
+        f"{dist_info}/entry_points.txt": entry_points,
+    }
+    rows: list[list[str]] = []
+    for name, payload in files.items():
+        digest = base64.urlsafe_b64encode(hashlib.sha256(payload).digest()).rstrip(b"=")
+        rows.append([name, f"sha256={digest.decode()}", str(len(payload))])
+        destination = site / name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(payload)
+    rows.append([f"{dist_info}/RECORD", "", ""])
+    buffer = io.StringIO()
+    csv.writer(buffer, lineterminator="\n").writerows(rows)
+    wheel = tmp_path / "arras.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        for name, payload in {**files, f"{dist_info}/RECORD": buffer.getvalue().encode()}.items():
+            archive.writestr(name, payload)
+    return _ConsoleInstallation(
+        venv=venv,
+        site=site,
+        scripts=scripts,
+        script=script,
+        script_bytes=script_bytes,
+        wheel=wheel,
+        dist_info=dist_info,
+        files=files,
+        rows=rows,
+    )
+
+
+def _console_record_for_case(fixture: _ConsoleInstallation, case: str) -> tuple[Path, str]:
+    venv, site, scripts, script = fixture.venv, fixture.site, fixture.scripts, fixture.script
+    script_bytes, rows, dist_info = fixture.script_bytes, fixture.rows, fixture.dist_info
+    record_path = Path(os.path.relpath(script, site)).as_posix()
+    if case == "noncanonical":
+        record_path = "../../../bin/../bin/arras"
+    elif case == "absolute":
+        record_path = str(script)
+    elif case == "outside":
+        record_path = "../../../../outside/arras"
+    digest = base64.urlsafe_b64encode(hashlib.sha256(script_bytes).digest()).rstrip(b"=").decode()
+    script_hash = "" if case == "missing-digest" else f"sha256={digest}"
+    size = "" if case == "missing-size" else str(len(script_bytes))
+    if case == "wrong-digest":
+        script_hash = f"sha256={'0' * 43}"
+    elif case == "wrong-size":
+        size = str(len(script_bytes) + 1)
+    elif case == "changed-bytes":
+        script.write_bytes(b"tampered")
+    elif case == "symlink":
+        target = scripts / "target"
+        target.write_bytes(script_bytes)
+        script.unlink()
+        script.symlink_to(target)
+    selected_scripts = scripts
+    if case == "scripts-outside":
+        selected_scripts = venv.parent / "outside"
+        selected_scripts.mkdir()
+    elif case == "scripts-symlink":
+        selected_scripts = venv / "linked-bin"
+        selected_scripts.symlink_to(scripts, target_is_directory=True)
+    if case != "omitted-record":
+        rows.append([record_path, script_hash, size])
+    if case == "missing-file":
+        script.unlink()
+    elif case == "duplicate-record":
+        rows.append([record_path, script_hash, size])
+    buffer = io.StringIO()
+    csv.writer(buffer, lineterminator="\n").writerows(rows)
+    installed_record = buffer.getvalue()
+    (site / dist_info / "RECORD").write_text(installed_record)
+
+    return selected_scripts, installed_record

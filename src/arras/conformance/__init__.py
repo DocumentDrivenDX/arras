@@ -46,6 +46,7 @@ from arras.types import Principal, Revision, Statement
 from arras.umf import parse_module
 
 from . import _checks
+from ._harness import HarnessBase as HarnessBase
 
 _Fail = _checks.Failure
 _check_capabilities = _checks.check_capabilities

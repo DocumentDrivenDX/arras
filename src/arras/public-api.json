@@ -2,17 +2,15 @@
   "schema_version": 1,
   "distribution": {
     "name": "arras",
-    "version": "0.6.4",
+    "version": "0.6.5",
     "version_source": "pyproject.toml",
     "python_requires": ">=3.11",
     "declared_python": [
-      "3.11",
-      "3.12",
-      "3.13"
+      "3.11"
     ],
     "npm": {
       "name": "@documentdrivendx/arras-ui",
-      "version": "0.6.4",
+      "version": "0.6.5",
       "version_source": "pyproject.toml",
       "exports": {
         ".": {
@@ -238,10 +236,30 @@
         "kind": "package",
         "names": [
           "Harness",
+          "HarnessBase",
           "Limit",
           "Result",
           "Report",
           "run_corpus"
+        ]
+      },
+      "arras.alias": {
+        "kind": "module",
+        "names": [
+          "alias_package"
+        ]
+      },
+      "arras.backend": {
+        "kind": "module",
+        "names": [
+          "Answer",
+          "Backend",
+          "BackendInfo",
+          "Migrates",
+          "Plan",
+          "Provider",
+          "Reason",
+          "TextMatch"
         ]
       },
       "arras.branding": {
@@ -307,7 +325,8 @@
         "kind": "module",
         "names": [
           "load_manifest",
-          "AssetManifest"
+          "AssetManifest",
+          "build_theme_manifest"
         ]
       },
       "arras.umf_admission": {
@@ -770,6 +789,11 @@
             "name": "telemetry_factory",
             "kind": "KEYWORD_ONLY",
             "default": null
+          },
+          {
+            "name": "operator_groups",
+            "kind": "KEYWORD_ONLY",
+            "default": null
           }
         ]
       },
@@ -1064,6 +1088,43 @@
           }
         ]
       },
+      "arras.ui.assets.build_theme_manifest": {
+        "parameters": [
+          {
+            "name": "output",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "stylesheet",
+            "kind": "KEYWORD_ONLY"
+          },
+          {
+            "name": "favicon",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          },
+          {
+            "name": "fonts",
+            "kind": "KEYWORD_ONLY",
+            "default": "empty tuple"
+          },
+          {
+            "name": "package_name",
+            "kind": "KEYWORD_ONLY",
+            "default": "theme"
+          },
+          {
+            "name": "package_version",
+            "kind": "KEYWORD_ONLY",
+            "default": "1"
+          },
+          {
+            "name": "ui_versions",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
+      },
       "arras.policy.PolicyRefused": {
         "parameters": [
           {
@@ -1199,6 +1260,11 @@
             "name": "telemetry_context",
             "kind": "KEYWORD_ONLY",
             "default": null
+          },
+          {
+            "name": "operator_groups",
+            "kind": "KEYWORD_ONLY",
+            "default": "default operator groups"
           }
         ]
       },
@@ -1322,6 +1388,24 @@
             "default": "legacy-arras/1"
           }
         ]
+      },
+      "arras.alias.alias_package": {
+        "parameters": [
+          {
+            "name": "name",
+            "kind": "POSITIONAL_OR_KEYWORD"
+          },
+          {
+            "name": "target",
+            "kind": "KEYWORD_ONLY",
+            "default": "arras"
+          },
+          {
+            "name": "modules",
+            "kind": "KEYWORD_ONLY",
+            "default": null
+          }
+        ]
       }
     },
     "contracts_version_source": "contracts",
@@ -1334,6 +1418,8 @@
       "arras",
       "arras.adapters",
       "arras.adapters.truss",
+      "arras.alias",
+      "arras.backend",
       "arras.branding",
       "arras.conformance",
       "arras.conformance.truss",
@@ -1360,7 +1446,8 @@
       "arras._umf_projection",
       "arras.adapters.truss._conformance",
       "arras.conformance.__main__",
-      "arras.conformance._checks"
+      "arras.conformance._checks",
+      "arras.conformance._harness"
     ],
     "launcher_modules": {
       "arras.mcp": [
@@ -1485,7 +1572,9 @@
     "development_environment": {
       "keys": [
         "ARRAS_TRUSS_DEV_URL",
-        "ARRAS_TRUSS_DEV_CREDENTIALS"
+        "ARRAS_TRUSS_DEV_CREDENTIALS",
+        "<PREFIX>_TRUSS_DEV_URL",
+        "<PREFIX>_TRUSS_DEV_CREDENTIALS"
       ],
       "owner": "development host only",
       "precedence": [
@@ -1507,6 +1596,7 @@
       "--truss-url",
       "--truss-reset",
       "--truss-credentials",
+      "--operator-group",
       "--records",
       "--also"
     ],
@@ -1582,7 +1672,8 @@
         "createAcceptanceConfig"
       ],
       "./testkit/host": [
-        "AcceptanceHost"
+        "AcceptanceHost",
+        "WidgetControls"
       ]
     },
     "npm_type_exports": {
@@ -1813,7 +1904,7 @@
     ],
     "ui_acceptance": {
       "manifest_path": "support/acceptance/resources.json",
-      "manifest_sha256": "bfb6ed43ff0accdb170b60cc7095365f2a7cc287a66b7dfcab31918106042f78",
+      "manifest_sha256": "ac5dd4b46986437df5af2d8c3eb8460f1a9d7be67c8cc25f9816a3362db4044d",
       "version": 1,
       "specs": [
         "a11y.spec.ts",

@@ -1,0 +1,13 @@
+Building source distribution...
+WARN Retry attempt #0. Sleeping 1.123449599s before the next attempt
+WARN Retry attempt #1. Sleeping 1.463409341s before the next attempt
+WARN Retry attempt #2. Sleeping 6.209870559s before the next attempt
+error: Failed to build `/private/tmp/arras-ashlar-integration-20261029`
+  cause: Failed to resolve requirements from `build-system.requires`
+  cause: No solution found when resolving: `hatchling>=1.27, <2`
+  cause: Request failed after 3 retries in 8.8s
+  cause: Failed to fetch: https://pypi.org/simple/hatchling/
+  cause: error sending request for url (https://pypi.org/simple/hatchling/)
+  cause: client error (Connect)
+  cause: dns error
+  cause: failed to lookup address information: nodename nor servname provided, or not known

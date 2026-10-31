@@ -1,0 +1,8 @@
+Building wheel...
+Successfully built /private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-016/temporary/arras-dist-verify-69522rnc/rebuilt/arras-0.6.5-py3-none-any.whl
+
+[notice] A new release of pip is available: 24.0 -> 26.2.2
+[notice] To update, run: /private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-016/temporary/arras-dist-verify-69522rnc/consumer-source-wheel/bin/python -m pip install --upgrade pip
+
+[notice] A new release of pip is available: 24.0 -> 26.2.2
+[notice] To update, run: /private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-016/temporary/arras-dist-verify-69522rnc/consumer-sdist-rebuilt-wheel/bin/python -m pip install --upgrade pip

@@ -60,6 +60,32 @@ def test_main_refuses_a_port_that_is_not_a_number(fake_uvicorn) -> None:
     assert fake_uvicorn == []
 
 
+@pytest.mark.parametrize("groups", [(), []])
+def test_main_refuses_explicit_empty_operator_groups_before_startup(
+    fake_uvicorn, monkeypatch, groups, capsys
+) -> None:
+    import arras.devhost as devhost
+
+    effects: list[str] = []
+    monkeypatch.setattr(devhost, "build", lambda *_a, **_kw: effects.append("build"))
+    with pytest.raises(SystemExit) as result:
+        main(["--no-demo"], operator_groups=groups)
+    assert result.value.code == 2
+    assert "operator_groups: one or more names" in capsys.readouterr().err
+    assert effects == [] and fake_uvicorn == []
+
+
+@pytest.mark.parametrize("groups", [(), []])
+def test_operator_group_flag_overrides_an_empty_programmatic_default(
+    fake_uvicorn, tmp_path, groups
+) -> None:
+    main(
+        ["--no-demo", "--ui", str(tmp_path), "--operator-group", "ops"],
+        operator_groups=groups,
+    )
+    assert fake_uvicorn[0]["app"].operator_groups == ("ops",)
+
+
 def test_telemetry_factory_runs_after_argument_validation_and_before_build(
     fake_uvicorn, monkeypatch, tmp_path
 ) -> None:
