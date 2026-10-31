@@ -2892,3 +2892,12 @@ archive and all executable Python, JavaScript, CSS, native and dependency inputs
 stay unchanged. The corrected wheel requires explicit descriptor correspondence
 and fresh artifact-bound checks; the earlier wheel's receipts remain original
 evidence, without substituted hashes or a final-candidate pass claim.
+
+The corrected source `ff672139389eb802bb1bdf8e88fa0fc85cdb6522` passed all
+twelve catalog controls and the five fresh installed-artifact gates, with zero
+skips. Its wheel is `beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b`;
+the [governed receipt index](../05-deploy/evidence/arras-0.6.5-local-20261031/qualification-index.json)
+retains the original results and descriptor correspondence. Bind the existing
+release guard to these measured bytes while preserving its missing/mismatch
+controls. Final source archive parity, normal merge, local publication and
+fresh public-index proof remain separate required steps.

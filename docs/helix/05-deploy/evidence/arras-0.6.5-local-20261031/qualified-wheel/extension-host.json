@@ -1,0 +1,458 @@
+{
+  "arras_wheel": {
+    "path": "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/artifacts/arras-0.6.5-py3-none-any.whl",
+    "sha256": "beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b"
+  },
+  "commands": [
+    "python -I -m extension_host --resource graph.json",
+    "extension-host-example --resource seed.json",
+    "python -I -m pytest --import-mode=importlib examples/extension_host/tests/test_installed.py",
+    "python -I -m arras.conformance --backend memory-store"
+  ],
+  "consumer_runs": {
+    "graph": {
+      "actor": "example_owner",
+      "brand": "Extension Host Example",
+      "created_by_action": 1,
+      "imported": 2,
+      "imported_by": "admin",
+      "module": "notes",
+      "registered_source_bytes": 2223,
+      "selected_resource": "graph.json"
+    },
+    "seed": {
+      "actor": "example_owner",
+      "brand": "Extension Host Example",
+      "created_by_action": 1,
+      "imported": 1,
+      "imported_by": "admin",
+      "module": "notes",
+      "registered_source_bytes": 2223,
+      "selected_resource": "seed.json"
+    }
+  },
+  "environment": {
+    "arras_import": "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/temporary/arras-extension-host-ufpb9qag/venv/lib/python3.11/site-packages/arras/__init__.py",
+    "dependency_mode": "fresh-public-index-resolution",
+    "dependency_site_directory_reused": null,
+    "extension_host_import": "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/temporary/arras-extension-host-ufpb9qag/venv/lib/python3.11/site-packages/extension_host/__init__.py",
+    "installed_distributions": {
+      "Pygments": "2.21.0",
+      "arras": "0.6.5",
+      "example-extension-host": "0.1.0",
+      "graphql-core": "3.3.1",
+      "iniconfig": "2.3.1",
+      "packaging": "26.3",
+      "pip": "24.0",
+      "pluggy": "1.7.0",
+      "pytest": "9.2.0",
+      "setuptools": "79.0.1"
+    },
+    "isolated_imports": true,
+    "python": "3.11.17"
+  },
+  "extension_host_wheel": {
+    "build_backend": "hatchling via declared pyproject.toml and uv build",
+    "filename": "example_extension_host-0.1.0-py3-none-any.whl",
+    "sha256": "882f3d22493a5d36cba8e3eeb32fd360c10af517fff603412ca603900fed1601"
+  },
+  "installed_consumer_test": {
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests": 4
+    },
+    "mode": "isolated pytest against installed distributions",
+    "path": "examples/extension_host/tests/test_installed.py"
+  },
+  "memory_corpus": {
+    "backend": "memory-store",
+    "corpus_version": 13,
+    "counts": {
+      "failed": 0,
+      "harness_error": 0,
+      "host_specific": 0,
+      "limit": 0,
+      "passed": 72
+    },
+    "newer_corpus": false,
+    "results": [
+      {
+        "case": "read.key-lookup-whole-entity",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "read.relationship-columns-follow-ends",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "read.missing-key-is-no-rows",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "read.columns-and-filters",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "read.relationship-filter-both-directions",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "read.repeated-relationship-predicates-mean-both",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "read.count-group-by",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "read.inner-join-is-a-bag",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "read.count-over-a-join-by-several-columns",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "read.paging-by-key",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "read.relationship-columns-are-capped",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "read.the-named-module-scopes-the-statement",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "access.no-token-is-refused",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "access.anothers-token-is-refused",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "access.no-grant-is-refused-not-empty",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "access.expired-token-is-refused-not-unavailable",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "access.outage-is-unavailable-never-empty",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "access.no-token-is-refused-even-when-down",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "access.outage-during-a-write-changes-nothing",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "access.non-member-write-is-refused",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "freshness.status-states-availability",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "freshness.undeterminable-token-is-unavailable-not-false",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "freshness.store-has-reached-its-own-tokens",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "freshness.non-member-reached-is-refused",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "describe.capabilities-by-role",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "store.registers-under-the-schema-grant-and-never-attaches",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.applies-atomically-and-reads-back",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.failed-precondition-changes-nothing",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.conflict-rolls-back-the-unit",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.update-bumps-the-version-once",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.read-only-principal-is-refused",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.anothers-token-cannot-write",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.idempotent-retry-returns-the-original",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.keyed-retry-of-a-delete-replays",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.keyed-retry-of-an-unlink-replays",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.keyed-retry-after-its-target-was-deleted-replays",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.same-key-from-another-person-replays",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.key-reused-with-other-inputs-conflicts",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.dry-run-writes-nothing-and-keeps-the-key",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.deleted-keys-stay-deleted",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.atomic-batch-is-all-or-nothing",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.independent-batch-reports-each-item",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.batch-shape-and-access",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "import.identity-skip-and-provenance",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "import.original-time-names-its-offset",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "import.entities-before-relationships",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "import.administrative-principals-only",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "import.deleted-stays-deleted",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.receipt-names-its-group",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "action.retry-with-generated-keys-matches",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "journal.changes-are-committed-groups-newest-first",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "journal.loads-newest-first",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "registry.document-is-verbatim",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "registry.document-is-refused-without-read",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "text.every-word-in-some-property",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "text.folds-case",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "text.only-the-named-properties",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "text.percent-underscore-backslash-are-literal",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "text.rows-are-ordered-by-key-and-bounded",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "text.no-match-is-an-empty-answer",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "text.rows-carry-attribution",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "text.on-a-property-the-backend-does-not-list-is-unsupported",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "text.refused-without-the-grant",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "text.unavailable-is-not-empty",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "registry.validate-reports-without-applying",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "registry.schema-is-not-write",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "registry.register-checks-the-revision-it-was-planned-against",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "registry.rewritten-equal-document-registers-unchanged",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "registry.registers-a-new-record-type",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "export.canonical-order-and-absent-properties",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "export.refused-without-read-never-empty",
+        "message": "",
+        "status": "passed"
+      },
+      {
+        "case": "export.pages-resume-after-the-last-record",
+        "message": "",
+        "status": "passed"
+      }
+    ],
+    "roles": [
+      "reader",
+      "provider"
+    ],
+    "skipped": [
+      "freshness.replica-status-states-its-position",
+      "freshness.unissued-token-is-invalid",
+      "freshness.replica-catches-up-to-a-token",
+      "replica.refuses-every-change",
+      "replica.holds-no-document",
+      "replica.refuses-validate-register",
+      "replica.export-is-unsupported"
+    ]
+  },
+  "qualification": "installed-artifact consumer and fixed memory corpus",
+  "schema_version": 1
+}

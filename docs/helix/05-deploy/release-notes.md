@@ -19,15 +19,29 @@ ddx:
 
 ## 0.6.5 downstream integration candidate
 
+Installed development hosts serve their wheel-carried UI and console entrypoints.
+Operators can select explicit groups and development namespaces, framework
+mounts preserve their prefixes, and theme manifests state their appearance.
+External backends receive a public conformance base, alias packages preserve
+module identity, and the acceptance testkit separates host isolation and visual
+baseline selection. The [changelog](../../../CHANGELOG.md#065--downstream-integration)
+records the fifteen integrated downstream changes.
+
 Python 3.11 is the sole supported Python release profile. The installer minimum
 remains `>=3.11`, permitting later interpreters without qualifying their support.
 The completed 3.12 checks remain incidental observations; 3.13 is unqualified
 and is outside this release's required gates. Full UI, native, UMF and public
 consumer qualification remains required on the named platforms.
 
-This candidate is not yet merged or published. Original qualification receipts
-retain their artifact identities; the metadata correction requires a separately
-reviewed rebuild and explicit final-artifact correspondence before publication.
+Wheel `beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b`
+passed twelve catalog controls and fresh distribution, doctor, extension, UMF
+and installed CLI/development-host checks on CPython 3.11.17 / Darwin arm64.
+The [original receipts and correspondence](evidence/arras-0.6.5-local-20261031/README.md)
+retain the distinct source/artifact identities, unchanged executable and npm
+payloads, historical Linux/UI/native component evidence and platform limits.
+This candidate is not yet merged or published. The final selected-wheel guard,
+source archive, public bytes and clean public-index consumers still require
+verification before release completion.
 
 ## 0.6.4 embedded composition
 

@@ -1,0 +1,22 @@
+Building wheel...
+Successfully built /private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-014/temporary/arras-dist-verify-wffuxglk/rebuilt/arras-0.6.5-py3-none-any.whl
+Traceback (most recent call last):
+  File "/private/tmp/arras-ashlar-integration-20261029/tools/verify_distribution.py", line 557, in <module>
+    main()
+  File "/private/tmp/arras-ashlar-integration-20261029/tools/verify_distribution.py", line 527, in main
+    source_consumer = install_consumer(args.wheel, temp, "source-wheel", npm_script)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/arras-ashlar-integration-20261029/tools/verify_distribution.py", line 358, in install_consumer
+    venv.EnvBuilder(with_pip=True).create(envdir)
+  File "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11/venv/__init__.py", line 77, in create
+    self._setup_pip(context)
+  File "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11/venv/__init__.py", line 359, in _setup_pip
+    self._call_new_python(context, '-m', 'ensurepip', '--upgrade',
+  File "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11/venv/__init__.py", line 355, in _call_new_python
+    subprocess.check_output(args, **kwargs)
+  File "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11/subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-014/temporary/arras-dist-verify-wffuxglk/consumer-source-wheel/bin/python', '-m', 'ensurepip', '--upgrade', '--default-pip']' returned non-zero exit status 1.

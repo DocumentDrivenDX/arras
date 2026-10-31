@@ -1,0 +1,194 @@
+{
+  "status": "passed",
+  "sourceCommit": "ff672139389eb802bb1bdf8e88fa0fc85cdb6522",
+  "startedAtUtc": "2026-10-31T17:34:37.260166+00:00",
+  "endedAtUtc": "2026-10-31T17:36:38.435029+00:00",
+  "elapsedSeconds": 121.1632749591954,
+  "budgetSeconds": 180.0,
+  "gates": [
+    {
+      "gate": "source-catalog-controls",
+      "argv": [
+        "/private/tmp/arras-ashlar-integration-20261029/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_public_api_manifest.py",
+        "--junitxml=/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/source-catalog.xml"
+      ],
+      "sourceCommit": "ff672139389eb802bb1bdf8e88fa0fc85cdb6522",
+      "pid": 9784,
+      "exitCode": 0,
+      "elapsedSeconds": 2.5970206670463085
+    },
+    {
+      "gate": "catalog-artifact-build",
+      "argv": [
+        "uv",
+        "build",
+        "--wheel",
+        "--sdist",
+        "--out-dir",
+        "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/artifacts"
+      ],
+      "sourceCommit": "ff672139389eb802bb1bdf8e88fa0fc85cdb6522",
+      "pid": 9819,
+      "exitCode": 0,
+      "elapsedSeconds": 6.024316417053342
+    },
+    {
+      "gate": "distribution-parity",
+      "argv": [
+        "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/bin/python3.11",
+        "/private/tmp/arras-065-release-20261029/python311-support-correction/capture-distribution-error.py",
+        "--output",
+        "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/distribution-verification.json",
+        "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/artifacts/arras-0.6.5-py3-none-any.whl",
+        "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/artifacts/arras-0.6.5.tar.gz"
+      ],
+      "sourceCommit": "ff672139389eb802bb1bdf8e88fa0fc85cdb6522",
+      "pid": 9910,
+      "exitCode": 0,
+      "elapsedSeconds": 30.971701374975964
+    },
+    {
+      "gate": "fresh-doctor",
+      "argv": [
+        "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/bin/python3.11",
+        "tools/verify_doctor.py",
+        "--wheel",
+        "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/artifacts/arras-0.6.5-py3-none-any.whl",
+        "--output-json",
+        "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/doctor-installed.json"
+      ],
+      "sourceCommit": "ff672139389eb802bb1bdf8e88fa0fc85cdb6522",
+      "pid": 10414,
+      "exitCode": 0,
+      "elapsedSeconds": 16.860695459181443
+    },
+    {
+      "gate": "fresh-extension",
+      "argv": [
+        "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/bin/python3.11",
+        "tools/verify_extension_host.py",
+        "--wheel",
+        "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/artifacts/arras-0.6.5-py3-none-any.whl",
+        "--output-json",
+        "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/extension-host.json",
+        "--fresh-dependencies"
+      ],
+      "sourceCommit": "ff672139389eb802bb1bdf8e88fa0fc85cdb6522",
+      "pid": 10745,
+      "exitCode": 0,
+      "elapsedSeconds": 19.18175012501888
+    },
+    {
+      "gate": "fresh-umf",
+      "argv": [
+        "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/bin/python3.11",
+        "tools/verify_umf_admission.py",
+        "--wheel",
+        "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/artifacts/arras-0.6.5-py3-none-any.whl",
+        "--python",
+        "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/bin/python3.11",
+        "--output-json",
+        "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/umf-admission.json",
+        "--qualification-phase",
+        "release-build"
+      ],
+      "sourceCommit": "ff672139389eb802bb1bdf8e88fa0fc85cdb6522",
+      "pid": 11149,
+      "exitCode": 0,
+      "elapsedSeconds": 37.41955204214901
+    },
+    {
+      "gate": "installed-two",
+      "argv": [
+        "/private/tmp/arras-ashlar-integration-20261029/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-rP",
+        "tests/test_cli.py::test_the_installed_wheel_provides_the_command",
+        "tests/test_devhost_installed.py::test_the_installed_wheel_serves_its_own_page",
+        "--junitxml=/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/installed-two.xml"
+      ],
+      "sourceCommit": "ff672139389eb802bb1bdf8e88fa0fc85cdb6522",
+      "pid": 11728,
+      "exitCode": 0,
+      "elapsedSeconds": 7.607802500016987
+    }
+  ],
+  "cleanup": [
+    {
+      "pid": 9784,
+      "pgid": 9784,
+      "createdNewSession": true,
+      "signals": [],
+      "directChildReaped": true,
+      "groupAbsent": true
+    },
+    {
+      "pid": 9819,
+      "pgid": 9819,
+      "createdNewSession": true,
+      "signals": [],
+      "directChildReaped": true,
+      "groupAbsent": true
+    },
+    {
+      "pid": 9910,
+      "pgid": 9910,
+      "createdNewSession": true,
+      "signals": [],
+      "directChildReaped": true,
+      "groupAbsent": true
+    },
+    {
+      "pid": 10414,
+      "pgid": 10414,
+      "createdNewSession": true,
+      "signals": [],
+      "directChildReaped": true,
+      "groupAbsent": true
+    },
+    {
+      "pid": 10745,
+      "pgid": 10745,
+      "createdNewSession": true,
+      "signals": [],
+      "directChildReaped": true,
+      "groupAbsent": true
+    },
+    {
+      "pid": 11149,
+      "pgid": 11149,
+      "createdNewSession": true,
+      "signals": [],
+      "directChildReaped": true,
+      "groupAbsent": true
+    },
+    {
+      "pid": 11728,
+      "pgid": 11728,
+      "createdNewSession": true,
+      "signals": [],
+      "directChildReaped": true,
+      "groupAbsent": true
+    }
+  ],
+  "originalInputPinsSha256": "3bb80cef1aeee2087c266504fdacc223a7805e8a9771eb93b5b8d68423f354a8",
+  "supportedPython": "3.11",
+  "driverRuntime": "3.11.17 (main, Oct  3 2026, 00:54:14) [Clang 22.1.3 ]",
+  "passedOriginalAssemblyPinsSha256": "37ac06d871bb3f5d643957248060658ebea7cfdbde59071e3be314fa2fe5ed8c",
+  "failed013InputPinsSha256": "d71e7c97754b8eb2ea3e541ee7d48a89b1145ea1818955c1e6db7fc071bb836d",
+  "failed014InputPinsSha256": "24050eb97db6151926bb405735a1d6ce4850f3c1e22415e266e1af1be149ae20",
+  "failed015InputPinsSha256": "8481c832839863f0f8f0e378fb76d608f528eda432654c160250a6fe5ef352e8",
+  "passed016InputPinsSha256": "114961401171eb0398f5d977995f396aede8ac5e4249318c09fa928223c2d4b0",
+  "physicalPythonSha256": "5ebf120b62e8d02ab22485ca328da471db27fd278069df3de01c957cc02d9cd6",
+  "driverBaseExecutable": "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/bin/python3.11",
+  "driverBasePrefix": "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none",
+  "distributionFailureCaptureSha256": "7780801f3f188f8ce14e6a2ed368315b211918b5939b84e46333a51a3c20c622",
+  "priorAttempt": "All012-015failures and actual016intermediate passes retained verbatim; newcatalog owningcontrols/build/descriptorcorrespondence and final-artifact checks are explicit.",
+  "remainingFinalization": "Final measured digest guard/source commit and final sdist/source parity, owner review/merge, public bytes/consumers/publication remain separate."
+}

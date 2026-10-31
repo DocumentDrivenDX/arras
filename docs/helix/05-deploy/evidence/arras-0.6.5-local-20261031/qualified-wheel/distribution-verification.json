@@ -1,0 +1,62 @@
+{
+  "consumers": {
+    "sdist_rebuilt_wheel": {
+      "environment": "sdist-rebuilt-wheel",
+      "graphql_core": "3.3.1",
+      "graphql_core_inventory_sha256": "7eefecbd6010f111f0e2d3c61826528836d42837dbd2e2727f400e7db8fec2a6",
+      "in_memory_operation": true,
+      "package": "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/temporary/arras-dist-verify-637wgu8f/consumer-sdist-rebuilt-wheel/lib/python3.11/site-packages/arras",
+      "packed_npm_consumer": "Packed consumer passed through package exports",
+      "platform": "darwin",
+      "python": "3.11.17",
+      "schema_callback": true
+    },
+    "source_wheel": {
+      "environment": "source-wheel",
+      "graphql_core": "3.3.1",
+      "graphql_core_inventory_sha256": "2466009e091aeca7125189581acbfffec116ee561be04a5464f2b17fea06c240",
+      "in_memory_operation": true,
+      "package": "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/temporary/arras-dist-verify-637wgu8f/consumer-source-wheel/lib/python3.11/site-packages/arras",
+      "packed_npm_consumer": "Packed consumer passed through package exports",
+      "platform": "darwin",
+      "python": "3.11.17",
+      "schema_callback": true
+    }
+  },
+  "declared_python": [
+    "3.11"
+  ],
+  "javascript_consumer_cohort": "workspace-linked UI dependencies; package itself extracted from each verified wheel",
+  "not_qualified_without_observation": [
+    "Linux",
+    "Python 3.12",
+    "Python 3.13",
+    "registry installation",
+    "managed Arras host",
+    "official UMF runtime"
+  ],
+  "npm": {
+    "exact_between_wheels": true,
+    "file": "documentdrivendx-arras-ui-0.6.5.tgz",
+    "sha256": "26abe759e7bb918bf30c5144a34cff8deb7ecb4dd2ef531d41ec3ceab2155e0f"
+  },
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "python_interpreter": "3.11.17",
+  "qualification": [
+    "artifact-inspected",
+    "installed-consumer-tested"
+  ],
+  "qualified_python": "3.11.17",
+  "sdist": {
+    "file": "arras-0.6.5.tar.gz",
+    "sha256": "25e4c2ae1a4956385242cdb57762d16ebe495a779ace7298f5d9e7c3746f33a5"
+  },
+  "sdist_rebuilt_wheel": {
+    "file": "arras-0.6.5-py3-none-any.whl",
+    "sha256": "beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b"
+  },
+  "source_wheel": {
+    "file": "arras-0.6.5-py3-none-any.whl",
+    "sha256": "beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b"
+  }
+}

@@ -199,7 +199,7 @@ def test_registry_publishing_is_separate_oidc_only_after_public_release_gates() 
 def test_release_rebuild_must_match_the_selected_qualification_wheel_before_upload() -> None:
     build = job_text(RELEASE.read_text(), "build")
     selected = (
-        "ebeb45b0b3e6a2fff5fc18094f355fd451a996171d76e2c48286c5b579170c1f"
+        "beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b"
         "  dist/arras-0.6.5-py3-none-any.whl"
     )
     assert f"echo '{selected}' | sha256sum --check --strict -" in build
