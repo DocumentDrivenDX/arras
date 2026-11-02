@@ -427,13 +427,15 @@ def _check_distribution_file(path: str, value: object, problems: list[str]) -> N
         problems.append(f"{path}: distribution: a table")
         return
     table = cast("dict[str, object]", value)
-    allowed = {"mcp_server_name", "mcp_tool_prefix", "brand", "telemetry"}
+    allowed = {"mcp_server_name", "mcp_tool_prefix", "brand", "telemetry", "theme_manifest"}
     for field_name, field_value in table.items():
         if field_name not in allowed:
             problems.append(f"{path}: distribution.{field_name}: unknown or launcher-only field")
-        elif field_name in {"mcp_server_name", "mcp_tool_prefix"} and not isinstance(
-            field_value, str
-        ):
+        elif field_name in {
+            "mcp_server_name",
+            "mcp_tool_prefix",
+            "theme_manifest",
+        } and not isinstance(field_value, str):
             problems.append(f"{path}: distribution.{field_name}: a string")
         elif field_name == "brand":
             names = {"name", "title", "wordmark", "tagline", "logo"}
@@ -475,7 +477,7 @@ def validate_distribution(
             except (TypeError, ValueError):
                 problems.append(f"distribution.brand.{field_name}: invalid value")
     values: dict[str, object] = {"brand": brand}
-    for field_name in ("mcp_server_name", "mcp_tool_prefix"):
+    for field_name in ("mcp_server_name", "mcp_tool_prefix", "theme_manifest"):
         if field_name not in table:
             continue
         try:

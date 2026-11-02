@@ -5,6 +5,10 @@ runs without one."""
 
 from __future__ import annotations
 
+import asyncio
+import hashlib
+import importlib.metadata
+import json
 import sys
 import types
 from pathlib import Path
@@ -13,6 +17,7 @@ from typing import Any
 import pytest
 
 from arras.devhost import DevHost, main
+from arras.sandbox import Sandbox
 
 
 @pytest.fixture
@@ -124,6 +129,15 @@ def test_help_and_invalid_arguments_skip_the_telemetry_factory() -> None:
     with pytest.raises(SystemExit) as invalid_result:
         main(["--port", "invalid"], telemetry_factory=factory)
     assert invalid_result.value.code == 2 and called == []
+
+
+def test_help_uses_the_effective_programmatic_operator_group_default(capsys) -> None:
+    with pytest.raises(SystemExit) as help_result:
+        main(["--help"], operator_groups=("maintainers", "reviewers"))
+    assert help_result.value.code == 0
+    help_text = " ".join(capsys.readouterr().out.split())
+    assert "(maintainers, reviewers)" in help_text
+    assert "(admins, builders)" not in help_text
 
 
 def test_invalid_truss_mode_skips_telemetry_factory() -> None:
@@ -257,3 +271,164 @@ def test_main_uses_printable_brand_for_help_and_startup_banner(
     ]
     [run] = fake_uvicorn
     assert run["app"].distribution is selected
+
+
+def _theme_manifest(tmp_path: Path, name: str, css: str) -> Path:
+    from arras.ui.assets import build_theme_manifest
+
+    source = tmp_path / f"{name}.css"
+    source.write_text(css, encoding="utf-8")
+    return build_theme_manifest(
+        tmp_path / name,
+        stylesheet=source,
+        package_name=name,
+        ui_versions=(importlib.metadata.version("arras"),),
+    )
+
+
+def _devhost_ui(tmp_path: Path) -> Path:
+    from arras.ui import STATIC
+
+    if (STATIC / "asset-manifest.json").is_file():
+        return STATIC
+    root = tmp_path / "built-ui"
+    root.mkdir()
+    page = b'<!doctype html><html lang="en"><head><title>Arras</title></head></html>'
+    (root / "embed.html").write_bytes(page)
+    (root / "asset-manifest.json").write_text(
+        json.dumps(
+            {
+                "format": "arras.ui.assets",
+                "version": 1,
+                "kind": "page",
+                "package": {
+                    "name": "@documentdrivendx/arras-ui",
+                    "version": importlib.metadata.version("arras"),
+                },
+                "contracts": {"console": 2, "operate": 2, "schema": 1, "browser": 1},
+                "schema_browser": {
+                    "name": "@documentdrivendx/umf-schema-browser",
+                    "version": "test",
+                    "integrity": "sha512-test",
+                },
+                "entry": {"html": "embed.html"},
+                "files": {
+                    "embed.html": {
+                        "sha256": hashlib.sha256(page).hexdigest(),
+                        "size": len(page),
+                        "mime": "text/html",
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    return root
+
+
+def _asgi_get(app: Any, path: str) -> tuple[int, dict[bytes, bytes], bytes]:
+    async def run() -> tuple[int, dict[bytes, bytes], bytes]:
+        messages: list[dict[str, Any]] = []
+
+        async def receive() -> dict[str, Any]:
+            return {"type": "http.request", "body": b"", "more_body": False}
+
+        async def send(message: dict[str, Any]) -> None:
+            messages.append(message)
+
+        raw_path = path.encode("ascii")
+        await app(
+            {
+                "type": "http",
+                "asgi": {"version": "3.0", "spec_version": "2.3"},
+                "http_version": "1.1",
+                "method": "GET",
+                "scheme": "http",
+                "path": path,
+                "raw_path": raw_path,
+                "query_string": b"",
+                "headers": [(b"host", b"127.0.0.1:8000")],
+                "server": ("127.0.0.1", 8000),
+                "client": ("127.0.0.1", 50000),
+            },
+            receive,
+            send,
+        )
+        start = next(item for item in messages if item["type"] == "http.response.start")
+        headers = dict(start["headers"])
+        body = b"".join(
+            item.get("body", b"") for item in messages if item["type"] == "http.response.body"
+        )
+        return start["status"], headers, body
+
+    return asyncio.run(run())
+
+
+def test_cli_theme_manifest_overrides_distribution_and_themes_built_ui(
+    fake_uvicorn, tmp_path: Path
+) -> None:
+    from arras.devhost import DevHost
+    from arras.distribution import Brand, DistributionConfig
+
+    default_manifest = _theme_manifest(tmp_path, "default-theme", ":root { --surface: pink; }")
+    selected_manifest = _theme_manifest(tmp_path, "cli-theme", ":root { --surface: teal; }")
+    ui_dir = _devhost_ui(tmp_path)
+    selected = DistributionConfig(
+        brand=Brand(name="Example Host"), theme_manifest=str(default_manifest)
+    )
+    main(
+        ["--no-demo", "--ui", str(ui_dir), "--theme-manifest", str(selected_manifest)],
+        distribution=selected,
+    )
+    [run] = fake_uvicorn
+    app = run["app"]
+    assert app.theme_manifest == selected_manifest
+
+    status, headers, page = _asgi_get(app, "/")
+    assert status == 200
+    assert b"<title>Example Host</title>" in page
+    assert b"/theme-assets/" + app._themed_ui.theme_manifest.manifest_sha256.encode() in page
+    assert b"cli-theme.css" in page and b"default-theme.css" not in page
+    assert b"style-src 'self'" in headers[b"content-security-policy"]
+
+    digest = app._themed_ui.theme_manifest.manifest_sha256
+    status, headers, body = _asgi_get(app, f"/theme-assets/{digest}/cli-theme.css")
+    assert status == 200 and body == b":root { --surface: teal; }"
+    assert headers[b"cache-control"] == b"public, max-age=31536000, immutable"
+    assert b"style-src 'self'" in headers[b"content-security-policy"]
+
+    direct_manifest = _theme_manifest(tmp_path, "direct-theme", ":root { --surface: navy; }")
+    direct = DevHost(
+        Sandbox().seed(),
+        port=8000,
+        ui_dir=ui_dir,
+        distribution=selected,
+        theme_manifest=direct_manifest,
+    )
+    assert direct.theme_manifest == direct_manifest
+    assert b"direct-theme.css" in direct.static("/")[2]
+
+
+def test_theme_manifest_refuses_missing_and_changed_manifests_with_csp(tmp_path: Path) -> None:
+    from arras.devhost import DevHost
+    from arras.distribution import DistributionConfig
+
+    missing = tmp_path / "missing.json"
+    with pytest.raises(ValueError, match="invalid asset manifest"):
+        DevHost(
+            Sandbox().seed(),
+            port=8000,
+            distribution=DistributionConfig(theme_manifest=str(missing)),
+        )
+
+    manifest = _theme_manifest(tmp_path, "mutable-theme", ":root { color: green; }")
+    app = DevHost(
+        Sandbox().seed(),
+        port=8000,
+        distribution=DistributionConfig(theme_manifest=str(manifest)),
+    )
+    digest = app._themed_ui.theme_manifest.manifest_sha256
+    manifest.write_text("not valid JSON", encoding="utf-8")
+    status, headers, body = _asgi_get(app, f"/theme-assets/{digest}/mutable-theme.css")
+    assert status == 503 and body == b"theme manifest invalid"
+    assert b"style-src 'self'" in headers[b"content-security-policy"]

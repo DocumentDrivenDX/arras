@@ -61,6 +61,7 @@ from arras.ui import (  # noqa: F401  (the policy its page is measured under)
     branded,
     not_built_page,
 )
+from arras.ui import create_app as create_ui_app
 
 USER_HEADER = "x-arras-user"
 ROLE_HEADER = "x-arras-role"  # with a made-up name: the role it holds (`arras.sandbox.ROLES`)
@@ -194,9 +195,17 @@ class DevHost:
         distribution: DistributionConfig | None = None,
         telemetry_context: telemetry.TelemetryContext | None = None,
         operator_groups: Sequence[str] = OPERATOR_GROUPS,
+        theme_manifest: Path | None = None,
     ) -> None:
         self.operator_groups = checked_operator_groups(operator_groups)
         self.distribution = distribution or DistributionConfig()
+        self.theme_manifest = (
+            theme_manifest
+            if theme_manifest is not None
+            else Path(self.distribution.theme_manifest)
+            if self.distribution.theme_manifest is not None
+            else None
+        )
         self.telemetry_context = telemetry._context_for(telemetry_context, distribution)
         self.box: Any = serialized(sandbox)
         # Only the default falls back: a directory named with `--ui` is served as given.
@@ -229,6 +238,20 @@ class DevHost:
             authorize_operator=operate.operators_in_groups(*self.operator_groups),
             **kw,
         )
+        self._themed_ui: Any | None = None
+        if self.theme_manifest is not None:
+            self._themed_ui = create_ui_app(
+                sandbox.arras,
+                principal_for_request=self.who,
+                authorize_operator=operate.operators_in_groups(*self.operator_groups),
+                base_path="",
+                public_origin=origins[0],
+                allowed_origins=(origins[1], *dev),
+                static_dir=self.ui,
+                theme_manifest=self.theme_manifest,
+                brand=self.distribution.brand,
+                telemetry_context=self.telemetry_context,
+            )
 
     def who(self, request: Request) -> Principal | None:
         """A sandbox person by name, or, with a role, a made-up one (`Sandbox.person`)."""
@@ -276,6 +299,8 @@ class DevHost:
             }
             body = json.dumps(people).encode()
             return await self._send(send, 200, "application/json", body)
+        if self._themed_ui is not None:
+            return await self._themed_ui(scope, receive, send)
         status, ctype, body = self.static(path)
         await self._send(send, status, ctype, body, PAGE_HEADERS)
 
@@ -356,6 +381,11 @@ class DevHost:
     def static(self, path: str, *, fallback: bool = True) -> tuple[int, str, bytes]:
         """A file of the built UI, or its index for a route of the app; never a path outside it.
         Without `fallback` a missing file is a 404, not the app's page."""
+        if self._themed_ui is not None:
+            if path.startswith("/theme-assets/"):
+                status, ctype, body, _cache = self._themed_ui.theme_asset(path)
+                return status, ctype, body
+            return self._themed_ui.static(path)
         index = self.ui / "index.html"
         if not index.is_file():
             index = self.ui / PAGE  # the wheel's build names its page `embed.html`
@@ -623,7 +653,11 @@ def _display_brand_name(distribution: DistributionConfig | None) -> str:
     )
 
 
-def _parser(distribution: DistributionConfig | None = None) -> argparse.ArgumentParser:
+def _parser(
+    distribution: DistributionConfig | None = None,
+    *,
+    operator_groups: Sequence[str] = OPERATOR_GROUPS,
+) -> argparse.ArgumentParser:
     selected = distribution or DistributionConfig()
     url_variable = truss_url_variables(selected)[0]
     credentials_variable = truss_credentials_variables(selected)[0]
@@ -684,7 +718,13 @@ def _parser(distribution: DistributionConfig | None = None) -> argparse.Argument
         dest="operator_groups",
         metavar="NAME",
         help="a group the operator surface is offered to; repeatable, and replaces the default "
-        f"({', '.join(OPERATOR_GROUPS)}). The sandbox's operators belong to each group named",
+        f"({', '.join(operator_groups)}). The sandbox's operators belong to each group named",
+    )
+    p.add_argument(
+        "--theme-manifest",
+        type=Path,
+        metavar="PATH",
+        help="theme manifest to apply to the built UI (overrides the distribution default)",
     )
     p.add_argument(
         "--records",
@@ -711,16 +751,25 @@ def main(
 ) -> None:
     """The development host's command line. `operator_groups` is the distribution's default for the
     groups the operator surface is offered to (`--operator-group` overrides it)."""
-    p = _parser(distribution)
+    try:
+        default_operator_groups = checked_operator_groups(
+            operator_groups if operator_groups is not None else OPERATOR_GROUPS
+        )
+        default_groups_error: str | None = None
+    except ValueError as error:
+        # A command-line --operator-group replaces this default, so defer refusal until after
+        # argparse has had the chance to parse an override or print help.
+        default_operator_groups = OPERATOR_GROUPS
+        default_groups_error = str(error)
+    p = _parser(distribution, operator_groups=default_operator_groups)
     args = p.parse_args(argv)
     try:
-        args.operator_groups = checked_operator_groups(
-            args.operator_groups
-            if args.operator_groups is not None
-            else operator_groups
-            if operator_groups is not None
-            else OPERATOR_GROUPS
-        )
+        if args.operator_groups is None:
+            if default_groups_error is not None:
+                raise ValueError(default_groups_error)
+            args.operator_groups = default_operator_groups
+        else:
+            args.operator_groups = checked_operator_groups(args.operator_groups)
     except ValueError as e:
         p.error(str(e))
     needs_module = [("--also", args.also), ("--seed", args.seed), ("--records", args.records)]
@@ -816,6 +865,7 @@ def _run_host(
                 distribution=distribution,
                 telemetry_context=context,
                 operator_groups=args.operator_groups,
+                theme_manifest=args.theme_manifest,
             )
             print(
                 f"{_display_brand_name(distribution)} development host at http://127.0.0.1:{args.port}",

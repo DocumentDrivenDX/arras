@@ -55,19 +55,26 @@ def _is_telemetry_names(value: object) -> bool:
 
 @dataclass(frozen=True)
 class DistributionConfig:
-    """Distribution-specific presentation and process-name settings; performs no host I/O."""
+    """Distribution-specific presentation, UI and process-name settings; performs no host I/O."""
 
     brand: Brand = field(default_factory=Brand)
     mcp_server_name: str = "arras"
     mcp_tool_prefix: str = ""
     env_prefix: str = "ARRAS"
     telemetry: TelemetryNames = TelemetryNames()
+    theme_manifest: str | None = None
 
     def __post_init__(self) -> None:
         if not _is_brand(self.brand):
             raise ValueError("brand: a Brand value")
         if not _is_telemetry_names(self.telemetry):
             raise ValueError("telemetry: a TelemetryNames value")
+        if self.theme_manifest is not None and (
+            not _is_text(self.theme_manifest)
+            or not self.theme_manifest.strip()
+            or "\x00" in self.theme_manifest
+        ):
+            raise ValueError("theme_manifest: a nonempty path without NUL")
         if (
             not _is_text(self.mcp_server_name)
             or not self.mcp_server_name.strip()

@@ -1040,11 +1040,50 @@ def test_theme_manifest_command_writes_a_bundle_the_loader_accepts(
             str(out),
             "--ui-version",
             "9.9.9",
+            "--appearance",
+            "dark",
         ]
     )
     assert code == 0 and capsys.readouterr().out.strip() == str(out / "theme-manifest.json")
     loaded = load_manifest(out / "theme-manifest.json", kind="theme")
     assert loaded.ui_versions == ("9.9.9",) and set(loaded.files) == {"theme.css", "mark.svg"}
+    assert loaded.entry["appearance"] == "dark"
     with pytest.raises(SystemExit) as refused:
         main(["theme-manifest", "--css", str(tmp_path / "none.css"), "--out", str(out)])
     assert refused.value.code == 2
+
+
+@pytest.mark.parametrize("appearance", ["system", "", 1])
+def test_theme_manifest_builder_refuses_invalid_appearance_before_creating_output(
+    tmp_path: Path, appearance: Any
+) -> None:
+    from arras.ui.assets import build_theme_manifest
+
+    src = _theme_sources(tmp_path / "src")
+    out = tmp_path / "not-created"
+    with pytest.raises(ValueError, match="appearance"):
+        build_theme_manifest(out, stylesheet=src["theme.css"], appearance=appearance)
+    assert not out.exists()
+
+
+def test_theme_manifest_command_refuses_invalid_appearance_without_output(
+    tmp_path: Path,
+) -> None:
+    from arras.ui.__main__ import main
+
+    src = _theme_sources(tmp_path / "src")
+    out = tmp_path / "not-created"
+    with pytest.raises(SystemExit) as refused:
+        main(
+            [
+                "theme-manifest",
+                "--css",
+                str(src["theme.css"]),
+                "--out",
+                str(out),
+                "--appearance",
+                "system",
+            ]
+        )
+    assert refused.value.code == 2
+    assert not out.exists()

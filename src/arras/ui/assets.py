@@ -325,15 +325,22 @@ def build_theme_manifest(  # noqa: PLR0913
     package_name: str = "theme",
     package_version: str = "1",
     ui_versions: Sequence[str] | None = None,
+    appearance: str | None = None,
 ) -> Path:
     """Write a theme bundle into `output` and return the path of its manifest.
 
     The stylesheet, optional favicon and fonts are copied into `output` under their own file
     names, and `theme-manifest.json` records each one's SHA-256, size and MIME type. The manifest
     names `ui_versions` (default: the installed Arras version) as the page versions it supports.
+    A theme providing one appearance of role tokens sets `appearance` to `light` or `dark`; a
+    theme providing both appearances leaves it unset so the host's preference applies.
     The result is read back with `load_manifest(..., kind="theme")` before it is returned, so a
     bundle this function returns is one `create_app(theme_manifest=...)` accepts; anything it
     would refuse raises `ValueError` and leaves no manifest behind."""
+    if appearance is not None and (
+        not isinstance(appearance, str) or appearance not in THEME_APPEARANCES
+    ):
+        raise ValueError('appearance must be "light" or "dark"')
     if ui_versions is None:
         try:
             ui_versions = [importlib.metadata.version("arras")]
@@ -361,6 +368,8 @@ def build_theme_manifest(  # noqa: PLR0913
         entry["fonts"] = [Path(font).name for font in fonts]
     if favicon:
         entry["favicon"] = Path(favicon).name
+    if appearance is not None:
+        entry["appearance"] = appearance
     manifest = {
         "format": "arras.ui.assets",
         "version": 1,
