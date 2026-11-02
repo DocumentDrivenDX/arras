@@ -69,11 +69,10 @@ jobs:
           uv run --no-sync pyright
           mkdir -p artifacts
           uv run --no-sync pytest -q --junitxml=artifacts/source-pytest.xml
-          uv run --no-sync pytest -m truss -q --junitxml=artifacts/truss-pytest.xml
+          ARRAS_REQUIRE_TRUSS=1 uv run --no-sync pytest -m truss -q --junitxml=artifacts/truss-pytest.xml
         env:
           ARRAS_REQUIRE_WEFT: '1'
           ARRAS_REQUIRE_UMF: '1'
-          ARRAS_REQUIRE_TRUSS: '1'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
