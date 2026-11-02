@@ -424,8 +424,11 @@ origin, so `python -m name.x` runs the real module. A module the alias package i
 (`name/__main__.py`, a renamed launcher) is never replaced. `name` also forwards attribute access
 to `arras` (`name.Arras is arras.Arras`). `modules`, when given, closes the set: only the listed
 dotted submodules (`"model"`, `"ui.assets"`) and the packages leading to them import, and any other
-`name.<module>` is `ModuleNotFoundError`. It renames nothing on the wire: contract, vocabulary,
-action and CSS identities remain canonical.
+`name.<module>` is `ModuleNotFoundError`. A package entrypoint is not implicit: listing only
+`"conformance"` does not permit `name.conformance.__main__` or `python -m name.conformance`;
+include `"conformance.__main__"` explicitly when that entrypoint is intended. Real alias-local
+shims retain local-module precedence. It renames nothing on the wire: contract, vocabulary, action
+and CSS identities remain canonical.
 
 `arras.mcp.launch(argv=None, *, distribution=None, telemetry_factory=None) -> None` is the supported
 callable launcher for a thin downstream command. `argv` is a sequence of strings,

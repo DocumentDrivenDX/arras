@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased — embedded host and theme corrections
+## Unreleased — embedded host, themes, and aliases
 
 - Fixes #49: development-host help now shows the effective configured operator
   groups; explicit command-line groups still take precedence.
@@ -8,6 +8,9 @@
   to the stock UI, with `--theme-manifest` overriding configuration.
 - Fixes #51: the theme-manifest builder and CLI accept an optional `light` or
   `dark` appearance declaration; omitted appearance remains undeclared.
+- Fixes #52: local package attributes and shim modules keep precedence when Arras
+  aliases are installed; a closed alias list must explicitly include a package
+  `__main__` entrypoint when `python -m` support is intended.
 
 ## 0.7.0 — bounded UMF memory actions
 
