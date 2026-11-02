@@ -3491,3 +3491,42 @@ cohort selection truthfully and records this rationale. All hash comparisons and
 historical guards remain unchanged. After independent driver review, enable the
 Release workflow and dispatch the supported default-branch route against immutable
 v0.7.0 and exact source f9f04c42, keeping driver and payload identities separate.
+
+
+### Immutable GitHub publication; isolated public-verifier failure
+
+Release 41514683626 passed source/build, Truss, installed Linux native, official
+admission/actions, UI/packed-theme, schema-3 assembly, GitHub publication and the
+installed downstream consumer. The exact tag-produced wheel is b20; carried npm
+SHA-256 is `8f3c5ea2d98ffa8011e5acfe3d9a65cd773cd149481aeb6edcf2d671bb5af9de`,
+and sdist is `c790907c3bdb9600fe25942ceae10dae59307d0574e7cc6440a58261743ef00f`.
+The immutable GitHub release has 18 assets, with 17 checksum entries. SHA256SUMS
+is `7d02b79e1a0fc3fe388d86e9209559495f969d6724cc04075acb98804a827ab8`;
+release-evidence.json is
+`71ca10acf69b36c485588ddbcf838bc4fdb8dd380e862a79c663392ceb6d22d6`.
+
+The original run concluded FAILURE solely at anonymous public-bundle validation:
+`_validate_actions_component` called nonexistent
+`_umf_actions_receipt.strict_json_loads`, raising AttributeError before public
+asset validation. This is not a successful public-download gate or registry
+delivery. Original failure logs/diagnostics remain retained; no asset/tag changes
+or rebuild/reupload are authorized as a way to hide the failure.
+
+The public-assets helper now uses the existing admission module's strict JSON
+parser, as the provenance helper already does, and translates duplicate/nonfinite
+parser refusals into its existing closed AssetError. Action projection, actual
+wheel metadata, SDK cohort, source hashes and aggregate binding checks remain
+unchanged. Parser-dispatch controls exercise valid, duplicate-key and nonfinite
+JSON. A local comparison of two separate copies of the actual published schema-3
+bundle passes all seventeen checksummed assets with the corrected helper; this
+is a local parser regression, not anonymous hosted qualification.
+
+Both normal Release and the supported published-release recovery consumer now
+invoke their separately checked-out and identified default-branch driver's asset
+validator. The immutable tagged payload remains f9f04c42. Recovery must validate
+the failed original manual publication and exact assets, then run fresh public
+checks without altering original provenance. The normal registry publisher still
+requires original Release success; a distinct, narrowly pinned 0.7.0 composite
+origin is needed before registries can consume an original-failure plus successful
+hosted recovery chain. No original-success rewrite or older-artifact substitution
+is permitted. Public registry delivery and independent public installs remain open.

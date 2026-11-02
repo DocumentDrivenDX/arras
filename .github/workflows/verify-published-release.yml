@@ -259,7 +259,7 @@ jobs:
           mkdir -p public-release-assets artifacts
           curl --disable --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --retry 2 --max-time 60 \
             --output public-release-assets/SHA256SUMS "$RELEASE_URL/SHA256SUMS"
-          python .github/scripts/verify_public_release_assets.py plan \
+          python verification-driver/.github/scripts/verify_public_release_assets.py plan \
             --trusted-dir trusted-release-assets \
             --public-dir public-release-assets \
             --expected-version "$EXPECTED_VERSION" \
@@ -272,7 +272,7 @@ jobs:
             curl --disable --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --retry 2 --max-time 60 \
               --output "public-release-assets/$asset" "$RELEASE_URL/$asset"
           done < "$RUNNER_TEMP/public-release-plan.txt"
-          python .github/scripts/verify_public_release_assets.py verify \
+          python verification-driver/.github/scripts/verify_public_release_assets.py verify \
             --trusted-dir trusted-release-assets \
             --public-dir public-release-assets \
             --expected-version "$EXPECTED_VERSION" \

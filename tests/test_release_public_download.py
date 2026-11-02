@@ -188,6 +188,55 @@ def test_action_capability_adds_one_required_public_asset_and_component() -> Non
         checker._validate_components(aggregate, entries, version=VERSION, actions_required=True)
 
 
+@pytest.mark.parametrize(
+    "raw", ['{"status":"passed"}', '{"status":"passed","status":"passed"}', '{"value":NaN}']
+)
+def test_action_component_uses_strict_parser_before_projection(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, raw: str
+) -> None:
+    sys.path.insert(0, str(HELPER.parent))
+    try:
+        spec = importlib.util.spec_from_file_location("action_public_parser_control", HELPER)
+        assert spec is not None and spec.loader is not None
+        checker = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(checker)
+    finally:
+        sys.path.pop(0)
+    path = tmp_path / "umf-actions-installed.json"
+    path.write_text(raw, encoding="utf-8")
+    digest = sha(path.read_bytes())
+    seen: list[object] = []
+
+    def projection(value: object, **kwargs: Any) -> dict[str, Any]:
+        assert kwargs["wheel_path"] == tmp_path / WHEEL
+        seen.append(value)
+        return {}
+
+    monkeypatch.setattr(checker._actions_receipt, "validate_public_projection", projection)
+    kwargs = dict(
+        directory=tmp_path,
+        version=VERSION,
+        wheel=WHEEL,
+        wheel_sha256="a" * 64,
+        entry_sha256=digest,
+        aggregate={
+            "umf_actions": {
+                "filename": path.name,
+                "sha256": digest,
+                "qualification_phase": "release-build",
+                "status": "passed",
+            }
+        },
+    )
+    if raw == '{"status":"passed"}':
+        checker._validate_actions_component(**kwargs)
+        assert seen == [{"status": "passed"}]
+    else:
+        with pytest.raises(checker.AssetError, match="trusted UMF actions receipt is invalid"):
+            checker._validate_actions_component(**kwargs)
+        assert seen == []
+
+
 def test_plan_and_verify_require_exact_trusted_public_bytes(tmp_path: Path) -> None:
     trusted = tmp_path / "trusted"
     public = tmp_path / "public"
@@ -408,7 +457,7 @@ def _run_actual_download(
     )
     curl.chmod(0o755)
     (bin_dir / "python").symlink_to(sys.executable)
-    scripts = tmp_path / ".github/scripts"
+    scripts = tmp_path / "release-driver/.github/scripts"
     scripts.mkdir(parents=True)
     (scripts / HELPER.name).symlink_to(HELPER)
     env = dict(os.environ)

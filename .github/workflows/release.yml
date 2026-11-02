@@ -768,7 +768,7 @@ jobs:
           curl --disable --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --retry 2 --max-time 60 \
             --output "$PUBLIC_RELEASE_ASSETS/SHA256SUMS" "$RELEASE_URL/SHA256SUMS" \
             >> artifacts/public-download.stdout.log 2>> artifacts/public-download.stderr.log
-          python .github/scripts/verify_public_release_assets.py plan \
+          python release-driver/.github/scripts/verify_public_release_assets.py plan \
             --trusted-dir "$TRUSTED_RELEASE_ASSETS" \
             --public-dir "$PUBLIC_RELEASE_ASSETS" \
             --expected-version "$EXPECTED_VERSION" \
@@ -783,7 +783,7 @@ jobs:
               --output "$PUBLIC_RELEASE_ASSETS/$asset" "$RELEASE_URL/$asset" \
               >> artifacts/public-download.stdout.log 2>> artifacts/public-download.stderr.log
           done < "$RUNNER_TEMP/public-release-plan.txt"
-          python .github/scripts/verify_public_release_assets.py verify \
+          python release-driver/.github/scripts/verify_public_release_assets.py verify \
             --trusted-dir "$TRUSTED_RELEASE_ASSETS" \
             --public-dir "$PUBLIC_RELEASE_ASSETS" \
             --expected-version "$EXPECTED_VERSION" \
