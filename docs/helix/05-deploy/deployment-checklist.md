@@ -218,6 +218,32 @@ alone may be deferred under the human's instruction, with no claim of registry
 delivery. Final support limits and per-seam changes belong in release notes only
 after the actual cohort is known.
 
+## Exact local 0.6.5 registry backfill
+
+The immutable local `v0.6.5` publication has no original hosted Release run.
+Its eight assets and `arras.local-release-proof.v1` retain their actual origin;
+they must never be substituted for a hosted producer's seventeen-asset bundle.
+The default-branch `Publish registries` dispatch accepts `origin=local-0.6.5`
+only with the exact tag, source, annotated object, checksum and wheel pins,
+`target=npm` and no publication run ID. The separate qualification workflow
+validates the live immutable release and downloads every asset anonymously.
+
+| Required gate | Backfill evidence |
+| --- | --- |
+| Source and Truss | Pinned source lint, types and full required Weft/UMF tests; real Truss tests; retained JUnit results. No replacement distributions are produced. |
+| Installed native | Complete Linux x86_64 native verifier and cohort binder on the exact public wheel, CPython 3.11. |
+| Installed UMF | Exact public wheel, 139 reference and 139 fresh-empty Registry comparisons, fixed controls, zero skips and cleanup, checked by the existing full receipt validator. |
+| UI | Source lint/type/unit/integration and nonvisual browser projects, exact npm packed-browser checks and exact-wheel prebuilt/host-build theme routes. Linux does not claim macOS visual execution. |
+| Public consumers | Anonymous archive hashes, complete distribution/sdist payload comparison, installed doctor, fresh-dependency extension, and isolated public-wheel downstream consumer on Python 3.11. Duplicate executions on identical public bytes are unnecessary. |
+| Retained evidence | Original macOS visual/native/managed receipts keep their own artifact identities and correspondence limits in the pinned local proof and qualification-input archive. Fresh Linux qualification does not relabel those observations. |
+| Publication | Every mandatory current qualification job must succeed before the separate hosted-local-origin receipt and verified input artifact exist. Existing npm OIDC trust, collision refusal, exact public-byte verification and fresh registry install remain required. |
+
+Record the new driver, run and attempt separately from the local publication;
+never synthesize original Release provenance. Recheck remote tag and immutable
+asset inventory immediately before npm upload. Preserve the original archives,
+local proof and failed attempts. Public registry acceptance is recorded only
+after registry-served bytes and the clean install pass. PyPI is not republished.
+
 ## Recovering an unpublished tag
 
 An orchestration-only failure may use the reviewed default-branch release driver
