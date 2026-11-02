@@ -39,9 +39,19 @@ SDK artifact and verifier source. Historical schema-2 releases retain their
 17-asset layout, original-source digest validation and closed dependency cohorts.
 The frozen 0.6.5 artifact guard and completed backfill remain unchanged.
 
-Qualification and delivery status is recorded in the
+[0.7.0 is published on GitHub](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.7.0),
+[PyPI](https://pypi.org/project/arras/0.7.0/) and
+[npm](https://www.npmjs.com/package/@documentdrivendx/arras-ui/v/0.7.0).
+The exact b20 wheel, c790 sdist and 8f3 npm archive passed the required source,
+Linux/Mac installed, hosted public and registry checks. Independent public
+verification passed all 323 npm files and 33 exports, and fresh Mac Python 3.11
+extras with exact core/Truss/Weft hashes, pip check, doctor and UMF smoke.
+The original Release public-codec failure and first npm HTTPError are preserved;
+separate hosted public recovery succeeded, and only the failed npm job was rerun,
+matching existing bytes and skipping upload. See the
+[delivery evidence and scope limits](evidence/arras070-20261102/README.md) and
 [integration plan](../04-build/arras-integration-plan-20261022.md).
-Candidate and historical proofs do not establish public 0.7.0 delivery.
+Managed 0.7.0 acceptance remains not run/unqualified.
 
 ## 0.6.5 downstream integration
 

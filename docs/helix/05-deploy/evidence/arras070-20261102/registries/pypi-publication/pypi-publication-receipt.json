@@ -1,0 +1,17 @@
+{
+  "files": {
+    "arras-0.7.0-py3-none-any.whl": "b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6",
+    "arras-0.7.0.tar.gz": "c790907c3bdb9600fe25942ceae10dae59307d0574e7cc6440a58261743ef00f"
+  },
+  "fresh_install_smoke": "passed",
+  "install_scope": "plain-index-base",
+  "publisher_workflow_sha": "5b4e1e54a2d53b6d92b98952a6ca0173e5f719de",
+  "registry": "pypi",
+  "registry_bytes_verified": true,
+  "schema_version": 1,
+  "source_sha": "f9f04c42ae0c989d34907e00a63ca95c3cb2fcdf",
+  "status": "passed",
+  "tag": "v0.7.0",
+  "version": "0.7.0",
+  "wheel_sha256": "b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6"
+}

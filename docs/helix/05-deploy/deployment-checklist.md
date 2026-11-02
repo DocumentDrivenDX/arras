@@ -115,6 +115,33 @@ and identity requirements and retain a newly exact-wheel-bound full twelve-case
 campaign with independently observed cleanup/custody. This scope determination
 is not a waiver of any applicable current gate.
 
+### 0.7.0 delivered — 2026-11-02
+
+- [x] Original PR 10 history is preserved by normal merge f9f04c42; full CI
+  41510837413 qualified exact b20 on both named SDK platforms and native Mac.
+- [x] Exact-tag build, Truss, native Linux, admission/actions, packed UI,
+  schema-3 assembly and installed downstream passed. GitHub has 18 immutable
+  assets with 17 checksum entries. Original Release 41514683626 remains failed
+  solely at its later public-codec step; it is not relabelled successful.
+- [x] Hosted public recovery 41520267978 passed actual original provenance,
+  fresh consumer and complete anonymous public SDK/UI checks. An independent
+  original/public asset comparison also passed every payload and strict codec.
+- [x] Explicit hosted composite admission validated those exact original-failure
+  and supplemental-success inputs before registry delivery. Publisher
+  41523777966 attempt 2 passed; PyPI base and both Linux/Mac extras passed.
+  The first npm job accepted OIDC upload then reported generic HTTPError;
+  only that failed job was rerun, matched existing bytes and skipped upload.
+- [x] Independent public npm installation verified all 323 files, 33 root
+  exports, archive/integrity equality and latest=0.7.0. Independent public Mac
+  Python 3.11.17 extras resolved 18 public-origin archives and verified exact core 0.10.5/Truss/Weft
+  pins, no direct URLs, isolated empty cache/config, pip check, doctor and UMF.
+
+[Safe delivery evidence](evidence/arras070-20261102/README.md) retains the original
+failures, hosted/independent receipts and actual interpreter limits. No new
+managed or exhaustive process-group-cleanup claim is made. Final superseded-ref
+and disposable-clone cleanup follows evidence merge; preserve independent
+verification folders, tags, published assets and shared caches.
+
 ## PR 9 / 0.6.1 execution
 
 - [x] Historical candidate `c31b56e5...` passed the complete fresh-installed

@@ -1,0 +1,125 @@
+{
+  "attempts": {
+    "preparation_failures": "Local-only runtime/cache/shim setup diagnostics preceded public installation; failed shim-copy venv retained and recorded in preparation.json; resolved interpreter produced fresh valid venv. No public installation failure or retry.",
+    "public_extras_install": {
+      "attempts": 1,
+      "exit_code": 0
+    },
+    "public_extras_verifier": {
+      "attempts": 1,
+      "exit_code": 0
+    }
+  },
+  "checked_at": "2026-11-02T21:10:00.287390+00:00",
+  "critical_selected_distributions": {
+    "arras": {
+      "filename": "arras-0.7.0-py3-none-any.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6",
+      "version": "0.7.0"
+    },
+    "truss-toolkit": {
+      "filename": "truss_toolkit-0.0.50-py3-none-any.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00",
+      "version": "0.0.50"
+    },
+    "umf-core": {
+      "filename": "umf_core-0.10.5-cp311-abi3-macosx_11_0_arm64.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "9213ff4b87649f551abcfdff40cdb6b0d75d619260988fa8ea4fe26cac7f6788",
+      "version": "0.10.5"
+    },
+    "weft-sql": {
+      "filename": "weft_sql-0.4.51-cp39-abi3-macosx_11_0_arm64.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "e60e552f02c670b43a43111b08d26d6b415aaa9b9de42f241c37ad1d9fdd2487",
+      "version": "0.4.51"
+    }
+  },
+  "files_sha256": {
+    "pip-check.stderr.log": "8ee2af54fe7398543d85a5770559025bdcfa3d4140e9f56c291eab21a5e57ddd",
+    "pip-check.stdout.log": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09",
+    "pip-install-report.json": "b62ebe5a95a40a205937c9efab14fd4054d8e8e41836ae486c365b5c18509ada",
+    "pip-install.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pip-install.stdout.log": "c70980728c896ad81a016fc5ce42060879e20935314c4e964bbe53cebc7dab49",
+    "preparation.json": "92a61a2a57a7ed604e1e871cc965a6af0fced49833f5b55d51136a49da1c4a79",
+    "public-archive-verification.json": "3c1cbe227484c0f435b0b9390f0fd7e28faa87eb73facdd33623ef13c41df0ee",
+    "pypi-extras-qualification.json": "e740ef57e1724db5f4a14604e9a7eb0b8f44e7ae14ea83eda310cf4628023f92",
+    "pypi-metadata.json": "eb67709880a3870f57c1af56308abae5e9080497bf9e85e541194029c57f47f3",
+    "verifier.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "verifier.stdout.log": "b7f9e5a01576f8a89ae1814e6426cc6fda13afd8ee1ae4ebf6e851eeb79bde1c"
+  },
+  "install": {
+    "ambient_index_and_source_path_variables_unset": true,
+    "arras_import": "/private/tmp/arras070-independent-20261102/public-pypi/venv-public/lib/python3.11/site-packages/arras/__init__.py",
+    "effective_config_entries": 0,
+    "empty_cache_entries_after": 0,
+    "empty_cache_entries_before": 0,
+    "fresh_venv_precheck": "passed; only bootstrap pip and setuptools",
+    "index_url": "https://pypi.org/simple",
+    "installed_direct_url_references": 0,
+    "installed_distribution_count": 20,
+    "no_cache": true,
+    "pip_config_file": "/dev/null",
+    "pip_isolated": true,
+    "selected_public_archive_count": 18,
+    "selector": "arras[truss,umf]==0.7.0"
+  },
+  "pip_check": "passed",
+  "public_arras_archives": [
+    {
+      "bytes": 5204806,
+      "filename": "arras-0.7.0-py3-none-any.whl",
+      "matches_qualified_github_sha256": true,
+      "sha256": "b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6",
+      "url": "https://files.pythonhosted.org/packages/6f/ce/77770d2502c59fdfd2df3db929e8ecb068d39cf8ffc38929eef713fb72c8/arras-0.7.0-py3-none-any.whl"
+    },
+    {
+      "bytes": 12328339,
+      "filename": "arras-0.7.0.tar.gz",
+      "matches_qualified_github_sha256": true,
+      "sha256": "c790907c3bdb9600fe25942ceae10dae59307d0574e7cc6440a58261743ef00f",
+      "url": "https://files.pythonhosted.org/packages/46/80/ee7c0b26074067ecd8e3d5d42612cf07df2bc2973107c9c735e31561fe07/arras-0.7.0.tar.gz"
+    }
+  ],
+  "publication_trigger": {
+    "pypi_publish_success_reported_by_parent": true,
+    "run_id": "41523777966"
+  },
+  "runtime": {
+    "implementation": "CPython",
+    "interpreter": "/private/tmp/arras070-independent-20261102/public-pypi/venv-public/bin/python",
+    "isolated": true,
+    "machine": "arm64",
+    "python": "3.11.17",
+    "system": "Darwin",
+    "user_site_enabled": false
+  },
+  "runtime_temp_entries_after": [
+    "xcrun_db"
+  ],
+  "schema": "arras.independent-public-pypi-install/1",
+  "scope": "Fresh local public-PyPI extras install, exact artifact identities, isolated installed imports, offline doctor and official UMF document admission smoke. This does not claim a native database, managed-host, browser or full action campaign.",
+  "smoke": {
+    "arras_import": "passed",
+    "doctor": "passed",
+    "toolkit_version": "0.0.50",
+    "truss_import": "passed",
+    "umf_distribution_version": "0.10.5",
+    "umf_document_admission": "valid_and_complete",
+    "weft_import": "passed",
+    "weft_support": "passed"
+  },
+  "source_verifier": {
+    "inputs_sha256": {
+      ".github/scripts/verify_pypi_extras.py": "db4c8c138b199dbf91644d6d9efd46f7da19f2675770e17fa1914945fc997361",
+      "examples/extension_host/doctor-request.json": "2b103716b6048ebd45c9ef67e55ec80cf772e5029ce133722aa346f1b7fe1c58",
+      "tests/fixtures/umf-core-reference/current-conformance.json": "bb008a98b8448050748e65f867e7863475ccad9501a5b9229ae9e6d336691544",
+      "tools/find-links/index.html": "43fe39056a8154dae58f097e6c712da464e740431b98413ffc5618c56b2d51dd"
+    },
+    "repository_main_sha": "5b4e1e54a2d53b6d92b98952a6ca0173e5f719de",
+    "source_files_modified": false
+  },
+  "status": "passed"
+}

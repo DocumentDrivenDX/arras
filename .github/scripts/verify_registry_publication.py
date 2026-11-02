@@ -54,6 +54,10 @@ class RegistryPublicationError(ValueError):
     """An original release run or registry payload cannot be trusted."""
 
 
+class RegistryArtifactPendingError(RegistryPublicationError):
+    """Accepted npm metadata exists before its immutable tarball is visible."""
+
+
 def _fail(message: str) -> NoReturn:
     raise RegistryPublicationError(message)
 
@@ -473,6 +477,13 @@ def _download_public(url: str) -> bytes:
             if final_url.scheme != "https" or final_url.hostname not in allowed_hosts:
                 _fail("registry tarball redirected outside the expected public host")
             data = response.read(512 * 1024 * 1024 + 1)
+    except urllib.error.HTTPError as exc:
+        failed_url = urllib.parse.urlparse(exc.geturl())
+        if failed_url.scheme != "https" or failed_url.hostname not in allowed_hosts:
+            _fail("registry tarball redirected outside the expected public host")
+        if exc.code == 404 and parsed.hostname == failed_url.hostname == "registry.npmjs.org":
+            raise RegistryArtifactPendingError("accepted npm tarball is not yet visible") from None
+        _fail(f"registry tarball request failed with HTTP {exc.code}")
     except (OSError, urllib.error.URLError) as exc:
         _fail(f"registry tarball request failed: {type(exc).__name__}")
     if len(data) > 512 * 1024 * 1024:
@@ -556,10 +567,13 @@ def wait_for_registry_match(check: Any, timeout_seconds: int = 180) -> str:
         _fail("registry visibility timeout must be from 1 to 600 seconds")
     deadline = time.monotonic() + timeout_seconds
     while True:
-        status = check()
+        try:
+            status = check()
+        except RegistryArtifactPendingError:
+            status = "pending-tarball"
         if status == "matching":
             return status
-        if status != "absent":
+        if status not in {"absent", "pending-tarball"}:
             _fail("registry checker returned an unsupported visibility state")
         remaining = deadline - time.monotonic()
         if remaining <= 0:

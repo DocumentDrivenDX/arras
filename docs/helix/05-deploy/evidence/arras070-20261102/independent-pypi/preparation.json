@@ -1,0 +1,27 @@
+{
+  "schema": "arras.independent-public-pypi-preparation/1",
+  "status": "prepared-awaiting-explicit-publication-trigger",
+  "public_registry_queried": false,
+  "package_install_started": false,
+  "fresh_venv_preparation": "passed; CPython 3.11.17 Darwin arm64, no Arras installed, empty cache has zero entries",
+  "runtime": "CPython 3.11.17 / Darwin arm64",
+  "venv": "/private/tmp/arras070-independent-20261102/public-pypi/venv-public",
+  "empty_cache": "/private/tmp/arras070-independent-20261102/public-pypi/empty-cache",
+  "verifier": "/private/tmp/umf-stack-release-arras/.github/scripts/verify_pypi_extras.py",
+  "verifier_sha256": "db4c8c138b199dbf91644d6d9efd46f7da19f2675770e17fa1914945fc997361",
+  "input_driver_head_at_preparation": "19c71f775e07a36ad23b3e80310e56aa61dae576",
+  "expected_arras_wheel_sha256": "b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6",
+  "expected_umf_core_version": "0.10.5",
+  "expected_umf_core_macos_sha256": "9213ff4b87649f551abcfdff40cdb6b0d75d619260988fa8ea4fe26cac7f6788",
+  "expected_truss_sha256": "7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00",
+  "expected_weft_macos_sha256": "e60e552f02c670b43a43111b08d26d6b415aaa9b9de42f241c37ad1d9fdd2487",
+  "preparation_attempts": [
+    {
+      "scope": "local venv creation only, no registry access or Arras installation",
+      "path": "/private/tmp/arras070-independent-20261102/public-pypi/venv",
+      "result": "failed",
+      "reason": "Using the ~/.local/bin/python3.11 shim with --copies wrote shim home into pyvenv.cfg; ensurepip failed and copied interpreter could not resolve encodings under /install. Retained failed preparation directory.",
+      "resolution": "Use the resolved uv-managed interpreter path directly to create a separate fresh venv-public."
+    }
+  ]
+}

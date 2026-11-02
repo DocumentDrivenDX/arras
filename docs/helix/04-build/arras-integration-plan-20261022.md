@@ -3583,3 +3583,56 @@ fresh extension, official admission and action receipts record the normative
 for a future caller-input clarification. GitHub assets are published and hosted
 public recovery is complete; registry OIDC delivery, independent public installs
 and final repository cleanup remain open until their actual evidence closes.
+
+
+### Public 0.7.0 delivery complete; final reconciliation closeout
+
+[Publisher 41523777966](https://github.com/DocumentDrivenDX/arras/actions/runs/41523777966)
+completed successfully on attempt 2. The first attempt passed actual hosted
+composite admission, its exclusive join, both preflights, PyPI base and both
+Linux/Mac public-extras checks. npm OIDC upload was accepted at 20:58:27 UTC,
+then postflight reported only generic HTTPError at 21:02:36; its original HTTP
+status is unknown. A subsequent separate diagnostic saw metadata 200/tarball
+404. Later identical public bytes support transient visibility as an inference,
+not proof of the original error status. Only the failed npm job was rerun from
+its original driver: exact existing bytes matched, upload was skipped, fresh
+install passed, and its receipt correctly records existing_exact_bytes with
+no second OIDC upload. The original GitHub Release 41514683626 still remains
+failed; successful public recovery is separately 41520267978.
+
+The parent independently verified anonymous GitHub/npm archive equality,
+metadata SHA512/SHA1 and all 323 installed files with no extras/symlinks,
+33 root exports, a fresh empty cache and disabled scripts on Node 26.12.1 /
+Darwin arm64. latest points to 0.7.0. Newton independently verified fresh
+public-only Python 3.11.17 / Darwin arm64 extras: exact b20 wheel/c790 sdist,
+18 public-origin archives with exact critical Arras/UMF/Truss/Weft pins,
+20 installed distributions, no direct URL metadata, empty
+cache/config, pip check, installed imports/doctor and official UMF document
+smoke. Both independent installations passed on their first actual attempt;
+the retained earlier venv preparation failure preceded installation.
+
+The [final evidence index](../05-deploy/evidence/arras070-20261102/README.md)
+links hosted admission, publication, Linux/Mac extras, independent npm receipt/
+script/metadata/lock/dist-tags, independent PyPI reports, and the original failed
+attempt records. Source, tag, b20/npm8f3/sdistc790, schemas, cohort distinction,
+managed NOT_RUN scope and native process-group null remain unchanged.
+
+A reliability-only follow-up now distinguishes same-host npm tarball HTTP 404
+from an available but mismatched archive. Preflight still fails closed and never
+reports an accepted pending version as absent. Only the existing bounded
+postflight wait retries that absence; HTTP 403/500, foreign redirects, PyPI-file
+404, collisions and exhausted budgets fail. The current delivery passed its
+failed-job rerun under the earlier frozen driver; it did not rely on this future
+hardening. The affected suite passed 117 tests; the four initial strict-type
+errors in test lambdas were corrected with typed named helpers. No full source,
+UI or artifact qualification is repeated for this repository-only follow-up.
+
+Independent final evidence/reliability review and final checks precede normal
+closeout merge and the already authorized cleanup:
+fast-forward primary clean main, delete only proved-merged feature/closeout refs
+with exact SHA leases, prune stale origin refs, move tool work to primary and
+remove the superseded isolated clone only after its source/evidence uniqueness
+and open-session audit. Preserve all tags/public assets, shared dependencies/
+caches and independent verification folders. Final cleanup is not inferred from
+this pre-cleanup record; its actual outside-clone receipt is required before
+claiming all branch reconciliation complete.

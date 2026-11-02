@@ -1,0 +1,15 @@
+{
+  "fresh_install_smoke": "passed",
+  "oidc_trusted_publisher": false,
+  "publication_mode": "existing_exact_bytes",
+  "publisher_workflow_sha": "5b4e1e54a2d53b6d92b98952a6ca0173e5f719de",
+  "registry": "npm",
+  "registry_bytes_verified": true,
+  "schema_version": 1,
+  "source_sha": "f9f04c42ae0c989d34907e00a63ca95c3cb2fcdf",
+  "status": "passed",
+  "tag": "v0.7.0",
+  "tarball_sha256": "8f3c5ea2d98ffa8011e5acfe3d9a65cd773cd149481aeb6edcf2d671bb5af9de",
+  "version": "0.7.0",
+  "wheel_sha256": "b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6"
+}
