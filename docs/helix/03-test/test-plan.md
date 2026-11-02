@@ -655,6 +655,24 @@ The `truss` tests run against a fresh local PostgreSQL 18.6 per run, with Truss 
 - The startup tests for each failure case pass before any merge that changes host startup (PRD).
 - The latency targets are met on a Lakebase branch (PRD, Success Criteria).
 
+## Later-release managed regression selection — 2026-11-02
+
+The operator directs impact-based qualification for Arras 0.7.0 and later
+managed releases: a changed wheel hash alone does not require repeating every
+Lakebase case. Preserve original campaign identities, compare relevant source,
+installed adapter payloads, dependency/native manifests and configuration, and
+map changed shared paths to existing regression evidence. Reuse unaffected
+managed evidence with an explicit applicability review; run only affected checks
+not already covered. Repeat the full campaign when changes or unresolved
+correspondence require its scope. Current-target identity, TLS, credentials,
+privileges and resource custody remain deployment admission checks.
+
+The [0.7.0 correspondence review](../05-deploy/evidence/managed070-impact-20261102/README.md)
+records unchanged adapter/harness/runtime behavior, existing exact-wheel native
+and Truss regression evidence, and no required fresh Lakebase execution. The
+historical PR 9 exact-wheel dual-campaign rule below remains its original
+execution contract; it is not a blanket repeat requirement for later releases.
+
 ## Open Questions
 
 - [ ] What line-coverage target applies, if any? Ask Erik LaBianca.

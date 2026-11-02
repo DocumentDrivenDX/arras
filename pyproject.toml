@@ -42,7 +42,7 @@ devhost = [
 truss = [
     "truss-toolkit[native,query]==0.0.50",
 ]
-# Official released UMF Python core; public PyPI extras acceptance also verifies the exact 0.10.0 artifact digest.
+# Official released UMF Python core; public PyPI extras acceptance also verifies the exact 0.10.5 artifact digest.
 umf = [
     "umf-core==0.10.5",
 ]

@@ -106,14 +106,17 @@ UI/native regressions, independent review, and release/public-registry gates.
 Its source and artifact gates passed for exact wheel
 `b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6`.
 
-Managed 0.7.0 acceptance is **not run / unqualified**. No older Lakebase campaign
-qualifies b20, and the fresh native Mac campaign does not substitute for managed
-behavior. This release adds only the bounded memory action profile; it does not
-claim new Truss/Ashlar action execution, managed-host acceptance or durable replay.
-A future managed qualification must satisfy CONTRACT-005's actual-target custody
-and identity requirements and retain a newly exact-wheel-bound full twelve-case
-campaign with independently observed cleanup/custody. This scope determination
-is not a waiver of any applicable current gate.
+The unchanged legacy managed profile is qualified by
+[reviewed correspondence](evidence/managed070-impact-20261102/README.md) to the
+original 0.6.4 Lakebase campaign and existing exact-b20 native/Truss regressions.
+No fresh Lakebase campaign was run or relabelled. All 23 shipped adapter files,
+the managed harness and the selected database runtime cohort are unchanged.
+The operator explicitly selected impact-based evidence reuse on 2026-11-02.
+New memory actions remain memory-only; no new Truss/Ashlar action execution or
+durable replay is qualified. Each actual deployment still satisfies
+CONTRACT-005's current-target custody, identity, TLS and access admission.
+Future managed changes require affected checks; unchanged behavior does not
+require a full twelve-case repeat solely because the wheel hash changed.
 
 ### 0.7.0 delivered — 2026-11-02
 
