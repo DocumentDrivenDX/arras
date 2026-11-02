@@ -67,8 +67,6 @@ HISTORICAL_UMF_PIN = {
     "sha256": "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9",
     "release_url": "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/umf_core-0.10.0-py3-none-any.whl",
 }
-# Closed release cohorts, not a minor-version inference. Each is tied to verified
-# immutable Arras release bytes by the caller's required wheel digest.
 RELEASE_UMF_PINS = {
     "0.6.3": HISTORICAL_UMF_PIN,
     "0.6.4": HISTORICAL_UMF_PIN,

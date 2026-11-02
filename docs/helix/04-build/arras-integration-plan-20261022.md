@@ -3400,3 +3400,59 @@ local source run passed 3,668 tests with two installed-wheel-only skips and 202
 intentional deselections; CI executes those installed-wheel checks separately.
 Final hosted native Mac, Linux/Mac installed receipts, independent integration
 review, merge and publication remain open.
+
+
+### Full c3 qualification and independent integration review
+
+[Full CI 41510837413](https://github.com/DocumentDrivenDX/arras/actions/runs/41510837413)
+passed on frozen source `c3cb035b55040765ae4a1a983a3c38201b7d588f`, tree
+`d0061331c4e935fd8d7e19eb017dd2a4b1bcde73`. Its producer wheel remains exact
+`b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6`.
+Build, Truss, UI, Python 3.11, hosted Mac admission/actions and explicitly selected
+native Mac jobs all succeeded. Source tests: 3,691 passed, two installed-wheel-only
+skips, 202 deselections, one Starlette test-client deprecation warning; the build
+job separately passed installed CLI and dev-host tests. Lean CI 41510649728 also
+passed. The dispatch's inapplicable lean job is skipped by design.
+
+[Retained receipts](evidence/arras070-20261102/) bind Linux CPython 3.11.18 and
+hosted Mac CPython 3.11.9 admission/actions to exact b20. Admission passes six base
+and ten extra controls and both 139-case corpora; actions pass twelve controls
+and 139+139 comparisons. All use public SDK artifacts, no candidate override and
+completed fresh-environment cleanup. Strict admission validation checks actual
+wheel metadata and current source digests; action tool/probe/selector identities
+also match current source. Producer provenance retains this run and source.
+
+Native macOS 15.8.2 / arm64 / CPython 3.11.9 passed 64 cases, eight declared
+limits, zero failures/harness errors. Its independent cleanup observer passed:
+zero remaining owned processes, ambiguous identities or native temporary roots.
+The evidence summary names the original hosted artifact and hashes all raw native
+receipts; it is a summary, not a substitute production release-gate receipt.
+No earlier cancelled native job is counted. This is native Truss conformance,
+not qualification of new UMF actions through Truss or a new managed campaign.
+
+Newton's final independent scoped integration review of b381a528..c3cb035 found
+no blocking code issue across manifest/naming/backward APIs, optional dependency
+boundaries, schema-3 assembly/provenance/public assets/registry validators and
+workflow callers. Its correctly candidate-bound eight-suite run passed 153 tests;
+an initial run accidentally imported primary editable 0.6.5 and failed four API
+assertions, then was corrected. Earlier independent extras/workflow review passed
+47 tests; the parent separately passed 74 extras/workflow/registry regressions.
+These overlapping counts are not additive coverage claims.
+
+Disjoint cleanup is complete. The retained original cleanup receipt binds both
+passes: 35 local and 37 remote superseded branches removed; all five audited old
+worktrees/residual directories and three stale administrative registrations
+reconciled. The two primary doc deltas were proven upstream-incorporated and
+byte-identical backups retained before primary fast-forward to b381a528. Only
+main and open PR10 remain; tags/public assets, shared dependencies and this active
+clone were protected. Required source/evidence uniqueness was audited before the
+last two artifact trees were removed. The receipt retains the original automatic
+review rejection and exact scoped resolution; no unresolved approval block remains.
+
+The following closeout changes only deploy documentation/evidence and removes two
+new explanatory comment lines from the extras driver. It changes no executable
+behavior, wheel payload or verifier/probe/selector hash. The full CI evidence stays
+bound to c3cb035; final lean/source checks and independent closeout review precede
+normal merge. Exact-tag Release will rebuild and requalify from its final source,
+with b20 enforced by the successor guard. Merge, GitHub release, PyPI/npm delivery
+and anonymous independent public install remain open until their actual gates pass.
