@@ -1,0 +1,10 @@
+{
+  "schema": "arras.ui-qualification-driver/1",
+  "driver_sha": "d2ad21fd916f8d455faac25f20ece209b00b49d0",
+  "payload_source_sha": "f9f04c42ae0c989d34907e00a63ca95c3cb2fcdf",
+  "scripts": {
+    "run_downstream_qualification": "63368beff83b338bb627afcbab329b0bb6f026eb008914e558e042c03de129e8",
+    "bind_downstream_theme": "60b49312d12554aa142c51f3bc07d0c9659f521a5ccfa5a5966ebc1ad1aa112c"
+  },
+  "theme_peer_binding_self_test": "passed"
+}

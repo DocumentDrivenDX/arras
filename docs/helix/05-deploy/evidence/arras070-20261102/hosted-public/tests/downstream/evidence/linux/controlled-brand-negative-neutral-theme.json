@@ -1,0 +1,7 @@
+{
+  "schema": "arras.ui.canonical-brand-negative.v1",
+  "file": "brand.spec.ts",
+  "title": "the served page carries the brand meta tag the app reads",
+  "project": "chromium",
+  "status": "failed"
+}

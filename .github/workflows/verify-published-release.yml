@@ -193,6 +193,7 @@ jobs:
     needs: trusted-publication
     uses: ./.github/workflows/downstream.yml
     with:
+      python_version: "3.11"
       wheel_url: https://github.com/${{ github.repository }}/releases/download/${{ needs.trusted-publication.outputs.release_tag }}/${{ needs.trusted-publication.outputs.wheel_name }}
       wheel_sha256: ${{ needs.trusted-publication.outputs.wheel_sha256 }}
       source_sha: ${{ needs.trusted-publication.outputs.source_sha }}

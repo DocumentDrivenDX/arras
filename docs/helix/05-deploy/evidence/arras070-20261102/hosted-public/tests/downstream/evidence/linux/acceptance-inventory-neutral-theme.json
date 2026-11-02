@@ -1,0 +1,28 @@
+{
+  "schema": "arras.ui.canonical-acceptance-inventory.v1",
+  "specs": [
+    "a11y.spec.ts",
+    "brand.spec.ts",
+    "browse-actions.spec.ts",
+    "browse-history.spec.ts",
+    "browse-new.spec.ts",
+    "browse-retire.spec.ts",
+    "browser.spec.ts",
+    "cross-links.spec.ts",
+    "flows.spec.ts",
+    "host-isolation.spec.ts",
+    "operator.spec.ts",
+    "query.spec.ts",
+    "routes.spec.ts",
+    "schema-admin.spec.ts",
+    "shortcuts.spec.ts",
+    "umf-explorer.spec.ts",
+    "visual.spec.ts"
+  ],
+  "expectedCounts": {
+    "chromium": 132,
+    "schema-admin": 3,
+    "browser": 70,
+    "visual": 67
+  }
+}

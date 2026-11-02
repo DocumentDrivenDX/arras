@@ -6,7 +6,7 @@ ROOT = Path(__file__).parents[1]
 def test_local_qualification_is_required_before_publisher_join():
     publisher = (ROOT / ".github/workflows/publish-registries.yml").read_text()
     qualifier = (ROOT / ".github/workflows/qualify-local-registry.yml").read_text()
-    assert "needs: [verify-hosted-release, qualify-local]" in publisher
+    assert "needs: [verify-hosted-release, qualify-local, qualify-hosted-recovery]" in publisher
     assert "needs.qualify-local.result == 'success'" in publisher
     assert "needs.verify-hosted-release.result == 'skipped'" in publisher
     assert "needs: [admit, source, installed, ui, downstream]" in qualifier

@@ -1,0 +1,18 @@
+{
+  "driver": {
+    "ref": "refs/heads/main",
+    "run_attempt": "1",
+    "run_id": "41514683626",
+    "sha": "19c71f775e07a36ad23b3e80310e56aa61dae576",
+    "workflow_ref": "DocumentDrivenDX/arras/.github/workflows/release.yml@refs/heads/main",
+    "workflow_sha": "19c71f775e07a36ad23b3e80310e56aa61dae576"
+  },
+  "event": "workflow_dispatch",
+  "schema": "arras.release-driver-provenance.v1",
+  "target": {
+    "source_sha": "f9f04c42ae0c989d34907e00a63ca95c3cb2fcdf",
+    "tag": "v0.7.0",
+    "tag_object_sha": "9f950b306eb3f86c057a118edba085e4fe81bbd4",
+    "version": "0.7.0"
+  }
+}
