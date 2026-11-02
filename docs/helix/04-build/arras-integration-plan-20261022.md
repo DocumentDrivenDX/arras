@@ -3247,3 +3247,71 @@ focused source/receipt/registry controls are next. Earlier read-only Python
 3.13.16 Mac diagnostics passed preparation, generated Apply/Validate, memory-host
 controls and 139+139 comparisons after an in-memory version allowlist change.
 Those diagnostics do not replace the required Python 3.11 installed proof.
+
+
+### Successor source and Mac checkpoint
+
+History-preserving merge `cda5e1180e3fd5f9958eeb8f48707fae485c2a1f` has
+original action head `27a1915` and delivered main `b381a528` as parents. The
+candidate wheel SHA-256 is
+`351dfd3a176493212468d6bc0606b6bd00125ac9833fe0114b79f7f0dfd24968`.
+Fresh public-extra Mac CPython 3.11.17 admission and action receipts are retained
+under [the candidate evidence](evidence/arras070-20261102/). Both prove exact
+139 reference plus 139 fresh-empty Registry comparisons; action proof passes
+all twelve controls with zero skips, no override and completed cleanup. The
+installed tool/probe/selector identities are bound in each receipt; these are
+local candidate proofs, not Linux, managed or public Arras release evidence.
+
+Three initial action-probe failures are retained. The pre-reconciliation probe
+rejected the newly wheel-declared CLI launcher outside site-packages. The fix
+allows only the exact wheel-declared `arras.cli:run` launcher under the fresh
+venv scripts directory, checks its installed RECORD hash, and refuses unlisted
+paths, symlinks and changed bytes. The first declaration correction used the
+wrong function spelling and remained failed; the final spelling is read from
+the actual wheel metadata. No failed attempt is reclassified as qualification.
+
+Focused cohort/receipt/registry/workflow controls passed 166 tests, separate
+release/recovery controls passed 101, and action/API/module checks passed 114.
+Later affected probe/metadata/module controls passed 92. The first full local
+base attempt had 3,573 passes, two skips, four failures and 70 errors: localhost
+sandbox refusals, cascading mutation controls and stale direct-reference/index
+fixtures. Corrected affected localhost/dependency/mutation checks passed 84 with
+one Truss case deselected; historical direct-reference serialization controls
+remain covered using an explicit historical fixture. This is not a full-suite
+pass. Full final-head hosted gates remain open.
+
+The original 0.6.5 receipt now has an actual historical regression: original
+pinned source accepts it, while current driver source and a changed old probe
+refuse. Historical backfill checks out and verifies `ad597d2` separately before
+passing that payload context to strict `validate_receipt`. Thirty-five affected
+historical/workflow controls pass. No broad digest exception or old-proof
+reinterpretation was introduced. Independent original-action review found no
+blocker in its bounded 19-control scope; final integration/artifact review is
+still required. Source freeze, hosted Linux/Mac qualification and release remain
+open.
+
+
+### Required independent integration findings — fixed before hosted freeze
+
+All three reported proof-chain findings are required, not advisory. Historical
+0.6.5 backfill now passes a separately checked-out `ad597d2` payload repository
+and rejects a different checkout or dirty relevant source; actual original
+receipt/tool/probe evidence is retained in the existing registry065 directory.
+The strict old digest comparison is unchanged.
+
+Admission receipt validation now reads the actual verified Arras wheel metadata,
+checks its outer SHA-256 and identity, and selects its SDK cohort for the observed
+runtime. Raw assembly, public asset verification and original-publication
+provenance supply the real wheel path. New/native proofs require actual wheel
+bytes; historical pure-core validation keeps its existing API. Cross-cohort
+controls refuse 0.10.5 proof for a 0.6.5 wheel declaring 0.10.0 and the inverse
+0.7.0/0.10.5 declaration with 0.10.0 proof. No package-version heuristic supplies
+the expected cohort. The actual local 0.7.0 raw admission receipt also passes
+this exact-wheel binding.
+
+Registry publication derives action capability from the already verified wheel,
+passes it into publication-context validation and explicitly requires the exact
+action job to succeed. Missing, failed, skipped and cancelled action gates refuse;
+the historical pure-core ten-gate route stays accepted. The combined affected
+assembly/publication/historical/admission suite passes 105 tests. Final independent
+review of these fixes and hosted artifact qualification remain required.

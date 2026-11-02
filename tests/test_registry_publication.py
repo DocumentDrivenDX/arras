@@ -405,3 +405,25 @@ def test_registry_authorization_and_server_errors_are_not_treated_as_absence(
     monkeypatch.setattr(urllib.request, "urlopen", unauthorized)
     with pytest.raises(registry.RegistryPublicationError, match="HTTP 401"):
         registry._registry_json("https://registry.npmjs.org/%40documentdrivendx%2Farras-ui/0.6.2")
+
+
+@pytest.mark.parametrize("outcome", [None, "failure", "skipped", "cancelled", "success"])
+def test_action_capable_publication_requires_its_action_job(outcome: str | None) -> None:
+    jobs = release_context()[1]
+    if outcome is not None:
+        jobs["jobs"].append(
+            {
+                "name": "Fresh installed generated-action proof when the wheel requires it",
+                "conclusion": outcome,
+            }
+        )
+        jobs["total_count"] += 1
+    if outcome == "success":
+        registry._validate_jobs(jobs, "0.7.0", actions_required=True)
+    else:
+        with pytest.raises(registry.RegistryPublicationError, match="mandatory"):
+            registry._validate_jobs(jobs, "0.7.0", actions_required=True)
+
+
+def test_historical_pure_core_publication_keeps_the_original_ten_gates() -> None:
+    registry._validate_jobs(release_context()[1], "0.6.5", actions_required=False)

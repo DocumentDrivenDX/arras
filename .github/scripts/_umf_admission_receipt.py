@@ -4,11 +4,13 @@
 
 from __future__ import annotations
 
+import email.parser
 import hashlib
 import importlib.util
 import json
 import re
 import sys
+import zipfile
 from pathlib import Path
 from typing import Any, NoReturn
 
@@ -100,6 +102,61 @@ def _validate_cohort_runtime(cohort: Any, runtime: dict[str, Any]) -> None:
     }.get(machine)
     if (platform_name, normalized_machine) != (cohort.platform, cohort.machine):
         _fail("UMF native cohort differs from the observed receipt runtime")
+
+
+def _require_wheel_binding(
+    value: dict[str, Any], version: str, cohort: Any, wheel: Path | None
+) -> None:
+    if wheel is not None:
+        validate_wheel_cohort(value, wheel)
+    elif cohort.cohort_id != _HISTORICAL_COHORT_ID or tuple(map(int, version.split("."))) >= (
+        0,
+        7,
+        0,
+    ):
+        _fail("actual Arras wheel is required for SDK cohort binding")
+
+
+def validate_wheel_cohort(value: dict[str, Any], wheel: Path) -> None:
+    """Bind SDK proof to the dependency declared by these exact Arras wheel bytes."""
+    try:
+        if wheel.is_symlink() or not wheel.is_file() or wheel.stat().st_size > 64 * 1024 * 1024:
+            _fail("Arras cohort wheel is not a bounded regular file")
+        raw = wheel.read_bytes()
+        if hashlib.sha256(raw).hexdigest() != value["arras_wheel"]["sha256"]:
+            _fail("Arras cohort wheel digest differs from receipt")
+        with zipfile.ZipFile(wheel) as archive:
+            names = [n for n in archive.namelist() if n.endswith(".dist-info/METADATA")]
+            if len(names) != 1 or archive.getinfo(names[0]).file_size > 1024 * 1024:
+                _fail("Arras cohort wheel metadata inventory is invalid")
+            metadata = email.parser.BytesParser().parsebytes(archive.read(names[0]))
+        if (
+            metadata.get("Name") != "arras"
+            or metadata.get("Version") != value["arras_wheel"]["version"]
+        ):
+            _fail("Arras cohort wheel metadata identity differs from receipt")
+        runtime = value["runtime"]
+        machine = {"AMD64": "x86_64", "aarch64": "arm64"}.get(
+            runtime["machine"], runtime["machine"]
+        )
+        cohort = _cohort_module().select_sdk_cohort(
+            metadata,
+            platform=runtime["platform"],
+            machine=machine,
+            registry=_cohort_module().KNOWN_COHORTS,
+        )
+        proof = value["umf_wheel"]
+        if (proof["filename"], proof["version"], proof["sha256"], proof["url"]) != (
+            cohort.filename,
+            cohort.distribution_version,
+            cohort.sha256,
+            cohort.url,
+        ):
+            _fail("UMF receipt cohort differs from the actual Arras wheel dependency")
+    except AdmissionReceiptError:
+        raise
+    except (OSError, ValueError, KeyError, zipfile.BadZipFile) as error:
+        _fail(f"Arras wheel SDK cohort binding is invalid: {type(error).__name__}")
 
 
 def strict_json_loads(value: str) -> Any:
@@ -437,6 +494,7 @@ def validate_receipt(
     wheel_sha256: str,
     phase: str,
     repository: Path,
+    wheel_path: Path | None = None,
 ) -> dict[str, Any]:
     """Return an allowlisted public receipt projection after checking every fixed proof field."""
     if not required_for_version(version):
@@ -458,6 +516,7 @@ def validate_receipt(
     ):
         _fail("UMF receipt runtime identity is unsupported")
     _validate_cohort_runtime(cohort, runtime)
+    _require_wheel_binding(root, version, cohort, wheel_path)
     base, extra = _validate_environments(root, version, expected_ids, cohort)
     _validate_corpus(root, expected_ids)
     _validate_cleanup(root)
@@ -510,7 +569,12 @@ def validate_receipt(
 
 
 def validate_public_projection(
-    value: object, *, version: str, wheel_name: str, wheel_sha256: str
+    value: object,
+    *,
+    version: str,
+    wheel_name: str,
+    wheel_sha256: str,
+    wheel_path: Path | None = None,
 ) -> dict[str, Any]:
     row = _object(value, "public UMF admission receipt")
     historical_keys = {
@@ -532,14 +596,8 @@ def validate_public_projection(
         _fail("public UMF admission receipt has an unexpected shape")
     umf = _exact(row["umf_wheel"], {"filename", "version", "sha256", "url"}, "public UMF wheel")
     cohort = _cohort_for_identity(umf["filename"], umf["version"], umf["sha256"], umf["url"])
-    selector_required = cohort.cohort_id != _HISTORICAL_COHORT_ID
-    if selector_required:
+    if cohort.cohort_id != _HISTORICAL_COHORT_ID or "selector_sha256" in row:
         selector_digest = _digest(row.get("selector_sha256"), "selector SHA-256")
-        selector_path = Path(__file__).resolve().parents[2] / "tools/_umf_sdk_cohorts.py"
-        if selector_digest != hashlib.sha256(selector_path.read_bytes()).hexdigest():
-            _fail("public UMF cohort selector digest differs from checked source")
-    elif "selector_sha256" in row:
-        selector_digest = _digest(row["selector_sha256"], "selector SHA-256")
         selector_path = Path(__file__).resolve().parents[2] / "tools/_umf_sdk_cohorts.py"
         if selector_digest != hashlib.sha256(selector_path.read_bytes()).hexdigest():
             _fail("public UMF cohort selector digest differs from checked source")
@@ -642,4 +700,5 @@ def validate_public_projection(
         or runtime["machine"] not in _RUNTIME_MACHINES
     ):
         _fail("public UMF runtime identity is incomplete")
+    _require_wheel_binding(row, version, cohort, wheel_path)
     return row

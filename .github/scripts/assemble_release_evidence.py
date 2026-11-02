@@ -67,6 +67,7 @@ def _read_umf_admission(
     *,
     wheel_name: str,
     wheel_sha: str,
+    wheel_path: Path,
     selected_inputs: dict[str, tuple[Path, bytes, str]],
 ) -> tuple[dict[str, Any] | None, str | None]:
     required = _umf_receipt.required_for_version(version)
@@ -83,6 +84,7 @@ def _read_umf_admission(
         wheel_sha256=wheel_sha,
         phase="release-build",
         repository=Path(__file__).resolve().parents[2],
+        wheel_path=wheel_path,
     )
     return projection, digest
 
@@ -677,6 +679,7 @@ def assemble(
     umf_admission, umf_admission_sha = _read_umf_admission(
         version,
         umf_admission_receipt_path,
+        wheel_path=selected[expected_wheel],
         wheel_name=expected_wheel,
         wheel_sha=wheel_sha,
         selected_inputs=selected_inputs,

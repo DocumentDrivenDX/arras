@@ -178,3 +178,55 @@ def test_ui_incomplete_campaign_refuses(evidence: tuple[Path, dict[str, str]], c
     path.write_text(json.dumps(receipt))
     with pytest.raises(ValueError, match="UI"):
         module.validate_evidence(root, identity)
+
+
+@pytest.mark.parametrize("context", ["original", "current-driver", "changed-probe"])
+def test_actual_065_admission_receipt_requires_its_original_source(
+    evidence: tuple[Path, dict[str, str]],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    context: str,
+) -> None:
+    import hashlib
+    import shutil
+
+    validate_receipt = importlib.import_module("_umf_admission_receipt").validate_receipt
+
+    root, identity = evidence
+    retained = ROOT / "docs/helix/05-deploy/evidence/registry065-20261102"
+    actual = retained / "historical-umf-admission-installed.json"
+    source = retained / "pinned-admission-source"
+    pins = json.loads((source / "provenance.json").read_text())
+    assert pins["source_sha"] == module.EXPECTED_SOURCE
+    payload = tmp_path / "payload-source"
+    for name, expected in pins["files"].items():
+        raw = (source / (Path(name).name + ".txt")).read_bytes()
+        assert hashlib.sha256(raw).hexdigest() == expected
+        target = payload / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(raw)
+    for name in ["umf-core-reference", "umf-core-metadata"]:
+        shutil.copytree(ROOT / "tests/fixtures" / name, payload / "tests/fixtures" / name)
+    shutil.copyfile(actual, root / "installed/umf-admission-installed.json")
+    monkeypatch.setattr(module, "validate_receipt", validate_receipt)
+    if context == "current-driver":
+        payload = ROOT
+    elif context == "changed-probe":
+        (payload / "tools/_umf_admission_probe.py").write_text("changed source\n")
+    if context == "original":
+        module.validate_evidence(root, identity, payload_repository=payload)
+    else:
+        with pytest.raises(ValueError, match="tool or probe digest"):
+            module.validate_evidence(root, identity, payload_repository=payload)
+
+
+def test_historical_payload_checkout_must_name_exact_commit(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def wrong_commit(*args: Any, **kwargs: Any) -> str:
+        return "0" * 40
+
+    monkeypatch.setattr(module.subprocess, "check_output", wrong_commit)
+    with pytest.raises(ValueError, match="pinned source"):
+        module.assert_payload_source(tmp_path)

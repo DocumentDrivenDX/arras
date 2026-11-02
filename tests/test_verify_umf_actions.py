@@ -694,3 +694,44 @@ def test_registry_selection_refuses_unqualified_or_widened_requirements(requirem
     metadata["Requires-Dist"] = requirement
     with pytest.raises(ValueError):
         _COHORTS.single_set_capability(metadata)
+
+
+@pytest.mark.parametrize("case", ["declared", "unlisted", "symlink", "changed"])
+def test_installed_record_allows_only_exact_declared_launcher(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, case: str
+) -> None:
+    from importlib.metadata import FileHash, PackagePath
+    from types import SimpleNamespace
+
+    site = tmp_path / "site"
+    scripts = tmp_path / "bin"
+    site.mkdir()
+    scripts.mkdir()
+    launcher = scripts / "arras"
+    launcher.write_bytes(b"generated launcher\n")
+    entry = PackagePath("../bin/arras")
+    entry.hash = FileHash(
+        "sha256="
+        + base64.urlsafe_b64encode(hashlib.sha256(launcher.read_bytes()).digest())
+        .rstrip(b"=")
+        .decode()
+    )
+    if case == "symlink":
+        target = scripts / "target"
+        target.write_bytes(launcher.read_bytes())
+        launcher.unlink()
+        launcher.symlink_to(target)
+    elif case == "changed":
+        launcher.write_bytes(b"changed launcher\n")
+
+    def locate(path: PackagePath) -> Path:
+        return site / str(path)
+
+    distribution = SimpleNamespace(locate_file=locate)
+    monkeypatch.setattr(_PROBE.sysconfig, "get_paths", lambda: {"purelib": str(site)})
+    allowed: set[Path] = set() if case == "unlisted" else {launcher.resolve()}
+    if case == "declared":
+        assert _PROBE._verify_installed_record(distribution, [entry], 0, allowed) == 0
+    else:
+        with pytest.raises(_PROBE.ProbeError):
+            _PROBE._verify_installed_record(distribution, [entry], 0, allowed)

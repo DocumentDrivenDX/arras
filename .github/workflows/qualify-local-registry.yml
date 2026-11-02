@@ -199,6 +199,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.workflow_sha }}
+      - uses: actions/checkout@v4
+        with:
+          ref: ad597d248847da47523155842524bb451a97f8d8
+          path: historical-payload
+          persist-credentials: false
       - uses: actions/download-artifact@v4
         with:
           name: local-origin-inputs
@@ -225,7 +230,7 @@ jobs:
         run: |
           mkdir -p evidence/ui
           cp evidence/ui-tree/tests/downstream/evidence/linux/*.json evidence/ui/
-          python3 .github/scripts/local_registry_qualification.py finish --assets inputs/local-assets
+          python3 .github/scripts/local_registry_qualification.py finish --assets inputs/local-assets --payload-source historical-payload
           cp -R inputs/local-assets verified/public-release-assets
       - uses: actions/upload-artifact@v4
         with:

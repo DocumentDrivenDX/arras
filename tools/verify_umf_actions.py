@@ -212,6 +212,20 @@ def _run(
     ):
         raise VerificationError(stage, "command-output-over-limit")
     if result.returncode:
+        if stage == "installed-action-probe":
+            # Only the owned probe's fixed failure identifiers may leave the subprocess.
+            try:
+                failure = json.loads(result.stdout).get("failure", {})
+            except (json.JSONDecodeError, AttributeError):
+                failure = {}
+            known = {"payload", "imports", "fixtures", "generator", "host", "corpus", "probe"}
+            code = failure.get("code") if isinstance(failure, dict) else None
+            if (
+                failure.get("stage") in known
+                and type(code) is str
+                and re.fullmatch(r"[a-z][a-z-]{1,79}", code)
+            ):
+                raise VerificationError("probe-" + failure["stage"], code)
         raise VerificationError(stage, "command-failed")
     return result
 

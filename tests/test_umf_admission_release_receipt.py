@@ -143,14 +143,17 @@ def passing_receipt() -> dict[str, Any]:
     }
 
 
-def validate(value: object) -> dict[str, Any]:
+def validate(value: object, wheel_path: Path | None = None) -> dict[str, Any]:
     return receipt_gate.validate_receipt(
         value,
         version="0.6.0",
         wheel_name="arras-0.6.0-py3-none-any.whl",
-        wheel_sha256="a" * 64,
+        wheel_sha256=hashlib.sha256(wheel_path.read_bytes()).hexdigest()
+        if wheel_path
+        else "a" * 64,
         phase="release-build",
         repository=ROOT,
+        wheel_path=wheel_path,
     )
 
 
@@ -215,9 +218,21 @@ def _native_receipt(monkeypatch: pytest.MonkeyPatch) -> dict[str, Any]:
 
 def test_native_cohort_receipt_requires_selector_binding_and_observed_runtime(
     monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
 ) -> None:
     row = _native_receipt(monkeypatch)
-    projected = validate(row)
+    sdk = row["umf_wheel"]
+    wheel = tmp_path / "arras-0.6.0-py3-none-any.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        archive.writestr(
+            "arras-0.6.0.dist-info/METADATA",
+            "Name: arras\nVersion: 0.6.0\n"
+            + f"Requires-Dist: umf-core @ {sdk['url']}#sha256={sdk['sha256']}; "
+            + "(sys_platform == 'darwin' and platform_machine == 'arm64') and extra == 'umf'\n",
+        )
+    digest = hashlib.sha256(wheel.read_bytes()).hexdigest()
+    row["arras_wheel"]["sha256"] = digest
+    projected = validate(row, wheel)
     assert projected["umf_wheel"]["version"] == "0.10.1"
     assert projected["selector_sha256"] == row["selector_sha256"]
     assert "SDK distribution 0.10.1" in projected["qualification_scope"]
@@ -225,18 +240,19 @@ def test_native_cohort_receipt_requires_selector_binding_and_observed_runtime(
         projected,
         version="0.6.0",
         wheel_name="arras-0.6.0-py3-none-any.whl",
-        wheel_sha256="a" * 64,
+        wheel_sha256=digest,
+        wheel_path=wheel,
     )
 
     missing = copy.deepcopy(row)
     missing.pop("selector_sha256")
     with pytest.raises(receipt_gate.AdmissionReceiptError, match="selector SHA"):
-        validate(missing)
+        validate(missing, wheel)
 
     wrong_runtime = copy.deepcopy(row)
     wrong_runtime["runtime"].update(platform="linux", machine="x86_64")
     with pytest.raises(receipt_gate.AdmissionReceiptError, match="runtime"):
-        validate(wrong_runtime)
+        validate(wrong_runtime, wheel)
 
 
 _RECEIPT_MUTATIONS: list[Mutation] = [
@@ -317,6 +333,7 @@ def test_assembler_cannot_omit_or_add_the_umf_receipt_for_wrong_release_version(
         wheel_name="arras-0.5.1-py3-none-any.whl",
         wheel_sha="a" * 64,
         selected_inputs={},
+        wheel_path=Path("not-consumed.whl"),
     ) == (None, None)
     with pytest.raises(assembler.AssemblyError, match="presence"):
         assembler._read_umf_admission(
@@ -325,6 +342,7 @@ def test_assembler_cannot_omit_or_add_the_umf_receipt_for_wrong_release_version(
             wheel_name="arras-0.6.0-py3-none-any.whl",
             wheel_sha="a" * 64,
             selected_inputs={},
+            wheel_path=Path("not-consumed.whl"),
         )
 
 
@@ -517,3 +535,51 @@ def test_v2_bundle_refuses_unbound_or_incomplete_umf_proof(tmp_path: Path, mutat
         (bundle / "SHA256SUMS").write_bytes(sums)
     with pytest.raises(assets.AssetError):
         assets._validate_trusted(bundle, "0.6.0", "arras-0.6.0-py3-none-any.whl", wheel_sha)
+
+
+@pytest.mark.parametrize(
+    "version,pin,proof_version",
+    [
+        ("0.6.5", "0.10.0", "0.10.5"),
+        ("0.7.0", "0.10.5", "0.10.0"),
+        ("0.6.5", "0.10.0", "0.10.0"),
+        ("0.7.0", "0.10.5", "0.10.5"),
+    ],
+)
+def test_admission_sdk_identity_is_bound_to_actual_wheel_dependency(
+    tmp_path: Path,
+    version: str,
+    pin: str,
+    proof_version: str,
+) -> None:
+    wheel = tmp_path / f"arras-{version}-py3-none-any.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        archive.writestr(
+            f"arras-{version}.dist-info/METADATA",
+            f"Name: arras\nVersion: {version}\nRequires-Dist: umf-core=={pin}; extra == 'umf'\n",
+        )
+    sdk = next(
+        c
+        for c in receipt_gate._cohort_module().KNOWN_COHORTS
+        if c.distribution_version == proof_version and c.platform in {"darwin", "any"}
+    )
+    proof = {
+        "arras_wheel": {
+            "version": version,
+            "sha256": hashlib.sha256(wheel.read_bytes()).hexdigest(),
+        },
+        "umf_wheel": {
+            "filename": sdk.filename,
+            "version": sdk.distribution_version,
+            "sha256": sdk.sha256,
+            "url": sdk.url,
+        },
+        "runtime": {"platform": "darwin", "machine": "arm64"},
+    }
+    if pin == proof_version:
+        receipt_gate.validate_wheel_cohort(proof, wheel)
+    else:
+        with pytest.raises(
+            receipt_gate.AdmissionReceiptError, match="actual Arras wheel dependency"
+        ):
+            receipt_gate.validate_wheel_cohort(proof, wheel)

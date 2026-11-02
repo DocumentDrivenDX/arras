@@ -162,7 +162,11 @@ def _validate_umf_component(
     try:
         proof = _umf_receipt.strict_json_loads(proof_path.read_text(encoding="utf-8"))
         _umf_receipt.validate_public_projection(
-            proof, version=version, wheel_name=wheel, wheel_sha256=wheel_sha256
+            proof,
+            version=version,
+            wheel_name=wheel,
+            wheel_sha256=wheel_sha256,
+            wheel_path=directory / wheel,
         )
     except _umf_receipt.AdmissionReceiptError as exc:
         _fail(f"trusted UMF admission receipt is invalid: {exc}")

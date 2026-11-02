@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import configparser
 import csv
 import email.parser
 import hashlib
@@ -165,18 +166,26 @@ def _installed_files(
 
 
 def _verify_installed_record(
-    distribution: importlib.metadata.Distribution, files: Any, expected_count: int
+    distribution: importlib.metadata.Distribution,
+    files: Any,
+    expected_count: int,
+    launchers: set[Path],
 ) -> int:
     site = Path(sysconfig.get_paths()["purelib"]).resolve()
     record_matches = 0
+    seen_launchers: set[Path] = set()
     for entry in files:
         if entry.hash is None or ".dist-info/" in entry.as_posix():
             continue
         if entry.hash.mode != "sha256":
             raise ProbeError("payload", "installed-record-hash-mode-invalid")
-        target = Path(distribution.locate_file(entry)).resolve()
+        located = Path(distribution.locate_file(entry))
+        target = located.resolve()
+        launcher = target in launchers
         if not _inside(target, site):
-            raise ProbeError("payload", "record-member-outside-site")
+            if not launcher or located.is_symlink() or target in seen_launchers:
+                raise ProbeError("payload", "record-member-outside-site")
+            seen_launchers.add(target)
         try:
             digest = _sha(target.read_bytes())
         except OSError as error:
@@ -184,7 +193,10 @@ def _verify_installed_record(
         encoded = base64.urlsafe_b64encode(bytes.fromhex(digest)).rstrip(b"=").decode("ascii")
         if encoded != entry.hash.value:
             raise ProbeError("payload", "installed-record-mismatch")
-        record_matches += 1
+        if not launcher:
+            record_matches += 1
+    if seen_launchers != launchers:
+        raise ProbeError("payload", "installed-launcher-incomplete")
     if record_matches != expected_count:
         raise ProbeError("payload", "installed-record-incomplete")
     return record_matches
@@ -226,6 +238,26 @@ def _payload_artifact_summary(
     }
 
 
+def _wheel_launchers(wheel: Path) -> set[Path]:
+    """Allow only the exact wheel-declared Arras launcher inside this fresh venv."""
+    with zipfile.ZipFile(wheel) as archive:
+        entries = [n for n in archive.namelist() if n.endswith(".dist-info/entry_points.txt")]
+        if not entries:
+            return set()
+        if len(entries) != 1:
+            raise ProbeError("payload", "launcher-metadata-invalid")
+        parser = configparser.ConfigParser(interpolation=None)
+        parser.read_string(archive.read(entries[0]).decode("utf-8"))
+        if set(parser.sections()) != {"console_scripts"} or dict(parser["console_scripts"]) != {
+            "arras": "arras.cli:run"
+        }:
+            raise ProbeError("payload", "launcher-metadata-invalid")
+    scripts = Path(sysconfig.get_paths()["scripts"]).resolve()
+    if not _inside(scripts, Path(sys.prefix).resolve()):
+        raise ProbeError("payload", "launcher-directory-outside-venv")
+    return {scripts / "arras"}
+
+
 def _installed_payload(name: str, wheel: Path) -> dict[str, Any]:
     expected, _record = _wheel_payload(wheel, name)
     try:
@@ -237,7 +269,9 @@ def _installed_payload(name: str, wheel: Path) -> dict[str, Any]:
     if wheel_name != name or wheel_version != distribution.version:
         raise ProbeError("payload", "installed-distribution-identity-mismatch")
     installed = _installed_files(name, expected, distribution, files)
-    record_matches = _verify_installed_record(distribution, files, len(expected))
+    record_matches = _verify_installed_record(
+        distribution, files, len(expected), _wheel_launchers(wheel)
+    )
     return _payload_artifact_summary(
         name, distribution.version, expected, installed, record_matches
     )
