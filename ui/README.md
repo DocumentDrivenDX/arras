@@ -218,14 +218,18 @@ Snapshot updates are disabled by the factory. Create or change baselines only th
 reviewed update workflow; do not reuse the default-theme snapshots for a different theme.
 
 The `host-isolation` spec uses the explicit `hostAppearanceProvider` profile to select tests whose premise is
-a bare page. With the default `false`, it plants page-level `data-appearance` and inline `color-scheme` values
-and checks nearest-provider and OS behavior. With `true`, only those bare-page premise tests are skipped;
-failures never trigger a skip. Both profiles run the host-owned provider cases at the `.arras-root` and at an
-ancestor, including light/dark changes, role-token application, outside-root computed-style isolation and storage
-nonmutation. A deliberate global-style leak is a negative control proving the isolation assertion rejects it.
-The ancestor token fixture also proves a host's role tokens override the library's root defaults. The profile flag
-does not exempt the suite from host isolation, appearance ownership or nonmutation checks. Arras installs no theme
-or preference in either profile.
+an unthemed fixture. With the default `false`, controlled palette tests exercise root and ancestor providers,
+nearest-provider precedence and OS behavior. With `true`, those synthetic palette assertions are skipped before
+measurement: an existing host stylesheet may validly declare role tokens on `.arras-root`, which take precedence
+over tokens injected on an ancestor. Failures never trigger a skip.
+
+Both profiles check the actual embedding page's outside-root styles, full ancestor/root attributes, subtree
+appearance declarations and exact local/session storage key/value maps before and after system appearance changes.
+A host's nonempty initial appearance and storage state must be preserved. Arras may not add appearance declarations
+to descendants of its root; host-owned root declarations are preserved under the host-provider profile. Negative
+controls prove the same guards reject a global style leak, changed storage values, replaced storage keys and host
+or subtree appearance mutations, including changes that preserve storage counts. These checks do not change the
+consumer's theme to force a synthetic expected color.
 
 `baseURL` and `schemaBaseURL` must be distinct credential-free root HTTP(S) origins. `outputDir` is
 consumer-owned and should be unique for simultaneous runs. `themeId` defaults to `default`; `expectedBrand` defaults to `{ name: "Arras" }`, and

@@ -49,6 +49,78 @@ const style = (page: Page, selector: string, prop: string) =>
     [selector, prop],
   );
 
+// Snapshot contents, not storage counts: a write can replace a value or key without changing length.
+async function hostState(page: Page) {
+  return page.evaluate(() => {
+    const attributes = (element: Element) =>
+      [...element.attributes]
+        .map(({ name, value }) => [name, value] as const)
+        .sort(([a], [b]) => a.localeCompare(b));
+    const storageEntries = (storage: Storage) =>
+      Array.from({ length: storage.length }, (_, index) => storage.key(index))
+        .filter((key): key is string => key !== null)
+        .sort()
+        .map((key) => [key, storage.getItem(key)]);
+    const element = (selector: string) => {
+      const found = document.querySelector(selector);
+      if (!found) throw new Error(`Missing host fixture element: ${selector}`);
+      return found;
+    };
+    const root = element(".arras-root");
+    const ancestors = [];
+    for (let element = root.parentElement; element; element = element.parentElement) {
+      ancestors.push({ tag: element.tagName, attributes: attributes(element) });
+    }
+    const subtreeAppearance = [root, ...root.querySelectorAll("*")].flatMap((element, index) => {
+      const appearance = {
+        appearance: element.getAttribute("data-appearance"),
+        theme: element.getAttribute("data-theme"),
+        scheme: (element as HTMLElement).style?.getPropertyValue("color-scheme") ?? "",
+      };
+      return appearance.appearance !== null || appearance.theme !== null || appearance.scheme !== ""
+        ? [{ index, ...appearance }]
+        : [];
+    });
+    return {
+      ancestors,
+      rootAttributes: attributes(root),
+      subtreeAppearance,
+      localStorage: storageEntries(localStorage),
+      sessionStorage: storageEntries(sessionStorage),
+      outside: [
+        getComputedStyle(element("#host-probe h1")).fontSize,
+        getComputedStyle(element("#host-probe a")).textDecorationLine,
+        getComputedStyle(element("#host-probe table")).borderCollapse,
+        getComputedStyle(element("#host-probe p")).marginTop,
+        getComputedStyle(document.body).backgroundColor,
+      ],
+    };
+  });
+}
+
+function assertHostPreserved(
+  before: Awaited<ReturnType<typeof hostState>>,
+  after: Awaited<ReturnType<typeof hostState>>,
+) {
+  expect(after).toEqual(before);
+}
+
+async function assertNoArrasAppearance(page: Page) {
+  const declarations = await page.evaluate(
+    (hostOwnsRoot) =>
+      [...document.querySelectorAll(hostOwnsRoot ? ".arras-root *" : ".arras-root, .arras-root *")]
+        .filter(
+          (element) =>
+            element.hasAttribute("data-appearance") ||
+            element.hasAttribute("data-theme") ||
+            ((element as HTMLElement).style?.getPropertyValue("color-scheme") ?? "") !== "",
+        )
+        .map((element) => element.outerHTML.slice(0, 200)),
+    HOST_APPEARANCE_PROVIDER,
+  );
+  expect(declarations, "Arras must not install appearance declarations in its subtree").toEqual([]);
+}
+
 test.describe("host isolation", () => {
   test("the library's reset and utilities do not reach the host's elements", async ({ page }) => {
     await openWithHost(page);
@@ -243,17 +315,9 @@ test.describe("host isolation", () => {
   test("a host that sets the role tokens and switches its own appearance re-themes the library, and the library writes nothing to the page", async ({
     page,
   }) => {
+    test.skip(HOST_APPEARANCE_PROVIDER, SKIP_BARE_HOST);
     await page.emulateMedia({ colorScheme: "light" });
     await openWithHost(page);
-    const pageState = () =>
-      page.evaluate(() => [
-        document.documentElement.getAttribute("data-appearance"),
-        document.documentElement.getAttribute("data-theme"),
-        document.documentElement.style.colorScheme,
-        document.body.style.colorScheme,
-        localStorage.length + sessionStorage.length,
-      ]);
-    const pageStateBefore = await pageState();
     // The host's element carries its tokens and its own `data-appearance` switch; the library's root is inside it.
     await hostCss(
       page,
@@ -266,6 +330,7 @@ test.describe("host isolation", () => {
       root.parentElement?.replaceChild(host, root);
       host.append(root);
     });
+    const before = await hostState(page);
     const bg = () => style(page, ".arras-root", "background-color");
     const choose = (appearance: string | null) =>
       page.evaluate((a) => {
@@ -282,13 +347,14 @@ test.describe("host isolation", () => {
     await page.emulateMedia({ colorScheme: "dark" });
     await expect.poll(bg).toBe(THEME.lightBg); // no appearance given: the host's token, whatever the OS says
     // The host's existing document-level appearance and storage remain exactly host-owned.
-    expect(await pageState()).toEqual(pageStateBefore);
+    assertHostPreserved(before, await hostState(page));
   });
 
   for (const provider of ["root", "ancestor"] as const) {
-    test(`host-owned ${provider} appearance provider and role tokens drive the library`, async ({
+    test(`a bare fixture's ${provider} appearance provider and role tokens drive the library`, async ({
       page,
     }) => {
+      test.skip(HOST_APPEARANCE_PROVIDER, SKIP_BARE_HOST);
       await page.emulateMedia({ colorScheme: "light" });
       await openWithHost(page);
       const host = provider === "root" ? ".arras-root" : ".host-appearance-provider";
@@ -311,6 +377,7 @@ test.describe("host isolation", () => {
           .evaluate((element, value) => element.setAttribute("data-appearance", value), appearance);
       const bg = () => style(page, ".arras-root", "background-color");
       await choose("light");
+      const before = await hostState(page);
       await expect.poll(bg).toBe(THEME.lightBg);
       await choose("dark");
       await expect.poll(bg).toBe(THEME.darkBg);
@@ -319,14 +386,76 @@ test.describe("host isolation", () => {
 
       // The declared host provider remains host-owned and does not change unrelated page styles or storage.
       expect(await style(page, "#host-probe h1", "font-size")).toBe("32px");
-      expect(
-        await page.evaluate(() => [
-          document.documentElement.getAttribute("data-appearance"),
-          document.documentElement.style.colorScheme,
-          localStorage.length + sessionStorage.length,
-        ]),
-      ).toEqual([null, "", 0]);
+      assertHostPreserved(before, await hostState(page));
       expect(await page.locator(host).getAttribute("data-appearance")).toBe("light");
+    });
+  }
+
+  test("the actual host retains its full appearance, subtree and storage state across system changes", async ({
+    page,
+  }) => {
+    await openWithHost(page);
+    const before = await hostState(page);
+    await assertNoArrasAppearance(page);
+    for (const colorScheme of ["dark", "light"] as const) {
+      await page.emulateMedia({ colorScheme });
+      // Let the host-observation effect run; appearance changes must never install a preference.
+      await page.evaluate(
+        () =>
+          new Promise<void>((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+          ),
+      );
+      await assertNoArrasAppearance(page);
+      assertHostPreserved(before, await hostState(page));
+    }
+  });
+
+  for (const mutation of [
+    "local value",
+    "session key",
+    "host appearance",
+    "subtree appearance",
+  ] as const) {
+    test(`the preservation guard rejects a ${mutation} mutation`, async ({ page }) => {
+      await openWithHost(page);
+      await page.evaluate(() => {
+        localStorage.setItem("preservation-local", "original");
+        sessionStorage.setItem("preservation-session", "original");
+        document.documentElement.setAttribute("data-theme", "original");
+      });
+      const before = await hostState(page);
+      await page.emulateMedia({ colorScheme: "dark" });
+      await page.evaluate(
+        () =>
+          new Promise<void>((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+          ),
+      );
+      assertHostPreserved(before, await hostState(page));
+      await page.evaluate((kind) => {
+        switch (kind) {
+          case "local value":
+            localStorage.setItem("preservation-local", "changed");
+            break;
+          case "session key":
+            sessionStorage.removeItem("preservation-session");
+            sessionStorage.setItem("replacement-session", "original");
+            break;
+          case "host appearance":
+            document.documentElement.setAttribute("data-theme", "changed");
+            break;
+          case "subtree appearance":
+            document.querySelector(".arras-root button")?.setAttribute("data-theme", "unexpected");
+            break;
+        }
+      }, mutation);
+      const after = await hostState(page);
+      expect(after.localStorage.length).toBe(before.localStorage.length);
+      expect(after.sessionStorage.length).toBe(before.sessionStorage.length);
+      expect(() => assertHostPreserved(before, after)).toThrow();
+      if (mutation === "subtree appearance")
+        await expect(assertNoArrasAppearance(page)).rejects.toThrow();
     });
   }
 
