@@ -407,6 +407,106 @@ def test_registry_authorization_and_server_errors_are_not_treated_as_absence(
         registry._registry_json("https://registry.npmjs.org/%40documentdrivendx%2Farras-ui/0.6.2")
 
 
+@pytest.mark.parametrize(
+    "requested,failed,code,pending",
+    [
+        ("registry.npmjs.org", "registry.npmjs.org", 404, True),
+        ("registry.npmjs.org", "registry.npmjs.org", 403, False),
+        ("registry.npmjs.org", "registry.npmjs.org", 500, False),
+        ("registry.npmjs.org", "other.invalid", 404, False),
+        ("files.pythonhosted.org", "files.pythonhosted.org", 404, False),
+    ],
+)
+def test_only_same_host_npm_tarball_404_is_pending(
+    monkeypatch: pytest.MonkeyPatch, requested: str, failed: str, code: int, pending: bool
+) -> None:
+    import urllib.error
+    from email.message import Message
+
+    def failure(_request: Any, timeout: int) -> Any:
+        raise urllib.error.HTTPError(
+            f"https://{failed}/package.tgz", code, "failure", Message(), None
+        )
+
+    monkeypatch.setattr(registry.urllib.request, "urlopen", failure)
+    with pytest.raises(registry.RegistryPublicationError) as caught:
+        registry._download_public(f"https://{requested}/package.tgz")
+    assert isinstance(caught.value, registry.RegistryArtifactPendingError) is pending
+
+
+def test_pending_tarball_wait_is_bounded_and_requires_matching_bytes(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    sleeps: list[float] = []
+    monkeypatch.setattr(registry.time, "sleep", sleeps.append)
+    monkeypatch.setattr(registry.time, "monotonic", lambda: 0.0)
+    outcomes = iter(["pending", "matching"])
+
+    def eventually_visible() -> str:
+        value = next(outcomes)
+        if value == "pending":
+            raise registry.RegistryArtifactPendingError("accepted tarball not visible")
+        return value
+
+    assert registry.wait_for_registry_match(eventually_visible, 600) == "matching"
+    assert sleeps == [5]
+    clock = iter([0.0, 0.0, 1.0])
+    monkeypatch.setattr(registry.time, "monotonic", lambda: next(clock))
+
+    def still_pending() -> str:
+        raise registry.RegistryArtifactPendingError("accepted tarball not visible")
+
+    with pytest.raises(registry.RegistryPublicationError, match="visibility timeout"):
+        registry.wait_for_registry_match(still_pending, 1)
+
+
+def test_pending_preflight_never_reports_absent_or_authorizes_upload(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def pending(*args: Any, **kwargs: Any) -> str:
+        raise registry.RegistryArtifactPendingError("accepted tarball not visible")
+
+    monkeypatch.setattr(registry, "check_npm_registry", pending)
+    receipt = tmp_path / "preflight.json"
+    github_output = tmp_path / "github-output"
+    monkeypatch.setenv("GITHUB_OUTPUT", str(github_output))
+    args = registry._parser().parse_args(
+        ["check-npm", "--version", "0.7.0", "--sha256", "a" * 64, "--output", str(receipt)]
+    )
+    assert registry._execute(args) == 1
+    assert not receipt.exists() and not github_output.exists()
+
+
+def test_visibility_wait_never_retries_a_version_collision(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def metadata(_url: str) -> dict[str, Any]:
+        return {
+            "name": "@documentdrivendx/arras-ui",
+            "version": "0.7.0",
+            "dist": {"tarball": "https://registry.npmjs.org/package.tgz"},
+        }
+
+    def collision(_url: str) -> bytes:
+        return b"wrong bytes"
+
+    monkeypatch.setattr(
+        registry,
+        "_registry_json",
+        metadata,
+    )
+    monkeypatch.setattr(registry, "_download_public", collision)
+    sleeps: list[float] = []
+    monkeypatch.setattr(registry.time, "sleep", sleeps.append)
+    monkeypatch.setattr(registry.time, "monotonic", lambda: 0.0)
+    with pytest.raises(registry.RegistryPublicationError, match="version collision"):
+        registry.wait_for_registry_match(
+            lambda: registry.check_npm_registry("@documentdrivendx/arras-ui", "0.7.0", "a" * 64),
+            600,
+        )
+    assert sleeps == []
+
+
 @pytest.mark.parametrize("outcome", [None, "failure", "skipped", "cancelled", "success"])
 def test_action_capable_publication_requires_its_action_job(outcome: str | None) -> None:
     jobs = release_context()[1]
