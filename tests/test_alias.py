@@ -12,6 +12,8 @@ import sys
 import textwrap
 from pathlib import Path
 
+import pytest
+
 ALIAS = "legacyname"
 
 
@@ -83,6 +85,35 @@ def test_alias_and_canonical_import_orders_preserve_module_identity(tmp_path: Pa
         assert done.stdout.strip() == "ok", f"{first}: {done.stderr}"
 
 
+@pytest.mark.parametrize("canonical_first", [True, False])
+def test_genuine_own_shims_precede_target_attributes_in_both_import_orders(
+    tmp_path: Path, canonical_first: bool
+) -> None:
+    package = _package(tmp_path)
+    (package / "operate.py").write_text("OWN = 'operate shim'\n")
+    (package / "mcp").mkdir()
+    (package / "mcp" / "__init__.py").write_text("OWN = 'mcp shim'\n")
+    done = _run(
+        tmp_path,
+        f"""
+        import importlib, sys
+        if {canonical_first}:
+            import arras.operate, arras.mcp
+        from {ALIAS} import operate, mcp
+        assert operate.OWN == "operate shim"
+        assert mcp.OWN == "mcp shim"
+        import arras.operate, arras.mcp
+        import {ALIAS}
+        assert {ALIAS}.operate is operate is sys.modules["{ALIAS}.operate"]
+        assert {ALIAS}.mcp is mcp is sys.modules["{ALIAS}.mcp"]
+        assert operate is not arras.operate and mcp is not arras.mcp
+        assert importlib.import_module("{ALIAS}.model") is importlib.import_module("arras.model")
+        print("ok")
+        """,
+    )
+    assert done.stdout.strip() == "ok", done.stderr
+
+
 def test_local_attributes_and_original_getattr_precede_target_fallback(tmp_path: Path) -> None:
     _package(
         tmp_path,
@@ -126,8 +157,9 @@ def test_broken_own_shim_import_error_does_not_fall_back_to_target(tmp_path: Pat
     done = _run(
         tmp_path,
         f"""
+        import arras.model
         try:
-            import {ALIAS}.model
+            from {ALIAS} import model
         except ImportError as error:
             assert str(error) == "shim import failed"
         else:

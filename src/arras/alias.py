@@ -127,8 +127,9 @@ def alias_package(
     contains itself is never replaced, whatever `modules` says. Entry points are never added
     implicitly to a closed list: include `"__main__"` for `python -m name` or
     `"conformance.__main__"` for `python -m name.conformance`. The alias package's own
-    `__getattr__` remains ahead of fallback attribute forwarding; only its `AttributeError`
-    allows forwarding to `target`."""
+    `__getattr__` remains ahead of local submodule lookup; only its `AttributeError`
+    allows lookup to continue. Genuine local submodules are imported before forwarding to
+    `target`, and their import errors propagate."""
     real = importlib.import_module(target)
     closed = None if modules is None else tuple(modules)
     finder = _AliasFinder(name, target, closed)
@@ -149,6 +150,9 @@ def alias_package(
                 return original_getattr(attribute)
             except AttributeError:
                 pass
+        fullname = f"{name}.{attribute}"
+        if finder._own(fullname) is not None:  # pyright: ignore[reportPrivateUsage]
+            return importlib.import_module(fullname)
         value = getattr(real, attribute)
         if isinstance(value, ModuleType) and value.__name__.startswith(target + "."):
             relative = value.__name__.removeprefix(target + ".")
