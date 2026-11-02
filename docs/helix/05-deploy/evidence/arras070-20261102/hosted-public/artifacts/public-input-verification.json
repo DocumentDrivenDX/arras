@@ -1,0 +1,82 @@
+{
+  "asset_count": 17,
+  "assets": [
+    {
+      "filename": "acceptance-inventory-neutral-theme.json",
+      "sha256": "925019da1651937a72a20b91a7a032f1101c2af024ae96c51ef423aa67bbe14c"
+    },
+    {
+      "filename": "acceptance-resources-neutral-theme.json",
+      "sha256": "ac5dd4b46986437df5af2d8c3eb8460f1a9d7be67c8cc25f9816a3362db4044d"
+    },
+    {
+      "filename": "arras-0.7.0-py3-none-any.whl",
+      "sha256": "b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6"
+    },
+    {
+      "filename": "arras-0.7.0.tar.gz",
+      "sha256": "c790907c3bdb9600fe25942ceae10dae59307d0574e7cc6440a58261743ef00f"
+    },
+    {
+      "filename": "consumer-qualification.json",
+      "sha256": "eb83e62a0985f0f17cf50ed97be71dd06f781f67863933a03d7b2aa9d9541cc4"
+    },
+    {
+      "filename": "distribution-verification.json",
+      "sha256": "0105ef0cb0d7eed7eeab7553ed22fb6740d0214ac24fe1b053cde66e50aa4886"
+    },
+    {
+      "filename": "doctor-installed.json",
+      "sha256": "45f2156481a300c51ede440bc8705869039a4dfe265bf471a35e278a856058ba"
+    },
+    {
+      "filename": "documentdrivendx-arras-ui-0.7.0.tgz",
+      "sha256": "8f3c5ea2d98ffa8011e5acfe3d9a65cd773cd149481aeb6edcf2d671bb5af9de"
+    },
+    {
+      "filename": "native-cohort-binding.json",
+      "sha256": "1885503f74c176c229c908ebef73ab7d3f542c037378bd596de0a9926eeb5356"
+    },
+    {
+      "filename": "native-cohort.json",
+      "sha256": "7c98095e01f6b5430e7a22c9b344704f11e1ecc8cb1e649232d8f4d7512649b7"
+    },
+    {
+      "filename": "native-find-links.html",
+      "sha256": "9186cb548ede57f45902096eacc3f10a4dbbae7dbc4066a890829e7d86c1d9d7"
+    },
+    {
+      "filename": "native-qualification.json",
+      "sha256": "23094f8d8f4e0cd51995a066acb6bacbc16846aeecda30bf75c21c74b4a2bf32"
+    },
+    {
+      "filename": "playwright-summary-neutral-theme.json",
+      "sha256": "6d84aa2dba1b5f45b3bcaa5577c05b2d85d135da4915d90f2237faa8e6384713"
+    },
+    {
+      "filename": "release-evidence.json",
+      "sha256": "71ca10acf69b36c485588ddbcf838bc4fdb8dd380e862a79c663392ceb6d22d6"
+    },
+    {
+      "filename": "ui-qualification.json",
+      "sha256": "b9f841f4ee5dc7f004296194191c1c0b893a66d50c5d438acdccccc7fe9bc68b"
+    },
+    {
+      "filename": "umf-actions-installed.json",
+      "sha256": "0cc1cb623a5544cd0c6f39bef7d02467dc378f40402946e45e3c07a6c27d1149"
+    },
+    {
+      "filename": "umf-admission-installed.json",
+      "sha256": "d1f2d42d8a84a6dabfd85b7d7e91921735eb07ea45d499d2115201068b4902eb"
+    }
+  ],
+  "npm_matches_wheel_payload": true,
+  "schema_version": 1,
+  "status": "passed",
+  "sums_sha256": "7d02b79e1a0fc3fe388d86e9209559495f969d6724cc04075acb98804a827ab8",
+  "version": "0.7.0",
+  "wheel": {
+    "filename": "arras-0.7.0-py3-none-any.whl",
+    "sha256": "b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6"
+  }
+}

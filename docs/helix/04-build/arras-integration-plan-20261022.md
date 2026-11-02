@@ -3530,3 +3530,56 @@ requires original Release success; a distinct, narrowly pinned 0.7.0 composite
 origin is needed before registries can consume an original-failure plus successful
 hosted recovery chain. No original-success rewrite or older-artifact substitution
 is permitted. Public registry delivery and independent public installs remain open.
+
+
+### Successful immutable public recovery and explicit registry handoff
+
+Public-codec repair PR 45 merged as `d2ad21fd916f8d455faac25f20ece209b00b49d0`.
+[Hosted recovery 41520267978](https://github.com/DocumentDrivenDX/arras/actions/runs/41520267978)
+completed successfully. Its original-provenance, fresh consumer and anonymous
+public consumer jobs passed. The original Release 41514683626 remains failed;
+no tag, asset or producer conclusion was changed. The parent independently
+compared anonymous SHA256SUMS with the original producer artifact and verified
+all seventeen payload hashes, then ran the repaired strict public codec against
+those distinct original/public directories successfully.
+
+The separate `hosted-recovered-0.7.0` registry origin pins only this immutable
+0.7.0 producer cohort. Normal hosted-success and historical local-0.6.5 paths
+keep their existing validators. Its new read-only qualifier requires every
+original mandatory job, including action and installed downstream, to succeed
+except exactly the original public-download failure; any extra failure, missing
+job, stale attempt or substituted identity refuses. It validates the actual
+successful default-main recovery API/workflow/jobs, exact original anchor,
+producer bundle, summary and seven SHA-bound raw public receipts. Existing full
+distribution, twenty-case doctor, fresh consumer, actual-wheel public-phase
+admission/action, portable UI/resources/sidecars and four route/surface validators
+are reused. The original GitHub release must still report immutable=true.
+
+A local end-to-end preflight of those actual original and completed supplemental
+API/artifact inputs passes. [Retained evidence](../05-deploy/evidence/arras070-20261102/)
+includes original failed diagnostics, original anchor, successful hosted public
+summary/raw JSON receipts and UI sidecars, independent public-codec comparison,
+and the local composite preflight with qualifier/receipt hashes. Local preflight
+is not the hosted registry-admission job. The latter independently repeats
+anonymous plan/verify before creating the normal verified-input artifact.
+A three-way exclusive join admits exactly one successful origin with the other
+two skipped; automatic failed Release events cannot select recovery. OIDC,
+collision checks and both registry postflights remain unchanged and required.
+
+The affected gate/regression group passes 165 tests. Ruff/format and Pyright pass;
+official actionlint 1.7.12 validates the new publisher/qualifier workflows. Broader
+lint reports only three pre-existing informational SC2035 glob notes in the
+unchanged Release build staging block. Parent independently reports 109 affected
+tests passing, and Newton's final read-only review found no remaining blocker.
+Initial test-only condition/new-job block extraction failures were corrected;
+they were not production-gate passes or artifact defects.
+
+Both future reusable Release and verification downstream callers now explicitly
+select Python 3.11. The original Release and already-running d2ad recovery
+reusable consumers used their legacy 3.12 default; those observations remain
+incidental and are not relabelled. The recovery's separate raw public doctor,
+fresh extension, official admission and action receipts record the normative
+3.11 execution, which the new qualifier enforces. No whole UI rerun is required
+for a future caller-input clarification. GitHub assets are published and hosted
+public recovery is complete; registry OIDC delivery, independent public installs
+and final repository cleanup remain open until their actual evidence closes.

@@ -696,6 +696,7 @@ jobs:
     needs: [check, build, github-release]
     uses: ./.github/workflows/downstream.yml
     with:
+      python_version: "3.11"
       wheel_url: https://github.com/${{ github.repository }}/releases/download/${{ needs.check.outputs.tag }}/${{ needs.build.outputs.wheel_name }}
       wheel_sha256: ${{ needs.build.outputs.wheel_sha256 }}
       source_sha: ${{ needs.check.outputs.source_sha }}

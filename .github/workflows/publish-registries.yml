@@ -7,11 +7,19 @@ on:
   workflow_dispatch:
     inputs:
       origin:
-        description: Original hosted Release or exact immutable local 0.6.5 qualification.
+        description: Successful hosted release, closed hosted 0.7.0 recovery, or immutable local 0.6.5 qualification.
         required: true
         type: choice
-        options: [hosted, local-0.6.5]
+        options: [hosted, local-0.6.5, hosted-recovered-0.7.0]
         default: hosted
+      recovery_run_id:
+        description: Successful Verify published release run for the pinned hosted 0.7.0 recovery.
+        required: false
+        type: string
+      expected_recovery_driver_sha:
+        description: Exact default-branch driver of that successful recovery run.
+        required: false
+        type: string
       publication_run_id:
         description: Successful Release workflow run whose immutable assets will be verified.
         required: false
@@ -56,12 +64,20 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && inputs.origin == 'local-0.6.5'
     uses: ./.github/workflows/qualify-local-registry.yml
 
+  qualify-hosted-recovery:
+    if: github.event_name == 'workflow_dispatch' && inputs.origin == 'hosted-recovered-0.7.0'
+    uses: ./.github/workflows/qualify-hosted-recovery.yml
+    with:
+      recovery_run_id: ${{ inputs.recovery_run_id }}
+      expected_recovery_driver_sha: ${{ inputs.expected_recovery_driver_sha }}
+
   verify-release:
     if: >-
       always() && !cancelled() &&
-      ((needs.verify-hosted-release.result == 'success' && needs.qualify-local.result == 'skipped') ||
-       (needs.qualify-local.result == 'success' && needs.verify-hosted-release.result == 'skipped'))
-    needs: [verify-hosted-release, qualify-local]
+      ((needs.verify-hosted-release.result == 'success' && needs.qualify-local.result == 'skipped' && needs.qualify-hosted-recovery.result == 'skipped') ||
+       (needs.qualify-local.result == 'success' && needs.verify-hosted-release.result == 'skipped' && needs.qualify-hosted-recovery.result == 'skipped') ||
+       (needs.qualify-hosted-recovery.result == 'success' && needs.verify-hosted-release.result == 'skipped' && needs.qualify-local.result == 'skipped'))
+    needs: [verify-hosted-release, qualify-local, qualify-hosted-recovery]
     runs-on: ubuntu-latest
     outputs:
       target: ${{ steps.identity.outputs.target }}
@@ -76,6 +92,8 @@ jobs:
         env:
           LOCAL: ${{ needs.qualify-local.result }}
           HOSTED: ${{ toJSON(needs.verify-hosted-release.outputs) }}
+          RECOVERED: ${{ needs.qualify-hosted-recovery.result }}
+          RECOVERY_TARGET: ${{ inputs.target }}
         run: |
           python3 - <<'PY' >> "$GITHUB_OUTPUT"
           import json, os
@@ -85,6 +103,12 @@ jobs:
                   wheel_name='arras-0.6.5-py3-none-any.whl',
                   wheel_sha256='beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b',
                   sums_sha256='dbe547fe5f05386759f6fed80fc85991b676e8ca6eeb67788b2b84dbba1919f8')
+          elif os.environ['RECOVERED'] == 'success':
+              identity = dict(target=os.environ['RECOVERY_TARGET'], version='0.7.0', tag='v0.7.0',
+                  source_sha='f9f04c42ae0c989d34907e00a63ca95c3cb2fcdf',
+                  wheel_name='arras-0.7.0-py3-none-any.whl',
+                  wheel_sha256='b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6',
+                  sums_sha256='7d02b79e1a0fc3fe388d86e9209559495f969d6724cc04075acb98804a827ab8')
           else:
               identity = json.loads(os.environ['HOSTED'])
           for key, value in identity.items():
@@ -94,7 +118,7 @@ jobs:
           PY
 
   verify-hosted-release:
-    if: (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') && inputs.origin != 'local-0.6.5'
+    if: (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' && inputs.origin == 'hosted')
     runs-on: ubuntu-latest
     outputs:
       target: ${{ steps.identity.outputs.target }}

@@ -1,0 +1,59 @@
+{
+  "original_publication": {
+    "driver_sha": "19c71f775e07a36ad23b3e80310e56aa61dae576",
+    "evidence_sha256": "71ca10acf69b36c485588ddbcf838bc4fdb8dd380e862a79c663392ceb6d22d6",
+    "run_attempt": "1",
+    "run_id": "41514683626",
+    "sums_sha256": "7d02b79e1a0fc3fe388d86e9209559495f969d6724cc04075acb98804a827ab8",
+    "tag_object_sha": "9f950b306eb3f86c057a118edba085e4fe81bbd4",
+    "workflow_ref": "DocumentDrivenDX/arras/.github/workflows/release.yml@refs/heads/main"
+  },
+  "published_wheel": {
+    "filename": "arras-0.7.0-py3-none-any.whl",
+    "sha256": "b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6"
+  },
+  "purpose": "verification-only; no release assets were created or changed",
+  "receipts": [
+    {
+      "filename": "public-input-verification.json",
+      "sha256": "0df9e7cf4be0672564821e66a60b2ce20e7b6ca56731f71f7266d11cda7b6b29"
+    },
+    {
+      "filename": "public-distribution-verification.json",
+      "sha256": "1e0952e57fe408a1d1f87f3cc651bf571c1d28e9c4c75d6cb41de0ce610fe725"
+    },
+    {
+      "filename": "public-doctor-installed.json",
+      "sha256": "4255331a31a234521afba934132dcbb99df61812e9e819b39f3a8428e8dc5839"
+    },
+    {
+      "filename": "public-extension-host-fresh-dependencies.json",
+      "sha256": "dd6ce9b0015f9fc74ebcbe00ccde40fa52dfc97d14d6c15634b060ff02f475fe"
+    },
+    {
+      "filename": "tests/downstream/evidence/linux/qualification-linux.json",
+      "sha256": "a1515f66db1032fd8c47d78af17c691157fdabdf2f6506aecb45f9024446c5dd"
+    },
+    {
+      "filename": "public-umf-admission-installed.json",
+      "sha256": "44976f6be9f933fce2eb8009898c58a491d2c92b27e94d46756e9661f58cef8a"
+    },
+    {
+      "filename": "public-umf-actions-installed.json",
+      "sha256": "21e21fc348161a9fe84a0f5e812248933133a97ad18b2828c39a27be1194743e"
+    }
+  ],
+  "release": {
+    "source_sha": "f9f04c42ae0c989d34907e00a63ca95c3cb2fcdf",
+    "tag": "v0.7.0"
+  },
+  "schema_version": 1,
+  "status": "passed",
+  "umf_actions_required": true,
+  "verification": {
+    "driver_sha": "d2ad21fd916f8d455faac25f20ece209b00b49d0",
+    "run_attempt": "1",
+    "run_id": "41520267978",
+    "workflow_ref": "DocumentDrivenDX/arras/.github/workflows/verify-published-release.yml@refs/heads/main"
+  }
+}

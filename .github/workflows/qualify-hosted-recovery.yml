@@ -1,0 +1,135 @@
+name: Qualify immutable hosted 0.7.0 recovery
+
+on:
+  workflow_call:
+    inputs:
+      recovery_run_id:
+        required: true
+        type: string
+      expected_recovery_driver_sha:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+      - name: Admit only the explicit pinned hosted recovery request
+        env:
+          RECOVERY_RUN_ID: ${{ inputs.recovery_run_id }}
+          RECOVERY_DRIVER_SHA: ${{ inputs.expected_recovery_driver_sha }}
+        run: |
+          test "$GITHUB_REF" = refs/heads/main
+          test "$(git rev-parse HEAD)" = "$GITHUB_WORKFLOW_SHA"
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          request = json.loads(Path(os.environ['GITHUB_EVENT_PATH']).read_text())['inputs']
+          expected = dict(origin='hosted-recovered-0.7.0', publication_run_id='41514683626',
+              release_tag='v0.7.0', expected_source_sha='f9f04c42ae0c989d34907e00a63ca95c3cb2fcdf',
+              expected_tag_object_sha='9f950b306eb3f86c057a118edba085e4fe81bbd4',
+              expected_sums_sha256='7d02b79e1a0fc3fe388d86e9209559495f969d6724cc04075acb98804a827ab8',
+              expected_wheel_sha256='b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6')
+          if os.environ['GITHUB_EVENT_NAME'] != 'workflow_dispatch' or any(request.get(k) != v for k,v in expected.items()):
+              raise SystemExit('request differs from the closed hosted 0.7.0 recovery origin')
+          if request.get('target') not in {'npm','pypi','both'}:
+              raise SystemExit('invalid registry target')
+          if not re.fullmatch(r'[1-9][0-9]{0,19}', os.environ['RECOVERY_RUN_ID']) or not re.fullmatch(r'[0-9a-f]{40}', os.environ['RECOVERY_DRIVER_SHA']):
+              raise SystemExit('recovery run/driver pins are malformed')
+          PY
+      - name: Fetch original and supplemental hosted metadata without changing conclusions
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RECOVERY_RUN_ID: ${{ inputs.recovery_run_id }}
+        run: |
+          set -euo pipefail
+          mkdir -p metadata original/provenance original/release-assets recovery/anchor recovery/public verified
+          for pair in original:41514683626 recovery:$RECOVERY_RUN_ID; do
+            label="${pair%%:*}"
+            run_id="${pair#*:}"
+            gh api "repos/DocumentDrivenDX/arras/actions/runs/$run_id" > "metadata/$label-run.json"
+            gh api --paginate --slurp "repos/DocumentDrivenDX/arras/actions/runs/$run_id/jobs?filter=latest&per_page=100" > "metadata/$label-pages.json"
+          done
+          gh api repos/DocumentDrivenDX/arras/actions/workflows/release.yml > metadata/original-workflow.json
+          gh api repos/DocumentDrivenDX/arras/actions/workflows/verify-published-release.yml > metadata/recovery-workflow.json
+          gh api repos/DocumentDrivenDX/arras/git/ref/tags/v0.7.0 > metadata/tag-ref.json
+          gh api repos/DocumentDrivenDX/arras/git/tags/9f950b306eb3f86c057a118edba085e4fe81bbd4 > metadata/tag-object.json
+          gh api repos/DocumentDrivenDX/arras/releases/tags/v0.7.0 > metadata/release.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for label in ('original','recovery'):
+              pages = json.loads(Path(f'metadata/{label}-pages.json').read_text())
+              if not isinstance(pages,list) or not pages:
+                  raise SystemExit('missing job pages')
+              jobs = [job for page in pages for job in page['jobs']]
+              if any(page['total_count'] != len(jobs) for page in pages):
+                  raise SystemExit('incomplete job pagination')
+              Path(f'metadata/{label}-jobs.json').write_text(json.dumps(dict(total_count=len(jobs),jobs=jobs)))
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-driver-provenance
+          run-id: 41514683626
+          github-token: ${{ github.token }}
+          path: original/provenance
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-assets
+          run-id: 41514683626
+          github-token: ${{ github.token }}
+          path: original/release-assets
+      - uses: actions/download-artifact@v4
+        with:
+          name: original-publication-anchor-verification
+          run-id: ${{ inputs.recovery_run_id }}
+          github-token: ${{ github.token }}
+          path: recovery/anchor
+      - uses: actions/download-artifact@v4
+        with:
+          name: published-release-verification-only
+          run-id: ${{ inputs.recovery_run_id }}
+          github-token: ${{ github.token }}
+          path: recovery/public
+      - name: Validate the actual original-failure and supplemental-success chain
+        env:
+          RECOVERY_RUN_ID: ${{ inputs.recovery_run_id }}
+          RECOVERY_DRIVER_SHA: ${{ inputs.expected_recovery_driver_sha }}
+        run: |
+          python3 .github/scripts/qualify_hosted_recovery.py --metadata metadata --original original \
+            --recovery recovery --recovery-run-id "$RECOVERY_RUN_ID" \
+            --expected-recovery-driver-sha "$RECOVERY_DRIVER_SHA" \
+            --output verified/registry-publication-identity.json
+          cp verified/registry-publication-identity.json verified/hosted-recovered-070-qualification.json
+      - name: Independently repeat anonymous exact public asset comparison
+        run: |
+          set -euo pipefail
+          mkdir -p verified/public-release-assets
+          base=https://github.com/DocumentDrivenDX/arras/releases/download/v0.7.0
+          curl --disable --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-time 90 \
+            --output verified/public-release-assets/SHA256SUMS "$base/SHA256SUMS"
+          args=(--trusted-dir original/release-assets --public-dir verified/public-release-assets \
+            --expected-version 0.7.0 --expected-wheel arras-0.7.0-py3-none-any.whl \
+            --expected-wheel-sha256 b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6 \
+            --expected-sums-sha256 7d02b79e1a0fc3fe388d86e9209559495f969d6724cc04075acb98804a827ab8)
+          python3 .github/scripts/verify_public_release_assets.py plan "${args[@]}" --output public-plan.txt
+          while IFS= read -r asset; do
+            test -n "$asset"
+            curl --disable --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-time 90 \
+              --output "verified/public-release-assets/$asset" "$base/$asset"
+          done < public-plan.txt
+          python3 .github/scripts/verify_public_release_assets.py verify "${args[@]}" --output verified/public-input-verification.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: registry-verified-release-0.7.0
+          path: verified
+          if-no-files-found: error
+          retention-days: 90
