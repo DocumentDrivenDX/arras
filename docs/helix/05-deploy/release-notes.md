@@ -27,7 +27,7 @@ no public state effect, and uncertain outcomes are not automatically retried.
 Replay state lasts only for the process. Truss, Ashlar, general action execution
 and durable replay are outside this qualification.
 
-The Python distribution is `umf-core==0.10.5`, distinct from TypeScript SDK
+The optional UMF Python distribution is `umf-core==0.10.5`, distinct from TypeScript SDK
 0.10.1 and document/core semantics 0.10.0. Its optional native dependency narrows
 installation to the qualified Linux x86_64 and macOS arm64 artifacts; Python 3.11
 remains the supported release profile. Existing APIs, the wheel-carried compiled

@@ -3451,7 +3451,7 @@ review rejection and exact scoped resolution; no unresolved approval block remai
 
 The following closeout changes only deploy documentation/evidence and removes two
 new explanatory comment lines from the extras driver. It changes no executable
-behavior, wheel payload or verifier/probe/selector hash. The full CI evidence stays
+behavior, wheel payload or UMF verifier/probe/selector hash. The full CI evidence stays
 bound to c3cb035; final lean/source checks and independent closeout review precede
 normal merge. Exact-tag Release will rebuild and requalify from its final source,
 with b20 enforced by the successor guard. Merge, GitHub release, PyPI/npm delivery
