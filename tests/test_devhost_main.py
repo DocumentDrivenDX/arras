@@ -427,6 +427,7 @@ def test_theme_manifest_refuses_missing_and_changed_manifests_with_csp(tmp_path:
         port=8000,
         distribution=DistributionConfig(theme_manifest=str(manifest)),
     )
+    assert app._themed_ui is not None
     digest = app._themed_ui.theme_manifest.manifest_sha256
     manifest.write_text("not valid JSON", encoding="utf-8")
     status, headers, body = _asgi_get(app, f"/theme-assets/{digest}/mutable-theme.css")
