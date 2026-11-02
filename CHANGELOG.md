@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — embedded host and theme corrections
+
+- Fixes #49: development-host help now shows the effective configured operator
+  groups; explicit command-line groups still take precedence.
+- Fixes #50: the development host applies an explicit distribution theme manifest
+  to the stock UI, with `--theme-manifest` overriding configuration.
+- Fixes #51: the theme-manifest builder and CLI accept an optional `light` or
+  `dark` appearance declaration; omitted appearance remains undeclared.
+
 ## 0.7.0 — bounded UMF memory actions
 
 Adds opt-in `arras-umf-set/1` execution through the official generated synchronous

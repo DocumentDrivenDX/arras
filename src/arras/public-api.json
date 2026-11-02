@@ -824,6 +824,11 @@
             "name": "telemetry",
             "kind": "POSITIONAL_OR_KEYWORD",
             "default": "TelemetryNames()"
+          },
+          {
+            "name": "theme_manifest",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "default": null
           }
         ]
       },
@@ -1123,6 +1128,11 @@
             "name": "ui_versions",
             "kind": "KEYWORD_ONLY",
             "default": null
+          },
+          {
+            "name": "appearance",
+            "kind": "KEYWORD_ONLY",
+            "default": null
           }
         ]
       },
@@ -1266,6 +1276,11 @@
             "name": "operator_groups",
             "kind": "KEYWORD_ONLY",
             "default": "default operator groups"
+          },
+          {
+            "name": "theme_manifest",
+            "kind": "KEYWORD_ONLY",
+            "default": null
           }
         ]
       },
@@ -1633,12 +1648,22 @@
       "--truss-reset",
       "--truss-credentials",
       "--operator-group",
+      "--theme-manifest",
       "--records",
       "--also"
     ],
     "python -m arras.ui": [
       "npm-package",
-      "--copy"
+      "--copy",
+      "theme-manifest",
+      "--css",
+      "--out",
+      "--favicon",
+      "--font",
+      "--package-name",
+      "--package-version",
+      "--ui-version",
+      "--appearance"
     ],
     "python -m arras.mcp": [
       "-h",
