@@ -105,7 +105,7 @@ function assertHostPreserved(
   expect(after).toEqual(before);
 }
 
-async function assertNoArrasAppearance(page: Page) {
+async function assertNoArrasAppearance(page: Page, hostOwnsRoot = HOST_APPEARANCE_PROVIDER) {
   const declarations = await page.evaluate(
     (hostOwnsRoot) =>
       [...document.querySelectorAll(hostOwnsRoot ? ".arras-root *" : ".arras-root, .arras-root *")]
@@ -116,9 +116,98 @@ async function assertNoArrasAppearance(page: Page) {
             ((element as HTMLElement).style?.getPropertyValue("color-scheme") ?? "") !== "",
         )
         .map((element) => element.outerHTML.slice(0, 200)),
-    HOST_APPEARANCE_PROVIDER,
+    hostOwnsRoot,
   );
   expect(declarations, "Arras must not install appearance declarations in its subtree").toEqual([]);
+}
+
+// Keep media fixed while checking library-owned interactions. A host may legitimately rewrite its
+// own attributes, styles and preference storage in response to an OS media event.
+async function exerciseArrasInteraction(page: Page, inspect?: () => Promise<void>) {
+  await page.keyboard.press("ControlOrMeta+k");
+  await expect(page.getByRole("dialog", { name: "Command palette" })).toBeVisible();
+  if (inspect) await inspect();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: "Command palette" })).toHaveCount(0);
+}
+
+async function assertStaticInteractionPreserved(
+  page: Page,
+  hostOwnsRoot = HOST_APPEARANCE_PROVIDER,
+) {
+  await assertNoArrasAppearance(page, hostOwnsRoot);
+  const before = await hostState(page);
+  await exerciseArrasInteraction(page, () => assertNoArrasAppearance(page, hostOwnsRoot));
+  await assertNoArrasAppearance(page, hostOwnsRoot);
+  assertHostPreserved(before, await hostState(page));
+}
+
+async function assertSystemTransitionPreserved(
+  page: Page,
+  before: Awaited<ReturnType<typeof hostState>>,
+  hostOwnsAppearance = HOST_APPEARANCE_PROVIDER,
+) {
+  await assertNoArrasAppearance(page, hostOwnsAppearance);
+  // A bare fixture declares no host writer. A declared host owns the media event itself;
+  // check library interactions at fixed media against the host's settled state instead.
+  if (!hostOwnsAppearance) assertHostPreserved(before, await hostState(page));
+  await assertStaticInteractionPreserved(page, hostOwnsAppearance);
+}
+
+// A controlled host fixture, installed before application scripts. Its media listener deliberately
+// owns document/root attributes, outside-root background and preference storage. No production API.
+async function installMediaAppearanceHost(page: Page, placement: "root" | "ancestor") {
+  await page.addInitScript((placement) => {
+    localStorage.setItem("host-preference", "retained-local");
+    sessionStorage.setItem("host-session", "retained-session");
+    const media = matchMedia("(prefers-color-scheme: dark)");
+    const selector = placement === "root" ? ".arras-root" : "#host-media-provider";
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(
+      `${selector} { --arras-color-ground: rgb(221, 229, 237) } ${selector}[data-appearance=dark] { --arras-color-ground: rgb(31, 39, 47) }`,
+    );
+    document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+    let provider: Element | null = null;
+    const resolveProvider = () => {
+      if (provider) return provider;
+      const mount = document.querySelector(placement === "root" ? ".arras-root" : "#root");
+      if (!mount) return null;
+      provider = mount;
+      if (placement === "ancestor") {
+        provider = document.createElement("div");
+        provider.id = "host-media-provider";
+        mount.parentElement?.replaceChild(provider, mount);
+        provider.append(mount);
+      }
+      return provider;
+    };
+    const applyDocumentAppearance = (scheme: string) => {
+      if (document.documentElement) {
+        document.documentElement.setAttribute("data-appearance", scheme);
+        document.documentElement.setAttribute("data-theme", "host-retained");
+        document.documentElement.style.colorScheme = scheme;
+      }
+      if (document.body)
+        document.body.style.backgroundColor = media.matches ? "rgb(9, 10, 11)" : "transparent";
+    };
+    const apply = () => {
+      const scheme = media.matches ? "dark" : "light";
+      applyDocumentAppearance(scheme);
+      const host = resolveProvider();
+      host?.setAttribute("data-appearance", scheme);
+      host?.setAttribute("data-theme", "host-owned");
+      const root = document.querySelector(".arras-root");
+      root?.setAttribute("data-host-scheme", scheme);
+      root?.classList.toggle("host-media-dark", media.matches);
+      localStorage.setItem("host-observed-scheme", scheme);
+      return root !== null && host !== null;
+    };
+    media.addEventListener("change", apply);
+    const observer = new MutationObserver(() => {
+      if (apply()) observer.disconnect();
+    });
+    if (!apply()) observer.observe(document, { childList: true, subtree: true });
+  }, placement);
 }
 
 test.describe("host isolation", () => {
@@ -391,65 +480,123 @@ test.describe("host isolation", () => {
     });
   }
 
-  test("the actual host retains its full appearance, subtree and storage state across system changes", async ({
+  test("the actual host retains its full state during Arras interactions at fixed media", async ({
+    page,
+  }) => {
+    await openWithHost(page);
+    await assertStaticInteractionPreserved(page);
+  });
+
+  test("system changes preserve bare-host state and never install Arras subtree appearance", async ({
     page,
   }) => {
     await openWithHost(page);
     const before = await hostState(page);
-    await assertNoArrasAppearance(page);
     for (const colorScheme of ["dark", "light"] as const) {
       await page.emulateMedia({ colorScheme });
-      // Let the host-observation effect run; appearance changes must never install a preference.
       await page.evaluate(
         () =>
           new Promise<void>((resolve) =>
             requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
           ),
       );
-      await assertNoArrasAppearance(page);
-      assertHostPreserved(before, await hostState(page));
+      await assertSystemTransitionPreserved(page, before);
     }
   });
+
+  for (const placement of ["root", "ancestor"] as const) {
+    test(`a real ${placement} host media listener owns OS changes while Arras interactions preserve its state`, async ({
+      page,
+    }) => {
+      // This controlled fixture owns the page; never replace a consumer's already-declared provider.
+      test.skip(HOST_APPEARANCE_PROVIDER, SKIP_BARE_HOST);
+      await installMediaAppearanceHost(page, placement);
+      await openWithHost(page);
+      expect(
+        await page.evaluate(() => [
+          localStorage.getItem("host-preference"),
+          sessionStorage.getItem("host-session"),
+        ]),
+      ).toEqual(["retained-local", "retained-session"]);
+      const before = await hostState(page);
+      for (const scheme of ["dark", "light"] as const) {
+        await page.emulateMedia({ colorScheme: scheme });
+        await expect
+          .poll(() =>
+            page.evaluate(() => [
+              document.documentElement.getAttribute("data-appearance"),
+              document.querySelector(".arras-root")?.getAttribute("data-host-scheme"),
+              getComputedStyle(document.body).backgroundColor,
+              localStorage.getItem("host-observed-scheme"),
+            ]),
+          )
+          .toEqual([
+            scheme,
+            scheme,
+            scheme === "dark" ? "rgb(9, 10, 11)" : "rgba(0, 0, 0, 0)",
+            scheme,
+          ]);
+        await expect
+          .poll(() => style(page, ".arras-root", "background-color"))
+          .toBe(scheme === "dark" ? "rgb(31, 39, 47)" : "rgb(221, 229, 237)");
+        await assertSystemTransitionPreserved(page, before, true);
+      }
+    });
+  }
 
   for (const mutation of [
     "local value",
     "session key",
     "host appearance",
+    "root appearance",
+    "outside background",
     "subtree appearance",
   ] as const) {
-    test(`the preservation guard rejects a ${mutation} mutation`, async ({ page }) => {
+    test(`the static preservation guard rejects a ${mutation} write during an Arras interaction`, async ({
+      page,
+    }) => {
       await openWithHost(page);
       await page.evaluate(() => {
         localStorage.setItem("preservation-local", "original");
         sessionStorage.setItem("preservation-session", "original");
         document.documentElement.setAttribute("data-theme", "original");
       });
+      await assertStaticInteractionPreserved(page);
       const before = await hostState(page);
-      await page.emulateMedia({ colorScheme: "dark" });
-      await page.evaluate(
-        () =>
-          new Promise<void>((resolve) =>
-            requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-          ),
-      );
-      assertHostPreserved(before, await hostState(page));
       await page.evaluate((kind) => {
-        switch (kind) {
-          case "local value":
-            localStorage.setItem("preservation-local", "changed");
-            break;
-          case "session key":
-            sessionStorage.removeItem("preservation-session");
-            sessionStorage.setItem("replacement-session", "original");
-            break;
-          case "host appearance":
-            document.documentElement.setAttribute("data-theme", "changed");
-            break;
-          case "subtree appearance":
-            document.querySelector(".arras-root button")?.setAttribute("data-theme", "unexpected");
-            break;
-        }
+        // Simulate a forbidden Arras write during the next real keyboard interaction. The fixed
+        // media setting cannot trigger the host's legitimate media listener during this check.
+        window.addEventListener(
+          "keydown",
+          () => {
+            switch (kind) {
+              case "local value":
+                localStorage.setItem("preservation-local", "changed");
+                break;
+              case "session key":
+                sessionStorage.removeItem("preservation-session");
+                sessionStorage.setItem("replacement-session", "original");
+                break;
+              case "host appearance":
+                document.documentElement.setAttribute("data-theme", "changed");
+                break;
+              case "root appearance":
+                document.querySelector(".arras-root")?.setAttribute("data-theme", "changed");
+                break;
+              case "outside background":
+                document.body.style.backgroundColor = "rgb(5, 6, 7)";
+                break;
+              case "subtree appearance":
+                document
+                  .querySelector(".arras-root button")
+                  ?.setAttribute("data-theme", "unexpected");
+                break;
+            }
+          },
+          { once: true, capture: true },
+        );
       }, mutation);
+      await exerciseArrasInteraction(page);
       const after = await hostState(page);
       expect(after.localStorage.length).toBe(before.localStorage.length);
       expect(after.sessionStorage.length).toBe(before.sessionStorage.length);

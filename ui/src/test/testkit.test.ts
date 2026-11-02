@@ -100,15 +100,19 @@ describe("the portable acceptance profile", () => {
       "Tests that synthesize page-level appearance choices require the explicitly declared bare-host profile",
     );
     // Only controlled bare-fixture palettes skip; the actual-host preservation and mutation controls remain active.
-    expect(spec.match(/test\.skip\(HOST_APPEARANCE_PROVIDER, SKIP_BARE_HOST\)/g)).toHaveLength(6);
+    expect(spec.match(/test\.skip\(HOST_APPEARANCE_PROVIDER, SKIP_BARE_HOST\)/g)).toHaveLength(7);
     expect(spec).toContain('for (const provider of ["root", "ancestor"] as const)');
     expect(spec).toContain("the isolation guard rejects a deliberate global host-style leak");
     expect(spec).toContain("localStorage: storageEntries(localStorage)");
     expect(spec).toContain("sessionStorage: storageEntries(sessionStorage)");
     expect(spec).toContain(
-      "the actual host retains its full appearance, subtree and storage state across system changes",
+      "the actual host retains its full state during Arras interactions at fixed media",
     );
     expect(spec).toContain("assertNoArrasAppearance");
+    expect(spec).toContain("if (!hostOwnsAppearance) assertHostPreserved");
+    expect(spec).toContain("await assertStaticInteractionPreserved(page)");
+    expect(spec).toContain("media.addEventListener");
+    expect(spec).toContain("await assertSystemTransitionPreserved(page, before, true)");
     expect(spec).not.toContain("if (HOST_APPEARANCE_PROVIDER) return");
   });
 

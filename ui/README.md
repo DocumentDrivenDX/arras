@@ -223,13 +223,22 @@ nearest-provider precedence and OS behavior. With `true`, those synthetic palett
 measurement: an existing host stylesheet may validly declare role tokens on `.arras-root`, which take precedence
 over tokens injected on an ancestor. Failures never trigger a skip.
 
-Both profiles check the actual embedding page's outside-root styles, full ancestor/root attributes, subtree
-appearance declarations and exact local/session storage key/value maps before and after system appearance changes.
-A host's nonempty initial appearance and storage state must be preserved. Arras may not add appearance declarations
-to descendants of its root; host-owned root declarations are preserved under the host-provider profile. Negative
-controls prove the same guards reject a global style leak, changed storage values, replaced storage keys and host
-or subtree appearance mutations, including changes that preserve storage counts. These checks do not change the
-consumer's theme to force a synthetic expected color.
+Both profiles compare the actual page's full ancestor/root attributes, outside-root styles, subtree appearance
+and exact local/session storage key/value maps around Arras command-palette interactions **with media held fixed**.
+Nonempty host state must survive those library interactions. Negative controls inject forbidden storage, ancestor,
+root, outside-background and subtree writes during the same interaction; exact comparison catches changed values
+and replaced keys even when storage counts stay equal. The global-style-leak negative control remains separate.
+
+OS appearance events are a different cause: a declared host provider may update its own appearance attributes,
+root attributes, page background or preference storage in a media listener. The host-provider profile therefore
+checks that Arras adds no descendant appearance declarations during OS changes, then checks full preservation
+around Arras interactions against the host's new settled state. The bare profile also requires full preservation
+across OS changes because it declares no host appearance writer. Host-owned root declarations remain valid and
+are covered by the fixed-media preservation check. This separation uses the existing boolean profile; it does
+not allowlist attribute names or infer exemptions from failures. Controlled root and ancestor media-listener
+regressions install a host before application scripts, verify its actual light/dark appearance, root-attribute,
+background and preference changes, then exercise the same fixed-media guard. They run in the bare fixture profile
+so they never replace an existing consumer provider.
 
 `baseURL` and `schemaBaseURL` must be distinct credential-free root HTTP(S) origins. `outputDir` is
 consumer-owned and should be unique for simultaneous runs. `themeId` defaults to `default`; `expectedBrand` defaults to `{ name: "Arras" }`, and
