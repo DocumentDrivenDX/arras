@@ -19,6 +19,7 @@ from dataclasses import replace
 from datetime import datetime
 from typing import Any, Literal, cast
 
+from arras._legacy_aliases import validate_alias_tuple
 from arras.actions import (
     KEY_VALUE,
     Create,
@@ -363,8 +364,12 @@ class MemoryStore(
         clock: Clock = _now,
         *,
         action_profile: ActionProfile | None = None,
+        view_vocabulary_aliases: tuple[str, ...] = (),
     ) -> None:
         super().__init__(name, access, clock)
+        self.view_vocabulary_aliases = validate_alias_tuple(
+            view_vocabulary_aliases, "view_vocabulary_aliases", "arras.view"
+        )
         if action_profile is not None and (
             type(action_profile) is not str or action_profile != "arras-umf-set/1"
         ):
@@ -851,8 +856,13 @@ class MemoryReplica(_Store):
         access: FakeAccess,
         name: str = "memory_replica",
         clock: Clock = _now,
+        *,
+        view_vocabulary_aliases: tuple[str, ...] = (),
     ) -> None:
         super().__init__(name, access, clock)
+        self.view_vocabulary_aliases = validate_alias_tuple(
+            view_vocabulary_aliases, "view_vocabulary_aliases", "arras.view"
+        )
         self.source = source
         self.fed = False  # until its first feed it holds no position the authority issued
         self.state = _State(at=clock())

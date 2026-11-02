@@ -20,6 +20,7 @@ from arras._catalogs import Catalogs as _Catalogs
 from arras._catalogs import collect_catalogs
 from arras.actions import ActionInfo, Effect, Plan, resolve
 from arras.backend import Backend, Migrates, Provider
+from arras.distribution import DistributionConfig
 from arras.errors import (
     UNAVAILABLE_REASONS,
     ArrasError,
@@ -111,6 +112,7 @@ class Arras:
         placement: Mapping[str, Placement] | None = None,
         default_placement: Placement | None = None,
         metadata_profile: MetadataProfile = "legacy-arras/1",
+        distribution: DistributionConfig | None = None,
     ) -> None:
         if type(metadata_profile) is not str or metadata_profile not in (
             "legacy-arras/1",
@@ -119,6 +121,12 @@ class Arras:
         ):
             raise ValueError(f"unknown metadata profile: {metadata_profile!r}")
         self.backends = dict(backends)
+        self.distribution = distribution or DistributionConfig()
+        self.view_vocabulary_aliases = self.distribution.view_vocabulary_aliases
+        for name, backend in self.backends.items():
+            backend_aliases = getattr(backend, "view_vocabulary_aliases", ())
+            if backend_aliases != self.view_vocabulary_aliases:
+                raise ValueError(f"backend {name}: view_vocabulary_aliases mismatch")
         self.metadata_profile = metadata_profile
         self.placements = dict(placement or {})  # the host's, by module name (CONTRACT-002)
         self.default_placement: Placement | None = default_placement
@@ -128,7 +136,7 @@ class Arras:
         self.sleep = sleep
         self.clock = clock
         self.handlers: dict[str, Handler] = {}
-        self.views = ViewCache()  # resolved views by module and revision (CONTRACT-010)
+        self.views = ViewCache(self.view_vocabulary_aliases)
         self._announce_lock = threading.Lock()
         self._announced: dict[
             str, tuple[bool, str | None]
@@ -147,6 +155,7 @@ class Arras:
         placement: Mapping[str, Placement] | None = None,
         default_placement: Placement | None = None,
         metadata_profile: MetadataProfile = "legacy-arras/1",
+        distribution: DistributionConfig | None = None,
     ) -> Arras:
         """Never raises for an availability failure: `status()` reports each backend.
 
@@ -167,6 +176,7 @@ class Arras:
             placement=placement,
             default_placement=default_placement,
             metadata_profile=metadata_profile,
+            distribution=distribution,
         )
 
     def placement_of(self, module: str) -> Placement | None:

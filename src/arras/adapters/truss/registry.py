@@ -36,6 +36,7 @@ from dataclasses import dataclass, replace
 from typing import Any
 
 from arras import callscope
+from arras._legacy_aliases import validate_alias_tuple
 from arras.adapters.truss.cache import CatalogCache
 from arras.adapters.truss.connection import Call, CommitUnknown, Connections, failure_error
 from arras.errors import (
@@ -128,10 +129,20 @@ class _Plan:
 
 
 class Registry:
-    def __init__(self, backend: str, connections: Connections, cache: CatalogCache) -> None:
+    def __init__(
+        self,
+        backend: str,
+        connections: Connections,
+        cache: CatalogCache,
+        *,
+        view_vocabulary_aliases: tuple[str, ...] = (),
+    ) -> None:
         self.name = backend
         self.connections = connections
         self.cache = cache
+        self.view_vocabulary_aliases = validate_alias_tuple(
+            view_vocabulary_aliases, "view_vocabulary_aliases", "arras.view"
+        )
 
     # -- reads
 
@@ -211,7 +222,7 @@ class Registry:
         if kind != "AcceptedDocument":
             return None  # refused, or not a reading this module takes
         try:
-            parsed = parse_module(out.content)
+            parsed = parse_module(out.content, view_vocabulary_aliases=self.view_vocabulary_aliases)
         except ArrasError:
             return None  # another tool's document: skipped, not fatal for the rest of the catalog
         info = replace(

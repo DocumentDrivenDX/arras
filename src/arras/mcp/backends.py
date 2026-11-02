@@ -43,7 +43,11 @@ def build_backends(config: Config) -> tuple[dict[str, Backend], dict[str, str]]:
         except ValueError as e:
             problems.append(f"{key}: {e}")
             continue
-        built[name] = create_backend(name, endpoint_source(endpoint))  # type: ignore[assignment]
+        built[name] = create_backend(
+            name,
+            endpoint_source(endpoint),
+            view_vocabulary_aliases=config.distribution.view_vocabulary_aliases,
+        )  # type: ignore[assignment]
     if problems:
         raise ConfigError(problems)
     return built, unbuilt

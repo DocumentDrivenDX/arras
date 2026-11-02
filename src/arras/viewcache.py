@@ -12,6 +12,7 @@ from __future__ import annotations
 import threading
 from collections.abc import Callable
 
+from arras._legacy_aliases import validate_alias_tuple
 from arras.errors import Invalid, Unsupported
 from arras.model import ModuleInfo
 from arras.results import RegisteredDocument
@@ -22,8 +23,11 @@ from arras.view import ResolvedModule, declared_from_text, resolve
 class ViewCache:
     """The latest resolution of each module, with the revision it was made at."""
 
-    def __init__(self) -> None:
-        self._held: dict[str, tuple[Revision, ResolvedModule]] = {}
+    def __init__(self, view_vocabulary_aliases: tuple[str, ...] = ()) -> None:
+        self.view_vocabulary_aliases = validate_alias_tuple(
+            view_vocabulary_aliases, "view_vocabulary_aliases", "arras.view"
+        )
+        self._held: dict[tuple[str, Revision, tuple[str, ...]], ResolvedModule] = {}
         self._lock = threading.Lock()
 
     def resolve(self, mod: ModuleInfo, fetch: Callable[[], RegisteredDocument]) -> ResolvedModule:
@@ -31,18 +35,22 @@ class ViewCache:
         a module that holds none (attached, never registered) has the defaults."""
         known = all(v is not None for v in mod.revision.by_backend.values())
         with self._lock:
-            held = self._held.get(mod.name)
-        if known and held is not None and held[0] == mod.revision:
-            return held[1]
+            held = self._held.get((mod.name, mod.revision, self.view_vocabulary_aliases))
+        if known and held is not None:
+            return held
         try:
             doc: RegisteredDocument | None = fetch()
         except (Unsupported, Invalid):
             doc = None
-        declared = declared_from_text(doc.text, mod) if doc is not None else None
+        declared = (
+            declared_from_text(doc.text, mod, view_vocabulary_aliases=self.view_vocabulary_aliases)
+            if doc is not None
+            else None
+        )
         resolved = resolve(mod, declared)
         if known and (doc is None or doc.revision == mod.revision):
             with self._lock:
-                self._held[mod.name] = (mod.revision, resolved)
+                self._held[(mod.name, mod.revision, self.view_vocabulary_aliases)] = resolved
         return resolved
 
     def clear(self) -> None:

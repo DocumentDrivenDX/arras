@@ -6,6 +6,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 
+from arras._legacy_aliases import validate_alias_policy
 from arras.branding import Brand
 
 _SERVER_NAME = re.compile(r"[^\x00-\x1f\x7f]+")
@@ -63,12 +64,15 @@ class DistributionConfig:
     env_prefix: str = "ARRAS"
     telemetry: TelemetryNames = TelemetryNames()
     theme_manifest: str | None = None
+    view_vocabulary_aliases: tuple[str, ...] = ()
+    graph_format_aliases: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         if not _is_brand(self.brand):
             raise ValueError("brand: a Brand value")
         if not _is_telemetry_names(self.telemetry):
             raise ValueError("telemetry: a TelemetryNames value")
+        validate_alias_policy(self.view_vocabulary_aliases, self.graph_format_aliases)
         if self.theme_manifest is not None and (
             not _is_text(self.theme_manifest)
             or not self.theme_manifest.strip()

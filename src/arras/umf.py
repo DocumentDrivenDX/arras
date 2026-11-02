@@ -22,8 +22,10 @@ not name a removed type. Actions are read from the legacy Arras declaration shap
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from typing import Any, cast
 
+from arras._legacy_aliases import validate_alias_tuple
 from arras.actioncheck import check_action
 from arras.actions import parse_action
 from arras.errors import Invalid, Violation
@@ -98,8 +100,19 @@ class _Names:
             self.seen[folded] = name
 
 
-def parse_module(document: bytes | str) -> ModuleInfo:
+def _allowed_extensions(declared: Iterable[str], aliases: tuple[str, ...]) -> set[str]:
+    return (_VOCABULARIES & (set(declared) | {"umf.ddd"})) | set(aliases)
+
+
+def parse_module(
+    document: bytes | str,
+    *,
+    view_vocabulary_aliases: tuple[str, ...] = (),
+) -> ModuleInfo:
     """Read one UMF module document; raise `Invalid` listing every violation."""
+    aliases = validate_alias_tuple(
+        view_vocabulary_aliases, "view_vocabulary_aliases", VIEW_VOCABULARY
+    )
     try:
         raw = json.loads(document, object_pairs_hook=_no_duplicates)
     except ValueError as e:
@@ -111,7 +124,7 @@ def parse_module(document: bytes | str) -> ModuleInfo:
     for k in root.keys() - _ROOT_KEYS:
         out.append(_doc(k, f"unsupported construct {k!r}"))
     vocabularies = _obj(root.get("vocabularies"))
-    for v in vocabularies.keys() - _VOCABULARIES:
+    for v in vocabularies.keys() - (_VOCABULARIES | set(aliases)):
         out.append(_doc(f"vocabularies.{v}", f"unsupported vocabulary {v!r}"))
     if "umf.ddd" in vocabularies:
         ddd_vocabulary = vocabularies["umf.ddd"]
@@ -138,8 +151,8 @@ def parse_module(document: bytes | str) -> ModuleInfo:
             Violation("modules[0].id", "invalid_name", "a module id is [a-z][a-z0-9_]{0,40}")
         )
         name = str(name)
-    declared = _obj(root.get("vocabularies")).keys()
-    for ext in _obj(mod.get("extensions")).keys() - (_VOCABULARIES & (declared | {"umf.ddd"})):
+    allowed_extensions = _allowed_extensions(_obj(root.get("vocabularies")).keys(), aliases)
+    for ext in _obj(mod.get("extensions")).keys() - allowed_extensions:
         out.append(_doc(f"extensions.{ext}", f"unsupported extension {ext!r}"))
     names = _Names(out)
     entities, values = _records(mod, name, names, out)
@@ -163,7 +176,7 @@ def parse_module(document: bytes | str) -> ModuleInfo:
             out.append(v)
         out.extend(check_action(a, info))
     # Presentation is examined only if the vocabulary is declared.
-    out.extend(parse_view(root, info)[1])
+    out.extend(parse_view(root, info, view_vocabulary_aliases=aliases)[1])
     if out:
         raise Invalid(out)
     return ModuleInfo(

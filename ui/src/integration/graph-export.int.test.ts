@@ -2,7 +2,7 @@
 import { spawnSync } from "node:child_process";
 import { describe, expect, it } from "vitest";
 import { ApiError } from "../api/errors";
-import { graphText, readGraph } from "../browser/graphFile";
+import { graphText, parseGraphFile, readGraph } from "../browser/graphFile";
 import { client, withDevHost } from "./harness";
 import { REPO_ROOT } from "./server";
 
@@ -52,6 +52,32 @@ describe("POST /export against the real dev host", () => {
 });
 
 describe("the file the UI writes", () => {
+  it("reads an explicitly selected format alias with the same canonical bytes as Python", async () => {
+    const legacy = JSON.stringify({
+      format: "legacy.graph",
+      version: 1,
+      module: "catalog",
+      complete: true,
+      records: [{ id: "native-roundtrip" }],
+    });
+    const graph = parseGraphFile(legacy, { graphFormatAliases: ["legacy.graph"] });
+    const canonical = graphText(graph);
+    const roundTrip = spawnSync(
+      "uv",
+      [
+        "run",
+        "python",
+        "-c",
+        "import sys; from arras import graphfile; t = sys.stdin.read(); sys.stdout.write(graphfile.dumps(graphfile.loads(t, graph_format_aliases=('legacy.graph',))))",
+      ],
+      { cwd: REPO_ROOT, input: legacy, encoding: "utf8", timeout: 120_000 },
+    );
+    expect(roundTrip.stderr).toBe("");
+    expect(roundTrip.status).toBe(0);
+    expect(roundTrip.stdout).toBe(canonical);
+    expect(JSON.parse(canonical).format).toBe("arras.graph");
+  }, 150_000);
+
   it("is exactly the file the library reads and writes back", async () => {
     const graph = await readGraph(client("alice"), "catalog");
     const text = graphText(graph);

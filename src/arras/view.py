@@ -18,6 +18,7 @@ from datetime import date, datetime
 from functools import lru_cache
 from typing import Any, cast
 
+from arras._legacy_aliases import validate_alias_tuple
 from arras.errors import Violation
 from arras.model import EntityTypeInfo, ModuleInfo, PropertyInfo
 
@@ -531,7 +532,12 @@ def resolve(mod: ModuleInfo, declared: DeclaredView | None = None) -> ResolvedMo
     return ResolvedModule(ResolvedModuleView(d.title or mod.name, d.description), types)
 
 
-def declared_from_text(text: str, mod: ModuleInfo) -> DeclaredView:
+def declared_from_text(
+    text: str,
+    mod: ModuleInfo,
+    *,
+    view_vocabulary_aliases: tuple[str, ...] = (),
+) -> DeclaredView:
     """The view a registered document declares, or an empty one when it declares none or is
     not JSON (a document the registry accepted has passed `parse_view`)."""
     try:
@@ -540,7 +546,9 @@ def declared_from_text(text: str, mod: ModuleInfo) -> DeclaredView:
         return DeclaredView()
     if not isinstance(root, dict):
         return DeclaredView()
-    declared, faults = parse_view(cast(dict[str, Any], root), mod)
+    declared, faults = parse_view(
+        cast(dict[str, Any], root), mod, view_vocabulary_aliases=view_vocabulary_aliases
+    )
     return DeclaredView() if faults else declared
 
 
@@ -775,79 +783,135 @@ def _size(*parts: Any) -> int:
     return len(json.dumps(parts, separators=(",", ":"), ensure_ascii=False).encode())
 
 
-def _view_of(carrier: Any) -> Any:
-    return _obj(_obj(carrier).get("extensions")).get(VOCABULARY)
+def _view_of(carrier: Any, vocabulary: str = VOCABULARY) -> Any:
+    return _obj(_obj(carrier).get("extensions")).get(vocabulary)
 
 
-def _has_view(carrier: Any) -> bool:
-    return VOCABULARY in _obj(_obj(carrier).get("extensions"))
+def _has_view(carrier: Any, vocabulary: str = VOCABULARY) -> bool:
+    return vocabulary in _obj(_obj(carrier).get("extensions"))
 
 
-def parse_view(root: Mapping[str, Any], mod: ModuleInfo) -> tuple[DeclaredView, list[Violation]]:
+def parse_view(
+    root: Mapping[str, Any],
+    mod: ModuleInfo,
+    *,
+    view_vocabulary_aliases: tuple[str, ...] = (),
+) -> tuple[DeclaredView, list[Violation]]:
     """Check and read the document's `arras.view` terms against the module's types.
 
     `mod` is the module the document defines (`umf.parse_module`'s reading of it). The terms are
     examined only when the document declares the vocabulary; a version this release does not
     support is the one fault then. Every fault carries its document path."""
-    vocab = _obj(root.get("vocabularies")).get(VOCABULARY)
-    if vocab is None:
+    aliases = validate_alias_tuple(view_vocabulary_aliases, "view_vocabulary_aliases", VOCABULARY)
+    names = (VOCABULARY, *aliases)
+    vocabularies = _obj(root.get("vocabularies"))
+    declarations = [(name, f"vocabularies.{name}") for name in names if name in vocabularies]
+    module = _obj((_list(root.get("modules")) or [None])[0])
+    extension_occurrences: list[tuple[str, str]] = []
+    carriers = (
+        (root, "extensions"),
+        (module, "modules[0].extensions"),
+        *tuple(
+            (_obj(action), f"modules[0].actions[{i}].extensions")
+            for i, action in enumerate(_list(module.get("actions")))
+        ),
+        *tuple(
+            (_obj(element), f"modules[0].elements[{i}].extensions")
+            for i, element in enumerate(_list(module.get("elements")))
+        ),
+        *tuple(
+            (_obj(relationship), f"modules[0].relationships[{i}].extensions")
+            for i, relationship in enumerate(_list(module.get("relationships")))
+        ),
+    )
+    for carrier, path in carriers:
+        ext = _obj(carrier.get("extensions"))
+        extension_occurrences.extend((name, f"{path}.{name}") for name in names if name in ext)
+    occurrences = [*declarations, *extension_occurrences]
+    selected_name = occurrences[0][0] if occurrences else None
+    conflict = next((entry for entry in occurrences[1:] if entry[0] != selected_name), None)
+    if conflict is not None:
+        return DeclaredView(), [
+            Violation(
+                conflict[1],
+                "view_ambiguous_vocabulary",
+                "select one view vocabulary name per document",
+            )
+        ]
+    if not declarations:
+        aliased_extension = next(
+            (entry for entry in extension_occurrences if entry[0] in aliases), None
+        )
+        if aliased_extension is not None:
+            return DeclaredView(), [
+                Violation(
+                    aliased_extension[1],
+                    "view_unknown_term",
+                    "the matching vocabulary must be declared",
+                )
+            ]
         return DeclaredView(), []
+    vocabulary = declarations[0][0]
+    vocab = vocabularies[vocabulary]
     if _obj(vocab).get("version") != VERSION:
-        path = f"vocabularies.{VOCABULARY}.version"
+        path = f"vocabularies.{vocabulary}.version"
         v = Violation(path, "view_unsupported_version", f"arras.view {VERSION} is supported")
         return DeclaredView(), [v]
     c = _Checker(mod)
-    module = _obj((_list(root.get("modules")) or [None])[0])
-    declared = _read_module(c, root, module)
+    declared = _read_module(c, root, module, vocabulary)
     total = _size(
         declared.title,
         declared.description,
-        [_view_of(e) for e in _list(module.get("elements"))],
-        [_view_of(r) for r in _list(module.get("relationships"))],
+        [_view_of(e, vocabulary) for e in _list(module.get("elements"))],
+        [_view_of(r, vocabulary) for r in _list(module.get("relationships"))],
     )
     if total > MAX_DOCUMENT_BYTES:
         c.fault(
-            "modules[0].extensions.arras.view",
+            f"modules[0].extensions.{vocabulary}",
             "view_too_large",
             "a document's views are at most 128 KiB",
         )
     return declared, c.out
 
 
-def _read_module(c: _Checker, root: Mapping[str, Any], module: Obj) -> DeclaredView:
-    if _has_view(root):
-        c.fault(f"extensions.{VOCABULARY}", "view_unknown_term", "a view belongs to a module")
+def _read_module(
+    c: _Checker, root: Mapping[str, Any], module: Obj, vocabulary: str
+) -> DeclaredView:
+    if _has_view(root, vocabulary):
+        c.fault(f"extensions.{vocabulary}", "view_unknown_term", "a view belongs to a module")
     title = description = None
-    if _has_view(module):
-        title, description = c.module_terms(_view_of(module), f"modules[0].extensions.{VOCABULARY}")
+    if _has_view(module, vocabulary):
+        title, description = c.module_terms(
+            _view_of(module, vocabulary), f"modules[0].extensions.{vocabulary}"
+        )
     for i, action in enumerate(_list(module.get("actions"))):
-        if _has_view(action):
+        if _has_view(action, vocabulary):
             c.fault(
-                f"modules[0].actions[{i}].extensions.{VOCABULARY}",
+                f"modules[0].actions[{i}].extensions.{vocabulary}",
                 "view_unknown_term",
                 "an action has no view",
             )
-    records, fields = _read_elements(c, _list(module.get("elements")))
-    rels = _read_relationships(c, _list(module.get("relationships")))
+    records, fields = _read_elements(c, _list(module.get("elements")), vocabulary)
+    rels = _read_relationships(c, _list(module.get("relationships")), vocabulary)
     return DeclaredView(title, description, records, fields, rels)
 
 
 def _read_elements(
-    c: _Checker, elements: list[Any]
+    c: _Checker, elements: list[Any], vocabulary: str
 ) -> tuple[dict[str, RecordTerms], dict[tuple[str, str], FieldTerms]]:
     records: dict[str, RecordTerms] = {}
     fields: dict[tuple[str, str], FieldTerms] = {}
     for i, el in enumerate(_obj(e) for e in elements):
-        if not _has_view(el):
+        if not _has_view(el, vocabulary):
             continue
-        path = f"modules[0].elements[{i}].extensions.{VOCABULARY}"
+        path = f"modules[0].elements[{i}].extensions.{vocabulary}"
         eid = str(el.get("id", ""))
         if el.get("kind") == "record":
             t = c.mod.entity_type(eid)
             if t is None:
                 c.fault(path, "view_unknown_term", "only an entity record has a view")
                 continue
-            records[eid] = c.record_terms(_view_of(el), path, t)
+            records[eid] = c.record_terms(_view_of(el, vocabulary), path, t)
         elif el.get("kind") == "field":
             type_name, _, prop = eid.partition(".")
             t = c.mod.entity_type(type_name)
@@ -855,14 +919,14 @@ def _read_elements(
             if p is None:
                 c.fault(path, "view_unknown_term", "only the field of an entity record has a view")
                 continue
-            fields[(type_name, prop)] = c.field_terms(_view_of(el), path, p)
+            fields[(type_name, prop)] = c.field_terms(_view_of(el, vocabulary), path, p)
         else:
             c.fault(path, "view_unknown_term", "only a record or a field has a view")
-    _check_record_sizes(c, elements)
+    _check_record_sizes(c, elements, vocabulary)
     return records, fields
 
 
-def _check_record_sizes(c: _Checker, elements: list[Any]) -> None:
+def _check_record_sizes(c: _Checker, elements: list[Any], vocabulary: str) -> None:
     """A record's view, with those of its fields, at most 16 KiB; the fault is at the first
     element of the record that declares a view."""
     sizes: dict[str, int] = {}
@@ -870,23 +934,25 @@ def _check_record_sizes(c: _Checker, elements: list[Any]) -> None:
     for i, el in enumerate(_obj(e) for e in elements):
         eid = str(el.get("id", ""))
         owner = eid.partition(".")[0] if el.get("kind") == "field" else eid
-        if _has_view(el):
-            sizes[owner] = sizes.get(owner, 0) + _size(_view_of(el))
+        if _has_view(el, vocabulary):
+            sizes[owner] = sizes.get(owner, 0) + _size(_view_of(el, vocabulary))
             first.setdefault(owner, i)
     for owner, n in sizes.items():
         if n > MAX_RECORD_BYTES:
-            path = f"modules[0].elements[{first[owner]}].extensions.{VOCABULARY}"
+            path = f"modules[0].elements[{first[owner]}].extensions.{vocabulary}"
             c.fault(path, "view_too_large", f"{owner}'s view is at most 16 KiB")
 
 
-def _read_relationships(c: _Checker, rels: list[Any]) -> dict[str, RelationshipTerms]:
+def _read_relationships(
+    c: _Checker, rels: list[Any], vocabulary: str
+) -> dict[str, RelationshipTerms]:
     out: dict[str, RelationshipTerms] = {}
     for i, rel in enumerate(_obj(r) for r in rels):
-        if not _has_view(rel):
+        if not _has_view(rel, vocabulary):
             continue
-        path = f"modules[0].relationships[{i}].extensions.{VOCABULARY}"
+        path = f"modules[0].relationships[{i}].extensions.{vocabulary}"
         name = str(rel.get("name", ""))
-        if _size(_view_of(rel)) > MAX_RECORD_BYTES:
+        if _size(_view_of(rel, vocabulary)) > MAX_RECORD_BYTES:
             c.fault(path, "view_too_large", "a relationship's view is at most 16 KiB")
-        out[name] = c.relationship_terms(_view_of(rel), path, bool(rel.get("inverse")))
+        out[name] = c.relationship_terms(_view_of(rel, vocabulary), path, bool(rel.get("inverse")))
     return out

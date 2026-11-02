@@ -101,6 +101,19 @@ describe("reading a graph file (tests/vectors/graphfile.json)", () => {
     const text = '{"format": "arras.graph", "version": 1, "module": "m", "records": []}';
     expect(parseGraphFile(text).complete).toBe(false);
   });
+
+  it("accepts only explicitly selected format aliases and keeps output canonical", () => {
+    const text = '{"format":"legacy.graph","version":1,"module":"m","records":[]}';
+    expect(() => parseGraphFile(text)).toThrow(/not a graph file/);
+    const graph = parseGraphFile(text, { graphFormatAliases: ["legacy.graph"] });
+    expect(graphText(graph)).toContain('"format": "arras.graph"');
+    expect(() => parseGraphFile(text, { graphFormatAliases: ["arras.future"] })).toThrow(
+      /graphFormatAliases/,
+    );
+    expect(() => parseGraphFile(text, { graphFormatAliases: ["legacy.graph\n"] })).toThrow(
+      /graphFormatAliases/,
+    );
+  });
 });
 
 describe("the export a client reads", () => {

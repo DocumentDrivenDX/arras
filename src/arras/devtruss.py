@@ -33,6 +33,7 @@ from typing import Any
 
 from arras.adapters.truss.local import CredentialSource, LocalTruss
 from arras.core import Arras
+from arras.distribution import DistributionConfig
 from arras.errors import ArrasError
 from arras.graphfile import GraphFile
 from arras.model import Placement
@@ -65,13 +66,16 @@ class TrussBox:
         url: str | None = None,
         credential_source: CredentialSource | None = None,
         reset: bool = False,
+        distribution: DistributionConfig | None = None,
     ) -> None:
+        self.distribution = distribution or DistributionConfig()
         self.truss = LocalTruss(
             name,
             directory=directory,
             url=url,
             credential_source=credential_source,
             reset=reset,
+            view_vocabulary_aliases=self.distribution.view_vocabulary_aliases,
         ).open()
         self.persistent = url is not None
         self.name = name
@@ -103,6 +107,7 @@ class TrussBox:
                 {name: backend},  # type: ignore[dict-item]
                 admin=self.people["root"],
                 default_placement=Placement(name),
+                distribution=self.distribution,
             )
         except BaseException:
             self.truss.close()
@@ -129,7 +134,9 @@ class TrussBox:
         """Register a module as root, hand its roles to Truss, give the people what they hold on
         every module, and run `steps` as alice. On a persistent server the steps wait for `finish`,
         which runs them only if the database holds no entities."""
-        module = parse_module(document).name
+        module = parse_module(
+            document, view_vocabulary_aliases=self.distribution.view_vocabulary_aliases
+        ).name
         self.arras.session(self.people["root"]).registry().register(document)
         document_id = json.loads(document)["id"]
         new_module = module not in self.modules

@@ -124,7 +124,10 @@ class SchemaApp(WireApp):
             policy = body.get("unknown_endpoint", "reject")
             if policy not in ("reject", "provisional"):
                 raise _Bad(400, "unknown_endpoint is reject or provisional")
-            name = parse_module(document).name  # a document that does not parse is 400, here
+            name = parse_module(
+                document,
+                view_vocabulary_aliases=self.h.view_vocabulary_aliases,
+            ).name  # a document that does not parse is 400, here
             if self.authorize_schema is not None and not self.authorize_schema(principal, name):
                 return self.json(403, {"error": {"type": "Refused", "message": "no access"}})
             schema = self.h.session(principal).schema()

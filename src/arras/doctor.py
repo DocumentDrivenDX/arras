@@ -537,6 +537,18 @@ def _check_files(
             "mcp_server_name": selected.mcp_server_name,
             "mcp_tool_prefix": selected.mcp_tool_prefix,
             "env_prefix": selected.env_prefix,
+            "legacy_read_aliases": {
+                "view": {
+                    "names": list(selected.view_vocabulary_aliases),
+                    "canonical": VIEW_VOCABULARY,
+                    "version": VIEW_VERSION,
+                },
+                "graph": {
+                    "names": list(selected.graph_format_aliases),
+                    "canonical": "arras.graph",
+                    "version": 1,
+                },
+            },
             "provenance": "validated typed request",
         }
     chosen = request.distribution or DistributionConfig()
@@ -657,13 +669,14 @@ def _check_documents(
             "the requested document validation profile is unavailable in this package cohort",
         )
         return
+    chosen = request.distribution or DistributionConfig()
     total = already_read
     documents: list[dict[str, object]] = []
     for index, path in enumerate(request.module_documents):
         try:
             data = _read_regular(path, min(_MAX_DOCUMENT, _MAX_COMBINED - total))
             total += len(data)
-            module = parse_module(data)
+            module = parse_module(data, view_vocabulary_aliases=chosen.view_vocabulary_aliases)
             documents.append(
                 {
                     "path": f"module_documents[{index}]",
@@ -776,7 +789,15 @@ def _distribution_request(value: Any) -> DistributionConfig:
     if type(value) is not dict:
         raise ValueError("distribution must be an object")
     fields = cast(dict[str, Any], value)
-    allowed = {"brand", "mcp_server_name", "mcp_tool_prefix", "env_prefix", "telemetry"}
+    allowed = {
+        "brand",
+        "mcp_server_name",
+        "mcp_tool_prefix",
+        "env_prefix",
+        "telemetry",
+        "view_vocabulary_aliases",
+        "graph_format_aliases",
+    }
     if set(fields) - allowed:
         raise ValueError("distribution has unknown fields")
     brand_value: Any = fields.get("brand", {})
@@ -794,6 +815,12 @@ def _distribution_request(value: Any) -> DistributionConfig:
         if name in fields and not isinstance(fields[name], str):
             raise ValueError("distribution fields have invalid types")
     telemetry_fields = _telemetry_fields(fields.get("telemetry", {}))
+    for field_name in ("view_vocabulary_aliases", "graph_format_aliases"):
+        if field_name in fields and (
+            type(fields[field_name]) is not list
+            or any(type(alias) is not str for alias in fields[field_name])
+        ):
+            raise ValueError("distribution alias fields must be arrays of strings")
     try:
         return DistributionConfig(
             brand=Brand(**brand_fields),
@@ -801,6 +828,8 @@ def _distribution_request(value: Any) -> DistributionConfig:
             mcp_tool_prefix=fields.get("mcp_tool_prefix", ""),
             env_prefix=fields.get("env_prefix", "ARRAS"),
             telemetry=TelemetryNames(**telemetry_fields),
+            view_vocabulary_aliases=tuple(fields.get("view_vocabulary_aliases", ())),
+            graph_format_aliases=tuple(fields.get("graph_format_aliases", ())),
         )
     except (TypeError, ValueError) as exc:
         raise DistributionInvalid from exc

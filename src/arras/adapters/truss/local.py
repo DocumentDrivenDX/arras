@@ -37,6 +37,7 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any, Protocol
 
+from arras._legacy_aliases import validate_alias_tuple
 from arras.adapters.truss import ModuleAccess, TrussBackend, create_backend
 from arras.adapters.truss.endpoint import Endpoint, connect, endpoint_source, parse_credentialed
 from arras.results import MigrationResult
@@ -81,10 +82,14 @@ class LocalTruss:
         url: str | None = None,
         credential_source: CredentialSource | None = None,
         reset: bool = False,
+        view_vocabulary_aliases: tuple[str, ...] = (),
     ) -> None:
         if reset and url is None:
             raise ValueError("reset needs a persistent server to attach to")
         self.name = name
+        self.view_vocabulary_aliases = validate_alias_tuple(
+            view_vocabulary_aliases, "view_vocabulary_aliases", "arras.view"
+        )
         self.persistent = url is not None
         self.prefix = PERSISTENT_PREFIX if self.persistent else ""
         self.installer = INSTALLER
@@ -157,7 +162,12 @@ class LocalTruss:
                 )
             )
             self._endpoint = Endpoint(str(self._params["host"]), DATABASE, sslmode="disable")
-            self.backend = create_backend(self.name, self._person_source, self._installing)
+            self.backend = create_backend(
+                self.name,
+                self._person_source,
+                self._installing,
+                view_vocabulary_aliases=self.view_vocabulary_aliases,
+            )
             self.migration = self.backend.migrate()
         except BaseException:
             self.close()  # no postgres process or root outlives a failed open
@@ -180,7 +190,12 @@ class LocalTruss:
                 raise ValueError(f"{self.installer!r} needs CREATEROLE: Truss's installing role")
             if self._reset:
                 self._drop_what_was_made()
-            self.backend = create_backend(self.name, self._person_source, self._installing)
+            self.backend = create_backend(
+                self.name,
+                self._person_source,
+                self._installing,
+                view_vocabulary_aliases=self.view_vocabulary_aliases,
+            )
             self.migration = self.backend.migrate()
         except BaseException:
             self.close()

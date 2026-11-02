@@ -117,7 +117,7 @@ def _run(
         if config.dev_sandbox:
             from arras.sandbox import Sandbox
 
-            box = Sandbox().seed()
+            box = Sandbox(distribution=config.distribution).seed()
             server = McpServer(
                 box.arras,
                 lambda: box.principal(config.dev_user),
@@ -142,6 +142,7 @@ def _run(
                     expected=tuple(config.endpoints),
                     placement=config.placements,
                     default_placement=config.default_placement,
+                    distribution=config.distribution,
                 ),
                 tokens.current,
                 distribution=config.distribution,
