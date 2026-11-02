@@ -160,7 +160,7 @@ jobs:
           python .github/scripts/verify_registry_publication.py pypi-metadata \
             --wheel dist/arras-*.whl \
             --sdist dist/arras-*.tar.gz
-      - name: Require the exact wheel selected for installed and managed qualification
+      - name: Require the exact wheel selected for this release cohort
         run: |
           case '${{ needs.check.outputs.version }}' in
             0.6.5)

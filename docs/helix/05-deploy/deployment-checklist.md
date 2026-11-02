@@ -94,6 +94,27 @@ platforms. Historical results keep their original versions and artifact hashes.
 | Public assembly (0.6.0+) | For 0.7.0 use release-evidence schema v3 with the mandatory safe admission and generated-action projections, each bound to the exact wheel, actual SDK dependency cohort and checked source hashes. Require action jobs to succeed in publication provenance and repeat qualification after public download. Preserve historical v2/seventeen-asset and v1/sixteen-asset releases unchanged. |
 | Truss 0.0.50 adoption / PR 9 | Before merge or tagging, retain and independently review the fresh-installed exact-cohort proof and full actual Lakebase receipt: LB-ADMISSION, LB-INSTALL, LB-PERSON, LB-CUSTODY, LB-SETTLEMENT, LB-ACL and MP-01–06 all pass, with independent owned-cleanup confirmation. Bind the managed receipt to the executed harness/fixture hashes, actual installed Truss archive/manifests and exact final Arras wheel, which must also pass the complete fresh-installed macOS campaign. Require the tagged-build and public wheel SHA-256 to match both original campaign bindings; any byte change requires both campaigns rebound and rerun. Document exact source correspondence to the release artifact; source-local checks, bootstrap evidence, partial schedules and earlier candidate artifacts cannot close this gate. |
 
+## 0.7.0 qualification scope
+
+The Truss adoption / PR 9 row above binds that historical campaign's canonical
+wheel through its original tag and public download. TP-001 explicitly scopes
+its dual-campaign and any-byte-change rules to PR 9; CONTRACT-005's corresponding
+selection names the 0.6.1 candidate. They do not require a new managed campaign
+for every later bounded release. The current 0.7.0 execution contract in the
+integration plan requires exact Linux/Mac Python 3.11 admission/actions, source,
+UI/native regressions, independent review, and release/public-registry gates.
+Its source and artifact gates passed for exact wheel
+`b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6`.
+
+Managed 0.7.0 acceptance is **not run / unqualified**. No older Lakebase campaign
+qualifies b20, and the fresh native Mac campaign does not substitute for managed
+behavior. This release adds only the bounded memory action profile; it does not
+claim new Truss/Ashlar action execution, managed-host acceptance or durable replay.
+A future managed qualification must satisfy CONTRACT-005's actual-target custody
+and identity requirements and retain a newly exact-wheel-bound full twelve-case
+campaign with independently observed cleanup/custody. This scope determination
+is not a waiver of any applicable current gate.
+
 ## PR 9 / 0.6.1 execution
 
 - [x] Historical candidate `c31b56e5...` passed the complete fresh-installed

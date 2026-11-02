@@ -3458,3 +3458,36 @@ bound to c3cb035; final lean/source checks and independent closeout review prece
 normal merge. Exact-tag Release will rebuild and requalify from its final source,
 with b20 enforced by the successor guard. Merge, GitHub release, PyPI/npm delivery
 and anonymous independent public install remain open until their actual gates pass.
+
+
+### Normal merge, immutable tag, and managed-gate applicability
+
+PR 10 merged normally as `f9f04c42ae0c989d34907e00a63ca95c3cb2fcdf`;
+original action head 27a1915 and final reviewed 928b647 are verified ancestors,
+and the merge tree matches 928b647. Final lean 41513518915 and merged-main lean
+41513851928 passed. Annotated v0.7.0 tag object
+`9f950b306eb3f86c057a118edba085e4fe81bbd4` names that exact merge commit.
+The tag was already pushed when the parent raised managed-gate applicability;
+no release started because the Release workflow was manually disabled.
+The tag will not move. No public 0.7.0 delivery is yet claimed.
+
+The governing TP-001 passage begins “PR 9 requires both complete campaigns”;
+its any-byte-change condition binds that adoption campaign's wheel through its
+own tag/public download. The adjacent 0.0.50 selection and CONTRACT-005 record
+name active 0.6.1, and the checklist row is explicitly PR 9/adoption. The current
+0.7.0 execution contract instead selects exact Linux/Mac installed admission and
+actions, source/UI/native, independent review, and release/public-registry gates,
+with no transferred managed proof. Newton independently read the same governing
+context and found no unconditional every-future-wheel managed prerequisite.
+The separate 0.6.4 campaign qualifies only its own artifact.
+
+Accordingly b20 managed qualification is NOT_RUN / unqualified, with no inherited
+Lakebase pass, new managed acceptance, Truss/Ashlar action or durable replay claim.
+Actual future managed execution still requires the authorized provider/resource/
+identity handoff and full exact-bound campaign/cleanup/custody evidence under
+CONTRACT-005. This interpretation introduces no waiver or approval blocker.
+The default-branch driver only renames the exact-wheel guard to describe release-
+cohort selection truthfully and records this rationale. All hash comparisons and
+historical guards remain unchanged. After independent driver review, enable the
+Release workflow and dispatch the supported default-branch route against immutable
+v0.7.0 and exact source f9f04c42, keeping driver and payload identities separate.
