@@ -8,10 +8,12 @@ import hashlib
 import json
 import os
 import subprocess
+import tarfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from _umf_admission_receipt import validate_receipt
+from assemble_release_evidence import _validate_ui
 from verify_local_registry_origin import (
     ASSETS,
     EXPECTED_SOURCE,
@@ -121,6 +123,9 @@ def finish(assets: Path, evidence: Path, output: Path) -> None:
     if native.get("status") != "passed":
         raise ValueError("installed native qualification did not pass")
     validate_evidence(evidence, identity)
+    validate_public_ui(assets, evidence, identity)
+    for path in sorted((evidence / "ui").glob("*.json")):
+        records[f"ui/{path.name}"] = hashlib.sha256(path.read_bytes()).hexdigest()
     output.mkdir(parents=True)
     (output / "registry-publication-identity.json").write_text(
         json.dumps(identity, indent=2) + "\n"
@@ -191,20 +196,26 @@ def validate_evidence(evidence: Path, identity: dict) -> None:
     if (
         acceptance.get("status") != "passed"
         or acceptance.get("visual", {}).get("status") != "skipped-non-Darwin"
-        or len(ui.get("routes", [])) != 2
+        or len(ui.get("routes", [])) != 4
     ):
         raise ValueError("UI qualification scope differs")
+    validate_ui_routes(ui["routes"])
     projects = acceptance.get("projects", [])
     if {project.get("name") for project in projects} != {"chromium", "schema-admin", "browser"}:
         raise ValueError("UI mandatory project set differs")
     for project in projects:
         if (
-            project.get("expected", 0) <= 0
+            project.get("expected")
+            != {"chromium": 132, "schema-admin": 3, "browser": 70}[project["name"]]
+            or project.get("discovered") != project["expected"]
             or project.get("passed") != project["expected"]
             or project.get("failed") != 0
             or project.get("skipped") != 0
         ):
             raise ValueError("UI project did not pass all expected tests")
+    canonical = acceptance.get("canonical", {})
+    if canonical.get("specCount") != 17 or canonical.get("expectedTestCount") != 205:
+        raise ValueError("UI canonical inventory differs")
     for name in ["source/source-pytest.xml", "source/truss-pytest.xml", "downstream/consumer.xml"]:
         root = ET.parse(evidence / name).getroot()
         suites = [root] if root.tag == "testsuite" else list(root.iter("testsuite"))
@@ -214,6 +225,41 @@ def validate_evidence(evidence: Path, identity: dict) -> None:
             or any(int(suite.get(key, "0")) for suite in suites for key in ["failures", "errors"])
         ):
             raise ValueError(f"test qualification did not pass: {name}")
+
+
+def validate_ui_routes(routes: list[dict]) -> None:
+    if {(route.get("route"), route.get("surface")) for route in routes} != {
+        (route, surface)
+        for route in ["prebuilt-page", "compiled-host"]
+        for surface in ["browser", "console"]
+    }:
+        raise ValueError("UI route and surface coverage differs")
+    for route in routes:
+        if route.get("schema") != "arras.ui.qualification-receipt.v1" or not {
+            "axe-wcag21aa",
+            "theme-tokens",
+            "contrast",
+            "keyboard-focus",
+        }.issubset(route.get("checks", [])):
+            raise ValueError("UI route checks differ")
+
+
+def validate_public_ui(assets: Path, evidence: Path, identity: dict) -> None:
+    receipt_path = evidence / "ui/qualification-linux.json"
+    with tarfile.open(assets / "documentdrivendx-arras-ui-0.6.5.tgz", "r:gz") as archive:
+        stream = archive.extractfile("package/support/acceptance/resources.json")
+        if stream is None:
+            raise ValueError("pinned npm acceptance resources are missing")
+        resources = stream.read()
+    _validate_ui(
+        json.loads(receipt_path.read_text()),
+        receipt_path,
+        identity["wheel"],
+        identity["wheel_sha256"],
+        identity["npm_sha256"],
+        "0.6.5",
+        resources,
+    )
 
 
 def main() -> None:
