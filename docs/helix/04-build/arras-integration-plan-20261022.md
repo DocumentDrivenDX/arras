@@ -3336,3 +3336,19 @@ request now select 0.7.0. A fresh local exact-wheel doctor proof passes all twen
 cases on candidate `351dfd3a…`. This initial hosted failure is historical; it is
 not a successful complete source/artifact gate. The new source freeze must run
 full hosted qualification, including both installed SDK platforms.
+
+
+### Provenance fingerprint correction before the next dispatch
+
+Hosted attempt [41502145102](https://github.com/DocumentDrivenDX/arras/actions/runs/41502145102)
+on `4dd0fdd` failed the public-content gate before artifact qualification: the
+0.7.0 example doctor request still had its original 0.6.5 fixture digest in the
+public-content policy. The policy now binds actual request SHA-256
+`2b103716b6048ebd45c9ef67e55ec80cf772e5029ce133722aa346f1b7fe1c58`.
+Local public-content validation passes; the parent independently confirms it.
+Affected source/provenance/receipt controls pass 113 tests. The superseded hosted
+run was cancelled to avoid further duplicate browser/Truss work. Its failed
+source gate is retained as historical evidence, not qualification. The correction
+changes no Arras wheel bytes; local admission/action and twenty-case installed
+doctor proofs remain scoped to their unchanged candidate wheel. Full required-
+engine local source validation is running before any new hosted dispatch.
