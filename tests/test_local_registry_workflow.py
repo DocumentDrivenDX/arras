@@ -48,3 +48,9 @@ def test_qualifier_never_rebuilds_or_republishes_release_assets():
         "run-downstream-qualification.mjs",
     ]:
         assert command in workflow
+
+
+def test_truss_requirement_is_scoped_to_native_test_command():
+    workflow = (ROOT / ".github/workflows/qualify-local-registry.yml").read_text()
+    assert "ARRAS_REQUIRE_TRUSS=1 uv run --no-sync pytest -m truss" in workflow
+    assert "ARRAS_REQUIRE_TRUSS:" not in workflow
