@@ -3352,3 +3352,51 @@ source gate is retained as historical evidence, not qualification. The correctio
 changes no Arras wheel bytes; local admission/action and twenty-case installed
 doctor proofs remain scoped to their unchanged candidate wheel. Full required-
 engine local source validation is running before any new hosted dispatch.
+
+
+### Exact hosted candidate and driver corrections
+
+Full hosted attempt [41504290459](https://github.com/DocumentDrivenDX/arras/actions/runs/41504290459)
+on `5406e481e246cfb3928d6f6eb35451e0e4267239` produced canonical wheel
+`b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6`.
+Build, Truss and UI gates passed. Python 3.11 reported 3,667 passes, two skips
+and one failure: the Mac extras fixture retained a Linux UMF pin. The Mac action
+job failed before verification because the downloaded wheel lives under
+`candidate/dist/`, not `candidate/`. All three new consumer paths are corrected;
+an extracted real inline-command regression covers matching, changed and missing
+nested artifacts. The selected native Mac job was cancelled before executing;
+this run provides no native Mac qualification. Neither failure is relabelled.
+
+The Linux-produced b20 wheel differs from local 351dfd3a in its npm gzip stream
+and wheel RECORD. All 323 npm payload files and decompressed tar bytes match;
+that comparison does not transfer exact-wheel proof. The successor release guard
+now pins b20; the frozen historical 0.6.5 guard remains unchanged.
+
+The parent independently ran a fresh public-extra Mac action proof for exact b20:
+[raw safe receipt](evidence/arras070-20261102/macos-actions-b20.safe.json).
+CPython 3.11.17, Darwin arm64, public UMF distribution 0.10.5 exact Mac wheel
+`9213ff4b87649f551abcfdff40cdb6b0d75d619260988fa8ea4fe26cac7f6788`:
+all twelve controls, 139 reference and 139 empty-registry comparisons pass;
+payload/RECORD parity covers 178 Arras and 36 UMF files. No overrides, public gate
+true, one fresh venv, no shared site packages, cleanup completed. Tool, probe and
+selector hashes were independently compared to current source before retaining
+the receipt. This is local-installed action proof, not hosted-path recovery or
+macOS 15 / CPython 3.11.9 native-adapter qualification. The parent reported roughly
+four minutes of download/setup and an active probe checkpoint at 5m21s overall;
+the receipt has no total-duration field, so no exact elapsed duration is claimed.
+A separate local b20 admission attempt timed out during venv creation before
+artifact checks; it is not counted as a passing proof.
+
+Historical public extras now select a closed known-release cohort: 0.6.3, 0.6.4
+and 0.6.5 retain pure core 0.10.0; 0.7.0 requires exact platform core 0.10.5.
+Unknown releases and cross-cohort substitutions refuse. The actual verified Arras
+version and required wheel digest bind the selected release; there is no global
+current-SDK substitution. Doctor requests get only the selected package-version
+expectations in a temporary copy, retaining all contract and export assertions.
+Old flat SDK-hash receipts and new platform-indexed hash receipts stay distinct.
+Affected driver/receipt/workflow regressions pass 132 tests; lint, formatting,
+Pyright and public-content integrity pass. The preceding full required-engine
+local source run passed 3,668 tests with two installed-wheel-only skips and 202
+intentional deselections; CI executes those installed-wheel checks separately.
+Final hosted native Mac, Linux/Mac installed receipts, independent integration
+review, merge and publication remain open.

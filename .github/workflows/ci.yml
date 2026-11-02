@@ -699,9 +699,9 @@ jobs:
           EXPECTED_SHA256: ${{ needs.check.outputs.wheel_sha256 }}
         run: |
           mkdir -p artifacts
-          uv run --no-project --python 3.11 python -c 'import hashlib, os, pathlib; p=pathlib.Path("candidate")/os.environ["EXPECTED_WHEEL"]; assert hashlib.sha256(p.read_bytes()).hexdigest()==os.environ["EXPECTED_SHA256"]'
-          uv run --no-project --python 3.11 python tools/verify_umf_admission.py --wheel "candidate/$EXPECTED_WHEEL" --output-json artifacts/umf-admission-macos.json
-          uv run --no-project --python 3.11 python tools/verify_umf_actions.py --wheel "candidate/$EXPECTED_WHEEL" --output-json artifacts/umf-actions-macos.json
+          uv run --no-project --python 3.11 python -c 'import hashlib, os, pathlib; p=pathlib.Path("candidate/dist")/os.environ["EXPECTED_WHEEL"]; assert hashlib.sha256(p.read_bytes()).hexdigest()==os.environ["EXPECTED_SHA256"]'
+          uv run --no-project --python 3.11 python tools/verify_umf_admission.py --wheel "candidate/dist/$EXPECTED_WHEEL" --output-json artifacts/umf-admission-macos.json
+          uv run --no-project --python 3.11 python tools/verify_umf_actions.py --wheel "candidate/dist/$EXPECTED_WHEEL" --output-json artifacts/umf-actions-macos.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
