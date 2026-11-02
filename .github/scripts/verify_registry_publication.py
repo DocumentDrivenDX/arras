@@ -379,7 +379,7 @@ def validate_release_inputs(args: argparse.Namespace) -> dict[str, str]:
         release,
         expected_asset_names=set(entries) | {"SHA256SUMS"},
         actions_required=_actions_receipt.required_for_wheel(
-            args.assets / wheel, expected_wheel_sha256=wheel_sha
+            args.assets / wheel, wheel_sha256=wheel_sha
         ),
         repository=args.repository,
         default_branch=args.default_branch,

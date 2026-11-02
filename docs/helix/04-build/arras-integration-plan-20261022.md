@@ -3315,3 +3315,24 @@ action job to succeed. Missing, failed, skipped and cancelled action gates refus
 the historical pure-core ten-gate route stays accepted. The combined affected
 assembly/publication/historical/admission suite passes 105 tests. Final independent
 review of these fixes and hosted artifact qualification remain required.
+
+
+### Independent review closure and first hosted attempt
+
+The bounded independent reviewer confirmed all three integration findings closed:
+original historical source binding, actual-wheel SDK cohort binding at all real
+assembly/public/provenance callers, and mandatory action-job publication gating.
+A further real-caller keyword mismatch (`expected_wheel_sha256` versus
+`wheel_sha256`) was corrected and covered by a real `validate_release_inputs`
+handoff test. The reviewer checked that correction and the unchanged schema-2
+17-asset and UI alias paths. This is scoped code review, not final artifact or
+release approval. The parent independently reports 108 affected admission,
+registry, historical recovery, action-receipt and workflow controls passing.
+
+Full hosted attempt [41501074057](https://github.com/DocumentDrivenDX/arras/actions/runs/41501074057)
+on `f5d5d03` failed the installed doctor setup: the example consumer still pinned
+Arras 0.6.5 while the candidate wheel was 0.7.0. The example dependency and doctor
+request now select 0.7.0. A fresh local exact-wheel doctor proof passes all twenty
+cases on candidate `351dfd3a…`. This initial hosted failure is historical; it is
+not a successful complete source/artifact gate. The new source freeze must run
+full hosted qualification, including both installed SDK platforms.
