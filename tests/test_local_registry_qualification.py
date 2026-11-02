@@ -58,10 +58,18 @@ def evidence(tmp_path, monkeypatch):
             ],
             "acceptance_suite": {
                 "status": "passed",
+                "canonical": {"specCount": 17, "expectedTestCount": 205},
                 "visual": {"status": "skipped-non-Darwin"},
                 "projects": [
-                    {"name": name, "expected": 1, "passed": 1, "failed": 0, "skipped": 0}
-                    for name in ["chromium", "schema-admin", "browser"]
+                    {
+                        "name": name,
+                        "expected": count,
+                        "discovered": count,
+                        "passed": count,
+                        "failed": 0,
+                        "skipped": 0,
+                    }
+                    for name, count in [("chromium", 132), ("schema-admin", 3), ("browser", 70)]
                 ],
             },
         },
@@ -147,4 +155,21 @@ def test_ui_route_coverage_refuses(evidence, change):
         receipt["routes"][0]["schema"] = "unknown"
     path.write_text(json.dumps(receipt))
     with pytest.raises(ValueError, match="UI route"):
+        module.validate_evidence(root, identity)
+
+
+@pytest.mark.parametrize("change", ["counts", "discovery", "canonical"])
+def test_ui_incomplete_campaign_refuses(evidence, change):
+    root, identity = evidence
+    path = root / "ui/qualification-linux.json"
+    receipt = json.loads(path.read_text())
+    suite = receipt["acceptance_suite"]
+    if change == "counts":
+        suite["projects"][0].update(expected=1, discovered=1, passed=1)
+    elif change == "discovery":
+        suite["projects"][0]["discovered"] = 1
+    else:
+        suite["canonical"]["specCount"] = 1
+    path.write_text(json.dumps(receipt))
+    with pytest.raises(ValueError, match="UI"):
         module.validate_evidence(root, identity)

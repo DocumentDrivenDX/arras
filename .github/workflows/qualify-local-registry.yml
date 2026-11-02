@@ -224,7 +224,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p evidence/ui
-          cp evidence/ui-tree/tests/downstream/evidence/linux/qualification-linux.json evidence/ui/
+          cp evidence/ui-tree/tests/downstream/evidence/linux/*.json evidence/ui/
           python3 .github/scripts/local_registry_qualification.py finish --assets inputs/local-assets
           cp -R inputs/local-assets verified/public-release-assets
       - uses: actions/upload-artifact@v4
