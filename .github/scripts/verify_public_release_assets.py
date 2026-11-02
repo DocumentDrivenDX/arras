@@ -199,7 +199,7 @@ def _validate_actions_component(
 ) -> None:
     proof_path = directory / _UMF_ACTIONS_COMPONENT
     try:
-        proof = _actions_receipt.strict_json_loads(proof_path.read_text(encoding="utf-8"))
+        proof = _umf_receipt.strict_json_loads(proof_path.read_text(encoding="utf-8"))
         _actions_receipt.validate_public_projection(
             proof,
             version=version,
@@ -209,7 +209,7 @@ def _validate_actions_component(
             wheel_path=directory / wheel,
             repository=Path(__file__).resolve().parents[2],
         )
-    except _actions_receipt.ActionReceiptError as exc:
+    except (_actions_receipt.ActionReceiptError, _umf_receipt.AdmissionReceiptError) as exc:
         _fail(f"trusted UMF actions receipt is invalid: {exc}")
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         _fail(f"trusted UMF actions receipt is invalid: {type(exc).__name__}")
