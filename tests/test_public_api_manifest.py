@@ -655,20 +655,38 @@ def test_configuration_cli_and_resource_inventory_are_declared_separately() -> N
         "devhost CLI options",
     )
     command_controls: tuple[tuple[str, set[str]], ...] = (
-        ("python -m arras.ui", {"npm-package", "--copy"}),
+        (
+            "python -m arras.ui",
+            {
+                "npm-package",
+                "--copy",
+                "theme-manifest",
+                "--css",
+                "--out",
+                "--favicon",
+                "--font",
+                "--package-name",
+                "--package-version",
+                "--ui-version",
+                "--appearance",
+            },
+        ),
         ("python -m arras.boundary", {"--host", "--library", "--host-package"}),
         ("python -m arras.mcp", {"-h", "--help"}),
         ("python -m arras.conformance", {"--backend"}),
     )
     for command, expected_options in command_controls:
         if command == "python -m arras.ui":
-            output = subprocess.run(
-                [sys.executable, "-m", "arras.ui", "npm-package", "--help"],
-                capture_output=True,
-                text=True,
-                check=True,
-            ).stdout
-            found = {"npm-package"} | (set(re.findall(r"--[a-z-]+", output)) - {"--help"})
+            found: set[str] = set()
+            for subcommand in ("npm-package", "theme-manifest"):
+                output = subprocess.run(
+                    [sys.executable, "-m", "arras.ui", subcommand, "--help"],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                ).stdout
+                found.add(subcommand)
+                found |= set(re.findall(r"--[a-z-]+", output)) - {"--help"}
         elif command == "python -m arras.boundary":
             output = subprocess.run(
                 [sys.executable, "-m", "arras.boundary", "--help"],

@@ -124,7 +124,12 @@ def alias_package(
     `modules` closes the set: when given, only the listed submodules (dotted names below the
     package, such as `"model"` or `"ui.assets"`) and the packages that lead to them can be
     imported, and every other `name.<module>` is `ModuleNotFoundError`. A module the alias package
-    contains itself is never replaced, whatever `modules` says."""
+    contains itself is never replaced, whatever `modules` says. Entry points are never added
+    implicitly to a closed list: include `"__main__"` for `python -m name` or
+    `"conformance.__main__"` for `python -m name.conformance`. The alias package's own
+    `__getattr__` remains ahead of local submodule lookup; only its `AttributeError`
+    allows lookup to continue. Genuine local submodules are imported before forwarding to
+    `target`, and their import errors propagate."""
     real = importlib.import_module(target)
     closed = None if modules is None else tuple(modules)
     finder = _AliasFinder(name, target, closed)
@@ -136,7 +141,18 @@ def alias_package(
     if package is None:
         return
 
+    current_getattr = getattr(package, "__getattr__", None)
+    original_getattr = getattr(current_getattr, "_arras_alias_original_getattr", current_getattr)
+
     def getattr_(attribute: str) -> Any:
+        if original_getattr is not None:
+            try:
+                return original_getattr(attribute)
+            except AttributeError:
+                pass
+        fullname = f"{name}.{attribute}"
+        if finder._own(fullname) is not None:  # pyright: ignore[reportPrivateUsage]
+            return importlib.import_module(fullname)
         value = getattr(real, attribute)
         if isinstance(value, ModuleType) and value.__name__.startswith(target + "."):
             relative = value.__name__.removeprefix(target + ".")
@@ -144,5 +160,6 @@ def alias_package(
                 raise AttributeError(f"module {name!r} has no attribute {attribute!r}")
         return value
 
+    getattr_.__dict__["_arras_alias_original_getattr"] = original_getattr
     package.__getattr__ = getattr_  # type: ignore[attr-defined]
     package.__dir__ = lambda: sorted({*vars(package), *dir(real)})  # type: ignore[method-assign]

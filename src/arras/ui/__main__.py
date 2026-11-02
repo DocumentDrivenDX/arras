@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT OR Apache-2.0
 """`python -m arras.ui`: `npm-package [--copy DIR]` names the wheel's npm tarball or copies it, and
-`theme-manifest --css FILE --out DIR` builds a runtime theme bundle for `create_app`."""
+`theme-manifest --css FILE --out DIR` builds a runtime theme bundle for `create_app`; pass
+`--appearance light|dark` when the theme supplies only that appearance's role tokens."""
 
 from __future__ import annotations
 
@@ -36,6 +37,11 @@ def main(argv: list[str] | None = None) -> int:
         action="append",
         help="a page version the theme supports (repeatable; default: the installed Arras)",
     )
+    theme.add_argument(
+        "--appearance",
+        choices=("light", "dark"),
+        help="fixed appearance when the theme supplies one set of role tokens",
+    )
     args = parser.parse_args(argv)
     if args.command == "theme-manifest":
         try:
@@ -48,6 +54,7 @@ def main(argv: list[str] | None = None) -> int:
                     package_name=args.package_name,
                     package_version=args.package_version,
                     ui_versions=args.ui_version,
+                    appearance=args.appearance,
                 )
             )
         except ValueError as error:

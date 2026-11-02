@@ -507,6 +507,27 @@ def test_committed_distribution_can_set_brand_but_not_bootstrap_prefix(tmp_path:
         Config.from_env(env, distribution=selected)
 
 
+def test_committed_distribution_theme_manifest_is_an_inert_path_reference(tmp_path: Path) -> None:
+    from arras.distribution import DistributionConfig
+
+    manifest = "themes/theme-manifest.json"
+    env = files(tmp_path, default=f'[distribution]\ntheme_manifest = "{manifest}"\n')
+    selected = Config.from_env(env)
+    assert selected.distribution.theme_manifest == manifest
+    assert not (tmp_path / "themes").exists()
+    assert DistributionConfig(theme_manifest=manifest).theme_manifest == manifest
+
+
+@pytest.mark.parametrize("manifest", ["", "bad\x00path", 7])
+def test_distribution_theme_manifest_refuses_empty_nul_and_non_string_values(
+    manifest: object,
+) -> None:
+    from arras.distribution import DistributionConfig
+
+    with pytest.raises(ValueError, match="theme_manifest"):
+        DistributionConfig(theme_manifest=manifest)  # type: ignore[arg-type]
+
+
 def test_arras_prefixed_custom_environment_names_are_not_mistaken_for_canonical() -> None:
     from arras.distribution import DistributionConfig
 

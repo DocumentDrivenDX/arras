@@ -12,6 +12,8 @@ import sys
 import textwrap
 from pathlib import Path
 
+import pytest
+
 ALIAS = "legacyname"
 
 
@@ -60,6 +62,141 @@ def test_an_aliased_module_is_the_arras_module_and_loaded_once(tmp_path: Path) -
         """,
     )
     assert done.stdout.strip() == "ok", done.stderr
+
+
+def test_alias_and_canonical_import_orders_preserve_module_identity(tmp_path: Path) -> None:
+    _package(tmp_path)
+    for first in (ALIAS, "arras"):
+        done = _run(
+            tmp_path,
+            f"""
+            import importlib
+            import {first}
+            alias = importlib.import_module("{ALIAS}")
+            canonical = importlib.import_module("arras")
+            alias_model = importlib.import_module("{ALIAS}.model")
+            canonical_model = importlib.import_module("arras.model")
+            assert alias_model is canonical_model
+            assert alias_model.__name__ == "arras.model"
+            assert alias_model.__spec__.name == "arras.model"
+            print("ok")
+            """,
+        )
+        assert done.stdout.strip() == "ok", f"{first}: {done.stderr}"
+
+
+@pytest.mark.parametrize("canonical_first", [True, False])
+def test_genuine_own_shims_precede_target_attributes_in_both_import_orders(
+    tmp_path: Path, canonical_first: bool
+) -> None:
+    package = _package(tmp_path)
+    (package / "operate.py").write_text("OWN = 'operate shim'\n")
+    (package / "mcp").mkdir()
+    (package / "mcp" / "__init__.py").write_text("OWN = 'mcp shim'\n")
+    done = _run(
+        tmp_path,
+        f"""
+        import importlib, sys
+        if {canonical_first}:
+            import arras.operate, arras.mcp
+        from {ALIAS} import operate, mcp
+        assert operate.OWN == "operate shim"
+        assert mcp.OWN == "mcp shim"
+        import arras.operate, arras.mcp
+        import {ALIAS}
+        assert {ALIAS}.operate is operate is sys.modules["{ALIAS}.operate"]
+        assert {ALIAS}.mcp is mcp is sys.modules["{ALIAS}.mcp"]
+        assert operate is not arras.operate and mcp is not arras.mcp
+        assert importlib.import_module("{ALIAS}.model") is importlib.import_module("arras.model")
+        print("ok")
+        """,
+    )
+    assert done.stdout.strip() == "ok", done.stderr
+
+
+def test_local_attributes_and_original_getattr_precede_target_fallback(tmp_path: Path) -> None:
+    _package(
+        tmp_path,
+        """LOCAL = 'local'
+def __getattr__(name):
+    if name == 'from_original':
+        return 'original'
+    if name == 'broken':
+        raise RuntimeError('original getter failed')
+    raise AttributeError(name)
+from arras.alias import alias_package
+alias_package(__name__)
+""",
+    )
+    done = _run(
+        tmp_path,
+        f"""
+        import {ALIAS}, arras
+        assert {ALIAS}.LOCAL == "local"
+        assert {ALIAS}.from_original == "original"
+        assert {ALIAS}.Arras is arras.Arras
+        try:
+            {ALIAS}.broken
+        except RuntimeError as error:
+            assert str(error) == "original getter failed"
+        else:
+            raise AssertionError("original getter exception was hidden")
+        from arras.alias import alias_package
+        alias_package("{ALIAS}")
+        assert {ALIAS}.from_original == "original"
+        assert {ALIAS}.Arras is arras.Arras
+        print("ok")
+        """,
+    )
+    assert done.stdout.strip() == "ok", done.stderr
+
+
+def test_broken_own_shim_import_error_does_not_fall_back_to_target(tmp_path: Path) -> None:
+    package = _package(tmp_path)
+    (package / "model.py").write_text("raise ImportError('shim import failed')\n")
+    done = _run(
+        tmp_path,
+        f"""
+        import arras.model
+        try:
+            from {ALIAS} import model
+        except ImportError as error:
+            assert str(error) == "shim import failed"
+        else:
+            raise AssertionError("target module masked the failing shim")
+        print("ok")
+        """,
+    )
+    assert done.stdout.strip() == "ok", done.stderr
+
+
+def test_closed_alias_requires_explicit_entrypoint_and_documents_it(tmp_path: Path) -> None:
+    _package(
+        tmp_path,
+        'from arras.alias import alias_package\nalias_package(__name__, modules=["conformance"])\n',
+    )
+    done = _run(
+        tmp_path,
+        f"""
+        try:
+            import {ALIAS}.conformance.__main__
+        except ModuleNotFoundError:
+            pass
+        else:
+            raise AssertionError("closed list implicitly exposed __main__")
+        print("ok")
+        """,
+    )
+    assert done.stdout.strip() == "ok", done.stderr
+
+
+def test_closed_alias_can_explicitly_enable_entrypoint(tmp_path: Path) -> None:
+    _package(
+        tmp_path,
+        'from arras.alias import alias_package\nalias_package(__name__, modules=["conformance", "conformance.__main__"])\n',
+    )
+    done = _python(tmp_path, "-m", f"{ALIAS}.conformance", "--help")
+    assert done.returncode == 0 and "conformance corpus" in done.stdout, done.stderr
 
 
 def test_importlib_resources_works_through_the_alias(tmp_path: Path) -> None:
