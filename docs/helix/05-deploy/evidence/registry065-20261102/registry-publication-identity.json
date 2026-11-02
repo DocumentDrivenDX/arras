@@ -1,0 +1,23 @@
+{
+  "schema": "arras.local-registry-origin.v1",
+  "origin": "local-release-proof",
+  "tag": "v0.6.5",
+  "version": "0.6.5",
+  "source_sha": "ad597d248847da47523155842524bb451a97f8d8",
+  "tag_object_sha": "85beae38114650caa7ff25d9dde090e20071c4e4",
+  "sums_sha256": "dbe547fe5f05386759f6fed80fc85991b676e8ca6eeb67788b2b84dbba1919f8",
+  "wheel": "arras-0.6.5-py3-none-any.whl",
+  "wheel_sha256": "beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b",
+  "npm_tarball": "documentdrivendx-arras-ui-0.6.5.tgz",
+  "npm_sha256": "26abe759e7bb918bf30c5144a34cff8deb7ecb4dd2ef531d41ec3ceab2155e0f",
+  "local_proof_sha256": "a2789f61dccc3be75c63ed5adb1435d7a8365d8941d3496eb47448e1dfbea238",
+  "assets": {
+    "arras-0.6.5-py3-none-any.whl": "beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b",
+    "arras-0.6.5.tar.gz": "838105bd625bfd611c00fc80597a22b0419b3d40e1a92134fb3f83fa2e814e51",
+    "documentdrivendx-arras-ui-0.6.5.tgz": "26abe759e7bb918bf30c5144a34cff8deb7ecb4dd2ef531d41ec3ceab2155e0f",
+    "installed-checks-public.json": "0fb06c9dffa527ae50d3c8ad99dff54059d084fef52e3f7311b9e8e1dabb0b90",
+    "local-release-proof.json": "a2789f61dccc3be75c63ed5adb1435d7a8365d8941d3496eb47448e1dfbea238",
+    "metadata-correspondence.json": "e1c7f9cfdaa58613b21b82419117da373cfa8d9d6386aed8fb948927e2218c81",
+    "qualification-inputs-ebeb.tar.gz": "6d9d0ce52b9338efcac2eb6bce1aff692e038a526d09942f42cc7306aee19ccc"
+  }
+}

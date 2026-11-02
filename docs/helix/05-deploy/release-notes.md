@@ -17,7 +17,7 @@ ddx:
 
 # Arras release notes
 
-## 0.6.5 downstream integration candidate
+## 0.6.5 downstream integration
 
 Installed development hosts serve their wheel-carried UI and console entrypoints.
 Operators can select explicit groups and development namespaces, framework
@@ -39,9 +39,19 @@ and installed CLI/development-host checks on CPython 3.11.17 / Darwin arm64.
 The [original receipts and correspondence](evidence/arras-0.6.5-local-20261031/README.md)
 retain the distinct source/artifact identities, unchanged executable and npm
 payloads, historical Linux/UI/native component evidence and platform limits.
-This candidate is not yet merged or published. The final selected-wheel guard,
-source archive, public bytes and clean public-index consumers still require
-verification before release completion.
+The immutable GitHub and PyPI release retains its local publication origin.
+The exact UI archive is now published as `@documentdrivendx/arras-ui@0.6.5` through
+the separately qualified default-branch OIDC backfill, run `41493303642`.
+Anonymous npm-served bytes match archive
+`26abe759e7bb918bf30c5144a34cff8deb7ecb4dd2ef531d41ec3ceab2155e0f`,
+and its fresh registry installation/import passes. The new hosted qualification
+includes 202 Truss cases, 64 native passes with eight limits, 139+139 official
+UMF admission comparisons and all 205 Linux UI cases. General source tests
+retain two skips; native and Mac support remains scoped to the recorded cohorts.
+The [delivery receipts and failed-attempt history](evidence/registry065-20261102/README.md)
+preserve the distinct local origin, new hosted driver, original Mac evidence
+limits and exact archive identities. No public asset was replaced or retagged;
+this backfill did not republish PyPI or claim a new PyPI-extras campaign.
 
 ## 0.6.4 embedded composition
 
