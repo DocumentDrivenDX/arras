@@ -1,0 +1,63 @@
+{
+  "artifact_id": 13172924667,
+  "artifact_name": "installed-native-macos-arm64-qualification",
+  "cleanup": {
+    "owned_process_group_cleanup_complete": null,
+    "process_observation_error_type": null,
+    "schema": "arras.native-independent-cleanup/3",
+    "status": "passed",
+    "verifier_exit_code": 0,
+    "wrapper_error_type": null
+  },
+  "cleanup_remaining_counts": {
+    "native_temp_roots_remaining": 0,
+    "owned_process_identity_ambiguous": 0,
+    "owned_processes_remaining": 0
+  },
+  "cleanup_scope_limit": "The observer found no remaining owned process identities, ambiguous identities or native temporary roots; independent process-group closure is unknown.",
+  "corpus_counts": {
+    "failed": 0,
+    "harness_error": 0,
+    "host_specific": 0,
+    "limit": 8,
+    "passed": 64
+  },
+  "host": {
+    "machine": "arm64",
+    "macos_product_version": "15.8.2",
+    "python": "3.11.9",
+    "python_executable": "/Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11",
+    "python_implementation": "CPython",
+    "release": "24.6.0",
+    "runner_image_os": "macos15",
+    "runner_image_version": "20261028.0489.1",
+    "system": "Darwin"
+  },
+  "payload_file_counts": {
+    "arras": 184,
+    "mini-racer": 18,
+    "pgserver-pg18": 1720,
+    "psutil": 15,
+    "psycopg-binary": 24,
+    "rpds-py": 8,
+    "truss-toolkit": 476,
+    "weft-sql": 8
+  },
+  "raw_receipt_sha256": {
+    "native-macos-cleanup-observation.json": "3e3d0c55d5d467886bdda25b2092b62fe1298068ed019f204d32b37b144835cf",
+    "native-macos-cohort-binding.json": "8b80a8b0f6f0cc13e0fc31e1da6a55e8512752ca57e4a88dd10fabaa3f0f10b3",
+    "native-macos-cohort.bound.json": "1fc860895e4ea262c59fb353df7aa20da89a5bb8d98030bc1db6dd6c4558dca1",
+    "native-macos-consumer-provenance.json": "08f16ab83595c53404f046eec1b0ba1a83b35690931c3d887305257d4f5dcba2",
+    "native-macos-verification.json": "a386c1e21a9ce31e9edd2b99d1b8041bebfb68f928a8796324682e03207e12a3"
+  },
+  "run_id": "41510837413",
+  "schema": "arras.native-qualification-evidence-summary/1",
+  "source_sha": "c3cb035b55040765ae4a1a983a3c38201b7d588f",
+  "source_tree_sha": "d0061331c4e935fd8d7e19eb017dd2a4b1bcde73",
+  "status": "passed",
+  "wheel": {
+    "name": "arras-0.7.0-py3-none-any.whl",
+    "sha256": "b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6",
+    "version": "0.7.0"
+  }
+}

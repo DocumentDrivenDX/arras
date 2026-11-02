@@ -52,6 +52,9 @@ describe("FR-67 New through the real server", () => {
     await within(box).findByRole("option", { name: ucName }, { timeout: 8000 });
     await user.selectOptions(box, ucName);
     await user.click(within(dialog).getByRole("button", { name: "Validate" }));
+    await waitFor(() =>
+      expect(within(dialog).getByRole("button", { name: "Create" })).toBeEnabled(),
+    );
     await user.click(await within(dialog).findByRole("button", { name: "Create" }));
     await waitFor(() => expect(window.location.hash).toBe(`#/explore/catalog/Solution/${code}`), {
       timeout: 10000,

@@ -14,6 +14,17 @@ Arras is embedded by host apps that supply their own identity and configuration.
 
 Beta (`0.x`). The in-memory and Truss adapters are implemented. The [release notes](docs/helix/05-deploy/release-notes.md) identify published versions, qualified subsets and exact artifact/platform evidence. The in-memory and Truss support claims remain bounded to those named cohorts. The Ashlar adapter and the feed from Truss to it are not built; the backend contract and packaged conformance corpus (`arras.conformance.run_corpus`) are what a new adapter is held to.
 
+## Bounded UMF memory actions
+
+Arras 0.7.0 adds opt-in `arras-umf-set/1`: the official generated synchronous
+client calls `Ontology.execute` for one source-bound STRING SET action in memory.
+Install `arras[umf]` with public `umf-core==0.10.5` on qualified Linux x86_64 or
+macOS ARM64, using Python 3.11. SDK distribution 0.10.5 is coupled to UMF SDK
+0.10.1; document/core semantics stay 0.10.0. Other platforms receive no fallback.
+This profile does not qualify Truss/Ashlar execution or durable replay. Release
+notes record the actual artifact qualification; source implementation alone is
+not a published-support claim.
+
 ## Install
 
 Choose a qualified version from the [GitHub releases](https://github.com/DocumentDrivenDX/arras/releases) and check its attached `SHA256SUMS`.

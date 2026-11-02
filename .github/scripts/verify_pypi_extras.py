@@ -12,6 +12,7 @@ import platform
 import re
 import subprocess
 import sys
+import tempfile
 import urllib.parse
 from pathlib import Path
 from typing import Any
@@ -19,10 +20,19 @@ from typing import Any
 PYPI_HOSTS = {"pypi.org", "files.pythonhosted.org"}
 QUALIFIED_GITHUB_PINS = {
     "umf-core": {
-        "version": "0.10.0",
-        "filename": "umf_core-0.10.0-py3-none-any.whl",
-        "sha256": "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9",
-        "release_url": "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/umf_core-0.10.0-py3-none-any.whl",
+        "version": "0.10.5",
+        "assets": {
+            "linux-x86_64": {
+                "filename": "umf_core-0.10.5-cp311-abi3-manylinux_2_34_x86_64.whl",
+                "sha256": "cf33b833ff4eaa080f459cf3c93baa7e3b4e436dab5cd7853dd748e3c220dd16",
+                "release_url": "https://github.com/DocumentDrivenDX/umf/releases/download/python-v0.10.5/umf_core-0.10.5-cp311-abi3-manylinux_2_34_x86_64.whl",
+            },
+            "macos-arm64": {
+                "filename": "umf_core-0.10.5-cp311-abi3-macosx_11_0_arm64.whl",
+                "sha256": "9213ff4b87649f551abcfdff40cdb6b0d75d619260988fa8ea4fe26cac7f6788",
+                "release_url": "https://github.com/DocumentDrivenDX/umf/releases/download/python-v0.10.5/umf_core-0.10.5-cp311-abi3-macosx_11_0_arm64.whl",
+            },
+        },
     },
     "truss-toolkit": {
         "version": "0.0.50",
@@ -51,15 +61,37 @@ QUALIFIED_GITHUB_PINS = {
         },
     },
 }
-REQUIRED_VERSIONS = {
-    "truss-toolkit": QUALIFIED_GITHUB_PINS["truss-toolkit"]["version"],
-    "weft-sql": QUALIFIED_GITHUB_PINS["weft-sql"]["version"],
-    "umf-core": QUALIFIED_GITHUB_PINS["umf-core"]["version"],
+HISTORICAL_UMF_PIN = {
+    "version": "0.10.0",
+    "filename": "umf_core-0.10.0-py3-none-any.whl",
+    "sha256": "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9",
+    "release_url": "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/umf_core-0.10.0-py3-none-any.whl",
+}
+RELEASE_UMF_PINS = {
+    "0.6.3": HISTORICAL_UMF_PIN,
+    "0.6.4": HISTORICAL_UMF_PIN,
+    "0.6.5": HISTORICAL_UMF_PIN,
+    "0.7.0": QUALIFIED_GITHUB_PINS["umf-core"],
 }
 
 
 class ExtrasVerificationError(ValueError):
     """The published extras install does not match its public qualified inputs."""
+
+
+def qualified_pins(version: str) -> dict[str, Any]:
+    if version not in RELEASE_UMF_PINS:
+        raise ExtrasVerificationError("Arras release has no qualified public dependency cohort")
+    return {**QUALIFIED_GITHUB_PINS, "umf-core": RELEASE_UMF_PINS[version]}
+
+
+def platform_pin(pin: dict[str, Any]) -> dict[str, Any]:
+    if "assets" not in pin:
+        return pin
+    selected = pin["assets"].get(_current_weft_platform())
+    if not isinstance(selected, dict):
+        raise ExtrasVerificationError("no qualified SDK artifact exists for this runner platform")
+    return selected
 
 
 class _Links(html.parser.HTMLParser):
@@ -88,14 +120,14 @@ def _read_json(path: Path, label: str) -> dict[str, Any]:
     return _object(value, label)
 
 
-def validate_qualified_index(path: Path) -> None:
+def validate_qualified_index(path: Path, *, version: str = "0.7.0") -> None:
     """Require the committed find-links page to retain the qualified release pins."""
     try:
         parser = _Links()
         parser.feed(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError) as exc:
         raise ExtrasVerificationError("cannot read the qualified GitHub pin index") from exc
-    for package, pin in QUALIFIED_GITHUB_PINS.items():
+    for package, pin in qualified_pins(version).items():
         assets = pin.get("assets", {"single": pin})
         for asset in assets.values():
             matches = []
@@ -182,15 +214,15 @@ def validate_pip_report(
     arras = selected.get("arras")
     if arras is None or arras["version"] != version or arras["sha256"] != expected_arras:
         raise ExtrasVerificationError("PyPI did not install the exact qualified Arras wheel")
-    for name, expected_version in REQUIRED_VERSIONS.items():
+    pins = qualified_pins(version)
+    for name, release_pin in pins.items():
+        expected_version = release_pin["version"]
         item = selected.get(name)
         if item is None or item["version"] != expected_version:
             raise ExtrasVerificationError(
                 f"required extra distribution is missing or changed: {name}"
             )
-        pin = QUALIFIED_GITHUB_PINS[name]
-        if name == "weft-sql":
-            pin = pin["assets"][_current_weft_platform()]
+        pin = platform_pin(release_pin)
         if item["filename"] != pin["filename"] or item["sha256"] != pin["sha256"]:
             raise ExtrasVerificationError(
                 f"installed artifact differs from its qualified GitHub pin: {name}"
@@ -211,11 +243,38 @@ def _verify_installed_closure(version: str) -> dict[str, str]:
             direct_urls.append(name)
     if direct_urls:
         raise ExtrasVerificationError("installed dependency closure contains direct-URL metadata")
-    expected = {"arras": version, **REQUIRED_VERSIONS}
+    expected = {
+        "arras": version,
+        **{name: pin["version"] for name, pin in qualified_pins(version).items()},
+    }
     for name, expected_version in expected.items():
         if installed.get(name) != expected_version:
             raise ExtrasVerificationError(f"installed distribution version differs: {name}")
     return installed
+
+
+def doctor_request_for_release(path: Path, version: str) -> dict[str, Any]:
+    qualified_pins(version)
+    request = _read_json(path, "doctor request")
+    packages = _object(request.get("expected_packages"), "doctor expected packages")
+    for name in ("arras", "@documentdrivendx/arras-ui"):
+        if name not in packages:
+            raise ExtrasVerificationError("doctor request omits the selected Arras package")
+        packages[name] = version
+    return request
+
+
+def _run_doctor(version: str, source_request: Path) -> subprocess.CompletedProcess[str]:
+    with tempfile.TemporaryDirectory(prefix="arras-pypi-extras-doctor-") as temporary:
+        request = Path(temporary) / "request.json"
+        request.write_text(json.dumps(doctor_request_for_release(source_request, version)))
+        return subprocess.run(
+            [sys.executable, "-I", "-m", "arras.doctor", "--request", str(request)],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=90,
+        )
 
 
 def _smoke_imports(version: str, doctor_request: Path, umf_document: Path) -> dict[str, Any]:
@@ -251,13 +310,7 @@ def _smoke_imports(version: str, doctor_request: Path, umf_document: Path) -> di
     ):
         raise ExtrasVerificationError("official UMF document smoke did not pass")
 
-    result = subprocess.run(
-        [sys.executable, "-I", "-m", "arras.doctor", "--request", str(doctor_request)],
-        check=False,
-        capture_output=True,
-        text=True,
-        timeout=90,
-    )
+    result = _run_doctor(version, doctor_request)
     if result.returncode != 0:
         raise ExtrasVerificationError("installed Arras doctor smoke did not pass")
     try:
@@ -281,7 +334,7 @@ def _smoke_imports(version: str, doctor_request: Path, umf_document: Path) -> di
 
 
 def verify(args: argparse.Namespace) -> dict[str, Any]:
-    validate_qualified_index(args.qualified_index)
+    validate_qualified_index(args.qualified_index, version=args.version)
     report = _read_json(args.report, "pip install report")
     selected = validate_pip_report(report, version=args.version, wheel_sha256=args.wheel_sha256)
     installed = _verify_installed_closure(args.version)
@@ -307,12 +360,12 @@ def verify(args: argparse.Namespace) -> dict[str, Any]:
             name: (
                 {
                     platform_name: pin["sha256"]
-                    for platform_name, pin in QUALIFIED_GITHUB_PINS[name]["assets"].items()
+                    for platform_name, pin in release_pin["assets"].items()
                 }
-                if name == "weft-sql"
-                else QUALIFIED_GITHUB_PINS[name]["sha256"]
+                if "assets" in release_pin
+                else release_pin["sha256"]
             )
-            for name in REQUIRED_VERSIONS
+            for name, release_pin in qualified_pins(args.version).items()
         },
         "selected_distribution_count": len(selected),
         "selected_distributions": {

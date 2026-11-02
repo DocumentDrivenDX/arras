@@ -1,0 +1,176 @@
+{
+  "schema": "arras.umf-single-set-handoff-review.v1",
+  "status": "source-and-artifact-links-reviewed",
+  "review_kind": "independent-read-and-hash-only",
+  "upstream_manifest_sha256": "8ed84e84e3070b24333f53fae5eb0ecdd8db2fe047dc3d6063e55cbdb4834e69",
+  "source_commit": "42cc635653972689d9443cbc06442df47eca92ca",
+  "base_commit": "8b06efc2d5186e315e2e68fe52d254c2a49f645c",
+  "upstream_status": "qualified-local-candidate",
+  "scope": "CONTRACT-906 single-SET STRING semantic admission; macOS arm64 CPython3.11.17 candidate; executionVerified:false",
+  "artifact_links": {
+    "wheel": {
+      "bytes": 3249742,
+      "sha256": "041b80331075e8548fc863ab5e4224afdf14fb2bcf95e5f90c81e65e7776e673"
+    },
+    "sdist": {
+      "bytes": 2594113,
+      "sha256": "ed56e3440e2637a35615571b5ef535f4cd85c8b7335020cf385cb4c01bc14a04"
+    },
+    "rebuilt_wheel": {
+      "bytes": 3250024,
+      "sha256": "a7c9d357a90b899159d3de2829b0771cf14d76229ee95cb65567a5e0ba6c2f80"
+    },
+    "source_patch": {
+      "bytes": 229979,
+      "sha256": "49c3262a08b991f8c7404214f06ba326775c66aeeb030bacda1d7b735d648386"
+    },
+    "source_bundle": {
+      "bytes": 56306,
+      "sha256": "762c080f37f7bb69a95fcb48555a53e99c9e81338466640990c95cb28e336329"
+    },
+    "source": {
+      "bytes": 4351,
+      "sha256": "5b79b3dba5ebc52ac9452f85a75411dab5edaa34154adda76f872a53c21d0818"
+    },
+    "vectors": {
+      "bytes": 18488,
+      "sha256": "c811eefac81c4f5ff3a7aa60cbe7f7657f7599040cd0869b2616c450931a950e"
+    },
+    "fixture_readme": {
+      "bytes": 1344,
+      "sha256": "d3750084d682794cb2ae721ca1f4c73a543b5ef68375f13e753450a6b5ad0a95"
+    },
+    "installed_primary": {
+      "bytes": 16214,
+      "sha256": "91f6641ecf4c1a4427cbde2d3361eae444ecb19084b8dd0bf1e0b5277e47e0bb"
+    },
+    "installed_rebuilt": {
+      "bytes": 16268,
+      "sha256": "f62a45dc80c4c0195415f46939ae7d7827a21eacb168e25479718b434396fbab"
+    },
+    "installed_driver": {
+      "bytes": 63742,
+      "sha256": "e026f5de3acf28309ca046379930795a1ff6cc557397dabec6efeeb3021ca2e8"
+    },
+    "reordered_ts_oracle": {
+      "bytes": 18862,
+      "sha256": "f13970e4b036f5692ddfae7c9f6e1c76712e1c33f8de094e87949199dda11041"
+    },
+    "literal_selector_ts_oracle": {
+      "bytes": 19437,
+      "sha256": "e71ac8297c9cffe7aa18ec79c50e169a8b03f18fe5d6094e6628380845599921"
+    },
+    "generated_client": {
+      "bytes": 12304,
+      "sha256": "e1507f659c94657677c428f825e98b141e49ebc00f9edc1946dd959ae535ff83"
+    },
+    "generated_ts_parity": {
+      "bytes": 1700,
+      "sha256": "1fc2a5c142b5e25c4cae546ea7f5d3a98891fe06389560eec5bb2ec9c2a909a1"
+    },
+    "browser_report": {
+      "bytes": 35512,
+      "sha256": "263f848c26e5734bda2d572e05a2f1b6b0c8e6569a3e7c3691604068c6a58436"
+    },
+    "browser_corpus": {
+      "bytes": 90529,
+      "sha256": "56398df385ed0a43bd1f5bf24ba8f975dcb80b72a47a461f363ae9a377c1a5b0"
+    },
+    "source_review": {
+      "bytes": 5695,
+      "sha256": "2e267f525c1e744d18536cd0ddd9d0a59894e8ad259c8a471d90a8c35dfa8a23"
+    },
+    "packaging_review": {
+      "bytes": 4852,
+      "sha256": "de14b4938a5369fbb57e4ba9d8c32859f95e2a7d6caed1ff67d48e99192c6126"
+    },
+    "rust_boundary_log": {
+      "bytes": 1018,
+      "sha256": "4d93ed2e062fb9d028ced5b0ddb2ae3d7df5e901b5a3243fc947523ca812f132"
+    },
+    "rust_regression_log": {
+      "bytes": 8604,
+      "sha256": "6eff7a2b4713d0107d7b727601e6e5e70cfd337fc2ffc8a94900532fdb4ff531"
+    },
+    "installed_pytest_log": {
+      "bytes": 99,
+      "sha256": "b61548ae19236f39b8f4a47e68693f2815f10375f5af14cdc001c4a5148cd3db"
+    },
+    "ts_regression_log": {
+      "bytes": 7067,
+      "sha256": "8f66038673555e8c3f10846713c36431a5d8738c4398ffb37cb8c497b7c7e280"
+    },
+    "final_artifact_review": {
+      "bytes": 9451,
+      "sha256": "3e88c88afff7fd063a0994e6ece8b77f187ddc8d84f1c0db23f136954dc88f4f"
+    }
+  },
+  "artifacts_rehashed": 24,
+  "artifact_hash_mismatches": 0,
+  "owner_reported_validation": {
+    "rust_lib": 99,
+    "rust_single_set_integration": 7,
+    "installed_pytest": 8,
+    "resource_controls": 33,
+    "typescript_regression": 76,
+    "chromium_cases": 8,
+    "chromium_controls": 8,
+    "installed_refusals_per_wheel": 34,
+    "installed_positive_variants_per_wheel": 10,
+    "inventory_boundary_controls": [
+      13,
+      10
+    ]
+  },
+  "owner_measurement": {
+    "deadline_seconds": 30,
+    "max_work_per_work_closure": 1000000000,
+    "meter_callback_count": 12251127,
+    "meter_callback_deltas": {
+      "factory": 2802338,
+      "invocation": 3271053,
+      "prepare": 3268561,
+      "record_values": 2909175
+    },
+    "operations": [
+      "factory-and-capability-probe",
+      "prepare",
+      "apply-invocation",
+      "record-values"
+    ],
+    "phase_wall_seconds": {
+      "factory": 1.2063239170238376,
+      "invocation": 1.1751921250252053,
+      "prepare": 1.2085962080163881,
+      "record_values": 1.10294283303665
+    },
+    "resource_io_accounting": "bounded factory setup is outside per-operation work meter and included in wall time",
+    "wall_seconds": 4.693166834011208,
+    "work_scope": "Observed four-phase sum; constructor and each engine call have separate max_work closures under one absolute deadline, not an engine-wide cumulative budget",
+    "work_unit_delta": 283358309,
+    "work_unit_deltas": {
+      "factory": 68214793,
+      "invocation": 72551564,
+      "prepare": 72499347,
+      "record_values": 70092605
+    },
+    "work_units": 283358309
+  },
+  "limits": [
+    "Not a public SDK release or full-port completion",
+    "No native/provider execution, person/grant/existence/replay/commit qualification",
+    "Only macOS arm64 CPython3.11.17 installed candidate qualified",
+    "Other supported declaration sizes may exceed a host-selected finite work budget",
+    "max_work applies separately to constructor and each call; deadline_ms stays absolute for engine lifetime",
+    "Wheel resources are fixed9official resources; no checkout fallback",
+    "Earlier rejected wheel and superseded driver/meter attempts retained separately",
+    "Validation counts are upstream-owner evidence; this reviewer did not rerun them.",
+    "No Arras installed whole-path pass or A2 regression follows from this upstream packet.",
+    "Original local artifact paths are omitted; binaries and raw logs are not copied."
+  ],
+  "arras_consumer_budget": {
+    "max_work_per_sdk_closure": 100000000,
+    "absolute_deadline_ms_per_engine": 5000,
+    "scope": "Frozen Arras fixture measured independently; not the broader upstream qualification settings."
+  }
+}

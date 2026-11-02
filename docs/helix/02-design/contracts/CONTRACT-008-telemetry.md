@@ -52,6 +52,7 @@ Terms. A span is one timed operation in a trace. W3C Trace Context is the standa
 | Event | When | Attributes besides `outcome` |
 |-------|------|------------------------------|
 | `arras.query` | A `query` ends | `consistency`, `module` once it is resolved; on success `backend`, `rows`, `truncated`; on `Unavailable` `backend`, `reason`; on `NotYetCurrent`, `Unsupported` or any other error raised by a backend, `backend` names the backend last asked (`Unsupported` carries no backend field of its own, so the attribute is the only place it is named); a `bulk` read that falls through to the record store is visible as `backend` |
+| `arras.execute` | A generated action `apply` or `validate` request ends (CONTRACT-003) | A known definite no-effect wire refusal carries only its fixed `reason` code; never the request, schema digest, inputs, key, token or raw SDK diagnostic |
 | `arras.validate` | A `validate` ends | `action`, `module`; on success `valid`; `backend` and `recovered` when the backend names them (below); a validate is a dry-run apply on the provider, so `recovered` is always `false` for it |
 | `arras.invoke` | An `invoke` ends | `action`, `module`; on success `replayed`; `backend` and `recovered` when the backend names them (below) |
 | `arras.invoke_batch` | An `invoke_batch` ends | `action`, `module`, `atomic`, `items`; on success `succeeded`, `failed`; `backend` and `recovered` as for `arras.invoke` |
@@ -65,7 +66,7 @@ Terms. A span is one timed operation in a trace. W3C Trace Context is the standa
 | `arras.backend.migrate`, `arras.backend.configure_access` | An adapter's install-or-verify or module-access call ends (the Truss adapter; each is a child of `arras.migrate` when run through it) | `backend`; on `Unavailable` `reason`. Never a role name, a document name, a release or an installation id |
 | `arras.backend.status` | A backend's availability changed since it was last reported, and its first report | `backend`, `available`, `reason` |
 
-`outcome` is `ok` or `error`. On `error`, `error.type` is the exception's class name and never its message.
+`outcome` is `ok` or `error`, except that `arras.execute` records `refused` when it translates a known definite no-effect refusal into a matching-schema wire error. That normal return is INFO, not a successful action. A thrown unexpected failure, including an uncertain write or malformed success after dispatch, remains `error`; a prior refusal marker MUST NOT override it. On `error`, `error.type` is the exception's class name and never its message.
 
 **Attributes.** The only attributes that may be emitted are `module`, `action`, `backend`, `consistency`, `outcome`, `reason`, `replayed`, `recovered`, `committed`, `atomic`, `valid`, `available`, `items`, `succeeded`, `failed`, `rows`, `truncated`, `duration_ms` (log records only; a span has its own duration) and `error.type`. A value is a boolean, an integer, or a string of at most 64 characters from letters, digits and `_ . : -`. Anything else is dropped. On spans the names are `arras.<name>`, except `error.type`, which is the OTel semantic convention of that name (pinned to semantic conventions v1.27 with `opentelemetry-api` 1.27 or later, below 2).
 
@@ -82,6 +83,8 @@ Terms. A span is one timed operation in a trace. W3C Trace Context is the standa
 **Other log lines.** A log line that is not a telemetry event carries the exception's class name and never its message or traceback; the MCP server's lines may also name the method or tool called. A request the MCP binding refuses as a protocol error (an unknown tool or method, malformed parameters) is answered with a JSON-RPC error and produces no event or span. An argument that does not convert is a failed `arras.invoke` event with `error.type=Invalid`.
 
 **Reasons.** `reason` is one of `not_configured`, `unreachable`, `access_denied`, `migration_failed`, `unsupported_version`, or `other`: a backend's own wording is never emitted.
+
+For the `arras.execute` definite-refusal case only, `reason` is the lowercase fixed wire code: `denied`, `conflict`, `precondition_failed`, `unsupported`, `busy`, `schema_mismatch`, `limit_exceeded`, or `invalid`. This exception adds no raw diagnostic attribute or general reason vocabulary to other events.
 
 **Loss.** Telemetry never raises into the operation it observes. A signal that could not be emitted is counted, readable as `arras.telemetry.dropped()`. Arras does not sample.
 

@@ -2901,3 +2901,560 @@ retains the original results and descriptor correspondence. Bind the existing
 release guard to these measured bytes while preserving its missing/mismatch
 controls. Final source archive parity, normal merge, local publication and
 fresh public-index proof remain separate required steps.
+
+## Next A3/A4 cut — candidate implementation, qualification pending
+
+This checkout starts at released main
+`8542d477c411c96a553ea84572b86c95c59d7cf2`, package 0.6.0, on public
+Truss 0.0.48/Weft 0.4.51 and the selected released pure UMF core 0.10.0.
+It is separate from Truss49 PR 9, managed acceptance and release closeout.
+Package/version/tag and the released dependency cohort remain unchanged for
+this action cut. Candidate source work is isolated from release and Truss49.
+
+The bounded goal is one source-bound module with a required STRING key, one
+constrained scalar and an unchanged generated explicit-key SET action through
+a real provider. The candidate follows existing CONTRACT-902 at the named UMF
+source, pending owner confirmation of the public binding/package. It has empty
+conditions/outputs/failures and no handlers
+or relationships; nonempty pre/postconditions or failure declarations refuse
+and remain later work.
+CONTRACT-002/003/004 and TP-001 above retain authority, source fidelity, refusal,
+dry-run, rollback and retry obligations. The metadata-only profile is unchanged.
+The Arras-owned opt-in execution profile is `arras-umf-set/1`. Its first source
+is immutable: same owner plus exact same bytes is idempotent, another owner is
+refused, and all changes/upgrades/downgrades are unsupported. The explicit host
+pin `sha256:<raw source SHA-256>` is separate from opaque native revision and
+UMF core version; no ordinal or semantic-version ordering is inferred.
+
+### Exact upstream handoff required
+
+The official core wheel qualifies model admission, not action execution.
+The integration owner identifies existing TypeScript public APIs at `f323a2d`:
+`admitActionInputs`, `validateCoreFieldValue`, `validateCoreRecordValues` and
+`prepareActionPlanModel`. The latter's unchanged strict branch refuses opaque
+authorization obligations. The new candidate `prepare_single_set_action`
+branch must separately preserve those obligations and host-supported policy
+assessment. The first installed subset is one STRING SET with required STRING
+key/value, no conditions, outputs, failure declarations, handlers or relationships.
+These source APIs are useful boundaries;
+the missing qualified Rust/Python binding, exact package and vectors remain
+the execution handoff dependency. No separate Python evaluator is proposed.
+At UMF source `f323a2dec16132c00eb1bc75c65c416f94804c26`, CONTRACT-900
+specifies actions 0.1.0/core 0.10.0. The separate inspected project checkout still
+has older 0.8.0 contract prose while its action package declares core 0.10.0;
+this is source-cohort drift, not proof that canonical declarations are absent.
+The package's description also retains 0.8.0 wording despite its 0.10.0
+`coreVersion`; the upstream handoff must resolve that metadata correspondence.
+CONTRACT-902 model-pin prose still names 0.8.0 while the inspected preparation
+implementation targets 0.10.0; the owner must reconcile that correspondence too.
+Action schemas and portable-plan assessments remain metadata/capability artifacts,
+not executable authority. CONTRACT-079/900/901 and companion 902–904 must be
+matched to the selected package rather than combined across cohorts.
+
+The current UMF owner must provide one reviewable handoff containing:
+
+1. Exact public callable/import path, package release or explicitly selected
+   candidate status, source commit, archive digest and dependency/native closure.
+2. Exact core/action/value/rule/selector versions and input/output types, including
+   source/registered-revision/owner custody; no document-loaded callbacks. Bind
+   the source-qualified CONTRACT-079 apply/validate inventory and the UMF-owned
+   bridge from generated entity-key Field-ID maps to canonical entity tuples.
+3. The authoritative Field value and action-plan/evaluation boundary, required
+   trusted host/provider ports, supported obligations and explicit refusals.
+   Private kernels and a copied Python evaluator are excluded by UMF ADR-006.
+4. Exact one-module fixture, unchanged generation command/output and positive/
+   negative vectors for constrained values, unsupported conditions/failure declarations/handlers/
+   multiple effects/relationships and authorization; identify available provider
+   fault/rollback and retry witnesses without inventing controls. The tutorial
+   postcondition fixture is outside
+   the first empty-condition subset and cannot prove its constrained-scalar claim.
+5. Outcome, error, dry-run, commit/unknown-settlement and replay contracts;
+   identify what is pure metadata, same-process, native or independently released.
+
+### Ordered ownership and implementation gate
+
+| Owner | Integrated deliverable after handoff | Gate |
+| --- | --- | --- |
+| Sol | Freeze selected profile, immutable ownership/source policy, internal ports and module map in these existing artifacts | Review actual source and official artifact evidence without substituting a local interpreter |
+| Luna A | `_action_types`, model/results/compat/provider protocol; `_action_transport` and minimal core delegation; registration; `fakes_actions` and narrow registry/import/profile/store changes; connected type/transport/memory tests | Current authority/source under shared lock, direct Plan refusal, official administrative seed path, positive legacy regression and mismatch/owner/refusal zero effects |
+| Luna B | `_umf_engine`, `_umf_actions`, exact source fixtures/provenance/vectors and bridge tests | Sole SDK import boundary; actual closed upstream API/resources and complete represented semantics, no private kernel or legacy reinterpretation |
+| Coordinated quality lane | Public catalog/contracts, DAG and required installed-extra gates after production freeze | Meaningful forbidden-edge controls, no-skip oracle checks and fresh installed candidate proof |
+
+Luna A may implement the connected host/provider custody paths against the frozen
+private bridge port while Luna B adopts the delivered closed semantic packet.
+No unused helper-only library, public callback injection or default-success
+semantic wrapper qualifies delivery. Preserve the 926-line ceiling and review
+production changes before catalog/module-map/CI updates. Current SDK packet
+names `umf.action_runtime.create_action_engine`, `prepare_single_set_action`,
+`admit_generated_action_invocation` and `admit_generated_record_values`; exact
+apply/validate correspondence, source/model pin and fixture naming must match
+the owner's final contract and vectors rather than consumer guesses.
+
+The released `umf` extra and lock stay intact until actual releasable artifact
+handoff. Use an explicitly supplied checksum-verified candidate wheel in a
+separate environment, record resource/native/source/vector identities and run
+the A2 139-vector regressions. Missing runtime/capability refuses cleanly in
+base/released-extra environments. Positive semantic support requires the actual
+SDK plus unchanged generated client through registration, admitted import,
+validate, commit and readback. Memory same-process replay cannot establish
+durable restart, Truss, managed service or full action/constraint support.
+No new release or native campaign is authorized by this plan.
+
+### Coherent action source checkpoint — qualification pending
+
+The integrated source passes Sol's source-only review. The public route is
+unchanged official generation through `SyncActions` and `Ontology.execute`,
+with public opt-in `InMemory` registration, officially admitted seed import and
+ordinary query readback. Source controls cover immutable ownership, current
+authorization, source rebinding under the shared lock, atomic row/replay/token
+publication, direct legacy-write refusal, dry-run and no-op behavior. Known
+definite wire refusals remain distinct from uncertain post-publication failures.
+The genuine generated-client test is present, including denial and uncertain
+response controls, but has not yet run with the candidate SDK and installed
+Arras wheel. Structural bridge doubles qualify custody/control flow only.
+
+The coordinator reports configured strict typing, Ruff/format, public-content
+integrity and the UI source build gates passing. The first full base suite
+reported 3,127 passed and three candidate-only skips, with one existing
+100 ms child-start timing failure. The coordinator later stopped the diagnostic
+rerun's owned process tree (exit 137) for resource coordination and retained its
+interrupted log; timing follow-up is deferred. Neither attempt is recorded as a
+full-suite pass. The source checkpoint precedes
+the exact-commit wheel build and is not an installed or immutable-build proof.
+
+SDK-only isolated preparation uses candidate-2 `umf-core` 0.10.0 from producing
+source `42cc635653972689d9443cbc06442df47eca92ca`, wheel SHA-256
+`041b80331075e8548fc863ab5e4224afdf14fb2bcf95e5f90c81e65e7776e673`.
+Independent archive inspection verifies all 40 RECORD entries and nine resource
+hashes against manifest
+`13c3fb58b94eefdb319637eb15e80d20501d3538ab7b6c152e12a1b481156dff`.
+The frozen source/vector digests remain
+`5b79b3dba5ebc52ac9452f85a75411dab5edaa34154adda76f872a53c21d0818` /
+`c811eefac81c4f5ff3a7aa60cbe7f7657f7599040cd0869b2616c450931a950e`.
+These archive observations do not establish installed Arras payload parity.
+
+The retained exploratory SDK meter receipt
+`888b4e715b12e6d43aca1dbd582f9212b400fb2ab84a9f70ba8a85b5fc719a37`
+binds probe source
+`e51f8f5f6a5127248432d7f7852ca018da8d228ed28a95bbd567ff4b51974cc6`.
+It sums incremental meter charges: the peak named operation is Apply at
+72,551,564 units. The selected finite budget is 100,000,000 units per SDK work
+closure, with a five-second absolute deadline per new engine instance.
+Constructor and individual calls reset their own work counters; the deadline
+does not reset. Factory-plus-capability charges span two closures, not one
+combined budget. Typed low-budget `RESOURCE_LIMIT`, elapsed `DEADLINE`,
+`CANCELLED` and `METER_FAILURE` controls were observed. The receipt's resource
+manifest field is an expected identity and its RECORD field is archive-derived;
+neither is an installed-payload measurement. A new SDK packet requires renewed
+budget and artifact review.
+
+The final upstream handoff manifest
+`8ed84e84e3070b24333f53fae5eb0ecdd8db2fe047dc3d6063e55cbdb4834e69`
+now binds 24 artifacts to the same SDK source/wheel, including the sdist,
+rebuilt-wheel, installed refusal/control and browser evidence. Independent
+read/hash review found no artifact mismatch; the path-free
+[handoff review](evidence/umf-actions-20261023/upstream-handoff-review.safe.json)
+retains identities and clearly separates owner-reported checks from that review.
+The owner qualifies only local macOS arm64 CPython 3.11.17 semantic admission,
+with `executionVerified:false`; its 1,000,000,000-unit/30-second measurements
+are distinct from Arras's smaller measured consumer budget. This is not a public
+SDK release, provider execution or general declaration-size qualification.
+
+The first installed Arras attempt on checkpoint `0dd13d2` used exact wheel
+`d9a291f1db94b17c1bc8bc97f842ea94ee0d008093f64a0577499860093e13d2`
+with the named SDK candidate: 36 tests passed, one failed and none skipped.
+The genuine generated public-host path, denial and uncertain-response controls
+passed. Invalid allowed-value validation exposed an unmapped official
+`CORE_SCHEMA_PROPERTIES` diagnostic; that failed attempt remains historical
+before the narrow fixed-code correction was reviewed. Independent archive/installed
+byte inspection matched all 174 selected Arras and 36 SDK payload members,
+but does not turn the failing run into an overall qualification pass.
+
+Corrected installed Arras whole-path proof and A2's 139 reference plus 139
+fresh-empty Registry regression checks were still pending at that source
+checkpoint; their later result follows. No new dependency pin, release, Truss/native/managed
+execution, durable restart, general action/constraint support or Ashlar
+qualification follows from this source checkpoint.
+
+### Corrected installed memory qualification — 2026-10-23
+
+Source `5ddfc34947994c33eebab04d017f06c43e396fac` builds exact Arras wheel
+`f5ccbd3bf5c6b21f44768f2283797a74e517f0f2053b77e58dbf0a93135b0626`,
+metadata version 0.6.0. It is an unreleased action-branch candidate, distinct
+from immutable public v0.6.0. A fresh environment with that wheel and the
+checksum-verified SDK candidate passes the required installed gate: 39 tests,
+zero failures/errors/skips, exit 0, 117.72 seconds reported by pytest. The
+retained XML records 105.000 seconds for its suite; those timings are separate
+observations. The coordinator executed the gate with isolated Python, outside
+the checkout, importlib test mode and required engine flags. Sol inspected the
+source, retained results and artifact bytes without rerunning the gate.
+
+The [path-free installed review](evidence/umf-actions-20261023/installed-memory-qualification.safe.json)
+binds the XML/log, installed-identity verifier, exact wheel and SDK, source
+fixtures and test hashes. Independent inspection matches all 174 selected Arras
+and 36 SDK archive/installed members plus all 181/43 hashed installed RECORD
+entries, with no mismatch or selected-origin escape. The observed environment
+is CPython 3.11.17 on macOS 27.0.1 arm64. This selected-package identity check
+does not imply a global dependency/alias audit or a new no-engine installed gate.
+
+Actual unchanged generation and `SyncActions` exercise public `InMemory`
+registration, officially admitted import, Apply/Validate and ordinary query
+read-at-least. Definite generated denial stays distinct from unknown lost or
+malformed responses after a real commit; the controlled transport wrappers
+make one call and do not retry. The corrected constraint-negative path returns
+fixed `Invalid` evidence without raw SDK prose. The single existing A2 oracle
+test checks 139 unique reference cases and 139 fresh-empty Registry comparisons,
+including validity, completeness and exact ordered diagnostics, under the same
+installed candidate. Reference-only registry callbacks remain test-only.
+
+Two later test-only custody controls leave runtime source `5ddfc34` unchanged.
+The coordinator's final same-file run reports 19 memory-control tests passing
+with no failures/errors/skips (9.09 seconds pytest wall time; 6.450 seconds in
+the retained XML), including both new controls: a
+fault after work-copy mutation preserves the prior state/rows/sequence/replay/
+tokens, and expiry waits for action publication before a later identical repeat
+is denied without readmission or replay. The final file includes an explicit
+shared-lock ownership assertion before the expiry attempt. Sol reviewed the
+source, exact file hash and retained XML without rerunning those controls; their
+bridge doubles prove custody rather than official semantic evaluation. The
+receipt binds their working-file hash separately from the installed wheel's
+runtime commit. The first failed installed attempt and interrupted full-source
+diagnostic remain retained. Remote CI still supplies the full base gate.
+
+This qualifies only the named one-module memory SET subset and same-process
+replay/token lifetime. No new SDK dependency pin, publication, generated get/read
+transport, replica, durable restart, Truss/native/managed execution, general
+action/constraint evaluation or Ashlar support is established.
+
+### Public SDK integration and PR 10 merge gates
+
+Head `5e1ff2779186494c2599a5dcd053311cf84c0fd4` passes all jobs in
+[CI run 39992835087](https://github.com/DocumentDrivenDX/arras/actions/runs/39992835087).
+That is the coherent source/legacy gate, not public action-SDK qualification:
+the declared `umf` extra still selects the released pure core wheel, which does
+not provide the action runtime. The independently qualified local SDK candidate
+above does not replace a public artifact handoff. Official public SDK delivery
+is pending with the UMF owner; no release URL, version or checksum is inferred.
+
+The immediate independent implementation is a reusable installed-action gate,
+without changing the existing admission receipt cohort:
+
+| Owner | Files and deliverable | Required boundary |
+| --- | --- | --- |
+| Luna B | `tools/verify_umf_actions.py`, `tools/_umf_actions_probe.py`, `tests/test_verify_umf_actions.py` | Fresh isolated install, actual official generation and public memory path; fixed probe, bounded artifacts, typed safe receipt and meaningful offline refusal controls |
+| Sol | Source/artifact review and this plan | Separate public dependency proof, candidate preparation, structural controls and actual semantic qualification |
+| Root/coordinated pin lane | Declared SDK dependency, lock/integrity selection, CI and later coherent admission migration after owner handoff | Exact public platform/version/source/hash correspondence; preserve prior receipts and unchanged Truss/Weft cohort |
+
+The verifier's default mode installs the supplied exact Arras wheel's declared
+`[umf]` extra with fresh dependencies and verifies the selected SDK's public
+URL/hash provenance. Missing action capability fails the required gate; it
+cannot skip or use a checkout, shared environment or implicit local override.
+An explicit `--umf-wheel` requires `--umf-sha256`, records both the declared
+public pin and supplied artifact identity, and always reports `public_gate:false`.
+That mode is candidate preparation and cannot close the public merge gate.
+
+The fixed probe verifies installed payload/RECORD/origin custody before SDK
+imports, then generates the unchanged client from the bound neutral fixture.
+It exercises public registration, officially admitted seed import, Apply/Validate,
+constraint negatives, no-op/replay/current denial, uncertain post-commit response
+classification and ordinary query read-at-least. It also executes all 139 unique
+reference and 139 fresh-empty Registry comparisons with zero skips. SDK resource,
+native payload, source/vector, probe/tool and exact Arras wheel hashes remain
+explicit. Raw paths/logs/hostnames and private semantic callbacks do not become
+public proof. The 926-line ceiling and existing quality limits remain unchanged.
+
+After the official handoff, dependency adoption must select real published
+wheel/tag/SHA identities for each claimed platform. A native SDK is not a
+`py3-none-any` wheel: allow its qualified tags/native payload only for the SDK,
+while keeping Arras's pure-wheel invariant. SDK distribution version, core
+document version, action/profile versions and opaque source/native revisions
+remain distinct. In particular, a package-version change must not rewrite core
+0.10.0 fixtures or reinterpret their diagnostics. Requalify 139/139 and the bounded
+action profile against the actual selected public artifact and finite budget.
+
+The old admission verifier/probe and release receipt validators hardcode the
+pure 0.10.0 cohort. Preserve them during the independent action-tool slice.
+Any later pin migration must coherently update dependency parsing, platform
+selection, installed admission evidence and its assembler/public-checker/release
+consumers, with explicit historical cohort handling; no broad acceptance of
+arbitrary SDK artifacts or reinterpretation of old v0.6.0 evidence. The browser
+package/schema cohort remains separately pinned and qualified; change it only
+with an actual corresponding handoff and parity evidence.
+
+PR 10 is ready for merge review only after default public-extra installed action
+qualification passes without skips, the selected platform/version and 139/139
+compatibility gates pass, and final-head required CI plus Sol review pass.
+Retain the safe action receipt as an explicit required CI artifact; green CI
+that only exercises the old optional metadata engine does not satisfy this gate.
+No public-readiness claim follows from the current candidate override proof.
+
+PR 9's Truss49/native/Lakebase work remains isolated. Main is still `8542d477`
+with public Arras 0.6.0; PR 9's green CI does not close its separate native/managed
+gates. Do not rebase, merge, adopt its pins, bump a version or publish through
+this action tranche. Root and the release coordinator retain those handoffs.
+Local native/Spark/mutation-copy campaign restrictions remain in force; remote
+PR CI may supply broad source gates without a competing local campaign.
+
+
+## PR 10 successor reconciliation — 2026-11-02
+
+The human transferred exclusive implementation ownership of the isolated
+`/private/tmp/umf-stack-release-arras` clone after UI evidence PR 43 merged as
+`b381a52802bf4d1eebb7a36edec35156775d4fba`. UI 0.6.5 delivery is complete;
+its immutable artifacts, original failures and recovery evidence stay separate.
+Original PR 10 head `27a1915124aaa47944a4722328dcba63b7107e99` is retained
+as a parent of the reconciliation with delivered main. Primary dirty documents
+and shared UMF/Ashlar source remain untouched.
+
+The successor is 0.7.0: the optional UMF dependency changes from a universal pure
+wheel to a bounded native-platform cohort, narrowing installation compatibility.
+CONTRACT-001/005 and the README compatibility policy govern this minor increment.
+The supported release interpreter stays Python 3.11. The selected distribution
+is public `umf-core==0.10.5`, coupled to separately versioned UMF SDK 0.10.1 at
+source `90cb61eb63aec3f5a77b5991a56e3dfc3d10bd27`. Document/core semantics
+remain 0.10.0; the newer producer is not selected and action scope is unchanged.
+
+### Execution contract and validation
+
+FEAT-003, CONTRACT-002/003/004/005, TP-001 and bounded A3/A4 acceptance above
+continue to govern `arras-umf-set/1`. The human authorizes implementation,
+qualification, independent review, normal PR merge and successor publication.
+Existing module-map and negative import controls remain required. Token estimate
+is unknown: no comparable baseline or reliable task meter is available. Source
+reconciliation starts with focused checks and one independent blocking review;
+repeat only changed-scope checks after findings. Keep one expensive job at a time
+and the existing two-worker limit. No managed campaign inherits previous proof.
+
+1. Merge main retaining modern historical 17-asset gates, registry direct-URL
+   refusals, recovery driver and core 0.10.0 `validate_receipt` compatibility.
+2. Adopt version-only 0.10.5 metadata with closed exact public platform URL/hash
+   selection; migrate admission/action, release/provenance and registry checks
+   together while retaining historical cohorts and original source bindings.
+3. Retain exact wheel/sdist and run fresh Linux/Mac Python 3.11 installed proofs
+   without overrides/skips: 139 reference plus 139 fresh-empty Registry cases,
+   generated Apply/Validate, constraints, no-op/replay, current denial, uncertainty
+   and payload custody. Real memory execution remains mandatory.
+4. Complete source/UI/native regression gates and independent source/artifact
+   review before merge. Bind the successor guard to its own qualified bytes;
+   preserve frozen historical 0.6.5 behavior. Do not transfer managed evidence.
+5. Complete release and anonymous public-asset/registry-install gates before
+   claiming delivery. Primary checkout or shared-repository edits are excluded.
+
+### Continuation
+
+Reconciliation is in progress. Dependency resolution selects public 0.10.5;
+focused source/receipt/registry controls are next. Earlier read-only Python
+3.13.16 Mac diagnostics passed preparation, generated Apply/Validate, memory-host
+controls and 139+139 comparisons after an in-memory version allowlist change.
+Those diagnostics do not replace the required Python 3.11 installed proof.
+
+
+### Successor source and Mac checkpoint
+
+History-preserving merge `cda5e1180e3fd5f9958eeb8f48707fae485c2a1f` has
+original action head `27a1915` and delivered main `b381a528` as parents. The
+candidate wheel SHA-256 is
+`351dfd3a176493212468d6bc0606b6bd00125ac9833fe0114b79f7f0dfd24968`.
+Fresh public-extra Mac CPython 3.11.17 admission and action receipts are retained
+under [the candidate evidence](evidence/arras070-20261102/). Both prove exact
+139 reference plus 139 fresh-empty Registry comparisons; action proof passes
+all twelve controls with zero skips, no override and completed cleanup. The
+installed tool/probe/selector identities are bound in each receipt; these are
+local candidate proofs, not Linux, managed or public Arras release evidence.
+
+Three initial action-probe failures are retained. The pre-reconciliation probe
+rejected the newly wheel-declared CLI launcher outside site-packages. The fix
+allows only the exact wheel-declared `arras.cli:run` launcher under the fresh
+venv scripts directory, checks its installed RECORD hash, and refuses unlisted
+paths, symlinks and changed bytes. The first declaration correction used the
+wrong function spelling and remained failed; the final spelling is read from
+the actual wheel metadata. No failed attempt is reclassified as qualification.
+
+Focused cohort/receipt/registry/workflow controls passed 166 tests, separate
+release/recovery controls passed 101, and action/API/module checks passed 114.
+Later affected probe/metadata/module controls passed 92. The first full local
+base attempt had 3,573 passes, two skips, four failures and 70 errors: localhost
+sandbox refusals, cascading mutation controls and stale direct-reference/index
+fixtures. Corrected affected localhost/dependency/mutation checks passed 84 with
+one Truss case deselected; historical direct-reference serialization controls
+remain covered using an explicit historical fixture. This is not a full-suite
+pass. Full final-head hosted gates remain open.
+
+The original 0.6.5 receipt now has an actual historical regression: original
+pinned source accepts it, while current driver source and a changed old probe
+refuse. Historical backfill checks out and verifies `ad597d2` separately before
+passing that payload context to strict `validate_receipt`. Thirty-five affected
+historical/workflow controls pass. No broad digest exception or old-proof
+reinterpretation was introduced. Independent original-action review found no
+blocker in its bounded 19-control scope; final integration/artifact review is
+still required. Source freeze, hosted Linux/Mac qualification and release remain
+open.
+
+
+### Required independent integration findings — fixed before hosted freeze
+
+All three reported proof-chain findings are required, not advisory. Historical
+0.6.5 backfill now passes a separately checked-out `ad597d2` payload repository
+and rejects a different checkout or dirty relevant source; actual original
+receipt/tool/probe evidence is retained in the existing registry065 directory.
+The strict old digest comparison is unchanged.
+
+Admission receipt validation now reads the actual verified Arras wheel metadata,
+checks its outer SHA-256 and identity, and selects its SDK cohort for the observed
+runtime. Raw assembly, public asset verification and original-publication
+provenance supply the real wheel path. New/native proofs require actual wheel
+bytes; historical pure-core validation keeps its existing API. Cross-cohort
+controls refuse 0.10.5 proof for a 0.6.5 wheel declaring 0.10.0 and the inverse
+0.7.0/0.10.5 declaration with 0.10.0 proof. No package-version heuristic supplies
+the expected cohort. The actual local 0.7.0 raw admission receipt also passes
+this exact-wheel binding.
+
+Registry publication derives action capability from the already verified wheel,
+passes it into publication-context validation and explicitly requires the exact
+action job to succeed. Missing, failed, skipped and cancelled action gates refuse;
+the historical pure-core ten-gate route stays accepted. The combined affected
+assembly/publication/historical/admission suite passes 105 tests. Final independent
+review of these fixes and hosted artifact qualification remain required.
+
+
+### Independent review closure and first hosted attempt
+
+The bounded independent reviewer confirmed all three integration findings closed:
+original historical source binding, actual-wheel SDK cohort binding at all real
+assembly/public/provenance callers, and mandatory action-job publication gating.
+A further real-caller keyword mismatch (`expected_wheel_sha256` versus
+`wheel_sha256`) was corrected and covered by a real `validate_release_inputs`
+handoff test. The reviewer checked that correction and the unchanged schema-2
+17-asset and UI alias paths. This is scoped code review, not final artifact or
+release approval. The parent independently reports 108 affected admission,
+registry, historical recovery, action-receipt and workflow controls passing.
+
+Full hosted attempt [41501074057](https://github.com/DocumentDrivenDX/arras/actions/runs/41501074057)
+on `f5d5d03` failed the installed doctor setup: the example consumer still pinned
+Arras 0.6.5 while the candidate wheel was 0.7.0. The example dependency and doctor
+request now select 0.7.0. A fresh local exact-wheel doctor proof passes all twenty
+cases on candidate `351dfd3a…`. This initial hosted failure is historical; it is
+not a successful complete source/artifact gate. The new source freeze must run
+full hosted qualification, including both installed SDK platforms.
+
+
+### Provenance fingerprint correction before the next dispatch
+
+Hosted attempt [41502145102](https://github.com/DocumentDrivenDX/arras/actions/runs/41502145102)
+on `4dd0fdd` failed the public-content gate before artifact qualification: the
+0.7.0 example doctor request still had its original 0.6.5 fixture digest in the
+public-content policy. The policy now binds actual request SHA-256
+`2b103716b6048ebd45c9ef67e55ec80cf772e5029ce133722aa346f1b7fe1c58`.
+Local public-content validation passes; the parent independently confirms it.
+Affected source/provenance/receipt controls pass 113 tests. The superseded hosted
+run was cancelled to avoid further duplicate browser/Truss work. Its failed
+source gate is retained as historical evidence, not qualification. The correction
+changes no Arras wheel bytes; local admission/action and twenty-case installed
+doctor proofs remain scoped to their unchanged candidate wheel. Full required-
+engine local source validation is running before any new hosted dispatch.
+
+
+### Exact hosted candidate and driver corrections
+
+Full hosted attempt [41504290459](https://github.com/DocumentDrivenDX/arras/actions/runs/41504290459)
+on `5406e481e246cfb3928d6f6eb35451e0e4267239` produced canonical wheel
+`b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6`.
+Build, Truss and UI gates passed. Python 3.11 reported 3,667 passes, two skips
+and one failure: the Mac extras fixture retained a Linux UMF pin. The Mac action
+job failed before verification because the downloaded wheel lives under
+`candidate/dist/`, not `candidate/`. All three new consumer paths are corrected;
+an extracted real inline-command regression covers matching, changed and missing
+nested artifacts. The selected native Mac job was cancelled before executing;
+this run provides no native Mac qualification. Neither failure is relabelled.
+
+The Linux-produced b20 wheel differs from local 351dfd3a in its npm gzip stream
+and wheel RECORD. All 323 npm payload files and decompressed tar bytes match;
+that comparison does not transfer exact-wheel proof. The successor release guard
+now pins b20; the frozen historical 0.6.5 guard remains unchanged.
+
+The parent independently ran a fresh public-extra Mac action proof for exact b20:
+[raw safe receipt](evidence/arras070-20261102/macos-actions-b20.safe.json).
+CPython 3.11.17, Darwin arm64, public UMF distribution 0.10.5 exact Mac wheel
+`9213ff4b87649f551abcfdff40cdb6b0d75d619260988fa8ea4fe26cac7f6788`:
+all twelve controls, 139 reference and 139 empty-registry comparisons pass;
+payload/RECORD parity covers 178 Arras and 36 UMF files. No overrides, public gate
+true, one fresh venv, no shared site packages, cleanup completed. Tool, probe and
+selector hashes were independently compared to current source before retaining
+the receipt. This is local-installed action proof, not hosted-path recovery or
+macOS 15 / CPython 3.11.9 native-adapter qualification. The parent reported roughly
+four minutes of download/setup and an active probe checkpoint at 5m21s overall;
+the receipt has no total-duration field, so no exact elapsed duration is claimed.
+A separate local b20 admission attempt timed out during venv creation before
+artifact checks; it is not counted as a passing proof.
+
+Historical public extras now select a closed known-release cohort: 0.6.3, 0.6.4
+and 0.6.5 retain pure core 0.10.0; 0.7.0 requires exact platform core 0.10.5.
+Unknown releases and cross-cohort substitutions refuse. The actual verified Arras
+version and required wheel digest bind the selected release; there is no global
+current-SDK substitution. Doctor requests get only the selected package-version
+expectations in a temporary copy, retaining all contract and export assertions.
+Old flat SDK-hash receipts and new platform-indexed hash receipts stay distinct.
+Affected driver/receipt/workflow regressions pass 132 tests; lint, formatting,
+Pyright and public-content integrity pass. The preceding full required-engine
+local source run passed 3,668 tests with two installed-wheel-only skips and 202
+intentional deselections; CI executes those installed-wheel checks separately.
+Final hosted native Mac, Linux/Mac installed receipts, independent integration
+review, merge and publication remain open.
+
+
+### Full c3 qualification and independent integration review
+
+[Full CI 41510837413](https://github.com/DocumentDrivenDX/arras/actions/runs/41510837413)
+passed on frozen source `c3cb035b55040765ae4a1a983a3c38201b7d588f`, tree
+`d0061331c4e935fd8d7e19eb017dd2a4b1bcde73`. Its producer wheel remains exact
+`b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6`.
+Build, Truss, UI, Python 3.11, hosted Mac admission/actions and explicitly selected
+native Mac jobs all succeeded. Source tests: 3,691 passed, two installed-wheel-only
+skips, 202 deselections, one Starlette test-client deprecation warning; the build
+job separately passed installed CLI and dev-host tests. Lean CI 41510649728 also
+passed. The dispatch's inapplicable lean job is skipped by design.
+
+[Retained receipts](evidence/arras070-20261102/) bind Linux CPython 3.11.18 and
+hosted Mac CPython 3.11.9 admission/actions to exact b20. Admission passes six base
+and ten extra controls and both 139-case corpora; actions pass twelve controls
+and 139+139 comparisons. All use public SDK artifacts, no candidate override and
+completed fresh-environment cleanup. Strict admission validation checks actual
+wheel metadata and current source digests; action tool/probe/selector identities
+also match current source. Producer provenance retains this run and source.
+
+Native macOS 15.8.2 / arm64 / CPython 3.11.9 passed 64 cases, eight declared
+limits, zero failures/harness errors. Its independent cleanup observer passed:
+zero remaining observed owned process identities, ambiguous identities or native
+temporary roots. `owned_process_group_cleanup_complete` is null: independent
+process-group closure remains unknown; no forced or exhaustive group cleanup is
+claimed. The evidence summary names the original hosted artifact and hashes all raw native
+receipts; it is a summary, not a substitute production release-gate receipt.
+No earlier cancelled native job is counted. This is native Truss conformance,
+not qualification of new UMF actions through Truss or a new managed campaign.
+
+Newton's final independent scoped integration review of b381a528..c3cb035 found
+no blocking code issue across manifest/naming/backward APIs, optional dependency
+boundaries, schema-3 assembly/provenance/public assets/registry validators and
+workflow callers. Its correctly candidate-bound eight-suite run passed 153 tests;
+an initial run accidentally imported primary editable 0.6.5 and failed four API
+assertions, then was corrected. Earlier independent extras/workflow review passed
+47 tests; the parent separately passed 74 extras/workflow/registry regressions.
+These overlapping counts are not additive coverage claims.
+
+Disjoint cleanup is complete. The retained original cleanup receipt binds both
+passes: 35 local and 37 remote superseded branches removed; all five audited old
+worktrees/residual directories and three stale administrative registrations
+reconciled. The two primary doc deltas were proven upstream-incorporated and
+byte-identical backups retained before primary fast-forward to b381a528. Only
+main and open PR10 remain; tags/public assets, shared dependencies and this active
+clone were protected. Required source/evidence uniqueness was audited before the
+last two artifact trees were removed. The receipt retains the original automatic
+review rejection and exact scoped resolution; no unresolved approval block remains.
+
+The following closeout changes only deploy documentation/evidence and removes two
+new explanatory comment lines from the extras driver. It changes no executable
+behavior, wheel payload or UMF verifier/probe/selector hash. The full CI evidence stays
+bound to c3cb035; final lean/source checks and independent closeout review precede
+normal merge. Exact-tag Release will rebuild and requalify from its final source,
+with b20 enforced by the successor guard. Merge, GitHub release, PyPI/npm delivery
+and anonymous independent public install remain open until their actual gates pass.

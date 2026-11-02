@@ -20,10 +20,12 @@ from pathlib import Path
 from typing import Any, NoReturn
 
 if __package__:
+    from . import _umf_actions_receipt as _actions_receipt
     from . import _umf_admission_receipt as _umf_receipt
     from . import verify_public_release_assets as _public_assets
 else:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import _umf_actions_receipt as _actions_receipt
     import _umf_admission_receipt as _umf_receipt
     import verify_public_release_assets as _public_assets
 
@@ -81,7 +83,7 @@ def _version(tag: str) -> str:
     return ".".join(match.groups())
 
 
-def _validate_jobs(jobs: dict[str, Any], version: str) -> None:
+def _validate_jobs(jobs: dict[str, Any], version: str, *, actions_required: bool = False) -> None:
     raw = jobs.get("jobs")
     if not isinstance(raw, list) or jobs.get("total_count") != len(raw) or len(raw) > 1000:
         _fail("release run jobs response is incomplete")
@@ -95,6 +97,12 @@ def _validate_jobs(jobs: dict[str, Any], version: str) -> None:
     required = dict(_REQUIRED_JOBS)
     if _umf_receipt.required_for_version(version):
         required["umf-admission"] = {"Fresh installed UMF admission proof on exact wheel"}
+    if type(actions_required) is not bool:
+        _fail("action qualification requirement is malformed")
+    if actions_required:
+        required["umf-actions"] = {
+            "Fresh installed generated-action proof when the wheel requires it"
+        }
     selected: dict[str, dict[str, Any]] = {}
     missing: list[str] = []
     for job_id, names in required.items():
@@ -280,6 +288,7 @@ def validate_publication_context(
     release: dict[str, Any],
     *,
     expected_asset_names: set[str],
+    actions_required: bool = False,
     repository: str,
     default_branch: str,
     requested_run_id: str,
@@ -311,7 +320,7 @@ def validate_publication_context(
     )
 
     _validate_tag(tag, source_sha, tag_ref, tag_object, tag_object_sha)
-    _validate_jobs(jobs, version)
+    _validate_jobs(jobs, version, actions_required=actions_required)
     _validate_release_assets(release, expected_asset_names, tag)
     return {
         "tag": tag,
@@ -369,6 +378,9 @@ def validate_release_inputs(args: argparse.Namespace) -> dict[str, str]:
         tag_object,
         release,
         expected_asset_names=set(entries) | {"SHA256SUMS"},
+        actions_required=_actions_receipt.required_for_wheel(
+            args.assets / wheel, wheel_sha256=wheel_sha
+        ),
         repository=args.repository,
         default_branch=args.default_branch,
         requested_run_id=args.run_id,

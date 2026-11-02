@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.0 — bounded UMF memory actions
+
+Adds opt-in `arras-umf-set/1` execution through the official generated synchronous
+client and `Ontology.execute`. The one-module STRING SET profile uses public
+`umf-core==0.10.5`; document/core semantics remain 0.10.0. The optional engine
+now requires its qualified Linux x86_64 or macOS ARM64 native wheel. Python 3.11
+remains the release interpreter. Memory replay lasts only for the current process;
+Truss/Ashlar action execution remains unqualified.
+
 ## 0.6.5 — downstream integration
 
 Python 3.11 is the supported release profile. Later interpreters remain permitted

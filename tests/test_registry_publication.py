@@ -405,3 +405,93 @@ def test_registry_authorization_and_server_errors_are_not_treated_as_absence(
     monkeypatch.setattr(urllib.request, "urlopen", unauthorized)
     with pytest.raises(registry.RegistryPublicationError, match="HTTP 401"):
         registry._registry_json("https://registry.npmjs.org/%40documentdrivendx%2Farras-ui/0.6.2")
+
+
+@pytest.mark.parametrize("outcome", [None, "failure", "skipped", "cancelled", "success"])
+def test_action_capable_publication_requires_its_action_job(outcome: str | None) -> None:
+    jobs = release_context()[1]
+    if outcome is not None:
+        jobs["jobs"].append(
+            {
+                "name": "Fresh installed generated-action proof when the wheel requires it",
+                "conclusion": outcome,
+            }
+        )
+        jobs["total_count"] += 1
+    if outcome == "success":
+        registry._validate_jobs(jobs, "0.7.0", actions_required=True)
+    else:
+        with pytest.raises(registry.RegistryPublicationError, match="mandatory"):
+            registry._validate_jobs(jobs, "0.7.0", actions_required=True)
+
+
+def test_historical_pure_core_publication_keeps_the_original_ten_gates() -> None:
+    registry._validate_jobs(release_context()[1], "0.6.5", actions_required=False)
+
+
+@pytest.mark.parametrize("pin,action_job", [("0.10.0", False), ("0.10.5", False), ("0.10.5", True)])
+def test_validate_release_inputs_hands_actual_wheel_capability_to_job_gate(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    pin: str,
+    action_job: bool,
+) -> None:
+    """Bundle validation is isolated; real wheel parsing and context/job handoff run."""
+    import argparse
+
+    context = release_context()
+    jobs, release = context[1], context[6]
+    if action_job:
+        jobs["jobs"].append(
+            {
+                "name": "Fresh installed generated-action proof when the wheel requires it",
+                "conclusion": "success",
+            }
+        )
+        jobs["total_count"] += 1
+    inputs: dict[str, Path] = {}
+    for name, value in zip(
+        ["run", "jobs", "workflow", "provenance", "tag_ref", "tag_object", "release"],
+        context,
+        strict=True,
+    ):
+        path = tmp_path / f"{name}.json"
+        path.write_text(json.dumps(value))
+        inputs[name] = path
+    assets = tmp_path / "assets"
+    assets.mkdir()
+    wheel = assets / f"arras-{VERSION}-py3-none-any.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        archive.writestr(
+            f"arras-{VERSION}.dist-info/METADATA",
+            f"Name: arras\nVersion: {VERSION}\nRequires-Dist: umf-core=={pin}; extra == 'umf'\n",
+        )
+    digest = hashlib.sha256(wheel.read_bytes()).hexdigest()
+    (assets / "release-evidence.json").write_text(
+        json.dumps({"release_artifacts": {"wheel": {"filename": wheel.name, "sha256": digest}}})
+    )
+    (assets / "SHA256SUMS").write_text("synthetic bundle boundary\n")
+    entries = {a["name"]: "a" * 64 for a in release["assets"] if a["name"] != "SHA256SUMS"}
+
+    def verified_bundle(*args: Any, **kwargs: Any) -> tuple[dict[str, Any], dict[str, str]]:
+        return {}, entries
+
+    monkeypatch.setattr(registry._public_assets, "_validate_trusted", verified_bundle)
+    args = argparse.Namespace(
+        **inputs,
+        assets=assets,
+        expected_wheel_sha256="",
+        expected_sums_sha256="",
+        repository=REPOSITORY,
+        default_branch="main",
+        run_id=RUN_ID,
+        expected_tag="",
+        expected_source_sha="",
+        expected_tag_object_sha="",
+    )
+    if pin == "0.10.5" and not action_job:
+        with pytest.raises(registry.RegistryPublicationError, match="mandatory gates"):
+            registry.validate_release_inputs(args)
+    else:
+        result = registry.validate_release_inputs(args)
+        assert result["wheel_sha256"] == digest

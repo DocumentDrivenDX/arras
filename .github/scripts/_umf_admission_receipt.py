@@ -4,9 +4,13 @@
 
 from __future__ import annotations
 
+import email.parser
 import hashlib
+import importlib.util
 import json
 import re
+import sys
+import zipfile
 from pathlib import Path
 from typing import Any, NoReturn
 
@@ -24,6 +28,7 @@ _UMF_URL = (
     "umf_core-0.10.0-py3-none-any.whl"
 )
 _UMF_SHA = "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9"
+_HISTORICAL_COHORT_ID = "umf-core-0.10.0-py3-none-any"
 _CORPUS_SHA = "bb008a98b8448050748e65f867e7863475ccad9501a5b9229ae9e6d336691544"
 _METADATA_SHA = "da883657baefe7b7a4ab8654f78e7d84ef1e281eea7bc7cee48f8662007cd687"
 _BASE = [
@@ -54,6 +59,104 @@ class AdmissionReceiptError(ValueError):
 
 def _fail(message: str) -> NoReturn:
     raise AdmissionReceiptError(message)
+
+
+def _cohort_module() -> Any:
+    name = "arras_release_umf_sdk_cohorts"
+    existing = sys.modules.get(name)
+    if existing is not None:
+        return existing
+    path = Path(__file__).resolve().parents[2] / "tools/_umf_sdk_cohorts.py"
+    spec = importlib.util.spec_from_file_location(name, path)
+    if spec is None or spec.loader is None:
+        _fail("verified UMF cohort selector is unavailable")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def _cohort_for_identity(filename: object, version: object, digest: object, url: object) -> Any:
+    cohorts = _cohort_module().KNOWN_COHORTS
+    matches = [
+        item
+        for item in cohorts
+        if (item.filename, item.distribution_version, item.sha256, item.url)
+        == (filename, version, digest, url)
+    ]
+    if len(matches) != 1:
+        _fail("UMF receipt identifies an unverified SDK cohort")
+    return matches[0]
+
+
+def _validate_cohort_runtime(cohort: Any, runtime: dict[str, Any]) -> None:
+    if cohort.platform == "any":
+        return
+    platform_name = runtime.get("platform")
+    machine = runtime.get("machine")
+    normalized_machine = {
+        "AMD64": "x86_64",
+        "aarch64": "arm64",
+        "x86_64": "x86_64",
+        "arm64": "arm64",
+    }.get(machine)
+    if (platform_name, normalized_machine) != (cohort.platform, cohort.machine):
+        _fail("UMF native cohort differs from the observed receipt runtime")
+
+
+def _require_wheel_binding(
+    value: dict[str, Any], version: str, cohort: Any, wheel: Path | None
+) -> None:
+    if wheel is not None:
+        validate_wheel_cohort(value, wheel)
+    elif cohort.cohort_id != _HISTORICAL_COHORT_ID or tuple(map(int, version.split("."))) >= (
+        0,
+        7,
+        0,
+    ):
+        _fail("actual Arras wheel is required for SDK cohort binding")
+
+
+def validate_wheel_cohort(value: dict[str, Any], wheel: Path) -> None:
+    """Bind SDK proof to the dependency declared by these exact Arras wheel bytes."""
+    try:
+        if wheel.is_symlink() or not wheel.is_file() or wheel.stat().st_size > 64 * 1024 * 1024:
+            _fail("Arras cohort wheel is not a bounded regular file")
+        raw = wheel.read_bytes()
+        if hashlib.sha256(raw).hexdigest() != value["arras_wheel"]["sha256"]:
+            _fail("Arras cohort wheel digest differs from receipt")
+        with zipfile.ZipFile(wheel) as archive:
+            names = [n for n in archive.namelist() if n.endswith(".dist-info/METADATA")]
+            if len(names) != 1 or archive.getinfo(names[0]).file_size > 1024 * 1024:
+                _fail("Arras cohort wheel metadata inventory is invalid")
+            metadata = email.parser.BytesParser().parsebytes(archive.read(names[0]))
+        if (
+            metadata.get("Name") != "arras"
+            or metadata.get("Version") != value["arras_wheel"]["version"]
+        ):
+            _fail("Arras cohort wheel metadata identity differs from receipt")
+        runtime = value["runtime"]
+        machine = {"AMD64": "x86_64", "aarch64": "arm64"}.get(
+            runtime["machine"], runtime["machine"]
+        )
+        cohort = _cohort_module().select_sdk_cohort(
+            metadata,
+            platform=runtime["platform"],
+            machine=machine,
+            registry=_cohort_module().KNOWN_COHORTS,
+        )
+        proof = value["umf_wheel"]
+        if (proof["filename"], proof["version"], proof["sha256"], proof["url"]) != (
+            cohort.filename,
+            cohort.distribution_version,
+            cohort.sha256,
+            cohort.url,
+        ):
+            _fail("UMF receipt cohort differs from the actual Arras wheel dependency")
+    except AdmissionReceiptError:
+        raise
+    except (OSError, ValueError, KeyError, zipfile.BadZipFile) as error:
+        _fail(f"Arras wheel SDK cohort binding is invalid: {type(error).__name__}")
 
 
 def strict_json_loads(value: str) -> Any:
@@ -124,27 +227,26 @@ def _ids(value: object, fixture: Path) -> list[str]:
 
 
 def _validate_root(value: object, phase: str) -> dict[str, Any]:
-    root = _exact(
-        value,
-        {
-            "schema",
-            "status",
-            "qualification_scope",
-            "qualification_phase",
-            "arras_wheel",
-            "umf_wheel",
-            "tool_sha256",
-            "fixed_probe_sha256",
-            "fixtures",
-            "runtime",
-            "environments",
-            "corpus",
-            "controls",
-            "cleanup",
-            "limitations",
-        },
-        "UMF receipt",
-    )
+    root = _object(value, "UMF receipt")
+    historical_keys = {
+        "schema",
+        "status",
+        "qualification_scope",
+        "qualification_phase",
+        "arras_wheel",
+        "umf_wheel",
+        "tool_sha256",
+        "fixed_probe_sha256",
+        "fixtures",
+        "runtime",
+        "environments",
+        "corpus",
+        "controls",
+        "cleanup",
+        "limitations",
+    }
+    if set(root) not in (historical_keys, historical_keys | {"selector_sha256"}):
+        _fail("UMF receipt has an unexpected shape")
     if (
         root["schema"] != "arras.umf-admission-installed/1"
         or root["status"] != "passed"
@@ -157,7 +259,7 @@ def _validate_root(value: object, phase: str) -> dict[str, Any]:
 
 def _validate_wheels(
     root: dict[str, Any], version: str, wheel_name: str, wheel_sha: str
-) -> tuple[dict[str, Any], dict[str, Any]]:
+) -> tuple[dict[str, Any], dict[str, Any], Any]:
     arras = _exact(
         root["arras_wheel"], {"filename", "version", "sha256", "record_entries"}, "Arras wheel"
     )
@@ -170,19 +272,24 @@ def _validate_wheels(
         {"filename", "version", "sha256", "url", "source_mode", "record_entries"},
         "UMF wheel",
     )
-    identity = (umf["filename"], umf["version"], umf["sha256"], umf["url"])
-    if identity != ("umf_core-0.10.0-py3-none-any.whl", "0.10.0", _UMF_SHA, _UMF_URL):
-        _fail("UMF receipt identifies an unexpected SDK artifact")
+    cohort = _cohort_for_identity(umf["filename"], umf["version"], umf["sha256"], umf["url"])
+    selector_required = cohort.cohort_id != _HISTORICAL_COHORT_ID
+    if selector_required:
+        _digest(root.get("selector_sha256"), "selector SHA-256")
+    elif "selector_sha256" in root:
+        _digest(root["selector_sha256"], "selector SHA-256")
     if (
         umf["source_mode"] != "pinned-public-url"
         or type(umf["record_entries"]) is not int
         or umf["record_entries"] < 1
     ):
         _fail("UMF receipt does not bind the official SDK source")
-    return arras, umf
+    return arras, umf, cohort
 
 
-def _validate_source_digests(root: dict[str, Any], repository: Path) -> tuple[str, str]:
+def _validate_source_digests(
+    root: dict[str, Any], repository: Path, cohort: Any
+) -> tuple[str, str, str | None]:
     script = repository / "tools/verify_umf_admission.py"
     probe = repository / "tools/_umf_admission_probe.py"
     tool_sha, probe_sha = (
@@ -191,7 +298,13 @@ def _validate_source_digests(root: dict[str, Any], repository: Path) -> tuple[st
     )
     if root["tool_sha256"] != tool_sha or root["fixed_probe_sha256"] != probe_sha:
         _fail("UMF receipt tool or probe digest differs from the checked source")
-    return tool_sha, probe_sha
+    selector_sha: str | None = None
+    if cohort.cohort_id != _HISTORICAL_COHORT_ID or "selector_sha256" in root:
+        selector = repository / "tools/_umf_sdk_cohorts.py"
+        selector_sha = hashlib.sha256(selector.read_bytes()).hexdigest()
+        if root.get("selector_sha256") != selector_sha:
+            _fail("UMF receipt cohort selector digest differs from checked source")
+    return tool_sha, probe_sha, selector_sha
 
 
 def _validate_fixtures(root: dict[str, Any], repository: Path) -> list[str]:
@@ -222,7 +335,7 @@ def _validate_fixtures(root: dict[str, Any], repository: Path) -> list[str]:
 
 
 def _validate_environment(
-    row: dict[str, Any], expected: list[str], label: str, version: str
+    row: dict[str, Any], expected: list[str], label: str, version: str, cohort: Any
 ) -> dict[str, Any]:
     expected_keys = {
         "status",
@@ -267,8 +380,8 @@ def _validate_environment(
     ):
         _fail("UMF extra environment lacks SDK payload parity")
     if label == "extra" and (
-        row.get("umf_version") != "0.10.0"
-        or row.get("umf_sha256") != _UMF_SHA
+        row.get("umf_version") != cohort.distribution_version
+        or row.get("umf_sha256") != cohort.sha256
         or row.get("direct_url_verified") is not True
     ):
         _fail("UMF extra environment does not bind the official SDK install")
@@ -291,14 +404,14 @@ def _validate_environment(
     if (
         arras_versions != [version]
         or (label == "base" and sdk_versions)
-        or (label == "extra" and sdk_versions != ["0.10.0"])
+        or (label == "extra" and sdk_versions != [cohort.distribution_version])
     ):
         _fail(f"UMF {label} distribution inventory contradicts the optional SDK controls")
     return payload
 
 
 def _validate_environments(
-    root: dict[str, Any], version: str, expected_ids: list[str]
+    root: dict[str, Any], version: str, expected_ids: list[str], cohort: Any
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     environments = _exact(root["environments"], {"base", "extra"}, "environments")
     base = _object(environments["base"], "base environment")
@@ -312,8 +425,8 @@ def _validate_environments(
             or any(value is not True for value in values.values())
         ):
             _fail("UMF receipt control inventory differs from required controls")
-    base_payload = _validate_environment(base, _BASE, "base", version)
-    extra_payload = _validate_environment(extra, _EXTRA, "extra", version)
+    base_payload = _validate_environment(base, _BASE, "base", version, cohort)
+    extra_payload = _validate_environment(extra, _EXTRA, "extra", version, cohort)
     _validate_corpus_result(extra["corpus"], expected_ids)
     if extra["corpus"] != root["corpus"]:
         _fail("UMF extra environment corpus differs from the top-level corpus result")
@@ -381,13 +494,14 @@ def validate_receipt(
     wheel_sha256: str,
     phase: str,
     repository: Path,
+    wheel_path: Path | None = None,
 ) -> dict[str, Any]:
     """Return an allowlisted public receipt projection after checking every fixed proof field."""
     if not required_for_version(version):
         _fail("UMF admission receipt is not part of this release version")
     root = _validate_root(value, phase)
-    arras, umf = _validate_wheels(root, version, wheel_name, wheel_sha256)
-    tool_sha, probe_sha = _validate_source_digests(root, repository)
+    arras, umf, cohort = _validate_wheels(root, version, wheel_name, wheel_sha256)
+    tool_sha, probe_sha, selector_sha = _validate_source_digests(root, repository, cohort)
     expected_ids = _validate_fixtures(root, repository)
     runtime = _object(root["runtime"], "runtime")
     if (
@@ -395,21 +509,32 @@ def validate_receipt(
         or not isinstance(runtime.get("version"), str)
         or _PYTHON_VERSION.fullmatch(runtime["version"]) is None
         or runtime.get("implementation") != "CPython"
+        or not isinstance(runtime.get("platform"), str)
         or runtime.get("platform") not in _RUNTIME_PLATFORMS
+        or not isinstance(runtime.get("machine"), str)
         or runtime.get("machine") not in _RUNTIME_MACHINES
     ):
         _fail("UMF receipt runtime identity is unsupported")
-    base, extra = _validate_environments(root, version, expected_ids)
+    _validate_cohort_runtime(cohort, runtime)
+    _require_wheel_binding(root, version, cohort, wheel_path)
+    base, extra = _validate_environments(root, version, expected_ids, cohort)
     _validate_corpus(root, expected_ids)
     _validate_cleanup(root)
     limitations = root["limitations"]
     if limitations != _EXPECTED_LIMITATIONS:
         _fail("UMF receipt limitations are malformed")
     base_payload, extra_payload = base["payload"], extra["payload"]
-    return {
+    historical_scope = "exact Arras wheel install, official UMF 0.10.0 admission parity (139 reference and 139 fresh-empty-registry cases), and fixed metadata-profile controls; no broader UMF execution claim"
+    native_scope = (
+        "exact Arras wheel install, official UMF core 0.10.0 admission parity using SDK distribution "
+        f"{cohort.distribution_version} (139 reference and 139 fresh-empty-registry cases), and fixed "
+        "metadata-profile controls; no broader UMF execution claim"
+    )
+    scope = historical_scope if cohort.cohort_id == _HISTORICAL_COHORT_ID else native_scope
+    projection = {
         "schema": "arras.umf-admission-public-qualification/1",
         "status": "passed",
-        "qualification_scope": "exact Arras wheel install, official UMF 0.10.0 admission parity (139 reference and 139 fresh-empty-registry cases), and fixed metadata-profile controls; no broader UMF execution claim",
+        "qualification_scope": scope,
         "qualification_phase": phase,
         "arras_wheel": {key: arras[key] for key in ("filename", "version", "sha256")},
         "umf_wheel": {key: umf[key] for key in ("filename", "version", "sha256", "url")},
@@ -438,36 +563,58 @@ def validate_receipt(
         },
         "controls": {"base": len(_BASE), "extra": len(_EXTRA), "cleanup": 2},
     }
+    if selector_sha is not None:
+        projection["selector_sha256"] = selector_sha
+    return projection
 
 
 def validate_public_projection(
-    value: object, *, version: str, wheel_name: str, wheel_sha256: str
+    value: object,
+    *,
+    version: str,
+    wheel_name: str,
+    wheel_sha256: str,
+    wheel_path: Path | None = None,
 ) -> dict[str, Any]:
-    row = _exact(
-        value,
-        {
-            "schema",
-            "status",
-            "qualification_scope",
-            "qualification_phase",
-            "arras_wheel",
-            "umf_wheel",
-            "tool_sha256",
-            "fixed_probe_sha256",
-            "fixtures",
-            "runtime",
-            "corpus",
-            "payload_parity",
-            "controls",
-        },
-        "public UMF admission receipt",
-    )
+    row = _object(value, "public UMF admission receipt")
+    historical_keys = {
+        "schema",
+        "status",
+        "qualification_scope",
+        "qualification_phase",
+        "arras_wheel",
+        "umf_wheel",
+        "tool_sha256",
+        "fixed_probe_sha256",
+        "fixtures",
+        "runtime",
+        "corpus",
+        "payload_parity",
+        "controls",
+    }
+    if set(row) not in (historical_keys, historical_keys | {"selector_sha256"}):
+        _fail("public UMF admission receipt has an unexpected shape")
+    umf = _exact(row["umf_wheel"], {"filename", "version", "sha256", "url"}, "public UMF wheel")
+    cohort = _cohort_for_identity(umf["filename"], umf["version"], umf["sha256"], umf["url"])
+    if cohort.cohort_id != _HISTORICAL_COHORT_ID or "selector_sha256" in row:
+        selector_digest = _digest(row.get("selector_sha256"), "selector SHA-256")
+        selector_path = Path(__file__).resolve().parents[2] / "tools/_umf_sdk_cohorts.py"
+        if selector_digest != hashlib.sha256(selector_path.read_bytes()).hexdigest():
+            _fail("public UMF cohort selector digest differs from checked source")
     if (
         row["schema"] != "arras.umf-admission-public-qualification/1"
         or row["status"] != "passed"
         or row["qualification_phase"] != "release-build"
         or row["qualification_scope"]
-        != "exact Arras wheel install, official UMF 0.10.0 admission parity (139 reference and 139 fresh-empty-registry cases), and fixed metadata-profile controls; no broader UMF execution claim"
+        != (
+            "exact Arras wheel install, official UMF 0.10.0 admission parity (139 reference and 139 fresh-empty-registry cases), and fixed metadata-profile controls; no broader UMF execution claim"
+            if cohort.cohort_id == _HISTORICAL_COHORT_ID
+            else (
+                "exact Arras wheel install, official UMF core 0.10.0 admission parity using SDK distribution "
+                f"{cohort.distribution_version} (139 reference and 139 fresh-empty-registry cases), and fixed "
+                "metadata-profile controls; no broader UMF execution claim"
+            )
+        )
     ):
         _fail("public UMF admission receipt scope or status differs")
     arras = _exact(row["arras_wheel"], {"filename", "version", "sha256"}, "public Arras wheel")
@@ -477,14 +624,10 @@ def validate_public_projection(
         wheel_sha256,
     ):
         _fail("public UMF receipt identifies a different Arras wheel")
-    umf = _exact(row["umf_wheel"], {"filename", "version", "sha256", "url"}, "public UMF wheel")
-    if (umf["filename"], umf["version"], umf["sha256"], umf["url"]) != (
-        "umf_core-0.10.0-py3-none-any.whl",
-        "0.10.0",
-        _UMF_SHA,
-        _UMF_URL,
-    ):
-        _fail("public UMF receipt identifies a different official SDK")
+    runtime = _object(row["runtime"], "public UMF runtime")
+    if set(runtime) != {"version", "implementation", "platform", "machine"}:
+        _fail("public UMF runtime has an unexpected shape")
+    _validate_cohort_runtime(cohort, runtime)
     fixtures = _exact(
         row["fixtures"],
         {"official_corpus_sha256", "metadata_fixture_sha256"},
@@ -551,8 +694,11 @@ def validate_public_projection(
         not isinstance(runtime["version"], str)
         or _PYTHON_VERSION.fullmatch(runtime["version"]) is None
         or runtime["implementation"] != "CPython"
+        or not isinstance(runtime["platform"], str)
         or runtime["platform"] not in _RUNTIME_PLATFORMS
+        or not isinstance(runtime["machine"], str)
         or runtime["machine"] not in _RUNTIME_MACHINES
     ):
         _fail("public UMF runtime identity is incomplete")
+    _require_wheel_binding(row, version, cohort, wheel_path)
     return row

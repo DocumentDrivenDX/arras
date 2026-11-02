@@ -35,6 +35,16 @@ def placed(h: Arras, document: bytes | str) -> tuple[bytes, ModuleInfo]:
     if h.metadata_profile == "legacy-arras/1":
         raw = document.encode() if isinstance(document, str) else document
         mod = parse_module(raw)
+    elif h.metadata_profile == "arras-umf-set/1":
+        if type(document) is bytes:
+            raw = document
+        elif type(document) is str:
+            raw = document.encode("utf-8", errors="strict")
+        else:
+            raise Invalid([Violation("document", "type", "exact bytes or text are required")])
+        from arras._umf_actions import prepare
+
+        mod = prepare(raw).module
     else:
         from arras.umf_admission import project_document
 
@@ -87,6 +97,33 @@ def _profile_qualification_violations(h: Arras, mod: ModuleInfo) -> list[Violati
                     f"{name!r} does not qualify for metadata profile {mod.metadata_profile!r}",
                 )
             )
+    if mod.metadata_profile == "arras-umf-set/1":
+        if len(mod.actions) != 1:
+            bad.append(
+                Violation(
+                    "placement",
+                    "invalid_placement",
+                    "the action profile requires its single admitted SET action",
+                )
+            )
+        for action in mod.actions:
+            provider_name = mod.placement.provider_of(action.name)
+            provider = h.backends.get(provider_name)
+            if provider is None:
+                continue
+            profiles: object = getattr(provider.describe(), "action_profiles", None)
+            if (
+                type(profiles) is not tuple
+                or any(type(item) is not str for item in cast(tuple[object, ...], profiles))
+                or "arras-umf-set/1" not in cast(tuple[str, ...], profiles)
+            ):
+                bad.append(
+                    Violation(
+                        "placement",
+                        "invalid_placement",
+                        f"{provider_name!r} does not qualify for arras-umf-set/1",
+                    )
+                )
     return bad
 
 

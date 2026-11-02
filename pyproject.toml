@@ -2,7 +2,7 @@
 license = "MIT OR Apache-2.0"
 license-files = ["LICENSE.md", "LICENSE-MIT", "LICENSE-APACHE"]
 name = "arras"
-version = "0.6.5"
+version = "0.7.0"
 description = "The interface to an ontology: UMF types and actions, freshness-stating reads, Truss and Ashlar backends."
 readme = "README.md"
 keywords = ["ontology", "umf", "truss", "ashlar", "graphql", "data-access", "freshness"]
@@ -44,7 +44,7 @@ truss = [
 ]
 # Official released UMF Python core; public PyPI extras acceptance also verifies the exact 0.10.0 artifact digest.
 umf = [
-    "umf-core==0.10.0",
+    "umf-core==0.10.5",
 ]
 
 [build-system]

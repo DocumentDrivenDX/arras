@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import io
 import json
 import os
@@ -64,6 +65,10 @@ def make_wheel(npm: bytes) -> bytes:
     with zipfile.ZipFile(result, "w") as archive:
         archive.writestr(f"arras/ui/npm/{NPM}", npm)
         archive.writestr("arras/__init__.py", "")
+        archive.writestr(
+            f"arras-{VERSION}.dist-info/METADATA",
+            f"Metadata-Version: 2.1\nName: arras\nVersion: {VERSION}\n\n",
+        )
     return result.getvalue()
 
 
@@ -151,6 +156,36 @@ def call_helper(*argv: str) -> subprocess.CompletedProcess[str]:
         text=True,
         check=False,
     )
+
+
+def test_action_capability_adds_one_required_public_asset_and_component() -> None:
+    original = set(ASSETS)
+    module_dir = HELPER.parent
+    sys.path.insert(0, str(module_dir))
+    try:
+        spec = importlib.util.spec_from_file_location("public_release_assets", HELPER)
+        assert spec is not None and spec.loader is not None
+        checker = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = checker
+        spec.loader.exec_module(checker)
+    finally:
+        sys.path.pop(0)
+    action_asset = "umf-actions-installed.json"
+    required_names = checker._expected_names(VERSION, WHEEL, actions_required=True)
+    assert required_names == original | {action_asset}
+    assert checker._expected_names(VERSION, WHEEL) == original
+    entries = {name: "a" * 64 for name in required_names if name != "SHA256SUMS"}
+    aggregate = {
+        "published_components": {
+            name: entries[name]
+            for name in required_names
+            - {WHEEL, f"arras-{VERSION}.tar.gz", NPM, "release-evidence.json", "SHA256SUMS"}
+        }
+    }
+    checker._validate_components(aggregate, entries, version=VERSION, actions_required=True)
+    del aggregate["published_components"][action_asset]
+    with pytest.raises(checker.AssetError, match="published-component inventory"):
+        checker._validate_components(aggregate, entries, version=VERSION, actions_required=True)
 
 
 def test_plan_and_verify_require_exact_trusted_public_bytes(tmp_path: Path) -> None:

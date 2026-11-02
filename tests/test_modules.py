@@ -76,7 +76,7 @@ def test_catalog_collection_stays_private_to_the_core_group() -> None:
     assert any(v.startswith("cycle: ") for v in violations(cyclic))
 
 
-def test_umf_admission_edge_is_limited_to_registration() -> None:
+def test_umf_admission_edge_is_limited_to_registration_and_the_action_bridge() -> None:
     assert (
         violations(
             {
@@ -92,6 +92,104 @@ def test_umf_admission_edge_is_limited_to_registration() -> None:
             "arras.umf_admission": "",
         }
     ) == ["arras.core:1: core must not import arras.umf_admission (umf_admission)"]
+    assert (
+        violations(
+            {
+                "arras._umf_actions": "from arras.umf_admission import admit_document\n",
+                "arras.umf_admission": "",
+            }
+        )
+        == []
+    )
+
+
+def test_action_bridge_has_exact_host_and_provider_consumers() -> None:
+    for importer in (
+        "arras.registration",
+        "arras.fakes",
+        "arras.fakes_actions",
+        "arras.fakes_registry",
+        "arras.fakes_import",
+    ):
+        assert (
+            violations(
+                {importer: "from arras._umf_actions import prepare\n", "arras._umf_actions": ""}
+            )
+            == []
+        )
+    for importer in (
+        "arras.core",
+        "arras._action_transport",
+        "arras.model",
+        "arras.adapters.truss",
+    ):
+        assert any(
+            "must not import arras._umf_actions" in issue
+            for issue in violations(
+                {importer: "from arras._umf_actions import prepare\n", "arras._umf_actions": ""}
+            )
+        )
+
+
+def test_action_types_and_bridge_cannot_own_provider_effects() -> None:
+    for importer in ("arras._action_types", "arras._umf_actions", "arras._umf_action_shapes"):
+        for target in ("arras.core", "arras.fakes", "arras.adapters.truss", "arras.backend"):
+            assert any(
+                "must not import" in issue
+                for issue in violations({importer: f"from {target} import value\n", target: ""})
+            )
+    assert (
+        violations(
+            {
+                "arras._umf_actions": "from arras._umf_engine import call_action_runtime\n",
+                "arras._umf_engine": "from arras.errors import Unsupported\n",
+                "arras.errors": "",
+            }
+        )
+        == []
+    )
+
+
+def test_action_result_shapes_stay_inert_and_private_to_the_bridge() -> None:
+    assert (
+        violations(
+            {
+                "arras._umf_actions": "from arras._umf_action_shapes import _prepared_shape\n",
+                "arras._umf_action_shapes": "",
+            }
+        )
+        == []
+    )
+    for importer, target in (
+        ("arras.fakes_actions", "arras._umf_action_shapes"),
+        ("arras._action_transport", "arras._umf_action_shapes"),
+        ("arras._umf_action_shapes", "arras._umf_actions"),
+        ("arras._umf_action_shapes", "arras._umf_engine"),
+    ):
+        assert any(
+            "must not import" in issue
+            for issue in violations({importer: f"from {target} import value\n", target: ""})
+        )
+
+
+def test_action_consumers_cannot_bypass_the_official_result_bridge() -> None:
+    for importer in ("arras.registration", "arras.fakes_actions", "arras._action_transport"):
+        assert any(
+            "must not import arras._umf_engine" in issue
+            for issue in violations(
+                {
+                    importer: "from arras._umf_engine import call_action_runtime\n",
+                    "arras._umf_engine": "",
+                }
+            )
+        )
+    for importer in ("arras._umf_actions", "arras.fakes_actions", "arras._action_transport"):
+        for source in (
+            "from umf.action_runtime import prepare_single_set_action\n",
+            "from importlib import import_module as load\nload('umf.action_runtime')\n",
+            "from typing import TYPE_CHECKING\nif TYPE_CHECKING:\n    import umf\n",
+        ):
+            assert official_umf_import_violations({importer: source})
 
 
 def test_only_private_engine_bridge_imports_the_official_umf_sdk() -> None:

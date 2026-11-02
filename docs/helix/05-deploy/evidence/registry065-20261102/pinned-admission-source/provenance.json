@@ -1,0 +1,8 @@
+{
+  "source_sha": "ad597d248847da47523155842524bb451a97f8d8",
+  "files": {
+    "tools/verify_umf_admission.py": "68b95ea3db1c7bac31c113ca9db1cd96be46f69668894a19bb27409518a149fc",
+    "tools/_umf_admission_probe.py": "0df4b122b2357645066901ba744aa7b83cec319c2d7fd73067ff25261bbd32ff"
+  },
+  "scope": "Original source bytes for strict historical receipt regression; not executed."
+}

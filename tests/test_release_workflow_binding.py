@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import ast
 import hashlib
+import os
 import re
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -11,6 +14,7 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent
 RELEASE = ROOT / ".github/workflows/release.yml"
 DOWNSTREAM = ROOT / ".github/workflows/downstream.yml"
+CI = ROOT / ".github/workflows/ci.yml"
 
 
 def job_text(workflow: str, name: str) -> str:
@@ -209,17 +213,22 @@ def test_release_rebuild_must_match_the_selected_qualification_wheel_before_uplo
 
 
 @pytest.mark.parametrize("state", ["matching", "changed", "missing"])
+@pytest.mark.parametrize("version", ["0.6.5", "0.7.0"])
 def test_release_wheel_hash_command_refuses_changed_or_missing_bytes(
-    tmp_path: Path, state: str
+    tmp_path: Path, state: str, version: str
 ) -> None:
     if shutil.which("sha256sum") is None or shutil.which("sh") is None:
         pytest.skip("the release runner's GNU sha256sum and POSIX shell are required")
     build = job_text(RELEASE.read_text(), "build")
-    command = next(line.strip() for line in build.splitlines() if "sha256sum --check" in line)
+    command = next(
+        line.strip()
+        for line in build.splitlines()
+        if "sha256sum --check" in line and f"arras-{version}-" in line
+    )
     expected = b"selected qualification artifact\n"
     digest = hashlib.sha256(expected).hexdigest()
     command = re.sub(r"[0-9a-f]{64}", digest, command)
-    wheel = tmp_path / "dist/arras-0.6.5-py3-none-any.whl"
+    wheel = tmp_path / f"dist/arras-{version}-py3-none-any.whl"
     wheel.parent.mkdir()
     if state != "missing":
         wheel.write_bytes(expected if state == "matching" else b"different release artifact\n")
@@ -237,7 +246,7 @@ def test_umf_admission_is_required_before_assembly_and_repeated_from_public_whee
     assert "--qualification-phase release-build" in proof
     assembly = job_text(workflow, "assemble-evidence")
     assert re.search(
-        r"(?m)^    needs: \[check, build, umf-admission, installed-native, ui-qualification\]$",
+        r"(?m)^    needs: \[check, build, umf-admission, umf-actions, installed-native, ui-qualification\]$",
         assembly,
     )
     assert "--umf-admission-receipt umf-admission/umf-admission-installed.json" in assembly
@@ -251,3 +260,45 @@ def test_umf_admission_is_required_before_assembly_and_repeated_from_public_whee
     assert "public-release-assets/${{ needs.trusted-publication.outputs.wheel_name }}" in anonymous
     assert "--qualification-phase public-download" in anonymous
     assert 'receipts.append("public-umf-admission-installed.json")' in anonymous
+
+
+def test_ci_qualifies_installed_actions_when_the_built_wheel_requires_them() -> None:
+    workflow = CI.read_text()
+    check = job_text(workflow, "check")
+    assert "steps.umf-actions-requirement.outputs.required" in check
+    assert "--check-requirement" in check
+    assert "--qualification-phase local-installed" in check
+    assert "name: arras-umf-actions-installed" in check
+    assert "path: artifacts/umf-actions-installed.json" in check
+    assert "if-no-files-found: warn" in check
+
+    tests = job_text(workflow, "test")
+    assert "needs: check" in tests
+    assert (
+        tests.count(
+            "ARRAS_REQUIRE_UMF_ACTIONS: ${{ needs.check.outputs.umf_actions_required == 'true' && '1' || '0' }}"
+        )
+        == 2
+    )
+
+
+@pytest.mark.parametrize("state", ["matching", "changed", "missing"])
+def test_macos_action_gate_uses_the_nested_downloaded_artifact(
+    tmp_path: Path,
+    state: str,
+) -> None:
+    job = job_text(CI.read_text(), "umf-actions-macos")
+    command = next(line.strip() for line in job.splitlines() if "python -c 'import hashlib" in line)
+    code = ast.literal_eval(command.partition("python -c ")[2])
+    payload = b"exact CI-produced wheel bytes\n"
+    wheel = tmp_path / "candidate/dist/arras-0.7.0-py3-none-any.whl"
+    wheel.parent.mkdir(parents=True)
+    if state != "missing":
+        wheel.write_bytes(payload if state == "matching" else b"changed bytes\n")
+    env = dict(
+        os.environ, EXPECTED_WHEEL=wheel.name, EXPECTED_SHA256=hashlib.sha256(payload).hexdigest()
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", code], cwd=tmp_path, env=env, capture_output=True
+    )
+    assert (result.returncode == 0) is (state == "matching")

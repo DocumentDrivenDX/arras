@@ -291,3 +291,35 @@ admission may preserve a default or other meaning that the selected metadata or
 execution profile refuses; preservation is not execution support.
 
 Open points: a primary key declared in UMF as several fields is refused in v1; whether a retired name may be redeclared once the backend defines it; and who supplies the Python UMF reader (a port of UMF's validator, or an adapter), which must pass the corpus's `umf` cases before Arras can claim conformance.
+
+## Planned bounded action-source binding
+
+The next action slice MUST bind the same exact source bytes used for generation
+and registration to its module, source SHA-256, trusted owner scope and current
+provider registration revision. A caller-supplied owner label or digest is not
+authority. Current ownership and authorization come from the qualified
+provider/host registration boundary; a process-local identity registry cannot
+stand in for native ownership or CAS.
+
+The first Arras-owned candidate profile is `arras-umf-set/1`. It qualifies one
+dedicated memory store and one immutable source registration. The first
+authenticated schema principal owns that source. Exact same bytes and same
+owner are idempotent; another owner is refused. Every source change, including
+an upgrade, downgrade or equivalent JSON with different bytes, is unsupported
+before effects. Broader upgrade/retirement/dependency policy remains later work.
+The host source pin is `sha256:<lowercase exact-source SHA-256>`; it is distinct
+from UMF core version, publisher version and the provider's opaque catalog
+`Revision`. None implies an ordering of another.
+
+The selected host registration path derives metadata from original source
+through the official bridge. Caller-provided reports or `ModuleInfo` values
+cannot establish admission or ownership. Registration, source rebinding,
+administrative import and action commit share the candidate store's lock and
+CAS boundary; a host-only earlier check cannot replace it. Mixed legacy and
+candidate write paths in this dedicated store are unsupported.
+
+This is an implementation contract for the candidate, not a change to
+`umf-core-metadata/1` or an assertion of qualified execution. Existing
+admin/token/catalog, person-schema, placement and provider authorization
+precedence remains unchanged. Qualification requires the actual official
+action/value binding and whole-path evidence in the integration plan.

@@ -746,6 +746,7 @@ def test_failed_validation_receipt_keeps_prevalidation_probe(
 
 @pytest.mark.skipif(os.name == "nt", reason="process-group SIGINT semantics are POSIX-specific")
 def test_owned_process_timeout_interrupts_and_reaps_its_process_group(tmp_path: Path) -> None:
+    """Exclude interpreter site startup and verify the owned process group is gone."""
     with pytest.raises(verify_native.ProcessTimeout) as captured:
         verify_native.run_owned(
             [
@@ -753,14 +754,17 @@ def test_owned_process_timeout_interrupts_and_reaps_its_process_group(tmp_path: 
                 "-I",
                 "-S",
                 "-c",
-                "import time; print('started', flush=True); time.sleep(30)",
+                "import os, time; print(f'started:{os.getpid()}', flush=True); time.sleep(30)",
             ],
             cwd=tmp_path,
             env=dict(os.environ),
-            timeout=0.1,
+            timeout=1,
         )
-    assert "started" in captured.value.stdout
+    assert captured.value.stdout.startswith("started:")
     assert not captured.value.leftovers
+    process_group = int(captured.value.stdout.removeprefix("started:").strip())
+    with pytest.raises(ProcessLookupError):
+        os.killpg(process_group, 0)
 
 
 def _owned_group_command(tmp_path: Path) -> tuple[list[str], Path]:

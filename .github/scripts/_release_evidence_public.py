@@ -459,12 +459,16 @@ def release_evidence_projection(
     sdist_sha: str,
     doctor_runtime: dict[str, str],
     umf_admission: dict[str, Any] | None = None,
+    umf_actions: dict[str, Any] | None = None,
+    umf_actions_required: bool = False,
 ) -> dict[str, Any]:
     requires_umf_admission = _umf_receipt.required_for_version(version)
     if requires_umf_admission != (umf_admission is not None):
         _fail("UMF admission projection presence does not match release version")
+    if type(umf_actions_required) is not bool or umf_actions_required != (umf_actions is not None):
+        _fail("UMF actions projection presence does not match the selected wheel capability")
     projection = {
-        "schema_version": 2 if requires_umf_admission else 1,
+        "schema_version": 3 if umf_actions_required else 2 if requires_umf_admission else 1,
         "status": "passed",
         "version": version,
         "release_artifacts": {
@@ -499,6 +503,13 @@ def release_evidence_projection(
         projection["umf_admission"] = {
             "filename": "umf-admission-installed.json",
             "sha256": component_hashes["umf-admission-installed.json"],
+            "qualification_phase": "release-build",
+            "status": "passed",
+        }
+    if umf_actions is not None:
+        projection["umf_actions"] = {
+            "filename": "umf-actions-installed.json",
+            "sha256": component_hashes["umf-actions-installed.json"],
             "qualification_phase": "release-build",
             "status": "passed",
         }

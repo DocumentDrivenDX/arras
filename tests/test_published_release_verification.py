@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
+import io
 import json
+import zipfile
 from argparse import Namespace
 from pathlib import Path
 from typing import Any
@@ -210,21 +212,45 @@ def test_original_driver_receipt_binds_tag_source_driver_and_run() -> None:
         )
 
 
-def make_bundle(directory: Path) -> tuple[str, str, str]:
+def make_bundle(directory: Path, *, actions_required: bool = False) -> tuple[str, str, str]:
     directory.mkdir()
     for name in ASSET_NAMES - {"release-evidence.json"}:
-        (directory / name).write_bytes(f"fixture:{name}".encode())
+        path = directory / name
+        if name == WHEEL:
+            wheel = io.BytesIO()
+            with zipfile.ZipFile(wheel, "w") as archive:
+                archive.writestr(
+                    f"arras-{VERSION}.dist-info/METADATA",
+                    f"Metadata-Version: 2.1\nName: arras\nVersion: {VERSION}\n\n",
+                )
+            path.write_bytes(wheel.getvalue())
+        else:
+            path.write_bytes(f"fixture:{name}".encode())
+    if actions_required:
+        (directory / "umf-actions-installed.json").write_text(
+            '{"schema":"arras.umf-actions-public-qualification/1"}\n', encoding="utf-8"
+        )
     wheel_sha = sha((directory / WHEEL).read_bytes())
-    aggregate = {
-        "schema_version": 1,
+    aggregate: dict[str, Any] = {
+        "schema_version": 3 if actions_required else 1,
         "status": "passed",
         "version": VERSION,
         "release_artifacts": {"wheel": {"filename": WHEEL, "sha256": wheel_sha}},
     }
+    if actions_required:
+        aggregate["umf_actions"] = {
+            "filename": "umf-actions-installed.json",
+            "sha256": sha((directory / "umf-actions-installed.json").read_bytes()),
+            "qualification_phase": "release-build",
+            "status": "passed",
+        }
     evidence_raw = (json.dumps(aggregate, sort_keys=True) + "\n").encode()
     (directory / "release-evidence.json").write_bytes(evidence_raw)
+    asset_names: set[str] = ASSET_NAMES | (
+        {"umf-actions-installed.json"} if actions_required else set()
+    )
     sums_raw = "".join(
-        f"{sha((directory / name).read_bytes())}  {name}\n" for name in sorted(ASSET_NAMES)
+        f"{sha((directory / name).read_bytes())}  {name}\n" for name in sorted(asset_names)
     ).encode()
     (directory / "SHA256SUMS").write_bytes(sums_raw)
     return sha(sums_raw), sha(evidence_raw), wheel_sha
@@ -255,6 +281,66 @@ def test_trusted_bundle_binds_exact_assets_aggregate_sums_and_wheel(tmp_path: Pa
     with pytest.raises(provenance.ProvenanceError, match="unexpected or missing"):
         provenance.validate_bundle(
             bundle,
+            version=VERSION,
+            expected_sums_sha256=sums_sha,
+            expected_evidence_sha256=evidence_sha,
+            expected_wheel_sha256=wheel_sha,
+        )
+
+
+def test_action_capability_requires_schema_three_bundle_and_publication_job(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    bundle = tmp_path / "action-release-assets"
+
+    def actions_required(_directory: Path, _version: str, _wheel_sha256: str) -> bool:
+        return True
+
+    def validate_action_component(
+        _directory: Path,
+        _aggregate: dict[str, Any],
+        _entries: dict[str, str],
+        *,
+        version: str,
+        wheel_name: str,
+        wheel_sha256: str,
+    ) -> None:
+        del version, wheel_name, wheel_sha256
+
+    monkeypatch.setattr(provenance, "_action_capability_required", actions_required)
+    monkeypatch.setattr(provenance, "_validate_action_component", validate_action_component)
+    sums_sha, evidence_sha, wheel_sha = make_bundle(bundle, actions_required=True)
+    assert (
+        provenance.validate_bundle(
+            bundle,
+            version=VERSION,
+            expected_sums_sha256=sums_sha,
+            expected_evidence_sha256=evidence_sha,
+            expected_wheel_sha256=wheel_sha,
+        )
+        == WHEEL
+    )
+
+    _, jobs, _ = run_metadata()
+    with pytest.raises(provenance.ProvenanceError, match="missing required"):
+        provenance._validate_required_jobs(jobs, VERSION, actions_required=True)
+    jobs["jobs"].append(
+        {
+            "name": "Fresh installed generated-action proof when the wheel requires it",
+            "conclusion": "success",
+            "steps": [],
+        }
+    )
+    jobs["total_count"] += 1
+    provenance._validate_required_jobs(jobs, VERSION, actions_required=True)
+    assert "umf-actions" in provenance._required_job_ids(VERSION, actions_required=True)
+
+    without_action = tmp_path / "missing-action-assets"
+    sums_sha, evidence_sha, wheel_sha = make_bundle(without_action, actions_required=True)
+    (without_action / "umf-actions-installed.json").unlink()
+    with pytest.raises(provenance.ProvenanceError, match="trusted release artifact contains"):
+        provenance.validate_bundle(
+            without_action,
             version=VERSION,
             expected_sums_sha256=sums_sha,
             expected_evidence_sha256=evidence_sha,

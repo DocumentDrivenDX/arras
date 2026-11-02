@@ -105,7 +105,9 @@ def test_extra_asset_refuses(assets: tuple[dict[str, str], str], tmp_path: Path)
 @pytest.mark.parametrize(
     "field", ["schema", "status", "transport", "version", "releaseSourceCommit"]
 )
-def test_invalid_proof_refuses(assets, tmp_path, field):
+def test_invalid_proof_refuses(
+    assets: tuple[dict[str, str], str], tmp_path: Path, field: str
+) -> None:
     pins, _ = assets
     proof_path = tmp_path / "local-release-proof.json"
     proof = json.loads(proof_path.read_text())
@@ -126,7 +128,9 @@ def test_invalid_proof_refuses(assets, tmp_path, field):
 
 
 @pytest.mark.parametrize("change", ["sums", "missing", "symlink", "duplicate"])
-def test_input_boundary_refuses(assets, tmp_path, change):
+def test_input_boundary_refuses(
+    assets: tuple[dict[str, str], str], tmp_path: Path, change: str
+) -> None:
     pins, sums_sha = assets
     name = next(iter(pins))
     if change == "sums":
@@ -152,7 +156,9 @@ def test_input_boundary_refuses(assets, tmp_path, change):
         )
 
 
-def test_cli_defaults_refuse_fixture_bytes(assets, tmp_path):
+def test_cli_defaults_refuse_fixture_bytes(
+    assets: tuple[dict[str, str], str], tmp_path: Path
+) -> None:
     with pytest.raises(ValueError, match="SHA256SUMS bytes"):
         module.validate(
             tmp_path, module.EXPECTED_TAG, module.EXPECTED_SOURCE, module.EXPECTED_TAG_OBJECT

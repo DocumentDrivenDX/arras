@@ -17,6 +17,32 @@ ddx:
 
 # Arras release notes
 
+## 0.7.0 bounded UMF memory actions
+
+The opt-in `arras-umf-set/1` profile adds one-module STRING-key, constrained
+STRING-value SET execution through `Ontology.execute` and the official generated
+synchronous client. Current authorization precedes dispatch; memory state,
+receipts, settlement tokens and replay records change atomically. Validation has
+no public state effect, and uncertain outcomes are not automatically retried.
+Replay state lasts only for the process. Truss, Ashlar, general action execution
+and durable replay are outside this qualification.
+
+The optional UMF Python distribution is `umf-core==0.10.5`, distinct from TypeScript SDK
+0.10.1 and document/core semantics 0.10.0. Its optional native dependency narrows
+installation to the qualified Linux x86_64 and macOS arm64 artifacts; Python 3.11
+remains the supported release profile. Existing APIs, the wheel-carried compiled
+UI, and the separately versioned npm package retain their current behavior.
+
+Schema-3 release evidence adds mandatory exact-wheel generated-action proof.
+Admission and action receipts bind the actual wheel dependency metadata, runtime,
+SDK artifact and verifier source. Historical schema-2 releases retain their
+17-asset layout, original-source digest validation and closed dependency cohorts.
+The frozen 0.6.5 artifact guard and completed backfill remain unchanged.
+
+Qualification and delivery status is recorded in the
+[integration plan](../04-build/arras-integration-plan-20261022.md).
+Candidate and historical proofs do not establish public 0.7.0 delivery.
+
 ## 0.6.5 downstream integration
 
 Installed development hosts serve their wheel-carried UI and console entrypoints.

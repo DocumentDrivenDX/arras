@@ -235,3 +235,82 @@ receipt = ontology.invoke("catalog.CreateCandidateSolution",
 The action shape follows the UMF build brief's description of UMF's action type: a name, a description, typed parameters, a result or handle, preconditions and effects, and optional compensation. The brief's caution applies: the declaration is the contract and a loss report, and the implementation remains the accurate semantics, so the declared effects are claims that the module's tests verify. Compensation and long-running work (sagas) are deferred.
 
 Open points: whether the closed set of predicates and effects is enough for the catalog, or a handler is needed in the first release; and how an action's declared authorization (which roles may invoke it) is expressed once UMF defines it, since v1 relies on the provider's module write access alone.
+
+## Planned one-action/constraint execution cut
+
+The next cut targets one module, one record with a required direct STRING key,
+one constrained scalar and one explicit-key SET action from the exact admitted
+generation source. The proposed first subset follows CONTRACT-902 at the named
+UMF source, subject to the owner's package/binding confirmation. It has empty
+conditions/outputs/failures and
+no handlers or relationships; nonempty conditions or failure declarations MUST
+refuse. Postcondition
+execution is a later profile, not a prerequisite for this bounded subset.
+The existing STRING key carrier is retained. It MUST use a separately qualified
+opt-in execution profile; the read-only metadata profile and legacy dialect keep
+their present meaning. Canonical source MUST NOT be lowered by the legacy parser
+or by a new Arras rule, literal, selector or recipe evaluator.
+The admitted key component remains its original STRING value and must fit
+`[A-Za-z0-9._:-]{1,128}`. An official-valid key outside that native carrier is
+unsupported; tuple hex, coercion or Unicode normalization cannot substitute for
+it. This key restriction does not narrow official scalar-value semantics.
+
+UMF CONTRACT-049/900/901 owns value, declaration and invocation meaning;
+CONTRACT-079 owns the generated wire. A session-bound synchronous
+`Ontology.execute(request: Mapping[str, object]) -> Mapping[str, object]` is the
+candidate integration point. Its current
+wire uses `contract: "umf.access/1"`, exact source digest `schema`, and
+`kind: "apply"` with action identity, inputs and optional idempotency key.
+The selected CONTRACT-079 source also defines `kind: "validate"`, omits an
+idempotency key for validation and returns `{schema, valid: true}` on success.
+Wire fields/codes MUST follow that exact source cohort; no additional kind is
+inferred from Arras method names.
+Source mismatch and unsupported meanings MUST stop before planning or effects.
+A definite refusal uses the request's source digest in its matching-schema
+known-code error envelope, including `SCHEMA_MISMATCH`. A current-store digest
+in that refusal would instead be a wrong-schema response to the generated
+client. Post-commit receipt/serialization failures and unclassified dispatch
+failures retain write uncertainty; they MUST NOT become no-effect refusals.
+
+The qualified engine/provider MUST enforce the selected inputs, constraints and
+frames under current person authority. Unsupported condition meanings refuse
+instead of being dropped. Dry run uses the source-qualified validation wire or
+host callable. It is advisory and leaves source, graph, revisions, journal,
+replay and position
+unchanged. Commit and idempotency state are atomic; same-key/same-input retry
+returns the original result on an explicit caller reissue, changed input
+conflicts, and uncertain settlement MUST NOT cause automatic retry or be treated
+as known rollback. Changed identities/counts and consistency tokens MUST follow
+the official wire, with complete fixed-code error mapping. Broader conditions,
+batch execution and durable restart/recovery are later qualifications; unsupported
+requests refuse before dispatch. Memory replay proves only its stated process
+lifetime. A post-dispatch unknown outcome remains unknown, never a safe retry.
+
+The Arras-owned execution profile is `arras-umf-set/1`; direct legacy
+`validate`, `invoke`, batch and provider `Plan` routes MUST refuse candidate
+modules. The generated request supplies neither host policy evidence nor a
+prepared plan. Its action is the exact qualified generated string, and entity
+inputs retain the authored Field-ID map. The official bridge owns key codecs,
+value constraints, materialized assignments and the business-input digest.
+Arras may mechanically apply only the complete admitted native STRING SET.
+
+The only supported authorization declaration is the host-interpreted
+`arras.module-write/1` policy with exact declared frame IDs. It requires current
+person read and write access to the selected module and exact bounded frame
+coverage. It does not interpret arbitrary role or policy declarations. The
+provider rechecks token, grants, current source and revision under the same
+lock immediately before commit and before replay; grant/expiry API changes
+participate in that lock. No public prepared-report injection is permitted.
+
+The existing public administrative `import_records` path is the sole candidate
+seed path. Official complete record/key/value admission precedes native record
+construction; legacy coercion, direct fake-state seeding and profile relabeling
+cannot qualify it. Import permission, attribution, load identity, native
+uniqueness and atomicity remain provider obligations.
+
+Metadata extension registration or `executionVerified:false` assessment alone
+cannot satisfy this gate. The new official `prepare_single_set_action` branch
+must preserve original checked/unchecked obligations and separate host-supported
+policy assessment; the historical strict `plan-model/1` API is unchanged.
+Closed SDK envelope details, apply/validate correspondence, fixture/vectors and
+artifact identity must be confirmed before positive semantic qualification.

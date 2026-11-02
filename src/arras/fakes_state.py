@@ -41,6 +41,12 @@ class State:
     at: datetime = field(default_factory=utcnow)
     changes: list[Change] = field(default_factory=list[Change])  # the audit journal
     loads: list[Load] = field(default_factory=list[Load])
+    declared_replays: dict[tuple[str, str, str, str, str], tuple[str, Any]] = field(
+        default_factory=dict[tuple[str, str, str, str, str], tuple[str, Any]]
+    )
+    declared_tokens: dict[str, tuple[str, str, int]] = field(
+        default_factory=dict[str, tuple[str, str, int]]
+    )
 
 
 @dataclass

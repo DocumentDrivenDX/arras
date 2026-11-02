@@ -35,7 +35,7 @@ wheels = [
 
 [[package]]
 name = "arras"
-version = "0.6.5"
+version = "0.7.0"
 source = { editable = "." }
 dependencies = [
     { name = "graphql-core" },
@@ -76,7 +76,7 @@ requires-dist = [
     { name = "graphql-core", specifier = ">=3.3,<3.4" },
     { name = "opentelemetry-api", marker = "extra == 'otel'", specifier = ">=1.27,<2" },
     { name = "truss-toolkit", extras = ["native", "query"], marker = "extra == 'truss'", specifier = "==0.0.50" },
-    { name = "umf-core", marker = "extra == 'umf'", specifier = "==0.10.0" },
+    { name = "umf-core", marker = "extra == 'umf'", specifier = "==0.10.5" },
     { name = "uvicorn", marker = "extra == 'devhost'", specifier = ">=0.30" },
 ]
 provides-extras = ["otel", "devhost", "truss", "umf"]
@@ -892,15 +892,6 @@ wheels = [
 ]
 
 [[package]]
-name = "ruamel-yaml"
-version = "0.19.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/c7/3b/ebda527b56beb90cb7652cb1c7e4f91f48649fbcd8d2eb2fb6e77cd3329b/ruamel_yaml-0.19.1.tar.gz", hash = "sha256:53eb66cd27849eff968ebf8f0bf61f46cdac2da1d1f3576dd4ccee9b25c31993", size = 142709, upload-time = "2026-01-02T16:50:31.84Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b8/0c/51f6841f1d84f404f92463fc2b1ba0da357ca1e3db6b7fbda26956c3b82a/ruamel_yaml-0.19.1-py3-none-any.whl", hash = "sha256:27592957fedf6e0b62f281e96effd28043345e0e66001f97683aa9a40c667c93", size = 118102, upload-time = "2026-01-02T16:50:29.201Z" },
-]
-
-[[package]]
 name = "ruff"
 version = "0.17.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1006,22 +997,14 @@ wheels = [
 
 [[package]]
 name = "umf-core"
-version = "0.10.0"
-source = { url = "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/umf_core-0.10.0-py3-none-any.whl" }
+version = "0.10.5"
+source = { registry = "tools/find-links/index.html" }
 dependencies = [
-    { name = "jsonschema" },
     { name = "pydantic" },
-    { name = "ruamel-yaml" },
 ]
 wheels = [
-    { url = "https://github.com/DocumentDrivenDX/umf/releases/download/umf-v0.5.4/umf_core-0.10.0-py3-none-any.whl", hash = "sha256:49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "jsonschema", specifier = ">=4.25,<5" },
-    { name = "pydantic", specifier = ">=2.11,<3" },
-    { name = "ruamel-yaml", specifier = ">=0.18,<1" },
+    { url = "https://github.com/DocumentDrivenDX/umf/releases/download/python-v0.10.5/umf_core-0.10.5-cp311-abi3-manylinux_2_34_x86_64.whl", hash = "sha256:cf33b833ff4eaa080f459cf3c93baa7e3b4e436dab5cd7853dd748e3c220dd16" },
+    { url = "https://github.com/DocumentDrivenDX/umf/releases/download/python-v0.10.5/umf_core-0.10.5-cp311-abi3-macosx_11_0_arm64.whl", hash = "sha256:9213ff4b87649f551abcfdff40cdb6b0d75d619260988fa8ea4fe26cac7f6788" },
 ]
 
 [[package]]

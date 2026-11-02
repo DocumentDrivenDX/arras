@@ -13,6 +13,7 @@ import os
 import subprocess
 import sys
 import zipfile
+from email.message import Message
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, NamedTuple
@@ -75,6 +76,46 @@ def test_official_corpus_identity_is_ordered_and_nonempty() -> None:
     assert len(ids) == len(set(ids)) == 139
     assert ids[0] == corpus["cases"][0]["id"]
     assert ids[-1] == corpus["cases"][-1]["id"]
+
+
+def test_verifier_selects_only_the_arras_wheel_host_cohort(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    linux = verifier._COHORTS.SDKCohort(
+        "synthetic-linux",
+        "0.10.1",
+        "0.10.0",
+        "linux",
+        "x86_64",
+        "umf_core-0.10.1-cp311-abi3-manylinux.whl",
+        "https://github.com/example/umf/releases/download/test/umf_core-0.10.1-cp311-abi3-manylinux.whl",
+        "1" * 64,
+    )
+    darwin = verifier._COHORTS.SDKCohort(
+        "synthetic-darwin",
+        "0.10.1",
+        "0.10.0",
+        "darwin",
+        "arm64",
+        "umf_core-0.10.1-cp311-abi3-macosx.whl",
+        "https://github.com/example/umf/releases/download/test/umf_core-0.10.1-cp311-abi3-macosx.whl",
+        "2" * 64,
+    )
+    monkeypatch.setattr(verifier, "KNOWN_COHORTS", (linux, darwin))
+    monkeypatch.setattr(verifier.sys, "platform", "darwin")
+    monkeypatch.setattr(verifier.host_platform, "machine", lambda: "arm64")
+    metadata = Message()
+    for cohort in (linux, darwin):
+        metadata["Requires-Dist"] = (
+            f"umf-core @ {cohort.url}#sha256={cohort.sha256} ; extra == 'umf' and "
+            f"sys_platform == '{cohort.platform}' and platform_machine == '{cohort.machine}'"
+        )
+    assert verifier._host_cohort(metadata) == darwin
+
+
+def test_process_helper_source_is_bound_by_verifier_constant() -> None:
+    helper = Path(__file__).parents[1] / "tools/_umf_admission_process.py"
+    assert hashlib.sha256(helper.read_bytes()).hexdigest() == verifier._PROCESS_HELPER_SHA256
 
 
 def test_corpus_rejects_duplicate_ids_and_noninteger_expectations(
@@ -241,7 +282,9 @@ def test_umf_extra_install_uses_the_same_explicit_qualified_wheel(
         report=tmp_path / "report.json",
     )
 
-    assert calls[0][-2:] == [f"arras[umf] @ {wheel.as_uri()}", verifier.UMF_REQUIREMENT]
+    assert calls[0][-1] == f"arras[umf] @ {wheel.as_uri()}"
+    assert "--report" in calls[0]
+    assert verifier.UMF_REQUIREMENT not in calls[0]
     assert calls[1][-1] == f"arras @ {wheel.as_uri()}"
     assert verifier.UMF_REQUIREMENT not in calls[1]
 

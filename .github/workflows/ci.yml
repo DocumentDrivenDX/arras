@@ -59,6 +59,8 @@ jobs:
       producer_event: ${{ steps.candidate.outputs.producer_event }}
       candidate_artifact_id: ${{ steps.candidate_artifact.outputs.artifact-id }}
       candidate_artifact_digest: ${{ steps.candidate_artifact.outputs.artifact-digest }}
+
+      umf_actions_required: ${{ steps.umf-actions-requirement.outputs.required }}
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -184,6 +186,34 @@ jobs:
         run: ARRAS_WHEEL="$(ls dist/arras-*.whl)" uv run --no-sync pytest -q tests/test_devhost_installed.py
       - name: The installed wheel provides the arras command
         run: ARRAS_WHEEL="$(ls dist/arras-*.whl)" uv run --no-sync pytest -q tests/test_cli.py
+
+      - name: Derive generated-action requirement from the exact built wheel
+        id: umf-actions-requirement
+        run: |
+          set -euo pipefail
+          wheel="$(find dist -maxdepth 1 -type f -name 'arras-*.whl' -print -quit)"
+          test -n "$wheel"
+          required="$(uv run --no-sync python tools/verify_umf_actions.py --wheel "$wheel" --check-requirement)"
+          case "$required" in
+            true|false) printf 'required=%s\n' "$required" >> "$GITHUB_OUTPUT" ;;
+            *) printf '%s\n' 'could not verify generated-action requirement' >&2; exit 1 ;;
+          esac
+      - name: Verify installed generated-action capability from the exact wheel
+        if: steps.umf-actions-requirement.outputs.required == 'true'
+        run: |
+          mkdir -p artifacts
+          wheel="$(find dist -maxdepth 1 -type f -name 'arras-*.whl' -print -quit)"
+          test -n "$wheel"
+          uv run --no-sync python tools/verify_umf_actions.py \
+            --wheel "$wheel" \
+            --qualification-phase local-installed \
+            --output-json artifacts/umf-actions-installed.json
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.umf-actions-requirement.outputs.required == 'true'
+        with:
+          name: arras-umf-actions-installed
+          path: artifacts/umf-actions-installed.json
+          if-no-files-found: warn
       - name: The wheel installs on a clean interpreter and carries the UI
         run: |
           uv run --no-project --isolated --with dist/*.whl python -c "import importlib.util, arras, arras.ui, arras.adapters.truss; assert importlib.util.find_spec('truss') is None, 'the base wheel must not need Truss'; print(arras.CONTRACT_VERSIONS, arras.ui.npm_package().name); assert (arras.ui.STATIC / arras.ui.PAGE).is_file()"
@@ -584,6 +614,7 @@ jobs:
   test:
     if: github.event_name == 'workflow_dispatch' && inputs.full_qualification
     name: Tests on Python ${{ matrix.python }}
+    needs: check
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -621,10 +652,12 @@ jobs:
         run: uv run --no-sync pytest -q tests/test_umf_admission.py::test_official_current_conformance_vectors_and_empty_registry_admission
         env:
           ARRAS_REQUIRE_UMF: "1"
+          ARRAS_REQUIRE_UMF_ACTIONS: ${{ needs.check.outputs.umf_actions_required == 'true' && '1' || '0' }}
       - run: uv run --no-sync pytest -q
         env:
           ARRAS_REQUIRE_WEFT: "1"
           ARRAS_REQUIRE_UMF: "1"
+          ARRAS_REQUIRE_UMF_ACTIONS: ${{ needs.check.outputs.umf_actions_required == 'true' && '1' || '0' }}
 
   truss:
     if: github.event_name == 'workflow_dispatch' && inputs.full_qualification
@@ -644,3 +677,34 @@ jobs:
       - run: uv run --no-sync pytest -m truss -q
         env:
           ARRAS_REQUIRE_TRUSS: "1"
+
+  umf-actions-macos:
+    name: Installed UMF actions on macOS arm64 Python 3.11
+    if: github.event_name == 'workflow_dispatch' && inputs.full_qualification
+    needs: check
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: arras-installed-candidate-artifacts
+          path: candidate
+      - name: Verify exact candidate wheel on the second qualified SDK platform
+        env:
+          EXPECTED_WHEEL: ${{ needs.check.outputs.wheel_name }}
+          EXPECTED_SHA256: ${{ needs.check.outputs.wheel_sha256 }}
+        run: |
+          mkdir -p artifacts
+          uv run --no-project --python 3.11 python -c 'import hashlib, os, pathlib; p=pathlib.Path("candidate/dist")/os.environ["EXPECTED_WHEEL"]; assert hashlib.sha256(p.read_bytes()).hexdigest()==os.environ["EXPECTED_SHA256"]'
+          uv run --no-project --python 3.11 python tools/verify_umf_admission.py --wheel "candidate/dist/$EXPECTED_WHEEL" --output-json artifacts/umf-admission-macos.json
+          uv run --no-project --python 3.11 python tools/verify_umf_actions.py --wheel "candidate/dist/$EXPECTED_WHEEL" --output-json artifacts/umf-actions-macos.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: arras-umf-macos-installed
+          path: artifacts/umf-*-macos.json
+          if-no-files-found: error

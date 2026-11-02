@@ -4,6 +4,7 @@ import importlib.util
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -18,7 +19,7 @@ SPEC.loader.exec_module(module)
 
 
 @pytest.fixture
-def evidence(tmp_path, monkeypatch):
+def evidence(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, dict[str, str]]:
     identity = {
         "wheel": "arras-0.6.5-py3-none-any.whl",
         "wheel_sha256": module.ASSETS["arras-0.6.5-py3-none-any.whl"],
@@ -83,7 +84,7 @@ def evidence(tmp_path, monkeypatch):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text('<testsuite tests="1" failures="0" errors="0" skipped="0"/>')
 
-    def check_umf(value, **kwargs):
+    def check_umf(value: object, **kwargs: Any) -> None:
         assert value == records["installed/umf-admission-installed.json"]
         assert kwargs["wheel_sha256"] == wheel_sha
         assert kwargs["version"] == "0.6.5"
@@ -93,7 +94,7 @@ def evidence(tmp_path, monkeypatch):
     return tmp_path, identity
 
 
-def test_exact_gate_receipts_pass(evidence):
+def test_exact_gate_receipts_pass(evidence: tuple[Path, dict[str, str]]) -> None:
     module.validate_evidence(*evidence)
 
 
@@ -109,7 +110,9 @@ def test_exact_gate_receipts_pass(evidence):
         ("ui/qualification-linux.json", "routes", []),
     ],
 )
-def test_semantic_failures_refuse(evidence, name, field, bad):
+def test_semantic_failures_refuse(
+    evidence: tuple[Path, dict[str, str]], name: str, field: str, bad: Any
+) -> None:
     root, identity = evidence
     path = root / name
     receipt = json.loads(path.read_text())
@@ -119,8 +122,10 @@ def test_semantic_failures_refuse(evidence, name, field, bad):
         module.validate_evidence(root, identity)
 
 
-def test_umf_failure_propagates(evidence, monkeypatch):
-    def refuse(*args, **kwargs):
+def test_umf_failure_propagates(
+    evidence: tuple[Path, dict[str, str]], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def refuse(*args: Any, **kwargs: Any) -> None:
         raise ValueError("UMF controls failed")
 
     monkeypatch.setattr(module, "validate_receipt", refuse)
@@ -128,14 +133,14 @@ def test_umf_failure_propagates(evidence, monkeypatch):
         module.validate_evidence(*evidence)
 
 
-def test_failed_consumer_report_refuses(evidence):
+def test_failed_consumer_report_refuses(evidence: tuple[Path, dict[str, str]]) -> None:
     root, identity = evidence
     (root / "downstream/consumer.xml").write_text('<testsuite tests="1" failures="1"/>')
     with pytest.raises(ValueError, match="test qualification"):
         module.validate_evidence(root, identity)
 
 
-def test_missing_receipt_refuses(evidence):
+def test_missing_receipt_refuses(evidence: tuple[Path, dict[str, str]]) -> None:
     root, identity = evidence
     (root / "installed/public-doctor.json").unlink()
     with pytest.raises(FileNotFoundError):
@@ -143,7 +148,7 @@ def test_missing_receipt_refuses(evidence):
 
 
 @pytest.mark.parametrize("change", ["duplicate", "missing-check", "schema"])
-def test_ui_route_coverage_refuses(evidence, change):
+def test_ui_route_coverage_refuses(evidence: tuple[Path, dict[str, str]], change: str) -> None:
     root, identity = evidence
     path = root / "ui/qualification-linux.json"
     receipt = json.loads(path.read_text())
@@ -159,7 +164,7 @@ def test_ui_route_coverage_refuses(evidence, change):
 
 
 @pytest.mark.parametrize("change", ["counts", "discovery", "canonical"])
-def test_ui_incomplete_campaign_refuses(evidence, change):
+def test_ui_incomplete_campaign_refuses(evidence: tuple[Path, dict[str, str]], change: str) -> None:
     root, identity = evidence
     path = root / "ui/qualification-linux.json"
     receipt = json.loads(path.read_text())
@@ -173,3 +178,55 @@ def test_ui_incomplete_campaign_refuses(evidence, change):
     path.write_text(json.dumps(receipt))
     with pytest.raises(ValueError, match="UI"):
         module.validate_evidence(root, identity)
+
+
+@pytest.mark.parametrize("context", ["original", "current-driver", "changed-probe"])
+def test_actual_065_admission_receipt_requires_its_original_source(
+    evidence: tuple[Path, dict[str, str]],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    context: str,
+) -> None:
+    import hashlib
+    import shutil
+
+    validate_receipt = importlib.import_module("_umf_admission_receipt").validate_receipt
+
+    root, identity = evidence
+    retained = ROOT / "docs/helix/05-deploy/evidence/registry065-20261102"
+    actual = retained / "historical-umf-admission-installed.json"
+    source = retained / "pinned-admission-source"
+    pins = json.loads((source / "provenance.json").read_text())
+    assert pins["source_sha"] == module.EXPECTED_SOURCE
+    payload = tmp_path / "payload-source"
+    for name, expected in pins["files"].items():
+        raw = (source / (Path(name).name + ".txt")).read_bytes()
+        assert hashlib.sha256(raw).hexdigest() == expected
+        target = payload / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(raw)
+    for name in ["umf-core-reference", "umf-core-metadata"]:
+        shutil.copytree(ROOT / "tests/fixtures" / name, payload / "tests/fixtures" / name)
+    shutil.copyfile(actual, root / "installed/umf-admission-installed.json")
+    monkeypatch.setattr(module, "validate_receipt", validate_receipt)
+    if context == "current-driver":
+        payload = ROOT
+    elif context == "changed-probe":
+        (payload / "tools/_umf_admission_probe.py").write_text("changed source\n")
+    if context == "original":
+        module.validate_evidence(root, identity, payload_repository=payload)
+    else:
+        with pytest.raises(ValueError, match="tool or probe digest"):
+            module.validate_evidence(root, identity, payload_repository=payload)
+
+
+def test_historical_payload_checkout_must_name_exact_commit(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def wrong_commit(*args: Any, **kwargs: Any) -> str:
+        return "0" * 40
+
+    monkeypatch.setattr(module.subprocess, "check_output", wrong_commit)
+    with pytest.raises(ValueError, match="pinned source"):
+        module.assert_payload_source(tmp_path)

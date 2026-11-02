@@ -1,0 +1,17 @@
+{
+  "attempted_mode": "public-extra",
+  "cleanup": {
+    "status": "completed"
+  },
+  "failure": {
+    "code": "command-failed",
+    "stage": "installed-action-probe"
+  },
+  "limitations": [
+    "A failed proof is not qualification."
+  ],
+  "public_gate": false,
+  "qualification_phase": "local-installed",
+  "schema": "arras.umf-actions-installed/1",
+  "status": "failed"
+}

@@ -1,0 +1,15 @@
+{
+  "checkout_head": "c3cb035b55040765ae4a1a983a3c38201b7d588f",
+  "event": "workflow_dispatch",
+  "pull_request_head_sha": null,
+  "run_attempt": "1",
+  "run_id": "41510837413",
+  "schema": "arras.ci-candidate-wheel/1",
+  "source_sha": "c3cb035b55040765ae4a1a983a3c38201b7d588f",
+  "source_tree_sha": "d0061331c4e935fd8d7e19eb017dd2a4b1bcde73",
+  "wheel": {
+    "name": "arras-0.7.0-py3-none-any.whl",
+    "sha256": "b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6",
+    "version": "0.7.0"
+  }
+}

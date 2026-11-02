@@ -98,7 +98,34 @@ def admit(destination: Path) -> None:
     Path("local-remote.json").write_text(json.dumps(metadata, indent=2) + "\n")
 
 
-def finish(assets: Path, evidence: Path, output: Path) -> None:
+def assert_payload_source(repository: Path) -> None:
+    """Historical receipts must be checked against the exact original payload checkout."""
+    head = subprocess.check_output(
+        ["git", "-C", str(repository), "rev-parse", "HEAD"], text=True
+    ).strip()
+    if head != EXPECTED_SOURCE:
+        raise ValueError("historical UMF payload checkout differs from pinned source")
+    subprocess.run(
+        [
+            "git",
+            "-C",
+            str(repository),
+            "diff",
+            "--exit-code",
+            "HEAD",
+            "--",
+            "tools/verify_umf_admission.py",
+            "tools/_umf_admission_probe.py",
+            "tests/fixtures/umf-core-reference",
+            "tests/fixtures/umf-core-metadata",
+        ],
+        check=True,
+        capture_output=True,
+    )
+
+
+def finish(assets: Path, evidence: Path, output: Path, payload_repository: Path) -> None:
+    assert_payload_source(payload_repository)
     identity = validate(assets, EXPECTED_TAG, EXPECTED_SOURCE, EXPECTED_TAG_OBJECT)
     remote_identity()
     required = [
@@ -122,7 +149,7 @@ def finish(assets: Path, evidence: Path, output: Path) -> None:
     native = json.loads((evidence / "installed/native-verification.json").read_text())
     if native.get("status") != "passed":
         raise ValueError("installed native qualification did not pass")
-    validate_evidence(evidence, identity)
+    validate_evidence(evidence, identity, payload_repository=payload_repository)
     validate_public_ui(assets, evidence, identity)
     for path in sorted((evidence / "ui").glob("*.json")):
         records[f"ui/{path.name}"] = hashlib.sha256(path.read_bytes()).hexdigest()
@@ -147,7 +174,9 @@ def finish(assets: Path, evidence: Path, output: Path) -> None:
     )
 
 
-def validate_evidence(evidence: Path, identity: dict) -> None:
+def validate_evidence(
+    evidence: Path, identity: dict, *, payload_repository: Path | None = None
+) -> None:
     def read(name: str) -> dict:
         return json.loads((evidence / name).read_text())
 
@@ -164,7 +193,9 @@ def validate_evidence(evidence: Path, identity: dict) -> None:
         wheel_name=identity["wheel"],
         wheel_sha256=wheel_sha,
         phase="public-download",
-        repository=Path(__file__).resolve().parents[2],
+        repository=payload_repository
+        if payload_repository is not None
+        else Path(__file__).resolve().parents[2],
     )
     distribution = read("installed/public-distribution.json")
     if (
@@ -268,11 +299,12 @@ def main() -> None:
     parser.add_argument("--assets", type=Path, default=Path("local-assets"))
     parser.add_argument("--evidence", type=Path, default=Path("evidence"))
     parser.add_argument("--output", type=Path, default=Path("verified"))
+    parser.add_argument("--payload-source", type=Path, default=Path("historical-payload"))
     args = parser.parse_args()
     if args.mode == "admit":
         admit(args.assets)
     elif args.mode == "finish":
-        finish(args.assets, args.evidence, args.output)
+        finish(args.assets, args.evidence, args.output, args.payload_source)
     else:
         remote_identity()
 

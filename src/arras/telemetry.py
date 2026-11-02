@@ -37,6 +37,7 @@ log = logging.getLogger("arras.telemetry")
 EVENTS = frozenset(
     {
         "arras.query",
+        "arras.execute",
         "arras.validate",
         "arras.invoke",
         "arras.invoke_batch",
@@ -251,9 +252,13 @@ class Operation:
     def __init__(self, event: str, attrs: Mapping[str, object]) -> None:
         self.event = event
         self.attrs: dict[str, object] = dict(attrs)
+        self.refusal: str | None = None
 
     def set(self, **attrs: object) -> None:
         self.attrs.update(attrs)
+
+    def refused(self, code: str) -> None:
+        self.refusal = code
 
 
 def _otel(name: str) -> Any:
@@ -312,6 +317,30 @@ def annotate(**attrs: object) -> None:
     op = _current.get()
     if op is not None:
         op.set(**attrs)
+
+
+def record_refusal(code: str) -> None:
+    """Mark a translated, known no-effect refusal on the current operation."""
+    try:
+        if type(code) is not str:
+            return
+        if code not in {
+            "DENIED",
+            "CONFLICT",
+            "PRECONDITION_FAILED",
+            "UNSUPPORTED",
+            "BUSY",
+            "SCHEMA_MISMATCH",
+            "LIMIT_EXCEEDED",
+            "INVALID",
+        }:
+            return
+        op = _current.get()
+        if op is not None and op.event == "arras.execute":
+            op.refused(code.lower())
+            op.set(reason=code.lower())
+    except Exception:
+        _count_dropped()
 
 
 @contextmanager
@@ -377,7 +406,8 @@ def _finish(
         if op.event not in EVENTS:
             raise ValueError(op.event)
         attrs = dict(op.attrs)
-        attrs["outcome"] = "ok" if failure is None else "error"
+        refused = failure is None and op.refusal is not None
+        attrs["outcome"] = "refused" if refused else "ok" if failure is None else "error"
         if failure is not None:
             attrs["error.type"] = type(failure).__name__
             if isinstance(failure, Unavailable):
@@ -399,7 +429,7 @@ def _finish(
         _record(
             op.event,
             {**safe, "duration_ms": round(seconds * 1000)},
-            _level(failure),
+            logging.INFO if refused else _level(failure),
             context,
         )
     except Exception:
