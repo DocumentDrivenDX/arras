@@ -244,6 +244,13 @@ asset inventory immediately before npm upload. Preserve the original archives,
 local proof and failed attempts. Public registry acceptance is recorded only
 after registry-served bytes and the clean install pass. PyPI is not republished.
 
+Completed on 2026-11-02: run `41493303642` passed all local-origin product gates,
+the complete receipt aggregate, npm OIDC upload, public-byte comparison and a
+fresh registry install/import. Independent verification matched all 323 installed
+files and 33 root exports. The [retained release evidence](evidence/registry065-20261102/README.md)
+records the original local origin, new driver, exact hashes, first failed source
+attempt, independent verifier-buffer failure and scoped Mac/native limits.
+
 ## Recovering an unpublished tag
 
 An orchestration-only failure may use the reviewed default-branch release driver

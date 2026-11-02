@@ -1,0 +1,45 @@
+{
+  "artifacts": [
+    {
+      "digest": "sha256:f1888c2ec35396b882fa1a5bd92124c7b5f222c742b9abd15ac9b586b6627804",
+      "id": 13166890063,
+      "name": "local-ui-evidence"
+    },
+    {
+      "digest": "sha256:e984f551cf77fa3fed0208ac452200b097a2db3e742e03a5f934594d33db9584",
+      "id": 13166105322,
+      "name": "local-downstream-evidence"
+    },
+    {
+      "digest": "sha256:9929e07c54b0ccb7ce56b96df9c815cb9403a5298761f79bc537b482535e3ea3",
+      "id": 13165368191,
+      "name": "registry-npm-preflight-0.6.5"
+    },
+    {
+      "digest": "sha256:a9dcdccddb7f323a6d8b02290084ffe1a679ca88712c0ebcb4c8a7f3f6afb8af",
+      "id": 13165139507,
+      "name": "registry-publication-npm-0.6.5"
+    },
+    {
+      "digest": "sha256:941c05d2a2cd08a5f63b248f839d173edf4cea99d8d3cd5df6e6a20fdad6ae98",
+      "id": 13164864665,
+      "name": "registry-verified-release-0.6.5"
+    },
+    {
+      "digest": "sha256:09757c476ab3ceb3f9cdd1f0e8e5672d605edae0c93ca7554d0cb6b591f99916",
+      "id": 13164698783,
+      "name": "local-installed-evidence"
+    },
+    {
+      "digest": "sha256:ceac54bfad20a32c564cd98b17cdfe13e34ab2c402ff79b0c1db7403677f6791",
+      "id": 13164624748,
+      "name": "local-source-evidence"
+    },
+    {
+      "digest": "sha256:3dd5f5392ef879a52ca2a09ecd21ca7ea4b711cdec4b6781ef078fa333ff577f",
+      "id": 13164143958,
+      "name": "local-origin-inputs"
+    }
+  ],
+  "run_id": 41493303642
+}

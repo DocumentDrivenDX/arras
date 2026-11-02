@@ -1,0 +1,43 @@
+{
+  "schema": "arras.registry-backfill-attempt.v1",
+  "run_id": "41491255649",
+  "driver_sha": "24ab3c5f5b2892f09bae87462d0c0318283796fa",
+  "url": "https://github.com/DocumentDrivenDX/arras/actions/runs/41491255649",
+  "origin": "local; no original hosted Release producer",
+  "tag": "v0.6.5",
+  "source_sha": "ad597d248847da47523155842524bb451a97f8d8",
+  "wheel_sha256": "beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b",
+  "npm_sha256": "26abe759e7bb918bf30c5144a34cff8deb7ecb4dd2ef531d41ec3ceab2155e0f",
+  "conclusion": "failure",
+  "gates": {
+    "admission": "success",
+    "source": "failure",
+    "installed": "success",
+    "ui": "success",
+    "downstream": "success",
+    "aggregate": "skipped",
+    "npm_publish": "skipped"
+  },
+  "source_tests": {
+    "passed": 3450,
+    "failed": 2,
+    "skipped": 2,
+    "deselected": 202,
+    "failed_targets": [
+      "tests/test_mcp.py::test_the_process_writes_only_frames_to_stdout_and_no_secrets_to_stderr",
+      "tests/test_mcp.py::test_the_sandbox_mode_serves_a_real_session_end_to_end"
+    ],
+    "cause": "The driver incorrectly exported ARRAS_REQUIRE_TRUSS to the general source suite. Strict MCP configuration rejected that unknown product setting in subprocesses.",
+    "reproduction_stderr": "arras.mcp: configuration: ARRAS_REQUIRE_TRUSS: not an Arras key",
+    "correction": "PR 41 scopes ARRAS_REQUIRE_TRUSS=1 to pytest -m truss only; its fail-not-skip requirement remains enabled.",
+    "local_reproduction_without_misplaced_flag": "41 MCP tests passed"
+  },
+  "pre_repeat_review": {
+    "actual_installed_receipts": "Passed the new aggregate's semantic checks, including the existing full UMF validator.",
+    "actual_ui_receipts": "205 Linux cases passed; four records cover two delivery routes across browser and console surfaces.",
+    "correction": "PR 42 replaces the incorrect two-record aggregate expectation with the exact four route/surface pairs and canonical campaign checks, and reuses the existing full UI validator with real sidecars and pinned npm resources.",
+    "dry_run": "Real installed/UI receipts validated; original failed source XML remained failed and was refused. No replacement successful source receipt was manufactured."
+  },
+  "public_assets_changed": false,
+  "registry_upload_attempted": false
+}
