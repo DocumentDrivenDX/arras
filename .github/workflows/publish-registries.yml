@@ -6,9 +6,15 @@ on:
     types: [completed]
   workflow_dispatch:
     inputs:
+      origin:
+        description: Original hosted Release or exact immutable local 0.6.5 qualification.
+        required: true
+        type: choice
+        options: [hosted, local-0.6.5]
+        default: hosted
       publication_run_id:
         description: Successful Release workflow run whose immutable assets will be verified.
-        required: true
+        required: false
         type: string
       release_tag:
         description: Exact vX.Y.Z tag from the successful Release run.
@@ -46,8 +52,49 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  qualify-local:
+    if: github.event_name == 'workflow_dispatch' && inputs.origin == 'local-0.6.5'
+    uses: ./.github/workflows/qualify-local-registry.yml
+
   verify-release:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    if: >-
+      always() && !cancelled() &&
+      ((needs.verify-hosted-release.result == 'success' && needs.qualify-local.result == 'skipped') ||
+       (needs.qualify-local.result == 'success' && needs.verify-hosted-release.result == 'skipped'))
+    needs: [verify-hosted-release, qualify-local]
+    runs-on: ubuntu-latest
+    outputs:
+      target: ${{ steps.identity.outputs.target }}
+      version: ${{ steps.identity.outputs.version }}
+      tag: ${{ steps.identity.outputs.tag }}
+      source_sha: ${{ steps.identity.outputs.source_sha }}
+      wheel_name: ${{ steps.identity.outputs.wheel_name }}
+      wheel_sha256: ${{ steps.identity.outputs.wheel_sha256 }}
+      sums_sha256: ${{ steps.identity.outputs.sums_sha256 }}
+    steps:
+      - id: identity
+        env:
+          LOCAL: ${{ needs.qualify-local.result }}
+          HOSTED: ${{ toJSON(needs.verify-hosted-release.outputs) }}
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, os
+          if os.environ['LOCAL'] == 'success':
+              identity = dict(target='npm', version='0.6.5', tag='v0.6.5',
+                  source_sha='ad597d248847da47523155842524bb451a97f8d8',
+                  wheel_name='arras-0.6.5-py3-none-any.whl',
+                  wheel_sha256='beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b',
+                  sums_sha256='dbe547fe5f05386759f6fed80fc85991b676e8ca6eeb67788b2b84dbba1919f8')
+          else:
+              identity = json.loads(os.environ['HOSTED'])
+          for key, value in identity.items():
+              if not value or '\n' in value or '\r' in value:
+                  raise SystemExit('invalid verified identity output')
+              print(f'{key}={value}')
+          PY
+
+  verify-hosted-release:
+    if: (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') && inputs.origin != 'local-0.6.5'
     runs-on: ubuntu-latest
     outputs:
       target: ${{ steps.identity.outputs.target }}
@@ -245,7 +292,7 @@ jobs:
           retention-days: 30
 
   npm-preflight:
-    if: needs.verify-release.outputs.target != 'pypi'
+    if: ${{ !cancelled() && needs.verify-release.result == 'success' && needs.verify-release.outputs.target != 'pypi' }}
     needs: [verify-release]
     runs-on: ubuntu-latest
     permissions:
@@ -283,7 +330,7 @@ jobs:
           retention-days: 90
 
   npm-publish:
-    if: needs.verify-release.outputs.target != 'pypi' && needs.npm-preflight.result == 'success'
+    if: ${{ !cancelled() && needs.verify-release.result == 'success' && needs.verify-release.outputs.target != 'pypi' && needs.npm-preflight.result == 'success' }}
     needs: [verify-release, npm-preflight]
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -336,7 +383,12 @@ jobs:
         if: steps.upload-check.outputs.status == 'absent'
         env:
           VERSION: ${{ needs.verify-release.outputs.version }}
+          LOCAL_ORIGIN: ${{ inputs.origin }}
+          GH_TOKEN: ${{ github.token }}
         run: |
+          if [ "$LOCAL_ORIGIN" = local-0.6.5 ]; then
+            python3 .github/scripts/local_registry_qualification.py recheck
+          fi
           npm publish "verified/public-release-assets/documentdrivendx-arras-ui-$VERSION.tgz" \
             --access public --provenance --registry https://registry.npmjs.org/
       - name: Verify registry-served npm bytes and a fresh package install
@@ -398,7 +450,7 @@ jobs:
           retention-days: 90
 
   pypi-preflight:
-    if: needs.verify-release.outputs.target != 'npm'
+    if: ${{ !cancelled() && needs.verify-release.result == 'success' && needs.verify-release.outputs.target != 'npm' }}
     needs: [verify-release]
     runs-on: ubuntu-latest
     permissions:
@@ -457,7 +509,7 @@ jobs:
           retention-days: 90
 
   pypi-publish:
-    if: needs.verify-release.outputs.target != 'npm' && needs.pypi-preflight.result == 'success'
+    if: ${{ !cancelled() && needs.verify-release.result == 'success' && needs.verify-release.outputs.target != 'npm' && needs.pypi-preflight.result == 'success' }}
     needs: [verify-release, pypi-preflight]
     runs-on: ubuntu-latest
     environment: pypi
@@ -537,7 +589,7 @@ jobs:
           retention-days: 90
 
   pypi-extras-verify:
-    if: needs.verify-release.outputs.target != 'npm' && needs.pypi-publish.result == 'success'
+    if: ${{ !cancelled() && needs.verify-release.result == 'success' && needs.verify-release.outputs.target != 'npm' && needs.pypi-publish.result == 'success' }}
     needs: [verify-release, pypi-publish]
     strategy:
       fail-fast: false

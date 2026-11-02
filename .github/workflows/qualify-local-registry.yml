@@ -1,0 +1,235 @@
+name: Qualify immutable local release
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  WHEEL: arras-0.6.5-py3-none-any.whl
+  WHEEL_SHA256: beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b
+  SOURCE_SHA: ad597d248847da47523155842524bb451a97f8d8
+
+jobs:
+  admit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+      - name: Admit exact local release from the default branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          test "$GITHUB_REF" = "refs/heads/$DEFAULT_BRANCH"
+          test "$(git rev-parse HEAD)" = "$GITHUB_WORKFLOW_SHA"
+          python3 - <<'PY'
+          import json, os
+          event = json.load(open(os.environ['GITHUB_EVENT_PATH']))
+          inputs = event['inputs']
+          pins = dict(origin='local-0.6.5', target='npm', release_tag='v0.6.5',
+              expected_source_sha='ad597d248847da47523155842524bb451a97f8d8',
+              expected_tag_object_sha='85beae38114650caa7ff25d9dde090e20071c4e4',
+              expected_sums_sha256='dbe547fe5f05386759f6fed80fc85991b676e8ca6eeb67788b2b84dbba1919f8',
+              expected_wheel_sha256='beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b')
+          if any(inputs.get(key) != value for key, value in pins.items()) or inputs.get('publication_run_id'):
+              raise SystemExit('local-origin dispatch pins differ or substitute a producer run')
+          PY
+          python3 .github/scripts/local_registry_qualification.py admit
+      - uses: actions/upload-artifact@v4
+        with:
+          name: local-origin-inputs
+          path: |
+            local-assets
+            local-origin.json
+            local-remote.json
+          if-no-files-found: error
+
+  source:
+    needs: admit
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ad597d248847da47523155842524bb451a97f8d8
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: '3.11'
+          enable-cache: true
+      - run: uv sync --locked --extra truss --extra umf --group truss-test
+      - name: Check source and required native dependencies
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          uv run --no-sync ruff check .
+          uv run --no-sync ruff format --check .
+          uv run --no-sync pyright
+          mkdir -p artifacts
+          uv run --no-sync pytest -q --junitxml=artifacts/source-pytest.xml
+          uv run --no-sync pytest -m truss -q --junitxml=artifacts/truss-pytest.xml
+        env:
+          ARRAS_REQUIRE_WEFT: '1'
+          ARRAS_REQUIRE_UMF: '1'
+          ARRAS_REQUIRE_TRUSS: '1'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: local-source-evidence
+          path: artifacts
+
+  installed:
+    needs: admit
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ad597d248847da47523155842524bb451a97f8d8
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: '3.11'
+          enable-cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/download-artifact@v4
+        with:
+          name: local-origin-inputs
+          path: inputs
+      - name: Verify exact installed public distributions, native adapter and UMF
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          cd inputs/local-assets
+          sha256sum --check SHA256SUMS
+          cd ../..
+          mkdir -p artifacts
+          uv sync --locked --extra devhost
+          npm ci --prefix ui
+          python3 .github/scripts/bind_native_cohort.py --template tests/downstream/native-cohorts/linux-x86_64.json --find-links tests/downstream/native-cohorts/linux-x86_64.find-links.html --wheel "inputs/local-assets/$WHEEL" --expected-version 0.6.5 --expected-sha256 "$WHEEL_SHA256" --output-json artifacts/native-cohort.bound.json --receipt-json artifacts/native-cohort-binding.json
+          python3 tools/verify_native.py --wheel "inputs/local-assets/$WHEEL" --cohort artifacts/native-cohort.bound.json --find-links tests/downstream/native-cohorts/linux-x86_64.find-links.html --output-json artifacts/native-verification.json --python "$(command -v python3)"
+          uv run --no-project --python 3.11 python tools/verify_umf_admission.py --wheel "inputs/local-assets/$WHEEL" --qualification-phase public-download --output-json artifacts/umf-admission-installed.json
+          python3 tools/verify_distribution.py --output artifacts/public-distribution.json "inputs/local-assets/$WHEEL" inputs/local-assets/arras-0.6.5.tar.gz
+          uv run --no-sync python tools/verify_doctor.py --wheel "inputs/local-assets/$WHEEL" --output-json artifacts/public-doctor.json
+          uv run --no-sync python tools/verify_extension_host.py --wheel "inputs/local-assets/$WHEEL" --output-json artifacts/public-extension.json --fresh-dependencies
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: local-installed-evidence
+          path: artifacts
+
+  ui:
+    needs: admit
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ad597d248847da47523155842524bb451a97f8d8
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: release-driver
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: '3.11'
+          enable-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - uses: actions/download-artifact@v4
+        with:
+          name: local-origin-inputs
+          path: inputs
+      - run: uv sync --locked --extra devhost
+      - run: uv run --no-sync python tools/check_public_content.py
+      - name: Source UI and exact archive qualification
+        working-directory: ui
+        env:
+          ARRAS_DOWNSTREAM_UI_DIR: ${{ github.workspace }}/ui
+        run: |
+          test "$(git -C .. rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git -C ../release-driver rev-parse HEAD)" = "$GITHUB_WORKFLOW_SHA"
+          npm ci
+          npm audit --audit-level=high --omit=dev
+          npm run check:umf -- --download
+          npm run check && npm run typecheck && npm test && npm run build && npm run test:integration
+          npm run check:umf -- --dist dist
+          npm run build:lib && npm run check:css -- dist-lib/styles.css && npm run check:externals
+          timeout --signal=TERM --kill-after=30s 15m npx --no-install playwright install --with-deps chromium
+          npm run e2e -- --project=chromium --project=schema-admin --project=browser
+          (cd ../inputs/local-assets && sha256sum --check SHA256SUMS)
+          npm run test:packed-browser -- ../inputs/local-assets/documentdrivendx-arras-ui-0.6.5.tgz
+          mkdir -p scripts/release-driver
+          cp ../release-driver/ui/scripts/run-downstream-qualification.mjs scripts/release-driver/
+          cp ../release-driver/ui/scripts/bind-downstream-theme.mjs scripts/release-driver/
+          node scripts/release-driver/run-downstream-qualification.mjs "../inputs/local-assets/$WHEEL"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: local-ui-evidence
+          path: |
+            tests/downstream/evidence/linux
+            ui/test-results
+            ui/playwright-report
+
+  downstream:
+    needs: admit
+    uses: ./.github/workflows/downstream.yml
+    with:
+      python_version: '3.11'
+      evidence_artifact: local-downstream-evidence
+      wheel_url: https://github.com/DocumentDrivenDX/arras/releases/download/v0.6.5/arras-0.6.5-py3-none-any.whl
+      wheel_sha256: beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b
+      source_sha: ad597d248847da47523155842524bb451a97f8d8
+      consumer_project_path: examples/extension_host
+      consumer_test_path: examples/extension_host/tests/test_installed.py
+
+  qualified:
+    needs: [admit, source, installed, ui, downstream]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: local-origin-inputs
+          path: inputs
+      - uses: actions/download-artifact@v4
+        with:
+          name: local-source-evidence
+          path: evidence/source
+      - uses: actions/download-artifact@v4
+        with:
+          name: local-installed-evidence
+          path: evidence/installed
+      - uses: actions/download-artifact@v4
+        with:
+          name: local-ui-evidence
+          path: evidence/ui-tree
+      - uses: actions/download-artifact@v4
+        with:
+          name: local-downstream-evidence
+          path: evidence/downstream
+      - name: Bind current successful qualification to original local archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p evidence/ui
+          cp evidence/ui-tree/tests/downstream/evidence/linux/qualification-linux.json evidence/ui/
+          python3 .github/scripts/local_registry_qualification.py finish --assets inputs/local-assets
+          cp -R inputs/local-assets verified/public-release-assets
+      - uses: actions/upload-artifact@v4
+        with:
+          name: registry-verified-release-0.6.5
+          path: verified
+          if-no-files-found: error
