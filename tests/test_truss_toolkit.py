@@ -54,7 +54,9 @@ def test_the_toolkit_and_weft_resolve_from_the_committed_find_links_page() -> No
     )
     umf_sha256 = "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9"
     assert f"{umf_wheel}#sha256={umf_sha256}" in page
-    assert len(re.findall(r"#sha256=[0-9a-f]{64}\"", page)) == 19  # Existing 17 plus two qualified UMF 0.10.5 platform wheels
+    assert (
+        len(re.findall(r"#sha256=[0-9a-f]{64}\"", page)) == 19
+    )  # Existing 17 plus two qualified UMF 0.10.5 platform wheels
 
 
 def test_active_native_cohorts_bind_the_exact_public_truss_wheel() -> None:
