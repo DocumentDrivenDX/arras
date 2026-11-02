@@ -91,16 +91,20 @@ describe("the portable acceptance profile", () => {
     );
   });
 
-  it("makes the host-isolation spec's bare-host assumption explicit and skippable, and keeps its Arras-installs-none assertion", () => {
+  it("keeps bare-host assumptions explicit and exercises host-owned root/ancestor providers", () => {
     const spec = readFileSync(
       join(import.meta.dirname, "../../e2e/host-isolation.spec.ts"),
       "utf8",
     );
-    expect(spec).toContain("Assumption: the host installs no appearance provider");
-    // the two specs that plant their own providers skip for such a host; the appearance spec still checks Arras's own subtree
-    expect(spec.match(/test\.skip\(HOST_APPEARANCE_PROVIDER, SKIP_BARE_HOST\)/g)).toHaveLength(2);
-    expect(spec).toContain("if (HOST_APPEARANCE_PROVIDER) {");
-    expect(spec).toContain(".arras-root, .arras-root *");
+    expect(spec).toContain(
+      "Tests that synthesize page-level appearance choices require the explicitly declared bare-host profile",
+    );
+    // Only bare-profile premises are skipped; host-owned root and ancestor cases and leak controls remain active.
+    expect(spec.match(/test\.skip\(HOST_APPEARANCE_PROVIDER, SKIP_BARE_HOST\)/g)).toHaveLength(4);
+    expect(spec).toContain('for (const provider of ["root", "ancestor"] as const)');
+    expect(spec).toContain("the isolation guard rejects a deliberate global host-style leak");
+    expect(spec).toContain("localStorage.length + sessionStorage.length");
+    expect(spec).not.toContain("if (HOST_APPEARANCE_PROVIDER) return");
   });
 
   describe("the visual project's baselineDir", () => {

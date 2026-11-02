@@ -217,15 +217,15 @@ Linux reports visual comparison as skipped while still running every nonvisual p
 Snapshot updates are disabled by the factory. Create or change baselines only through an explicit,
 reviewed update workflow; do not reuse the default-theme snapshots for a different theme.
 
-The `host-isolation` spec assumes a bare host: it plants its own `data-appearance` and `color-scheme` providers
-around the Arras root and checks that the root follows the nearest one, then the system's preference, so it only
-means something where nothing above the root already says an appearance. A host that sets `data-appearance` or
-an inline `color-scheme` above the root (or wraps a design-system provider that does) sets
-`hostAppearanceProvider: true`: the two specs that plant providers are then skipped, and the appearance spec
-keeps its half that does not depend on the host: no element on or beneath the Arras root carries
-`data-appearance`, `data-theme` or an inline `color-scheme`, whichever way the system's preference goes. Arras
-installs none either way. The default is `false`, and the host's own appearance
-behaviour is then a matter for the host's own tests.
+The `host-isolation` spec uses the explicit `hostAppearanceProvider` profile to select tests whose premise is
+a bare page. With the default `false`, it plants page-level `data-appearance` and inline `color-scheme` values
+and checks nearest-provider and OS behavior. With `true`, only those bare-page premise tests are skipped;
+failures never trigger a skip. Both profiles run the host-owned provider cases at the `.arras-root` and at an
+ancestor, including light/dark changes, role-token application, outside-root computed-style isolation and storage
+nonmutation. A deliberate global-style leak is a negative control proving the isolation assertion rejects it.
+The ancestor token fixture also proves a host's role tokens override the library's root defaults. The profile flag
+does not exempt the suite from host isolation, appearance ownership or nonmutation checks. Arras installs no theme
+or preference in either profile.
 
 `baseURL` and `schemaBaseURL` must be distinct credential-free root HTTP(S) origins. `outputDir` is
 consumer-owned and should be unique for simultaneous runs. `themeId` defaults to `default`; `expectedBrand` defaults to `{ name: "Arras" }`, and

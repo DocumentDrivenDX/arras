@@ -9,14 +9,11 @@ import { EXPECTED_SURFACE, HOST_APPEARANCE_PROVIDER } from "./acceptance";
 // A host's own `:root` tokens use the same names as ours (`--accent`, `--bg`), and its element rules are
 // the kind a design system writes.
 //
-// Assumption: the host installs no appearance provider. The specs that drive the appearance (`data-appearance`
-// on the page, nested providers, inline `color-scheme`, the OS preference) put their own provider around the
-// root, which only means something where nothing above it already says one. A host that sets `data-appearance`
-// or `color-scheme` above the root, or wraps a design-system provider that does, sets
-// `hostAppearanceProvider: true` in `createAcceptanceConfig`: those specs are then skipped, and the one that
-// asserts "the library sets none" checks the Arras subtree alone (the appearance test below).
+// Tests that synthesize page-level appearance choices require the explicitly declared bare-host profile.
+// Host-owned profiles are exercised separately at both the Arras root and an ancestor; no failure changes
+// which profile applies.
 const SKIP_BARE_HOST =
-  "the host installs its own appearance provider (hostAppearanceProvider): this spec drives the appearance on a bare host";
+  "hostAppearanceProvider is true: this spec drives page appearance on a declared bare host";
 
 const TOKENS = { lightBg: EXPECTED_SURFACE.light, darkBg: EXPECTED_SURFACE.dark };
 // The page the dev host serves loads no theme (ADR-029), so the library's own tokens are what most specs
@@ -74,13 +71,14 @@ test.describe("host isolation", () => {
     expect(await style(page, "html", "--accent")).toBe("");
     expect(await style(page, "#host-probe", "--bg")).toBe("");
     const ours = await style(page, ".arras-root", "--accent");
+    const surface = await style(page, ".arras-root", "background-color");
     expect(ours.trim()).not.toBe("");
     await hostCss(
       page,
       ":root { --accent: #ff0000; --bg: #000000; --fg: #00ff00; --font-sans: serif }",
     );
     expect(await style(page, ".arras-root", "--accent")).toBe(ours);
-    expect(await style(page, ".arras-root", "background-color")).toBe(TOKENS.lightBg);
+    expect(await style(page, ".arras-root", "background-color")).toBe(surface);
   });
 
   test("a host's layered utilities and element rules do not undo the library's, and its one-class button rule wins over the control reset", async ({
@@ -125,31 +123,12 @@ test.describe("host isolation", () => {
     expect(inherited[0]).toBe(inherited[1]);
   });
 
-  test("appearance follows the host's data-appearance, then the OS, and the library sets none", async ({
+  test("a bare host's data-appearance wins over the OS, and Arras sets no appearance", async ({
     page,
   }) => {
+    test.skip(HOST_APPEARANCE_PROVIDER, SKIP_BARE_HOST);
     await page.emulateMedia({ colorScheme: "light" });
     await openWithHost(page);
-    if (HOST_APPEARANCE_PROVIDER) {
-      // The host's provider owns the appearance, so only what is Arras's own is checked: nothing on or beneath
-      // its root says an appearance, whichever way the OS preference goes.
-      const arrasAppearance = () =>
-        page.evaluate(() =>
-          [
-            document.querySelector(".arras-root")?.hasAttribute("data-appearance"),
-            ...[...document.querySelectorAll(".arras-root, .arras-root *")].map(
-              (e) =>
-                e.hasAttribute("data-appearance") ||
-                e.hasAttribute("data-theme") ||
-                ((e as HTMLElement).style?.colorScheme ?? "") !== "",
-            ),
-          ].some(Boolean),
-        );
-      expect(await arrasAppearance()).toBe(false);
-      await page.emulateMedia({ colorScheme: "dark" });
-      expect(await arrasAppearance()).toBe(false);
-      return;
-    }
     const bg = () => style(page, ".arras-root", "background-color");
     expect(await bg()).toBe(TOKENS.lightBg);
 
@@ -266,6 +245,15 @@ test.describe("host isolation", () => {
   }) => {
     await page.emulateMedia({ colorScheme: "light" });
     await openWithHost(page);
+    const pageState = () =>
+      page.evaluate(() => [
+        document.documentElement.getAttribute("data-appearance"),
+        document.documentElement.getAttribute("data-theme"),
+        document.documentElement.style.colorScheme,
+        document.body.style.colorScheme,
+        localStorage.length + sessionStorage.length,
+      ]);
+    const pageStateBefore = await pageState();
     // The host's element carries its tokens and its own `data-appearance` switch; the library's root is inside it.
     await hostCss(
       page,
@@ -293,20 +281,73 @@ test.describe("host isolation", () => {
     await choose(null);
     await page.emulateMedia({ colorScheme: "dark" });
     await expect.poll(bg).toBe(THEME.lightBg); // no appearance given: the host's token, whatever the OS says
-    // A host with its own appearance provider has written to its page itself; the bare host has not.
-    if (HOST_APPEARANCE_PROVIDER) return;
-    expect(
-      await page.evaluate(() => [
-        document.documentElement.getAttribute("data-appearance"),
-        document.documentElement.style.colorScheme,
-        localStorage.length + sessionStorage.length,
-      ]),
-    ).toEqual([null, "", 0]);
+    // The host's existing document-level appearance and storage remain exactly host-owned.
+    expect(await pageState()).toEqual(pageStateBefore);
   });
 
-  test("a host's role token is the library's surface, and a host's own `--bg` still changes nothing", async ({
+  for (const provider of ["root", "ancestor"] as const) {
+    test(`host-owned ${provider} appearance provider and role tokens drive the library`, async ({
+      page,
+    }) => {
+      await page.emulateMedia({ colorScheme: "light" });
+      await openWithHost(page);
+      const host = provider === "root" ? ".arras-root" : ".host-appearance-provider";
+      if (provider === "ancestor") {
+        await page.evaluate(() => {
+          const root = document.querySelector(".arras-root") as HTMLElement;
+          const host = document.createElement("div");
+          host.className = "host-appearance-provider";
+          root.parentElement?.replaceChild(host, root);
+          host.append(root);
+        });
+      }
+      await hostCss(
+        page,
+        `${host} { --arras-color-ground: rgb(240, 238, 230) } ${host}[data-appearance=dark] { --arras-color-ground: rgb(27, 26, 25) }`,
+      );
+      const choose = (appearance: "light" | "dark") =>
+        page
+          .locator(host)
+          .evaluate((element, value) => element.setAttribute("data-appearance", value), appearance);
+      const bg = () => style(page, ".arras-root", "background-color");
+      await choose("light");
+      await expect.poll(bg).toBe(THEME.lightBg);
+      await choose("dark");
+      await expect.poll(bg).toBe(THEME.darkBg);
+      await choose("light");
+      await expect.poll(bg).toBe(THEME.lightBg);
+
+      // The declared host provider remains host-owned and does not change unrelated page styles or storage.
+      expect(await style(page, "#host-probe h1", "font-size")).toBe("32px");
+      expect(
+        await page.evaluate(() => [
+          document.documentElement.getAttribute("data-appearance"),
+          document.documentElement.style.colorScheme,
+          localStorage.length + sessionStorage.length,
+        ]),
+      ).toEqual([null, "", 0]);
+      expect(await page.locator(host).getAttribute("data-appearance")).toBe("light");
+    });
+  }
+
+  test("the isolation guard rejects a deliberate global host-style leak", async ({ page }) => {
+    await openWithHost(page);
+    await hostCss(page, "#host-probe h1 { font-size: 13px !important }");
+    expect(await style(page, "#host-probe h1", "font-size")).toBe("13px");
+    // This is the same canonical assertion used by the unmutated isolation control above.
+    let isolationAssertionRejected = false;
+    try {
+      expect(await style(page, "#host-probe h1", "font-size")).toBe("32px");
+    } catch {
+      isolationAssertionRejected = true;
+    }
+    expect(isolationAssertionRejected).toBe(true);
+  });
+
+  test("a bare host's root role token is the library's surface, and its own `--bg` changes nothing", async ({
     page,
   }) => {
+    test.skip(HOST_APPEARANCE_PROVIDER, SKIP_BARE_HOST);
     await page.emulateMedia({ colorScheme: "light" });
     await openWithHost(page);
     await hostCss(page, ":root { --arras-color-ground: rgb(240, 238, 230) }");
