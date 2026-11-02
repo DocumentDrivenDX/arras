@@ -3636,3 +3636,26 @@ and open-session audit. Preserve all tags/public assets, shared dependencies/
 caches and independent verification folders. Final cleanup is not inferred from
 this pre-cleanup record; its actual outside-clone receipt is required before
 claiming all branch reconciliation complete.
+
+### 0.7.0 managed qualification: reuse unchanged behavior — 2026-11-02
+
+The operator explicitly corrected the proposed blanket Lakebase rerun: unchanged
+managed behavior should retain its existing evidence. This supersedes the later
+0.7.0 notes requiring a full new campaign merely for a different wheel hash;
+historical PR 9 execution and original receipts remain unchanged.
+
+The [correspondence review](../05-deploy/evidence/managed070-impact-20261102/README.md)
+compares the published 0.6.4 and 0.7.0 wheels, adapter/harness source, application
+runtime versions and Truss archive. The unchanged legacy managed profile carries
+forward from the original twelve-case 0.6.4 Lakebase campaign. Existing 0.7.0
+source/Truss and exact-wheel native/SDK/public-install checks cover the changed
+shared host, descriptor, telemetry and optional-memory boundaries. No uncovered
+managed-behavior delta requires a new service campaign. No provider resource was
+created or mutated for this assessment.
+
+Qualification preserves the original wheel/target/harness/fixture identities;
+it does not claim historical receipts executed b20. The new memory action profile
+does not qualify new Truss/Ashlar actions or durable replay. Deploying to an actual
+target still verifies its current identity, TLS, grants and resource custody.
+Independent review and the correspondence receipt close this bounded assessment;
+no rebuild, retag, registry publication or full test repeat is needed.

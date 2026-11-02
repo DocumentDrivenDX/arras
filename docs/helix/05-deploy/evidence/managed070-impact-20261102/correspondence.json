@@ -1,0 +1,176 @@
+{
+  "baseline_dependency_report_sha256": "ca5a2920dfbdc7849a101d5b03d225569b4da114ea624bc10645fa6fe0281736",
+  "baseline_install_receipt_sha256": "337807e1cac666d963ea0d613138013a639059444c6fbe28b4c8160c09b8bd1c",
+  "baseline_managed_receipt_sha256": "13d5c55f63d014e148e830c0f4d0df5d8b8f0d7c702f166b6a7f2176295e3405",
+  "baseline_source": "11be778eae8050fd5b2e8b446479e8bea081778a",
+  "baseline_wheel_sha256": "29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2",
+  "candidate_native_receipt_sha256": "a386c1e21a9ce31e9edd2b99d1b8041bebfb68f928a8796324682e03207e12a3",
+  "candidate_source": "f9f04c42ae0c989d34907e00a63ca95c3cb2fcdf",
+  "candidate_wheel_sha256": "b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6",
+  "fresh_lakebase_execution": false,
+  "historical_cases": [
+    {
+      "case": "LB-ADMISSION",
+      "code": "identity_tls_server_match",
+      "status": "passed"
+    },
+    {
+      "case": "LB-INSTALL",
+      "code": "typed_strict_refusal_then_selected_install",
+      "status": "passed"
+    },
+    {
+      "case": "LB-PERSON",
+      "code": "human_identity_lifecycle_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-CUSTODY",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-SETTLEMENT",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-ACL",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-01",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-02",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-03",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-04",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-05",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-06",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    }
+  ],
+  "identical_adapter_members": {
+    "arras/adapters/__init__.py": "99ad17e8688221262b919dedc7f8eb35912413be4b232b430fb3be5e29a8725d",
+    "arras/adapters/ashlar/__init__.py": "d36e8c19f28f05182ffdfd512a46d643c0e305ecb43f6dbedc04e0f32fc80181",
+    "arras/adapters/ashlar/pages.py": "32f0fa766a659f4008af853cbbab3ca3a7b568cdc6bf2a275fddab12823d6445",
+    "arras/adapters/ashlar/singleton.py": "815399105e7a0879e19d3d545dd6b09ebc1da2b4a04f05849dd1e695a6a7fc15",
+    "arras/adapters/truss/__init__.py": "219a69f2a677dddfbc4fb9f7ea4c56adb63c9eb47172a4b0b5c07001a2745063",
+    "arras/adapters/truss/_conformance.py": "bb4c6b520c58da0e2620441409ff25a3c9d3bde97bcfddafac9426ede082b4a6",
+    "arras/adapters/truss/apply.py": "199a6ff4ed8f34ef07afea2aa65e35705df381876a7029721137b334dd826600",
+    "arras/adapters/truss/audit.py": "bf41f46e2135fa77eac6de92a262f878d26dc5bc34995df7d2de115ad9161d91",
+    "arras/adapters/truss/cache.py": "79741851048ade63ef00ddf584e349abe76cfa2a13ee9b9c23d7e118de4c9fe4",
+    "arras/adapters/truss/connection.py": "71be1cce7909862b9b42e8048ef55466f42593cf2fa79c6fada7b73a5d8bf627",
+    "arras/adapters/truss/describe.py": "9da5bb5691fa171584fa3aa1a0081a8e2e6b478ef366d1a5592841ce5013beaa",
+    "arras/adapters/truss/endpoint.py": "77c01d57e595b451b1e9c47ebbd2153313b6fa75bf06ea726371109e468912d4",
+    "arras/adapters/truss/export.py": "f345360c6065f2eb9182248ceb7cdc27626f3173fe356c4af86202fa8c891275",
+    "arras/adapters/truss/lifecycle.py": "1cd4d6eca9c33ddc2863d9a8674f0b2ac1a2decd1d31d38ca66e062bad2d4609",
+    "arras/adapters/truss/load.py": "081cb216cf07c74fff5c276acbd4fc33321939213896c78fa9e8c9f81f84753d",
+    "arras/adapters/truss/local.py": "67d6186044c92877dea4c7c1c3bdc01eb00f1acb6ce5af291f22133479f67e93",
+    "arras/adapters/truss/outcome.py": "264723b455ef7989f15a94510e670aed3b11988e4de80006b74463724903b9e3",
+    "arras/adapters/truss/plan.py": "bc66ac513e861c2da3fa915be0db3b2229f4f4ca5428268a9c5e96fd9f7ff001",
+    "arras/adapters/truss/query.py": "a159d3b9d6d5c91c9f28fe53408535eba58cddf6d29f41126f20f74800d900fb",
+    "arras/adapters/truss/reach.py": "a616f87e3e36f20e0e36b70eae1c8145a8adb7ffb6a30ddc6d502470cddb575b",
+    "arras/adapters/truss/registry.py": "6ba680d56b0b13571ad5a27837e5fdf0030c5f6f17ff089fc3ffe8fd3d69fec5",
+    "arras/adapters/truss/values.py": "f419f78a8f8fe74822f79317fcd5cd4e30fe84afa1f53776b3953e65b419f0f5",
+    "arras/adapters/truss/wire.py": "9c9a38c093036f7c23e17c06f1a5278c0f514809782b02619c32a28a4e85b097"
+  },
+  "identical_dependency_archives": {
+    "attrs": "c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309",
+    "graphql-core": "43ebcd0d9a0662a71b1a2f6562ba863d253057ec11cbc45835b2e2683a0a3770",
+    "jsonschema": "d489f15263b8d200f8387e64b4c3a75f06629559fb73deb8fdfb525f2dab50ce",
+    "jsonschema-specifications": "98802fee3a11ee76ecaca44429fda8a41bff98b00a0f2838151b113f210cc6fe",
+    "mini-racer": "56cc6965a1665a50d8d613bc43aa83b4cec6b1f09acc69dc4c2845dacb201463",
+    "psycopg": "a1db9f7148b06a28606767efaca51fa6f9398c5c0a3810519be69d7000bdb631",
+    "psycopg-binary": "f0535693ce476a722b718b002d5d2c27d47e71ca945276ac194409c98e74c492",
+    "referencing": "381329a9f99628c9069361716891d34ad94af76e461dcb0335825aecc7692231",
+    "rpds-py": "3231c4c0e521dafa5be0c9f114ee2c2ad46650836f2d72caa86801950c3e7044",
+    "truss-toolkit": "7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00",
+    "typing-extensions": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8",
+    "weft-sql": "e60e552f02c670b43a43111b08d26d6b415aaa9b9de42f241c37ad1d9fdd2487"
+  },
+  "identical_managed_source_files": {
+    "src/arras/adapters/__init__.py": "99ad17e8688221262b919dedc7f8eb35912413be4b232b430fb3be5e29a8725d",
+    "src/arras/adapters/ashlar/__init__.py": "d36e8c19f28f05182ffdfd512a46d643c0e305ecb43f6dbedc04e0f32fc80181",
+    "src/arras/adapters/ashlar/pages.py": "32f0fa766a659f4008af853cbbab3ca3a7b568cdc6bf2a275fddab12823d6445",
+    "src/arras/adapters/ashlar/singleton.py": "815399105e7a0879e19d3d545dd6b09ebc1da2b4a04f05849dd1e695a6a7fc15",
+    "src/arras/adapters/truss/__init__.py": "219a69f2a677dddfbc4fb9f7ea4c56adb63c9eb47172a4b0b5c07001a2745063",
+    "src/arras/adapters/truss/_conformance.py": "bb4c6b520c58da0e2620441409ff25a3c9d3bde97bcfddafac9426ede082b4a6",
+    "src/arras/adapters/truss/apply.py": "199a6ff4ed8f34ef07afea2aa65e35705df381876a7029721137b334dd826600",
+    "src/arras/adapters/truss/audit.py": "bf41f46e2135fa77eac6de92a262f878d26dc5bc34995df7d2de115ad9161d91",
+    "src/arras/adapters/truss/cache.py": "79741851048ade63ef00ddf584e349abe76cfa2a13ee9b9c23d7e118de4c9fe4",
+    "src/arras/adapters/truss/connection.py": "71be1cce7909862b9b42e8048ef55466f42593cf2fa79c6fada7b73a5d8bf627",
+    "src/arras/adapters/truss/describe.py": "9da5bb5691fa171584fa3aa1a0081a8e2e6b478ef366d1a5592841ce5013beaa",
+    "src/arras/adapters/truss/endpoint.py": "77c01d57e595b451b1e9c47ebbd2153313b6fa75bf06ea726371109e468912d4",
+    "src/arras/adapters/truss/export.py": "f345360c6065f2eb9182248ceb7cdc27626f3173fe356c4af86202fa8c891275",
+    "src/arras/adapters/truss/lifecycle.py": "1cd4d6eca9c33ddc2863d9a8674f0b2ac1a2decd1d31d38ca66e062bad2d4609",
+    "src/arras/adapters/truss/load.py": "081cb216cf07c74fff5c276acbd4fc33321939213896c78fa9e8c9f81f84753d",
+    "src/arras/adapters/truss/local.py": "67d6186044c92877dea4c7c1c3bdc01eb00f1acb6ce5af291f22133479f67e93",
+    "src/arras/adapters/truss/outcome.py": "264723b455ef7989f15a94510e670aed3b11988e4de80006b74463724903b9e3",
+    "src/arras/adapters/truss/plan.py": "bc66ac513e861c2da3fa915be0db3b2229f4f4ca5428268a9c5e96fd9f7ff001",
+    "src/arras/adapters/truss/query.py": "a159d3b9d6d5c91c9f28fe53408535eba58cddf6d29f41126f20f74800d900fb",
+    "src/arras/adapters/truss/reach.py": "a616f87e3e36f20e0e36b70eae1c8145a8adb7ffb6a30ddc6d502470cddb575b",
+    "src/arras/adapters/truss/registry.py": "6ba680d56b0b13571ad5a27837e5fdf0030c5f6f17ff089fc3ffe8fd3d69fec5",
+    "src/arras/adapters/truss/values.py": "f419f78a8f8fe74822f79317fcd5cd4e30fe84afa1f53776b3953e65b419f0f5",
+    "src/arras/adapters/truss/wire.py": "9c9a38c093036f7c23e17c06f1a5278c0f514809782b02619c32a28a4e85b097",
+    "tools/_lakebase_acceptance.py": "e0b6754f95efdd82dfadf85ef4b90bbdae6a375b1c9519277b657880e643b93e",
+    "tools/_lakebase_managed.py": "b556b0ff6c90d447f80251ebc4a0be718660a8144b65d0a267e07479cd206849",
+    "tools/_lakebase_managed_access.py": "0d39ba0f7cfc6675fdf8a0d164b7bb27c7991405910184896e9505cf9a3d6f20",
+    "tools/_lakebase_managed_common.py": "1f6ffff383f93e30ffca2d06e7fd7e0785e3fbbfd9f43f93f213fddf8e21e6e3",
+    "tools/_lakebase_managed_feed.py": "b58107ef4de446e5f3e53d1af889455bae763bf2052b4fe12fa9dda14e8944cd",
+    "tools/_lakebase_managed_feed_carriers.py": "e79069f09668f7f0f1001e62da00c98116340c676beac459f990b500fde13f68",
+    "tools/_lakebase_managed_feed_cases.py": "7e3bbcb40a3755765ba6ea01908093afd3613a90438f4b28bb7184058cc1acb2",
+    "tools/_lakebase_managed_feed_codec.py": "2c190e894ba38f401eaca1c9631b7ab436db9ade7f10fd6fc3b37eb059cc405d",
+    "tools/_lakebase_managed_feed_destination.py": "dcacbadaf1c5d8630e9614c1973a62ef5fb209cb2c71bb7f28eec0e180448bc7",
+    "tools/_lakebase_managed_feed_pages.py": "528369a1f5c6594523c118bc7a6f7df158000f8b22865af349a37754a053ac55",
+    "tools/_lakebase_managed_feed_probe.py": "b06549e63bd75396c726bb41e4dfa64bcaf62e4f802afcac06c1c438a2ebaa83",
+    "tools/_lakebase_managed_feed_revisions.py": "08d83c77248e6df7a79dd51343cc056d03289b303651f15029e0eef652d49454",
+    "tools/_lakebase_managed_identity.py": "acaab354f1bc4d789cbcb43fd7f9571e0df4667af9d0eefa2984572c28214b7e",
+    "tools/_lakebase_managed_lifecycle.py": "c4b5b5bad8841164398900b5195b7cadfa5031ab06ffecea484c0a9110c2dd9c",
+    "tools/_lakebase_managed_native.py": "1b143d6adc75aff32c69362126c350bf14e22905b8ae0884cae5f05d164e6200",
+    "tools/_lakebase_managed_public.py": "5ff47ea8205d94b0780edf378166e063dff82d5d20d2c6da803f83532b476932",
+    "tools/_lakebase_native.py": "e44b0d7d5d3b58e6d73e87c7b1a1f2e2b9cfeff5eeba65b333229b82bc34f688",
+    "tools/_lakebase_operations.py": "b24d716d15d2eb83082e39bee8d5b1a6ad6ec8107ecaaa8b065c1885e4f9eefb",
+    "tools/_lakebase_person.py": "1adaee726e967382dcc8fa96f9449e811c00ab3d63ddcad048a1480c0283e0ca",
+    "tools/_lakebase_receipts.py": "acddc893a1ed2f6517d77c7f97130f659c41fac00929fcc1ffdac2243a215533",
+    "tools/verify_lakebase_acceptance.py": "3c395638b198950563d1b252ba2c1355eb9b275cc7c9a02ce7ede9c04b9c2af2"
+  },
+  "schema": "arras.managed-qualification-correspondence/1",
+  "scope": "Historical managed execution; applicability to the unchanged legacy Truss profile established by correspondence review plus existing 0.7.0 regression evidence. No new target or memory-action managed support.",
+  "status": "passed",
+  "truss_archive_sha256": "7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00",
+  "unchanged_runtime_versions": {
+    "attrs": "26.1.0",
+    "graphql-core": "3.3.1",
+    "jsonschema": "4.26.0",
+    "jsonschema-specifications": "2025.9.1",
+    "mini-racer": "0.14.1",
+    "psycopg": "3.3.6",
+    "psycopg-binary": "3.3.6",
+    "referencing": "0.37.0",
+    "rpds-py": "2026.9.1",
+    "truss-toolkit": "0.0.50",
+    "typing_extensions": "4.16.0",
+    "weft-sql": "0.4.51"
+  }
+}

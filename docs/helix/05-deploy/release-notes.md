@@ -51,7 +51,9 @@ separate hosted public recovery succeeded, and only the failed npm job was rerun
 matching existing bytes and skipping upload. See the
 [delivery evidence and scope limits](evidence/arras070-20261102/README.md) and
 [integration plan](../04-build/arras-integration-plan-20261022.md).
-Managed 0.7.0 acceptance remains not run/unqualified.
+The existing legacy Lakebase profile carries forward through
+[source/artifact correspondence and existing 0.7.0 regressions](evidence/managed070-impact-20261102/README.md).
+No fresh managed campaign was needed; the new UMF actions remain memory-only.
 
 ## 0.6.5 downstream integration
 
