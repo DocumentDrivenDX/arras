@@ -2,6 +2,7 @@
   "artifact_id": 13172924667,
   "artifact_name": "installed-native-macos-arm64-qualification",
   "cleanup": {
+    "owned_process_group_cleanup_complete": null,
     "process_observation_error_type": null,
     "schema": "arras.native-independent-cleanup/3",
     "status": "passed",
@@ -13,6 +14,7 @@
     "owned_process_identity_ambiguous": 0,
     "owned_processes_remaining": 0
   },
+  "cleanup_scope_limit": "The observer found no remaining owned process identities, ambiguous identities or native temporary roots; independent process-group closure is unknown.",
   "corpus_counts": {
     "failed": 0,
     "harness_error": 0,

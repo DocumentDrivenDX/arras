@@ -3424,8 +3424,10 @@ also match current source. Producer provenance retains this run and source.
 
 Native macOS 15.8.2 / arm64 / CPython 3.11.9 passed 64 cases, eight declared
 limits, zero failures/harness errors. Its independent cleanup observer passed:
-zero remaining owned processes, ambiguous identities or native temporary roots.
-The evidence summary names the original hosted artifact and hashes all raw native
+zero remaining observed owned process identities, ambiguous identities or native
+temporary roots. `owned_process_group_cleanup_complete` is null: independent
+process-group closure remains unknown; no forced or exhaustive group cleanup is
+claimed. The evidence summary names the original hosted artifact and hashes all raw native
 receipts; it is a summary, not a substitute production release-gate receipt.
 No earlier cancelled native job is counted. This is native Truss conformance,
 not qualification of new UMF actions through Truss or a new managed campaign.
