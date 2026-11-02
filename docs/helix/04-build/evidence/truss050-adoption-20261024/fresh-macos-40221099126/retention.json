@@ -1,0 +1,112 @@
+{
+  "schema": "arras.native-macos-retention/1",
+  "source_run_id": 40221099126,
+  "source_job_id": 121252947879,
+  "check_id": 121252640671,
+  "run_attempt": 1,
+  "pull_request_head_sha": "20db67822b20c822ee91c6823a3fe73ebc3ae932",
+  "candidate_source_sha": "2a90d619de3e2c2bebc2ceecf1db28c392b17ea6",
+  "candidate_source_tree_sha": "5ef9170c03e0f9575649757850fe15e03ce94c7c",
+  "candidate_wheel_name": "arras-0.6.1-py3-none-any.whl",
+  "candidate_wheel_sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+  "candidate_build_artifact_id": 12609675153,
+  "candidate_build_artifact_server_digest": "sha256:d6ef116c95bda026240c850e4f026a6d211bfc01f2bd0986218adb4f00901d2e",
+  "candidate_build_wheel_byte_equality": "verified by root-held b153 receipt; artifact not redownloaded",
+  "source_artifact_id": 12609499362,
+  "source_artifact_name": "installed-native-macos-arm64-qualification",
+  "source_artifact_zip_bytes": 143240,
+  "source_artifact_zip_sha256": "1764287f92cefb264b9cc9bdb877e12f39ac3856e2a500bc2b9f9d00b41cad68",
+  "source_api_digest": "sha256:1764287f92cefb264b9cc9bdb877e12f39ac3856e2a500bc2b9f9d00b41cad68",
+  "macos": {
+    "status": "passed",
+    "runtime": {
+      "machine": "arm64",
+      "python": "3.11",
+      "sys_platform": "darwin"
+    },
+    "corpus_version": 13,
+    "selected_case_count": 72,
+    "skipped_case_count": 7,
+    "corpus_counts": {
+      "failed": 0,
+      "harness_error": 0,
+      "host_specific": 0,
+      "limit": 8,
+      "passed": 64
+    },
+    "limits_count": 8,
+    "native_wheel_count": 7,
+    "all_native_wheel_hashes_verified": true,
+    "installed_arras_payload_count": 172,
+    "installed_arras_payload_exact_match": true,
+    "system_dynamic_link_audit": "not performed",
+    "cleanup_status": "passed",
+    "verifier_exit_code": 0,
+    "owned_processes_observed": 1364,
+    "remaining_processes": 0,
+    "remaining_roots": 0,
+    "ambiguous_processes": 0,
+    "process_group_cleanup_complete": null
+  },
+  "ci_context": {
+    "macos_job": "success",
+    "macos_check": "success",
+    "py311_and_ui": "success",
+    "postgres_job": "running_at_retention_snapshot",
+    "full_ci_complete": false
+  },
+  "private_originals_directory": "private-originals/ (mode 0700; files mode 0600)",
+  "private_originals_sha256": {
+    "candidate-wheel-provenance.json": {
+      "bytes": 547,
+      "sha256": "8d703fde2ab2cfd76b6f428d094cbc3887ff335c13b3fa590bb63d916cd45357"
+    },
+    "installed-native-macos-arm64-qualification-12609499362.zip": {
+      "bytes": 143240,
+      "sha256": "1764287f92cefb264b9cc9bdb877e12f39ac3856e2a500bc2b9f9d00b41cad68"
+    },
+    "macos-arm64.find-links.html": {
+      "bytes": 1957,
+      "sha256": "a04f0e579585e30cc8a33830290ff66695bbe8fab264a3367ea0709152b8a40e"
+    },
+    "macos-arm64.json": {
+      "bytes": 4383,
+      "sha256": "724a5d033e4b34a20340bf35264729068b972428278bf5c51c96f410e99e3841"
+    },
+    "native-macos-cleanup-observation.json": {
+      "bytes": 195559,
+      "sha256": "28115060b3e51e2eeaa5cfe979599b1237aad732d0ea8deb7d62b2d821793ca4"
+    },
+    "native-macos-cohort-binding.json": {
+      "bytes": 893,
+      "sha256": "a06b005c5103be3869817c28e71baade552f3cdcb2686b6231ff39f77ccbc02d"
+    },
+    "native-macos-cohort.bound.json": {
+      "bytes": 4506,
+      "sha256": "6de88e06c7b387f037175c16acd2a995ac6d7b5e6373f7cd716b82041a2cbd9d"
+    },
+    "native-macos-consumer-provenance.json": {
+      "bytes": 2367,
+      "sha256": "b5938f5b8490afd725d9f1fce4a22a549eaf09e08227ea829fa7b6f66c2a070d"
+    },
+    "native-macos-verification.json": {
+      "bytes": 381563,
+      "sha256": "82dc10126dfe517f3797d625db04570fabe67c68fcb803fed16936a07aba7d43"
+    }
+  },
+  "safe_summary_files_sha256": {
+    "artifact-api.json": {
+      "bytes": 330,
+      "sha256": "8c83f836fe2d8d72e080cb4a63f48c59d7fe27880e6455af84002c557d895382"
+    },
+    "native-macos-cleanup-summary.json": {
+      "bytes": 357,
+      "sha256": "d482c3581223ab16229bed9079c61c5b1dfd5ac0b725bdb57cdd5004f1372164"
+    }
+  },
+  "private_material_not_retained": [
+    "verifier stdout/stderr",
+    "signed artifact download URL/credentials"
+  ],
+  "wan_acceptance_claim": false
+}

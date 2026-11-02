@@ -1,0 +1,22 @@
+{
+  "bound_manifest": {
+    "path": "/Users/runner/work/arras/arras/artifacts/native-macos-cohort.bound.json",
+    "sha256": "6de88e06c7b387f037175c16acd2a995ac6d7b5e6373f7cd716b82041a2cbd9d"
+  },
+  "find_links": {
+    "path": "/Users/runner/work/arras/arras/tests/downstream/native-cohorts/macos-arm64.find-links.html",
+    "sha256": "a04f0e579585e30cc8a33830290ff66695bbe8fab264a3367ea0709152b8a40e"
+  },
+  "schema_version": 1,
+  "status": "bound",
+  "template": {
+    "path": "/Users/runner/work/arras/arras/tests/downstream/native-cohorts/macos-arm64.json",
+    "sha256": "724a5d033e4b34a20340bf35264729068b972428278bf5c51c96f410e99e3841"
+  },
+  "wheel": {
+    "name": "arras",
+    "path": "/Users/runner/work/arras/arras/candidate-artifacts/dist/arras-0.6.1-py3-none-any.whl",
+    "sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+    "version": "0.6.1"
+  }
+}

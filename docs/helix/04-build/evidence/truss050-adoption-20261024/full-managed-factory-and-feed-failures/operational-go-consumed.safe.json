@@ -1,0 +1,9 @@
+{
+  "consumed_at": "2026-10-24T14:03:54.455312+00:00",
+  "invocation_id": "4d2a4f49-9fd7-4a6b-868d-9abf8c4f1c9e",
+  "launch_sha256": "329b901a389cce5ea759f940f8d12fb433b5a3ba3b81b167e905c34d6b81ad60",
+  "operational_go_sha256": "952374f4cc02a4344ab5de3ac6ca77324f56e033328a0e6a76de602b214a501a",
+  "phase": "before_exact_launch_exec",
+  "replay_allowed": false,
+  "schema": "arras.operational-go-consumed/1"
+}

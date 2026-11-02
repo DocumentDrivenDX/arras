@@ -1,0 +1,195 @@
+{
+  "api_artifact_metadata_snapshot_sha256": "7631edd4573cd1d5564b157a20baa6d6c720a4ce69d94294d3e25c865b6c2fb8",
+  "hosted_linux": {
+    "artifact_created_at_utc": "2026-10-26T18:13:17Z",
+    "artifact_id": 12675076918,
+    "artifact_members_sha256": {
+      "pypi-extras-install-report.json": "7dc56958d5a16de6a0c38e4c4b5ec3f9ee29f087e2dc214b65cd077462b09145",
+      "pypi-extras-qualification.json": "e99c3fa21cfe3f63384b71b623dedfb27e1a3c8bb4823252f6e9c850d698739c",
+      "pypi-postflight.json": "8a6923eae7111cff3c65a175e9d1f1dac8d0e2fa1b87aa967897199a57c09d93",
+      "pypi-publication-receipt.json": "cc074b3cf2811f02daf072b3dfcb48bafc2179f011f92f9ea9c2797c452ff4ae"
+    },
+    "artifact_name": "registry-pypi-extras-0.6.3-linux-x86_64",
+    "artifact_size_bytes": 77834,
+    "artifact_zip_sha256": "7cbd539d2f6ff929e0550c569b9135f520eff2c31f5d75ca107dff3a9a8120bc",
+    "checks": {
+      "all_reported_distributions_from_files_pythonhosted_org": true,
+      "all_reported_install_entries_non_direct": true,
+      "arras_truss_umf_weft_hashes_match_qualified_github_assets": true,
+      "pip_check_and_arras_doctor_truss_weft_umf_smokes_passed": true,
+      "postflight_files_match": true,
+      "public_index_install": true,
+      "publication_receipt_passed_and_registry_bytes_verified": true
+    },
+    "index": "https://pypi.org/simple",
+    "install_selector": "arras[truss,umf]==0.6.3",
+    "installed_direct_url_references": 0,
+    "origins": [
+      "files.pythonhosted.org"
+    ],
+    "pip_check": "passed",
+    "platform": {
+      "machine": "x86_64",
+      "python": "3.11.17",
+      "system": "Linux"
+    },
+    "selected_distribution_count": 19,
+    "smoke": {
+      "arras_import": "passed",
+      "doctor": "passed",
+      "toolkit_version": "0.0.50",
+      "truss_import": "passed",
+      "umf_distribution_version": "0.10.0",
+      "umf_document_admission": "valid_and_complete",
+      "weft_import": "passed",
+      "weft_support": "passed"
+    },
+    "status": "passed",
+    "workflow_commit": "dab5884ec45b5e82b9908ad540e8cb67960f6bba",
+    "workflow_run_id": 40370325928
+  },
+  "hosted_macos": {
+    "artifact_created_at_utc": "2026-10-26T18:50:22Z",
+    "artifact_id": 12679008357,
+    "artifact_members_sha256": {
+      "pypi-extras-install-report.json": "ee5b4a144a589b31dc497cfe312300b8f99dbe92c4de5b9863da44c652bd121c",
+      "pypi-extras-qualification.json": "ce43f7588b3e4c037fcabd991d80725906fc344f97bcd4dfc70142156a75409a",
+      "pypi-postflight.json": "8a6923eae7111cff3c65a175e9d1f1dac8d0e2fa1b87aa967897199a57c09d93",
+      "pypi-publication-receipt.json": "cc074b3cf2811f02daf072b3dfcb48bafc2179f011f92f9ea9c2797c452ff4ae"
+    },
+    "artifact_name": "registry-pypi-extras-0.6.3-macos-arm64",
+    "artifact_size_bytes": 77805,
+    "artifact_zip_sha256": "dbb42ea10f8f23482b5cc993eb8e7f58aded05bbb757ddb831120c91de9f4d69",
+    "checks": {
+      "all_reported_distributions_from_files_pythonhosted_org": true,
+      "all_reported_install_entries_non_direct": true,
+      "arras_truss_umf_weft_hashes_match_qualified_github_assets": true,
+      "pip_check_and_arras_doctor_truss_weft_umf_smokes_passed": true,
+      "postflight_files_match": true,
+      "public_index_install": true,
+      "publication_receipt_passed_and_registry_bytes_verified": true
+    },
+    "index": "https://pypi.org/simple",
+    "installed_direct_url_references": 0,
+    "job_id": 121757573895,
+    "origins": [
+      "files.pythonhosted.org"
+    ],
+    "pip_check": "passed",
+    "platform": {
+      "machine": "arm64",
+      "python": "3.11.9",
+      "system": "macOS"
+    },
+    "selected_distribution_count": 19,
+    "smoke": {
+      "arras_import": "passed",
+      "doctor": "passed",
+      "toolkit_version": "0.0.50",
+      "truss_import": "passed",
+      "umf_distribution_version": "0.10.0",
+      "umf_document_admission": "valid_and_complete",
+      "weft_import": "passed",
+      "weft_support": "passed"
+    },
+    "status": "passed",
+    "workflow_commit": "dab5884ec45b5e82b9908ad540e8cb67960f6bba",
+    "workflow_run_id": 40370325928
+  },
+  "limitations": [
+    "Evidence covers only the exact Arras 0.6.3 public-PyPI extras install on the named Linux x86_64 and macOS arm64 CI runners with their recorded Python versions.",
+    "No Windows platform, native/provider campaign, or database-backed behavior is qualified by these package-install receipts.",
+    "The separate local macOS check remains supplemental and is not used to replace the hosted macOS job result."
+  ],
+  "local_macos_arm64": {
+    "checks": {
+      "all_reported_distributions_non_direct_and_public_origin": true,
+      "arras_truss_umf_weft_hashes_match_qualified_github_assets": true,
+      "fresh_isolated_public_index_install": true,
+      "pip_check_and_arras_doctor_truss_weft_umf_smokes_passed": true
+    },
+    "files_sha256": {
+      "local-extras-install-report.json": "6ea7041361a2d5fc28e1a797e9bb6a35e9fbcf14569717fd2f445c811bef7368",
+      "local-extras-qualification.json": "8d95335a66178f1a57b56abefc47313ef2a2cb85dd6fc20d0bc41e84ba21ef87",
+      "local-extras-verification.json": "8e0ec8c2e724424725b4c51c43379d80b41365c17869f48e12ba0acff876e9e1"
+    },
+    "index": "https://pypi.org/simple",
+    "install_log_sha256_commitment": "7872925e2d4c3a8c361fbb1134abde49efe04eb13443020cfec9b7bc64ceaadb",
+    "installed_direct_url_references": 0,
+    "limitations": [
+      "This was a local macOS arm64 verification, not a hosted macOS CI job."
+    ],
+    "pip_check": "passed",
+    "platform": {
+      "machine": "arm64",
+      "python": "3.11.17",
+      "system": "Darwin"
+    },
+    "public_origin_host": "files.pythonhosted.org",
+    "qualification_timestamp_utc": "2026-10-26T17:46:19.711401+00:00",
+    "selected_distribution_count": 19,
+    "smoke": {
+      "arras_import": "passed",
+      "doctor": "passed",
+      "toolkit_version": "0.0.50",
+      "truss_import": "passed",
+      "umf_distribution_version": "0.10.0",
+      "umf_document_admission": "valid_and_complete",
+      "weft_import": "passed",
+      "weft_support": "passed"
+    },
+    "status": "passed_local_supplemental_only",
+    "versions": {
+      "arras": "0.6.3",
+      "truss-toolkit": "0.0.50",
+      "umf-core": "0.10.0",
+      "weft-sql": "0.4.51"
+    },
+    "workflow_run_id": null
+  },
+  "report_sha256": {
+    "hosted_linux": {
+      "pypi-extras-install-report.json": "7dc56958d5a16de6a0c38e4c4b5ec3f9ee29f087e2dc214b65cd077462b09145",
+      "pypi-extras-qualification.json": "e99c3fa21cfe3f63384b71b623dedfb27e1a3c8bb4823252f6e9c850d698739c",
+      "pypi-postflight.json": "8a6923eae7111cff3c65a175e9d1f1dac8d0e2fa1b87aa967897199a57c09d93",
+      "pypi-publication-receipt.json": "cc074b3cf2811f02daf072b3dfcb48bafc2179f011f92f9ea9c2797c452ff4ae"
+    },
+    "hosted_macos": {
+      "pypi-extras-install-report.json": "ee5b4a144a589b31dc497cfe312300b8f99dbe92c4de5b9863da44c652bd121c",
+      "pypi-extras-qualification.json": "ce43f7588b3e4c037fcabd991d80725906fc344f97bcd4dfc70142156a75409a",
+      "pypi-postflight.json": "8a6923eae7111cff3c65a175e9d1f1dac8d0e2fa1b87aa967897199a57c09d93",
+      "pypi-publication-receipt.json": "cc074b3cf2811f02daf072b3dfcb48bafc2179f011f92f9ea9c2797c452ff4ae"
+    },
+    "local_macos_arm64": {
+      "local-extras-install-report.json": "6ea7041361a2d5fc28e1a797e9bb6a35e9fbcf14569717fd2f445c811bef7368",
+      "local-extras-qualification.json": "8d95335a66178f1a57b56abefc47313ef2a2cb85dd6fc20d0bc41e84ba21ef87",
+      "local-extras-verification.json": "8e0ec8c2e724424725b4c51c43379d80b41365c17869f48e12ba0acff876e9e1"
+    }
+  },
+  "schema": "arras.public-pypi-extras-evidence/1",
+  "scope": "Exact Arras 0.6.3 public-PyPI extras qualification evidence; hosted Linux x86_64 and macOS arm64 jobs passed, with local macOS evidence retained as supplemental.",
+  "source": {
+    "commit": "81d560310f46f1d2c105e6635d70b0eeb97d4684",
+    "driver_commit": "dab5884ec45b5e82b9908ad540e8cb67960f6bba",
+    "repository": "DocumentDrivenDX/arras",
+    "sdist": {
+      "filename": "arras-0.6.3.tar.gz",
+      "sha256": "0c38d8c0c2d4f4dddbb7774025f543f2b8d70f6aaa062f6d6579a45585b01c13"
+    },
+    "tag": "v0.6.3",
+    "tag_object": "04af6523b7cba0388bb4848215078f9f30cc8575",
+    "wheel": {
+      "filename": "arras-0.6.3-py3-none-any.whl",
+      "sha256": "ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d"
+    }
+  },
+  "upstream_qualified_asset_sha256": {
+    "arras": "ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d",
+    "truss-toolkit": "7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00",
+    "umf-core": "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9",
+    "weft-sql": {
+      "linux-x86_64": "a23142f12b59444138b588a8a764666b025552a14036f62d83af022153f1a0a5",
+      "macos-arm64": "e60e552f02c670b43a43111b08d26d6b415aaa9b9de42f241c37ad1d9fdd2487"
+    }
+  }
+}

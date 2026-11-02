@@ -1,0 +1,117 @@
+{
+  "acceptance_passed": false,
+  "artifacts": {
+    "full-managed-terminal.safe.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-ab9790da-74d6-40bb-9583-0983af0f6e38/full-managed-terminal.safe.json",
+      "sha256": "f94f0b8dce84b18b2c02f5b6bab4ee51d4303104b79d6f89dcd502fc42de9eef"
+    },
+    "full-managed-terminal.safe.verifier.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-ab9790da-74d6-40bb-9583-0983af0f6e38/full-managed-terminal.safe.verifier.json",
+      "sha256": "218a75cf6327519fa9faf826aae4e35b6982eb948ac4cd78ff3765775becf26c"
+    },
+    "independent-audit.safe.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-ab9790da-74d6-40bb-9583-0983af0f6e38/independent-audit.safe.json",
+      "sha256": "9a8787ae33f5f88f3283d2fb1f478ca834eded5ed3ae490381d91bb4ed361152"
+    },
+    "person-exception.safe.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-ab9790da-74d6-40bb-9583-0983af0f6e38/person-exception.safe.json",
+      "sha256": "aa068e4f10c136fe16487d9070ae35c46ae9444df350a181c27337de885642d1"
+    },
+    "terminal-process-custody.safe.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-ab9790da-74d6-40bb-9583-0983af0f6e38/terminal-process-custody.safe.json",
+      "sha256": "41bc8b698c213eff7888f7bfbd624fe154dc3144d169e7d38aa0c2b38e85ea89"
+    }
+  },
+  "cases_blocked": [
+    {
+      "case": "LB-PERSON",
+      "code": "identity_lifecycle_postcondition_unverified",
+      "status": "blocked"
+    },
+    {
+      "case": "LB-CUSTODY",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "LB-SETTLEMENT",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "LB-ACL",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-01",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-02",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-03",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-04",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-05",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-06",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    }
+  ],
+  "cases_passed": [
+    "LB-ADMISSION",
+    "LB-INSTALL"
+  ],
+  "cleanup_deadline_utc": "2026-10-24T15:03:00Z",
+  "fixture_cleanup_passed": true,
+  "independent_native_provider_audit_passed": true,
+  "initial_remaining_seconds": 14315.082467761938,
+  "ledger_consumed_utc": "2026-10-24T11:01:26Z",
+  "native_memberships": 18,
+  "native_roles": 33,
+  "new_native_roles": 0,
+  "next": "release-owner source review of registrar document call as host administrator; no ACL broadening or speculative product fix; next source freeze and exact separately reviewed GO required",
+  "no_vm": true,
+  "normal_expiry_utc": "2026-10-24T15:00:00Z",
+  "ordinary_platform_closures_false": true,
+  "parent_and_audit_groups_empty": true,
+  "recorded_at": "2026-10-24T11:10:13.896513+00:00",
+  "resources": "RETURNED_NO_ACTIVE_EFFECTS",
+  "safe_actual_person_exception": {
+    "exception_type": "Refused",
+    "line": 567,
+    "sqlstate": null,
+    "traceback_frames": [
+      {
+        "function": "_run_person_controls",
+        "line": 567,
+        "source": "_lakebase_person.py"
+      },
+      {
+        "function": "_person_public_api_checks",
+        "line": 676,
+        "source": "_lakebase_person.py"
+      }
+    ]
+  },
+  "schema": "arras.public50-fresh-window-actual-campaign-result/1",
+  "sql_operation_timeout_ms": 60000,
+  "status": "BLOCKED_NOT_ACCEPTED_INDEPENDENT_CLEANUP_PASSED",
+  "terminal_utc": "2026-10-24T11:07:04Z"
+}

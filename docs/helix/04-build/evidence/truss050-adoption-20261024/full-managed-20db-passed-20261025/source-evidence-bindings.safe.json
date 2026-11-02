@@ -1,0 +1,25 @@
+{
+  "note": "Hashes bind private campaign receipts; raw archives and private receipts are not copied.",
+  "private_source_receipt_hashes": {
+    "activation-window.candidate.json": "9143660c6dda4b3ea53da2844db5d148da300cd576f85ab85ae2332596810bbb",
+    "archive-after-bound.stdout.private.log": "e70536f408660e150e04c2403eda321e22362fba03175ec41e0e24ac5ab9f605",
+    "archive-after-canonical.stdout.private.log": "5f7590d0554dc52f7054a5ac8f97c2ffad5cee760b86f95abc2b12820d76733b",
+    "archive-after-host.stdout.private.log": "e70536f408660e150e04c2403eda321e22362fba03175ec41e0e24ac5ab9f605",
+    "audit-supervisor.stderr.private.log": "b8880e207a054c8e8847b885e057500f20c143c6d59e84ee0b2e86ca59a896df",
+    "bound-manifest.candidate.json": "b14b71d5dbb04a0c1b749c147e4399a1a5454a08e66e5fd05490ec2b66ba41e4",
+    "dispatch.final.json": "e6d6bfd4dcf0cce768c34fe6acfad29702f0b005145184d527306ae2ca4d8a75",
+    "execution-path-preparation.safe.json": "d53a8d66a054de2f932a65e7dcc25d379ebfd4981b0de1a9bc74cdcf61057411",
+    "full-custody-handback-final.safe.json": "604b7be1384d8a111cb502cd428c0962674d0aa0aca79669f548b2fcfae76cd8",
+    "full-diagnostics.safe.json": "778d555566d4b2f01151a1155d1a38533d60d3939cecb5c47e42d310d70640f8",
+    "full-managed-root-preflight-20261025.safe.json": "d0586099198c607a0924f10671f91a8ca916300ba671acb0e67a0be83edf5878",
+    "full-managed-terminal.safe.json": "2b8d9f863bdcd9123441747e5e8608186094323018f38a0c74ce3ef6f9cdb282",
+    "full-managed-terminal.safe.verifier.json": "7bce9c34146785669634b5690ad2f793c0c00dfd6184a8117295566d3aefe41d",
+    "full-process-census-final.safe.json": "b84947312943425ae4f77e5654883197b23d668bebe8fa719c968c1843a1e76c",
+    "independent-audit.safe.json": "03ed508264ae0d83a53a6684e7d5a37d7fdbb1de2a853fe1d6a3695219976a0f",
+    "owned-fault-archives.safe.json": "c97f575cc9f2a72aeab3927a15216e9246a28e3f60fcb59ec92386062eb32283",
+    "review-candidate.safe.json": "f80f8f64e57746dcc9556299c15686cff6dd142d340991ebb2c9193503c0cac9",
+    "root-operational-go.safe.json": "15e9aba27dde11f60da485b779e11ac4c9c639c9fae172fe3e28e31bbbd3c101",
+    "static-validation.safe.json": "f59b64a03ff79efa59765dbdcf631c0122bc2d41095b3db0f8d8a22c3bb687a6"
+  },
+  "schema": "arras.public50.full-managed-retention-evidence.v1"
+}

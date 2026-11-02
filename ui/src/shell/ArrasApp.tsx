@@ -3,10 +3,9 @@
 // (the `admin` mode id) is the Operator Console, offered only when the host says the viewer is an operator
 // (`GET /viewer`). With Operate absent the page carries no control, link or hint to it, and the operate surface is called
 // for nothing but the viewer's modes.
-import type { QueryClient } from "@tanstack/react-query";
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrasConsole, type ArrasConsoleProps } from "../ArrasConsole";
-import { ArrasProvider, createQueryClient } from "../api/context";
+import { ArrasProvider } from "../api/context";
 import { type QuerySession, useQuerySessionState } from "../areas/queryHistory";
 import { GraphBrowser, type GraphBrowserProps } from "../browser/GraphBrowser";
 import { type ExploreLocation, parseExplore } from "../browser/location";
@@ -60,9 +59,10 @@ function currentHash(rewrite: boolean): string {
 
 /** `controlled`: the host owns the location, so the fragment is read but never rewritten. */
 const useHash = (controlled: boolean) => {
-  const [hash, setHash] = useState(() => currentHash(!controlled));
+  const [hash, setHash] = useState(() => (controlled ? "" : currentHash(true)));
   useEffect(() => {
-    const on = () => setHash(currentHash(!controlled));
+    if (controlled) return;
+    const on = () => setHash(currentHash(true));
     window.addEventListener("hashchange", on);
     window.addEventListener("popstate", on);
     return () => {
@@ -123,7 +123,7 @@ function useCrossLinks(d: LinkDeps) {
     [offered, controlled, openOperate, openExplore],
   );
   const operateHere = useCallback(() => {
-    const parsed = parseExplore(window.location.hash);
+    const parsed = controlled ? { kind: "other" as const } : parseExplore(window.location.hash);
     const hashed = parsed.kind === "explore" ? parsed.loc : {};
     const at = targetOfLocation(controlled ? (location ?? {}) : hashed);
     if (at && links) links.toOperate(at.target, at.area).go();
@@ -141,13 +141,15 @@ function useMode(props: ArrasAppProps) {
   const viewer = useViewer(props);
   const controlled = props.location !== undefined; // the host owns the location: never touch the URL
   const hash = useHash(controlled);
-  const [local, setLocal] = useState<Mode | undefined>(() => remembered() ?? props.defaultMode);
+  const [local, setLocal] = useState<Mode | undefined>(
+    () => (controlled ? undefined : remembered()) ?? props.defaultMode,
+  );
   const offered = viewer.modes.includes("admin");
   const fromHash = effectiveMode({
     hash,
     modes: viewer.modes,
     defaultMode: props.defaultMode,
-    remembered: remembered(),
+    remembered: controlled ? undefined : remembered(),
   });
   const mode: Mode = controlled ? (offered ? (local ?? "user") : "user") : fromHash;
   const [operateRoute, setOperateRoute] = useState<Route>({ area: "model" });
@@ -155,8 +157,9 @@ function useMode(props: ArrasAppProps) {
   // The address is read live, not from `hash`: the console may already have replaced it in this very commit
   // (its default type), and a rewrite of the older fragment would put the type-less address back.
   useEffect(() => {
+    if (controlled) return;
     const here = window.location.hash;
-    if (!controlled && offered && hashKind(hash) === "legacy" && hashKind(here) === "legacy")
+    if (offered && hashKind(hash) === "legacy" && hashKind(here) === "legacy")
       window.history.replaceState(window.history.state, "", operateHash(here));
   }, [controlled, offered, hash]);
   useEffect(() => {
@@ -193,7 +196,7 @@ function useMode(props: ArrasAppProps) {
   const asksOperate =
     kind === "operate" ||
     kind === "legacy" ||
-    (kind === "none" && (remembered() ?? props.defaultMode) === "admin");
+    (kind === "none" && ((controlled ? undefined : remembered()) ?? props.defaultMode) === "admin");
   const pending = !viewer.settled && !controlled && asksOperate;
   return {
     mode,
@@ -226,7 +229,7 @@ function useShellSession(identity: string | undefined): QuerySession {
   return session;
 }
 
-function ShellBody(props: ArrasAppProps & { queryClient: QueryClient }) {
+function ShellBody(props: ArrasAppProps) {
   const { defaultMode: _mode, toolbar, explorerBase, ...conn } = props;
   const {
     mode,
@@ -317,21 +320,22 @@ function ShellBody(props: ArrasAppProps & { queryClient: QueryClient }) {
  * edit-mode lock, the single-key switch, the shortcut help and the palette, shared by both modes.
  */
 export function ArrasApp(props: ArrasAppProps) {
-  const { queryClient: given, brand } = props;
-  const qc = useMemo(() => given ?? createQueryClient(), [given]);
+  const { queryClient, brand, identity, pageEffects } = props;
   const { operateBase, consoleBase, schemaBase, getHeaders, onUnauthorized } = props;
   return (
     <Scope>
       <ArrasProvider
+        identity={identity}
+        pageEffects={pageEffects}
         operateBase={operateBase}
         consoleBase={consoleBase}
         schemaBase={schemaBase}
         getHeaders={getHeaders}
         onUnauthorized={onUnauthorized}
         brand={brand}
-        queryClient={qc}
+        queryClient={queryClient}
       >
-        <ShellBody {...props} queryClient={qc} />
+        <ShellBody {...props} />
       </ArrasProvider>
     </Scope>
   );

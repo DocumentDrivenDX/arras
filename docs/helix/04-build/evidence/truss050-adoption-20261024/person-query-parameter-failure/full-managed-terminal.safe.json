@@ -1,0 +1,44 @@
+{
+  "artifact_bindings_unchanged_after": true,
+  "bound_manifest_sha256": "0d2bc416477ed1c28154b36005d20bf5fd6a31e221731e430a960952f351ab82",
+  "dispatch_go_sha256": "3d8b56ac0bf5e8863f13ea8f06eca11f1d368ec8866b82e396081e5cf8bd3804",
+  "entry_sha256": "421b0061be508aa909c766b0abbc718424ebcc2fcc19d5c9968ce7588de2b3a3",
+  "final_acceptance": "pending_independent_audit",
+  "full_managed_exit_code": 1,
+  "full_managed_inner_gate": "blocked",
+  "full_managed_inner_status": "blocked",
+  "full_managed_receipt_sha256": "f7d4a6297b86ee4919a0dabcd68a8fc9ddb90e7a892b88410d57d7579ce53ac3",
+  "full_managed_receipt_valid": true,
+  "installed_observation_after_sha256": "437f208a7ae4ab576020218efb36cb87a790c4f50d69a56e3742f3f43aa1c2d9",
+  "installed_observation_sha256": "437f208a7ae4ab576020218efb36cb87a790c4f50d69a56e3742f3f43aa1c2d9",
+  "invocation_id": "4bdb68df-c0a6-4407-a659-83ed12022a2a",
+  "late_completion": false,
+  "limits": {
+    "cleanup_grace_seconds": 180,
+    "installer_operation_timeout_ms": 60000,
+    "installer_statement_timeout_ms": 60000,
+    "maximum_window_seconds": 14400,
+    "no_vm": true,
+    "provider_operation_timeout_seconds": 180
+  },
+  "obligations": {
+    "independent_process_required": true,
+    "original_verifier_owned_cleanup": "within_full_managed_invocation; see inner receipt",
+    "post_terminal": "sole_operator_independent_audit_and_narrow_recovery_if_needed",
+    "status": "pending_independent_audit"
+  },
+  "process": {
+    "pid": 83098,
+    "start_time_unix": 1792842322.441869
+  },
+  "schema": "arras.public50-wan-full-managed-entry/3",
+  "scope": "one original full-managed invocation; independent cleanup/audit obligations follow",
+  "source_freeze_sha256": "c5a62e0ac42c5ccec67f6348afea96e9619753ca0e1923ec408abe3299ae78bc",
+  "stage_initial_remaining_seconds": 11677.41322396556,
+  "stage_monotonic_elapsed_ns": 386146733750,
+  "stage_monotonic_start_ns": 587596927740041,
+  "stage_wall_start_utc": "2026-10-24T11:45:23Z",
+  "stage_wall_terminal_utc": "2026-10-24T11:51:49Z",
+  "status": "full_managed_failed_or_blocked_audit_required",
+  "window_sha256": "9af52f520df6107ad01cf28af27aaa18109e87ff8efc49b5eba0a92e7e71f878"
+}

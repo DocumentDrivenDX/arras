@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
+import { useId } from "react";
 import { weftName, weftType } from "../api/gql";
 import type { EntityTypeInfo, ModuleInfo } from "../api/types";
 import { Button, Chip } from "../components/ui";
@@ -181,10 +182,11 @@ export function QueryHistoryPanel({
   onRunAgain: (h: QueryHistoryEntry) => void;
   onClear: () => void;
 }) {
+  const heading = useId();
   return (
-    <section aria-labelledby="query-history-h" className="px-3 py-2" data-testid="query-history">
+    <section aria-labelledby={heading} className="px-3 py-2" data-testid="query-history">
       <div className="mb-1 flex items-center gap-2">
-        <h2 id="query-history-h" className="m-0 text-[13px] font-semibold">
+        <h2 id={heading} className="m-0 text-[13px] font-semibold">
           History
         </h2>
         <span className="text-[11px] text-muted">this session, in memory only</span>

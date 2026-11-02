@@ -1,0 +1,29 @@
+{
+  "schema": "arras.process-census-supplement.public-projection/1",
+  "source_commit": "20db67822b20c822ee91c6823a3fe73ebc3ae932",
+  "source_tree": "5ef9170c03e0f9575649757850fe15e03ce94c7c",
+  "source_supplement_sha256": "a91df427bd3a497c919882091f73da2cb86b37d28e196f038d2efd50b66f4de4",
+  "scope": "Independent scoped OS census supplement for the full managed 20db run; the source record remains private.",
+  "observations": {
+    "process_names_examined": 1538,
+    "same_uid_python_candidates": 22,
+    "exact_owned_script_matches": 0,
+    "inspection_denials": 0,
+    "known_process_groups": 3,
+    "known_process_groups_absent": 3,
+    "pinned_supervisor_command_absent": true,
+    "direct_supervisor_process_group_observed": false,
+    "direct_supervisor_process_group_status": "unknown; it was not captured",
+    "pinned_supervisor_source_ast": {
+      "popen_calls": 1,
+      "worker_new_session": true,
+      "child_accounted": true
+    }
+  },
+  "limitations": [
+    "No claim that the direct supervisor PGID was observed.",
+    "No claim that a process was forcefully terminated.",
+    "The supplemental census is scoped and does not replace the primary retained audit/census records."
+  ],
+  "raw_source_retained_private": true
+}

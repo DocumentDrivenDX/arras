@@ -8,7 +8,7 @@ import {
   OTHER_GROUP,
   targetType,
 } from "../lib/actionGroups";
-import { requestInputFocus, takeInputFocus } from "../lib/formFocus";
+import { createFormFocus, requestInputFocus, takeInputFocus } from "../lib/formFocus";
 import { planRefLabels, readRefLabels, titleSelection } from "../lib/relLabels";
 import { actions, link, m } from "./actionFixtures";
 import { defined } from "./defined";
@@ -61,12 +61,13 @@ describe("actionGroups", () => {
 
 describe("formFocus", () => {
   it("hands a request over once, to its own action, before it lapses", () => {
-    requestInputFocus("a.X", "level", 1000);
-    expect(takeInputFocus("a.Y", 1001)).toBeUndefined();
-    expect(takeInputFocus("a.X", 1001)).toBe("level");
-    expect(takeInputFocus("a.X", 1002)).toBeUndefined();
-    requestInputFocus("a.X", "level", 1000);
-    expect(takeInputFocus("a.X", 60_000)).toBeUndefined();
+    const scope = createFormFocus();
+    requestInputFocus(scope, "a.X", "level", 1000);
+    expect(takeInputFocus(scope, "a.Y", 1001)).toBeUndefined();
+    expect(takeInputFocus(scope, "a.X", 1001)).toBe("level");
+    expect(takeInputFocus(scope, "a.X", 1002)).toBeUndefined();
+    requestInputFocus(scope, "a.X", "level", 1000);
+    expect(takeInputFocus(scope, "a.X", 60_000)).toBeUndefined();
   });
 });
 

@@ -3,6 +3,7 @@
 // line (count, ranked, truncated), the hits, and the freshness of the answer. A type that could not
 // be searched is named, never counted as having no hits.
 import type { UseQueryResult } from "@tanstack/react-query";
+import { useId } from "react";
 import { shortName } from "../api/gql";
 import type { NotSearched, SearchHit, SearchPage } from "../api/types";
 import { EntityRow } from "./EntityRow";
@@ -97,16 +98,17 @@ export function NoResults({
   entries: TypeEntry[];
   narrowed: boolean;
 }) {
+  const heading = useId();
   const plural = (t: string) =>
     entries.find((e) => shortName(e.type.name) === t)?.view.pluralLabel ?? t;
   const searched = page.counts.map((c) => plural(c.type));
   const skipped = page.notSearched.map((n) => plural(n.type));
   return (
-    <section className="gb-state" data-testid="gb-state" aria-labelledby="gb-state-title">
+    <section className="gb-state" data-testid="gb-state" aria-labelledby={heading}>
       <span className="gb-state-icon">
         <Glyph name="search" size={26} />
       </span>
-      <h1 id="gb-state-title">No results for “{page.text}”</h1>
+      <h1 id={heading}>No results for “{page.text}”</h1>
       <p>
         Searched {searched.join(", ") || "nothing"}.
         {skipped.length > 0 && ` Not searched: ${skipped.join(", ")}.`}

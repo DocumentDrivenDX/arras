@@ -52,7 +52,7 @@ function Ready({
   /** The address is the entity's History: the panel shows for an operator, else the page alone. */
   history?: boolean;
 }) {
-  const { meta, canEdit, go } = useBrowser();
+  const { meta, canEdit, go, ownsHistory } = useBrowser();
   const open = history === true && canEdit;
   const [shown, setShown] = useState<Record<string, number>>({});
   const groups = useMemo(() => groupsOf(entry.view, entity), [entry.view, entity]);
@@ -79,7 +79,8 @@ function Ready({
                 history: true,
               };
               go(loc);
-              if (window.location.hash === formatExplore(loc)) saveViewState({ fromEntity: true });
+              if (ownsHistory !== false && window.location.hash === formatExplore(loc))
+                saveViewState({ fromEntity: true });
             }}
           >
             History

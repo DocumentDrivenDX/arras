@@ -1,0 +1,147 @@
+{
+  "status": "passed",
+  "sourceCommit": "aebf3987ff2bfeccea21a9f0b2a68dbc0311d664",
+  "startedAtUtc": "2026-10-31T17:27:57.753155+00:00",
+  "endedAtUtc": "2026-10-31T17:29:37.147685+00:00",
+  "elapsedSeconds": 99.39422466699034,
+  "budgetSeconds": 180.0,
+  "gates": [
+    {
+      "gate": "distribution-parity",
+      "argv": [
+        "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/bin/python3.11",
+        "/private/tmp/arras-065-release-20261029/python311-support-correction/capture-distribution-error.py",
+        "--output",
+        "/private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-016/distribution-verification.json",
+        "/private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-014/artifacts/arras-0.6.5-py3-none-any.whl",
+        "/private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-014/artifacts/arras-0.6.5.tar.gz"
+      ],
+      "sourceCommit": "aebf3987ff2bfeccea21a9f0b2a68dbc0311d664",
+      "pid": 3539,
+      "exitCode": 0,
+      "elapsedSeconds": 31.364455207949504
+    },
+    {
+      "gate": "fresh-doctor",
+      "argv": [
+        "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/bin/python3.11",
+        "tools/verify_doctor.py",
+        "--wheel",
+        "/private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-014/artifacts/arras-0.6.5-py3-none-any.whl",
+        "--output-json",
+        "/private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-016/doctor-installed.json"
+      ],
+      "sourceCommit": "aebf3987ff2bfeccea21a9f0b2a68dbc0311d664",
+      "pid": 3944,
+      "exitCode": 0,
+      "elapsedSeconds": 12.983406415907666
+    },
+    {
+      "gate": "fresh-extension",
+      "argv": [
+        "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/bin/python3.11",
+        "tools/verify_extension_host.py",
+        "--wheel",
+        "/private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-014/artifacts/arras-0.6.5-py3-none-any.whl",
+        "--output-json",
+        "/private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-016/extension-host.json",
+        "--fresh-dependencies"
+      ],
+      "sourceCommit": "aebf3987ff2bfeccea21a9f0b2a68dbc0311d664",
+      "pid": 4106,
+      "exitCode": 0,
+      "elapsedSeconds": 13.156398459104821
+    },
+    {
+      "gate": "fresh-umf",
+      "argv": [
+        "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/bin/python3.11",
+        "tools/verify_umf_admission.py",
+        "--wheel",
+        "/private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-014/artifacts/arras-0.6.5-py3-none-any.whl",
+        "--python",
+        "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/bin/python3.11",
+        "--output-json",
+        "/private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-016/umf-admission.json",
+        "--qualification-phase",
+        "release-build"
+      ],
+      "sourceCommit": "aebf3987ff2bfeccea21a9f0b2a68dbc0311d664",
+      "pid": 4250,
+      "exitCode": 0,
+      "elapsedSeconds": 30.0400521249976
+    },
+    {
+      "gate": "installed-two",
+      "argv": [
+        "/private/tmp/arras-ashlar-integration-20261029/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-rP",
+        "tests/test_cli.py::test_the_installed_wheel_provides_the_command",
+        "tests/test_devhost_installed.py::test_the_installed_wheel_serves_its_own_page",
+        "--junitxml=/private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-016/installed-two.xml"
+      ],
+      "sourceCommit": "aebf3987ff2bfeccea21a9f0b2a68dbc0311d664",
+      "pid": 4983,
+      "exitCode": 0,
+      "elapsedSeconds": 11.446245125029236
+    }
+  ],
+  "cleanup": [
+    {
+      "pid": 3539,
+      "pgid": 3539,
+      "createdNewSession": true,
+      "signals": [],
+      "directChildReaped": true,
+      "groupAbsent": true
+    },
+    {
+      "pid": 3944,
+      "pgid": 3944,
+      "createdNewSession": true,
+      "signals": [],
+      "directChildReaped": true,
+      "groupAbsent": true
+    },
+    {
+      "pid": 4106,
+      "pgid": 4106,
+      "createdNewSession": true,
+      "signals": [],
+      "directChildReaped": true,
+      "groupAbsent": true
+    },
+    {
+      "pid": 4250,
+      "pgid": 4250,
+      "createdNewSession": true,
+      "signals": [],
+      "directChildReaped": true,
+      "groupAbsent": true
+    },
+    {
+      "pid": 4983,
+      "pgid": 4983,
+      "createdNewSession": true,
+      "signals": [],
+      "directChildReaped": true,
+      "groupAbsent": true
+    }
+  ],
+  "originalInputPinsSha256": "3bb80cef1aeee2087c266504fdacc223a7805e8a9771eb93b5b8d68423f354a8",
+  "supportedPython": "3.11",
+  "driverRuntime": "3.11.17 (main, Oct  3 2026, 00:54:14) [Clang 22.1.3 ]",
+  "passedOriginalAssemblyPinsSha256": "37ac06d871bb3f5d643957248060658ebea7cfdbde59071e3be314fa2fe5ed8c",
+  "failed013InputPinsSha256": "d71e7c97754b8eb2ea3e541ee7d48a89b1145ea1818955c1e6db7fc071bb836d",
+  "failed014InputPinsSha256": "24050eb97db6151926bb405735a1d6ce4850f3c1e22415e266e1af1be149ae20",
+  "failed015InputPinsSha256": "8481c832839863f0f8f0e378fb76d608f528eda432654c160250a6fe5ef352e8",
+  "physicalPythonSha256": "5ebf120b62e8d02ab22485ca328da471db27fd278069df3de01c957cc02d9cd6",
+  "driverBaseExecutable": "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/bin/python3.11",
+  "driverBasePrefix": "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none",
+  "distributionFailureCaptureSha256": "7780801f3f188f8ce14e6a2ed368315b211918b5939b84e46333a51a3c20c622",
+  "priorAttempt": "012cache/013DNS/014ensurepip/015captured-install-prefix failures retained verbatim; original strict assembly and014metadata build/parity reused with exact hashpins",
+  "remainingFinalization": "Final measured digest guard/source commit and final sdist/source parity, owner review/merge, public bytes/consumers/publication remain separate."
+}

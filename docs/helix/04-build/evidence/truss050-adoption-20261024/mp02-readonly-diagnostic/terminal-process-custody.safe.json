@@ -1,0 +1,23 @@
+{
+  "acceptance_claim": false,
+  "actual_process": {
+    "observed_wall_unix": 1792847602.374218,
+    "pgid": 52893,
+    "phase": "mp02_readonly_launch_shell_before_exec",
+    "pid": 52893,
+    "start_time_unix": 1792847602.300855
+  },
+  "additional_auth_sql_or_provider_custody_probes": false,
+  "exit_code": 1,
+  "numeric_group_permission_denials": [],
+  "numeric_groups_scanned": 1576,
+  "operational_go_consumed_sha256": "43a893d62700b6faf8235a6092b67667ad07c2c6a3795210a77b93bc3c150439",
+  "receipt_before_after_pid_start_pgid_match_preexec": true,
+  "receipt_sha256": "3e7587ef91f170091568f4bb886760a479084a6c410b1ad8e89680b1c5c5b1a6",
+  "recorded_at": "2026-10-24T13:15:03.896160+00:00",
+  "recorded_group_members": [],
+  "recorded_pid_absent": true,
+  "schema": "arras.mp02-readonly-terminal-process-custody/1",
+  "status": "CLEAR",
+  "tool_session": 60262
+}

@@ -919,3 +919,33 @@ describe("UMF source in the address (CONTRACT-010 D)", () => {
     });
   });
 });
+
+it("observes the theme of each embedded schema view's own host", async () => {
+  realCatalog();
+  render(
+    <>
+      <div data-testid="light-owner" data-appearance="light">
+        <ArrasProvider>
+          <UmfSource module="catalog" />
+        </ArrasProvider>
+      </div>
+      <div data-testid="dark-owner" data-appearance="dark">
+        <ArrasProvider>
+          <UmfSource module="catalog" />
+        </ArrasProvider>
+      </div>
+    </>,
+  );
+  await waitFor(() => expect(live()).toHaveLength(2));
+  const mountedFor = (id: string) =>
+    defined(
+      live().find((m) => screen.getByTestId(id).contains(m.container)),
+      id,
+    );
+  expect(mountedFor("light-owner").options.theme).toBe("light");
+  const dark = mountedFor("dark-owner");
+  expect(dark.options.theme).toBe("dark");
+  act(() => screen.getByTestId("light-owner").setAttribute("data-appearance", "dark"));
+  await waitFor(() => expect(mountedFor("light-owner").options.theme).toBe("dark"));
+  expect(mountedFor("dark-owner")).toBe(dark);
+});

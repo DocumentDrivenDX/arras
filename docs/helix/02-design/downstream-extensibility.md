@@ -89,6 +89,25 @@ Governing sources: [Architecture](architecture.md), [embedding CONTRACT-005](con
 and [design system ADR-029](adr/ADR-029-the-ui-draws-through-a-pluggable-design-system-seam-with-a-built-in-default.md).
 Exact new interfaces belong in the affected contracts before implementation.
 
+## Embedded composition ownership
+
+CONTRACT-005's embedded API/compiled UI surface governs the 0.6.4 candidate.
+Python core, independent ASGI bindings and public React entrypoints remain one
+release cohort. Hosts can serve only the APIs and bundle only their selected UI
+components. Runtime assets for UMF source viewing remain an explicit host task.
+
+Identity/API changes replace all Arras-owned UI state before new-session render;
+shared caches are allowed only within the same identity/API scope. Controlled
+Explore owns no host history state. Page effects can be disabled, and individual
+areas receive a CSS root through the provider. Accessibility IDs, focus requests
+and edit-dialog portals must remain within their component instance.
+
+The supported distribution boundary is the deliberate public catalog, Python
+boundary checker and npm export map. Publishing extra internal modules or
+separate Python core/API wheels is not required for flexibility. The
+[component guide](../../../ui/README.md#embed-in-a-host) demonstrates composition;
+qualification and publication status belong in the build plan and release notes.
+
 ## Coverage and remaining boundaries
 
 | Concern | Queue / governing specification | Delivered seam and acceptance | Remaining boundary |
@@ -168,7 +187,9 @@ no evidence is relabelled or reassembled across those runs.
 `mcp_server_name`, optional `mcp_tool_prefix` and explicit bootstrap `env_prefix`
 without ambient I/O. ADR-019's typed reader merges committed presentation fields
 and selected aliases. Nonblank custom values override canonical fallback;
-conflicting credentials across both namespaces refuse before source selection.
+conflicting credentials across both namespaces refuse before source selection;
+other keys set to different values in both namespaces use the custom value and
+warn on stderr by variable name, never by value.
 MCP validates exposed names on initialization and registry changes; last-listed
 aliases never silently retarget another action. `arras.mcp.launch` is the callable
 shim entrypoint. Both MCP and development launchers use the selected printable
@@ -178,7 +199,7 @@ development internals are not promoted.
 
 | Surface | Classification and guarantee | Current seam / qualification |
 | --- | --- | --- |
-| Python/package identities, types, contract/vocabulary/action IDs and wire codes | (a) Canonical Arras identity | Explicit public shim reexports; no import rewriting |
+| Python/package identities, types, contract/vocabulary/action IDs and wire codes | (a) Canonical Arras identity | Explicit public shim reexports, or `arras.alias.alias_package` for a thin alias package that serves the same module objects; no import rewriting |
 | `.arras-root`, component classes and eighteen `--arras-*` tokens | (a) Stable namespace | Host supplies values/widgets; renaming is a breaking upstream change |
 | Titles, wordmark, tagline, Mark and product-bearing UI text | (b) Host presentation | Shared Brand and escaped runtime injection; no page rebuild |
 | MCP server display name and exposed tool prefix | (b)/(c) Explicit typed presentation/alias | Canonical qualified actions/version meanings remain unchanged |
@@ -241,8 +262,9 @@ versions in one tested cohort.
 1. A host builds from public UI/provider/types plus its packed theme package,
    replacing widgets/Mark and supplying CSS/fonts/favicon.
 2. A prebuilt page consumes an inert runtime theme manifest for CSS/font/favicon
-   and Brand. It retains stock widgets; arbitrary React replacement requires
-   the host-build route.
+   and Brand. `arras.ui.assets.build_theme_manifest` or `python -m arras.ui theme-manifest`
+   builds and validates that manifest from the host's own files. It retains stock widgets;
+   arbitrary React replacement requires the host-build route.
 
 Arras retains layout, routing, dialogs/focus orchestration and API behavior.
 Widgets must preserve labels, descriptions, refs, busy/disabled/error and keyboard
@@ -251,7 +273,7 @@ design-system dependency is unnecessary. CSS/token identifiers stay canonical.
 
 **Gate/cost:** small remaining exact-tag/public-download delivery work.
 The public Node-only `./testkit` exports `createAcceptanceConfig`; browser-only
-`./testkit/host` exports `AcceptanceHost`. They share all 17 canonical specs and
+`./testkit/host` exports `AcceptanceHost` and `WidgetControls`. They share all 17 canonical specs and
 83 hash-verified resources with upstream source. Explicit standard/schema URLs,
 expected Brand/surfaces, output and per-theme baseline directories remove checkout
 and fixed-origin assumptions. Neither Arras nor the checker requires a private

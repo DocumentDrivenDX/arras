@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
+import { useId } from "react";
 // The relationship groups of a node page (DESIGN-GB, Screen 3): the accessible equivalent of the
 // picture, and always complete. A neighbour is a link with its label, or a "Not available" row that
 // carries no key, type or reason, or a retry row when its label read failed for cost or a backend.
@@ -106,6 +107,7 @@ function Count({ group }: { group: GroupPlan }) {
 }
 
 function Group({ group, p }: { group: GroupPlan; p: RelationsProps }) {
+  const heading = useId();
   const { editing } = useBrowser();
   const links = editing
     ? groupLinks(p.centre.entry.module, p.centre.entry.type.name, group.field)
@@ -116,8 +118,8 @@ function Group({ group, p }: { group: GroupPlan; p: RelationsProps }) {
   const rest = group.refs.length - visible.length;
   const exhausted = group.refs.length >= MAX_KEYS && rest === 0;
   return (
-    <section className="gb-card gb-rel" aria-labelledby={`gb-rel-${group.field}`}>
-      <h3 id={`gb-rel-${group.field}`} className="gb-rel-h">
+    <section className="gb-card gb-rel" aria-labelledby={heading}>
+      <h3 id={heading} className="gb-rel-h">
         <span>{group.label}</span>
         <Count group={group} />
       </h3>

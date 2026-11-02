@@ -1,0 +1,24 @@
+{
+  "include": [
+    "../../../../../src/arras/adapters/ashlar",
+    "../../../../../tests/test_ashlar_singleton.py",
+    "../../../../../tests/test_ashlar_pages.py"
+  ],
+  "pythonVersion": "3.11",
+  "typeCheckingMode": "strict",
+  "executionEnvironments": [
+    {
+      "root": "../../../../../tests",
+      "extraPaths": [
+        "../../../../../src",
+        "../../../../../examples/extension_host/src"
+      ]
+    },
+    {
+      "root": "../../../../..",
+      "extraPaths": [
+        "../../../../../src"
+      ]
+    }
+  ]
+}

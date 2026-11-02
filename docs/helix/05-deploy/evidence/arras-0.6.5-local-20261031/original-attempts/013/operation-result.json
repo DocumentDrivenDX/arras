@@ -1,0 +1,41 @@
+{
+  "status": "failed",
+  "sourceCommit": "aebf3987ff2bfeccea21a9f0b2a68dbc0311d664",
+  "startedAtUtc": "2026-10-30T20:11:45.878786+00:00",
+  "endedAtUtc": "2026-10-30T20:11:54.962667+00:00",
+  "elapsedSeconds": 9.083808874944225,
+  "budgetSeconds": 180.0,
+  "gates": [
+    {
+      "gate": "metadata-build",
+      "argv": [
+        "uv",
+        "build",
+        "--wheel",
+        "--sdist",
+        "--out-dir",
+        "/private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-013/artifacts"
+      ],
+      "sourceCommit": "aebf3987ff2bfeccea21a9f0b2a68dbc0311d664",
+      "pid": 55694,
+      "exitCode": 2,
+      "elapsedSeconds": 8.93023291695863
+    }
+  ],
+  "cleanup": [
+    {
+      "pid": 55694,
+      "pgid": 55694,
+      "createdNewSession": true,
+      "signals": [],
+      "directChildReaped": true,
+      "groupAbsent": true
+    }
+  ],
+  "originalInputPinsSha256": "3bb80cef1aeee2087c266504fdacc223a7805e8a9771eb93b5b8d68423f354a8",
+  "supportedPython": "3.11",
+  "driverRuntime": "3.11.17 (main, Oct  3 2026, 00:54:14) [Clang 22.1.3 ]",
+  "passedOriginalAssemblyPinsSha256": "37ac06d871bb3f5d643957248060658ebea7cfdbde59071e3be314fa2fe5ed8c",
+  "priorAttempt": "python311-metadata-results; actualfailed sandboxcache access; original strict assembly reused with exact hashpins",
+  "remainingFinalization": "Final measured digest guard/source commit and final sdist/source parity, owner review/merge, public bytes/consumers/publication remain separate."
+}

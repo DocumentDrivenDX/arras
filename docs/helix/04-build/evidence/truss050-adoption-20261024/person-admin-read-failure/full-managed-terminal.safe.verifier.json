@@ -1,0 +1,283 @@
+{
+  "authentication_profile": "mixed",
+  "authorization_sha256": "3dd01ee2570f141ec790f5e14d0c33dda0cb3854e991e20936e5149d4b5b6832",
+  "cases": [
+    {
+      "case": "LB-ADMISSION",
+      "code": "identity_tls_server_match",
+      "status": "passed"
+    },
+    {
+      "case": "LB-INSTALL",
+      "code": "typed_strict_refusal_then_selected_install",
+      "status": "passed"
+    },
+    {
+      "case": "LB-PERSON",
+      "code": "identity_lifecycle_postcondition_unverified",
+      "status": "blocked"
+    },
+    {
+      "case": "LB-CUSTODY",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "LB-SETTLEMENT",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "LB-ACL",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-01",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-02",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-03",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-04",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-05",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-06",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    }
+  ],
+  "cleanup": {
+    "independent_absence": {
+      "generated_roles_absent": true,
+      "truss_schema_absent": true
+    },
+    "resources": [
+      {
+        "name_or_opaque_id": "f84f002b2bed908f227145cf7a04cca0d8ca76053f2b348ba281b92171d04dcf",
+        "removed": true,
+        "resource_kind": "schema"
+      },
+      {
+        "name_or_opaque_id": "b55e5749b4463256b172a864d0557735ce2606c3228b1368fb2f114d06dbb21f",
+        "removed": true,
+        "resource_kind": "role"
+      },
+      {
+        "name_or_opaque_id": "ecebc426a6fc794eea00dff5bb6760592b2fe3e58d6898307686650c428b07ce",
+        "removed": true,
+        "resource_kind": "role"
+      },
+      {
+        "name_or_opaque_id": "4c1a7c7485bc6ce3ce90d7fd0719b1b1f949efeb2bf8df6e5d565330a2661bc7",
+        "removed": true,
+        "resource_kind": "role"
+      },
+      {
+        "name_or_opaque_id": "effd25af7143833ff5509279145ee5f163cae20374a3ea6b613254d07ce8c0ce",
+        "removed": true,
+        "resource_kind": "role"
+      }
+    ],
+    "status": "passed"
+  },
+  "expected": {
+    "migration_manifest_sha256": "4c6baf0282e3d0b5492f070c9c07d89ff0c9a819e748f3820f60b11c1f51c7aa",
+    "native_manifest_sha256": "288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4",
+    "postgres_version_num": "180006",
+    "truss_version": "0.0.50",
+    "truss_wheel_sha256": "7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00",
+    "weft_version": "0.4.51"
+  },
+  "fixture_sha256": "251a5ebb0611a57512c5ca11424fe190900257f3b1c4ace399ac55b71c741285",
+  "gate_blockers": [
+    "human_writer_identity_lifecycle_unverified"
+  ],
+  "harness_sha256": "5afe7ae09628351fbad9bc39480176ee8bc78544e99de3003c979c97b7ba5825",
+  "managed_gate": "blocked",
+  "observed": {
+    "credential_source_provenance": {
+      "denied": {
+        "auth_profile": "nonhuman-oauth",
+        "credential_source_sha256": "d90d5d7c719bf556c2b5408e09cdd67aa551dd877d623534e6da2fb9e8e96c25",
+        "provider_observation_sha256": "523fa58fe2e10eede481d732e5607bd495cfd156e4330f9eb4b75e2d81c4325c",
+        "subject_kind": "nonhuman",
+        "subject_reference_sha256": "ed10b5bc953e12369cac5f394826d2d1ab7d366dfa2ced0edb577519769fb3d9"
+      },
+      "reader": {
+        "auth_profile": "nonhuman-oauth",
+        "credential_source_sha256": "d90d5d7c719bf556c2b5408e09cdd67aa551dd877d623534e6da2fb9e8e96c25",
+        "provider_observation_sha256": "523fa58fe2e10eede481d732e5607bd495cfd156e4330f9eb4b75e2d81c4325c",
+        "subject_kind": "nonhuman",
+        "subject_reference_sha256": "70097e20d551ee51b171d0b7cc89e2c89cebe95e8d465efc0a67e3606a2e728c"
+      },
+      "registrar": {
+        "auth_profile": "nonhuman-oauth",
+        "credential_source_sha256": "d90d5d7c719bf556c2b5408e09cdd67aa551dd877d623534e6da2fb9e8e96c25",
+        "provider_observation_sha256": "523fa58fe2e10eede481d732e5607bd495cfd156e4330f9eb4b75e2d81c4325c",
+        "subject_kind": "nonhuman",
+        "subject_reference_sha256": "7f1d5966dd8174ee5f39fe095482e8fe50989ed6cd70dd592e43d6901b1e8b89"
+      },
+      "writer": {
+        "auth_profile": "human-oauth",
+        "credential_source_sha256": "d90d5d7c719bf556c2b5408e09cdd67aa551dd877d623534e6da2fb9e8e96c25",
+        "provider_observation_sha256": "523fa58fe2e10eede481d732e5607bd495cfd156e4330f9eb4b75e2d81c4325c",
+        "subject_kind": "human",
+        "subject_reference_sha256": "6a6bafd7821bd795c035ea28c0c1b340c3ee745d5a97d431565ee8ec91f383c3"
+      }
+    },
+    "installed_truss_version": "0.0.50",
+    "installed_weft_version": "0.4.51",
+    "installer": {
+      "can_create_database": true,
+      "can_create_roles": true,
+      "can_login": true,
+      "can_replicate": true,
+      "database_matches": true,
+      "role_sha256": "6f30455e5e9fb2c523f0995778ec8af804ab988248394de7f4a9f4f681c3a6e1",
+      "server_version_num": "180006",
+      "ssl": true,
+      "superuser": false,
+      "tls_cipher": "TLS_AES_256_GCM_SHA384",
+      "tls_version": "TLSv1.3",
+      "truss_namespace_absent_before_mutation": true
+    },
+    "module_document_sha256": "0d9c4bd6c390803483937200812e838d45734e0e0ab7925374d88aceb767f16f",
+    "native_observer_fact_count": 6,
+    "operations": {
+      "acl": {
+        "intended_memberships_match": true,
+        "snapshot_after_sha256": "72e7eae20f116a227103a7dfdd067593babffcae0c891b26a9547bbd45e38ea4",
+        "snapshot_before_sha256": "72e7eae20f116a227103a7dfdd067593babffcae0c891b26a9547bbd45e38ea4"
+      },
+      "artifacts": {
+        "evidence_codes": [],
+        "migration_manifest_sha256": "4c6baf0282e3d0b5492f070c9c07d89ff0c9a819e748f3820f60b11c1f51c7aa",
+        "native_manifest_sha256": "288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4",
+        "truss_version": "0.0.50",
+        "truss_wheel_sha256": "7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00"
+      },
+      "operations": {
+        "access_configuration": "passed",
+        "denial": "passed",
+        "installation_ran": true,
+        "read": "passed",
+        "refreshed_connection": "not_run",
+        "registration": "passed",
+        "write": "passed"
+      },
+      "person": null,
+      "preconditions": {
+        "status_detail": "not_installed",
+        "status_reason": "not_configured",
+        "truss_schema_absent": true
+      },
+      "strict_probe": {
+        "caller_state_unchanged": true,
+        "native_state_unchanged": true,
+        "object_class": "schema",
+        "outcome": "typed_refusal",
+        "phase": "pre_ownership",
+        "role_selected": true,
+        "selected_role_sha256": "f123179708aacfc13f0ee6c74a9cdc32bcf7983bfcf57ae100dba41f2b46193b"
+      }
+    },
+    "ordinary_roles": {
+      "denied": {
+        "can_create_database": false,
+        "can_create_roles": false,
+        "can_login": true,
+        "can_replicate": false,
+        "database_matches": true,
+        "role_sha256": "46b1534ef50805b08b76e5cf25b1e0f9fbe63871ae770312b139b67b32594470",
+        "server_version_num": "180006",
+        "ssl": true,
+        "superuser": false,
+        "tls_cipher": "TLS_AES_256_GCM_SHA384",
+        "tls_version": "TLSv1.3",
+        "truss_namespace_absent_before_mutation": true
+      },
+      "reader": {
+        "can_create_database": false,
+        "can_create_roles": false,
+        "can_login": true,
+        "can_replicate": false,
+        "database_matches": true,
+        "role_sha256": "58ab93af1dbb6cb2a930a5a54471560f486c8623e613015664d6bd66671e6cf5",
+        "server_version_num": "180006",
+        "ssl": true,
+        "superuser": false,
+        "tls_cipher": "TLS_AES_256_GCM_SHA384",
+        "tls_version": "TLSv1.3",
+        "truss_namespace_absent_before_mutation": true
+      },
+      "registrar": {
+        "can_create_database": false,
+        "can_create_roles": false,
+        "can_login": true,
+        "can_replicate": false,
+        "database_matches": true,
+        "role_sha256": "16d1b229aaf58d85c4130e9559543d02170422e2e2d98b56a9334f6ea5b505c2",
+        "server_version_num": "180006",
+        "ssl": true,
+        "superuser": false,
+        "tls_cipher": "TLS_AES_256_GCM_SHA384",
+        "tls_version": "TLSv1.3",
+        "truss_namespace_absent_before_mutation": true
+      },
+      "writer": {
+        "can_create_database": false,
+        "can_create_roles": false,
+        "can_login": true,
+        "can_replicate": false,
+        "database_matches": true,
+        "role_sha256": "018ea470e3ee96e9db7a23e30d954fd2ce94d79d3cdb2a504bc83009e0f2c0c2",
+        "server_version_num": "180006",
+        "ssl": true,
+        "superuser": false,
+        "tls_cipher": "TLS_AES_256_GCM_SHA384",
+        "tls_version": "TLSv1.3",
+        "truss_namespace_absent_before_mutation": true
+      }
+    },
+    "provider_observation_sha256": "523fa58fe2e10eede481d732e5607bd495cfd156e4330f9eb4b75e2d81c4325c",
+    "provider_resource_sha256": "f67fc2abdd06dbc20b318287570934ff9589dcc40c6abd7030b841ee4cc3f740",
+    "truss_installed_before_run": false
+  },
+  "qualification_note": "Results are limited to the authorized target, observed artifacts, and exact selected scope.",
+  "request_reference_sha256": "efb1b0a6a4da3157a713dd33072cc064fe8275f220267ab2ca03645df60f6913",
+  "required_cases": [
+    "LB-ADMISSION",
+    "LB-INSTALL",
+    "LB-PERSON",
+    "LB-CUSTODY",
+    "LB-SETTLEMENT",
+    "LB-ACL",
+    "MP-01",
+    "MP-02",
+    "MP-03",
+    "MP-04",
+    "MP-05",
+    "MP-06"
+  ],
+  "schema": "arras.lakebase-qualification/1",
+  "scope": "full-managed",
+  "status": "blocked",
+  "target_sha256": "bf6a67b6f475c9504a44312e0cb32d04af87836c660ef9b223d1a278b9cffbbd"
+}

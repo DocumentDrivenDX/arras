@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
+import { useId } from "react";
 // An entity's History (FR-69): who changed it, when, by which action and what the change touched.
 // It opens at `.../<key>/history` and closes back to the entity. A journal the backend does not keep
 // (501) and a missing journal grant (403) are a sentence each, never an error panel.
@@ -110,20 +111,22 @@ export function HistoryPanel({
   keyText: string;
   title: string;
 }) {
-  const { go } = useBrowser();
+  const heading = useId();
+  const { go, ownsHistory } = useBrowser();
   const { state, more, retry } = useChanges(entry.type.name, keyText, true);
   const close = () => {
     const loc = { module: entry.module.name, type: shortName(entry.type.name), key: keyText };
     const opened = formatExplore({ ...loc, history: true });
     // Opened from the entity: going back lands on it. A fresh load of the history address has no
     // entity entry behind it, so the entity replaces it.
-    if (window.location.hash === opened && readViewState().fromEntity) window.history.back();
+    if (ownsHistory !== false && window.location.hash === opened && readViewState().fromEntity)
+      window.history.back();
     else go(loc, { replace: true });
   };
   return (
-    <section className="gb-hist" aria-labelledby="gb-hist-h" data-testid="gb-history">
+    <section className="gb-hist" aria-labelledby={heading} data-testid="gb-history">
       <div className="gb-hist-bar">
-        <h2 id="gb-hist-h">History</h2>
+        <h2 id={heading}>History</h2>
         <Button variant="text" onClick={close}>
           Back to {title}
         </Button>

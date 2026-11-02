@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "source": "anonymous public GitHub release download and mandatory downloaded-release workflow job",
+  "release_url": "https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.1",
+  "workflow_run": "https://github.com/DocumentDrivenDX/arras/actions/runs/40227314485",
+  "downloaded_release_job_run_id": 121277339041,
+  "tag": "v0.6.1",
+  "tag_object": "99609317f1cfc95a2e8e3768f2481910dcf42e23",
+  "source_commit": "243f1ebaf8b32beb0abc30d0d4fdcd9dd7b5ea92",
+  "source_tree": "9ee467d942ba7440d6adaa9b891b8f00aa2d8c1c",
+  "wheel_sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+  "public_assets": {
+    "count": 17,
+    "sha256sums_entries": 16,
+    "release_evidence_schema": 2
+  },
+  "observed_scope": {
+    "umf_phase": "public-download",
+    "umf_reference_matches": 139,
+    "umf_fresh_registry_matches": 139,
+    "umf_base_controls": 6,
+    "umf_extra_controls": 10,
+    "umf_skipped": 0,
+    "fresh_environments_cleaned": 2,
+    "doctor_cases": 20,
+    "extension_tests": 4,
+    "memory_cases_passed": 72,
+    "linux_public_theme_nonvisual_cases_passed": 205,
+    "unexpected_skips": 0
+  },
+  "limits": [
+    "Exact published wheel and recorded public cohort only.",
+    "No PyPI or npm publication claim; publisher jobs were skipped as configured.",
+    "This proof does not qualify broader platforms, production managed-service behavior, native macOS behavior, or untested consumers."
+  ],
+  "files": {
+    "public-download-qualification.json": "2e9063f518099b98d86ca235335bba72b0bfd78250dd8f85af82b416e22f0e26",
+    "public-umf-admission-installed.json": "305a767c7d90955b3789ae39fa50a458927b88ffebfe488362742490ac918539",
+    "public-input-verification.json": "edbdd0ade1fc7fddcd20f054eb2aeb9395a1f8de881787aaa3e794d2cdacb81b"
+  },
+  "workflow_artifact_sha256": "df5c8b5cbfc8dbab94ee8bfb18ff26618e9b653c0c18cde7e692e88240bc9de5"
+}

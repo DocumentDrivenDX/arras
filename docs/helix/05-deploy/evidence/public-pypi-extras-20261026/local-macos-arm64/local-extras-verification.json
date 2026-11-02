@@ -1,0 +1,52 @@
+{
+  "PIP_CONFIG_FILE": "/dev/null",
+  "cleared_environment": [
+    "PIP_INDEX_URL",
+    "PIP_EXTRA_INDEX_URL",
+    "PIP_FIND_LINKS",
+    "PIP_NO_INDEX"
+  ],
+  "downloaded_distribution_count": 19,
+  "executed_selector": "arras[truss,umf]",
+  "expected_resolved_selector": "arras[truss,umf]==0.6.3",
+  "files": {
+    "local-extras-install-report.json": "6ea7041361a2d5fc28e1a797e9bb6a35e9fbcf14569717fd2f445c811bef7368",
+    "local-extras-install.log": "7872925e2d4c3a8c361fbb1134abde49efe04eb13443020cfec9b7bc64ceaadb",
+    "local-extras-qualification.json": "8d95335a66178f1a57b56abefc47313ef2a2cb85dd6fc20d0bc41e84ba21ef87"
+  },
+  "fresh_virtual_environment": true,
+  "index": "https://pypi.org/simple",
+  "installed_direct_url_references": 0,
+  "pip_check": "passed",
+  "pip_flags": [
+    "--isolated",
+    "--no-cache-dir",
+    "--index-url https://pypi.org/simple"
+  ],
+  "platform": {
+    "machine": "arm64",
+    "python": "3.11.17",
+    "system": "Darwin"
+  },
+  "public_origin_host": "files.pythonhosted.org",
+  "schema": "arras.public-pypi-extras-local-acceptance/1",
+  "smoke": {
+    "arras_import": "passed",
+    "doctor": "passed",
+    "toolkit_version": "0.0.50",
+    "truss_import": "passed",
+    "umf_distribution_version": "0.10.0",
+    "umf_document_admission": "valid_and_complete",
+    "weft_import": "passed",
+    "weft_support": "passed"
+  },
+  "status": "passed",
+  "verified_at_utc": "2026-10-26T17:46:19.711401+00:00",
+  "verifier_sha256": "a732dc28b062024fbb19d374e8904058bcfe0527fb50d8173314a45afc633b34",
+  "versions": {
+    "arras": "0.6.3",
+    "truss-toolkit": "0.0.50",
+    "umf-core": "0.10.0",
+    "weft-sql": "0.4.51"
+  }
+}

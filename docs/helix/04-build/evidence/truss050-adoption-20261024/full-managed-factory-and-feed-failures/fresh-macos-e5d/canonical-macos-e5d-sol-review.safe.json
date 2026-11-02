@@ -1,0 +1,88 @@
+{
+  "archive_member_count": 10,
+  "archive_members_sha256": {
+    "artifacts/native-macos-cleanup-observation.json": "6987da419f039ab3a6cf3e946504c89bdce00846cf1c5d8a460cff352a3a7794",
+    "artifacts/native-macos-cohort-binding.json": "a06b005c5103be3869817c28e71baade552f3cdcb2686b6231ff39f77ccbc02d",
+    "artifacts/native-macos-cohort.bound.json": "6de88e06c7b387f037175c16acd2a995ac6d7b5e6373f7cd716b82041a2cbd9d",
+    "artifacts/native-macos-consumer-provenance.json": "d9ed2d0a0c8a59796fb2d467b4d37aa0110f6c6cfde04a08fecfe31f8dba1417",
+    "artifacts/native-macos-verification.json": "c32e97c3068b0ee0f40fb89fb471283c881ef801781f01c1577fc7cd0127491b",
+    "artifacts/native-macos-verifier.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/native-macos-verifier.stdout.log": "ac9fbf62d6c0221ce9422f84f49963eb9baf1418af2ecfcc6d5f7b4690e80d8c",
+    "candidate-artifacts/artifacts/candidate-wheel-provenance.json": "f39d377dda9150e167e83d8a3ac934ab4a00c20b459403a5665a9ac8bb4a25b2",
+    "tests/downstream/native-cohorts/macos-arm64.find-links.html": "a04f0e579585e30cc8a33830290ff66695bbe8fab264a3367ea0709152b8a40e",
+    "tests/downstream/native-cohorts/macos-arm64.json": "724a5d033e4b34a20340bf35264729068b972428278bf5c51c96f410e99e3841"
+  },
+  "artifact": "canonical-macos-e5d-12562651292.zip",
+  "artifact_bytes": 143926,
+  "artifact_sha256": "d71dde12e0026d33b52cff576e1785f1291c773eba767ca40153981ffaa4d3db",
+  "canonical_wheel": {
+    "bytes": 5155353,
+    "ci_wheel_payload_file_count": 172,
+    "filename": "arras-0.6.1-py3-none-any.whl",
+    "installed_payload_file_count": 172,
+    "payload_exactly_matches_ci_wheel": true,
+    "sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+    "version": "0.6.1"
+  },
+  "checks": {
+    "artifact_digest_binding": true,
+    "ci_artifact_sha256": true,
+    "cleanup_has_no_remaining_owned_roots_or_processes": true,
+    "cohort_is_bound_to_expected_wheel": true,
+    "cohort_manifest_contains_canonical_wheel_digest": true,
+    "corpus_passes_within_limit": true,
+    "installed_arras_payload_matches_ci_wheel": true,
+    "mac_archive_extraction_matches": true,
+    "mac_archive_size": true,
+    "mac_artifact_sha256": true,
+    "native_wheels_each_digest_verified": true,
+    "overall_clear": true,
+    "run_and_artifact_identity": true,
+    "source_and_tree_match_ci": true,
+    "wheel_digest_and_version_match_ci": true
+  },
+  "cohort_wheel_digest_field": {
+    "sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+    "version": "0.6.1"
+  },
+  "macos": {
+    "ambiguous_owned_processes": 0,
+    "cleanup_status": "passed",
+    "corpus_counts": {
+      "failed": 0,
+      "harness_error": 0,
+      "host_specific": 0,
+      "limit": 8,
+      "passed": 64
+    },
+    "machine": "arm64",
+    "native_cohort_wheel_count": 7,
+    "native_wheels_all_digest_verified": true,
+    "process_group_cleanup_complete": null,
+    "python": "3.11.9",
+    "remaining_owned_processes": 0,
+    "remaining_temp_roots": 0,
+    "runner_image_os": "macos15",
+    "system": "Darwin",
+    "system_dynamic_link_audit": "not performed"
+  },
+  "producer": {
+    "artifact_id": "12562081358",
+    "artifact_sha256": "144795c8563d775fd2a5fc4d7f1230286b1e06717943b70fda7b488a1c9e6097",
+    "job": "native-macos",
+    "run_attempt": "1",
+    "run_id": "40098437810"
+  },
+  "review_status": "clear_for_fresh_e5d_macos_artifact_only",
+  "schema": "arras.independent-native-macos-artifact-review/1",
+  "scope_limitations": [
+    "This verifies the fresh hosted macOS consumer artifact and canonical wheel payload correspondence only. It does not claim WAN acceptance.",
+    "The verification explicitly reports that a system dynamic-link audit was not performed.",
+    "The cleanup receipt reports no remaining roots/processes and no ambiguous identities; process_group_cleanup_complete is null, so no claim is made for that field."
+  ],
+  "source": {
+    "commit": "7a2a2a68af8fa612d069aebab7a33bc74e8da325",
+    "pull_request_head": "e5d8100fc544837b4cf14cc89e4465f468cc9f98",
+    "tree": "ee431af6283ba14035a1c83a83bd4f5b5a2784b2"
+  }
+}

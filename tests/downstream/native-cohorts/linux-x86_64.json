@@ -6,15 +6,15 @@
     "machine": "x86_64"
   },
   "find_links": {
-    "sha256": "197d63b9a651530b43457b768533165d0cc522ad5d872db063a8279a14ebbcd5"
+    "sha256": "9186cb548ede57f45902096eacc3f10a4dbbae7dbc4066a890829e7d86c1d9d7"
   },
   "native_wheels": [
     {
       "distribution": "truss-toolkit",
-      "version": "0.0.48",
-      "filename": "truss_toolkit-0.0.48-py3-none-any.whl",
-      "url": "https://github.com/DocumentDrivenDX/truss/releases/download/v0.0.48/truss_toolkit-0.0.48-py3-none-any.whl",
-      "sha256": "1aedf614ff3d3ff7a61bd4d91887ede650a7135d1239e8564c1c297c0ddc37c3"
+      "version": "0.0.50",
+      "filename": "truss_toolkit-0.0.50-py3-none-any.whl",
+      "url": "https://github.com/DocumentDrivenDX/truss/releases/download/v0.0.50/truss_toolkit-0.0.50-py3-none-any.whl",
+      "sha256": "7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00"
     },
     {
       "distribution": "weft-sql",

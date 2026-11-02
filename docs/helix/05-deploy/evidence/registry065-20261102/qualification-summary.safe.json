@@ -1,0 +1,56 @@
+{
+  "schema": "arras.local-origin-qualification-summary.v1",
+  "qualification_status": "passed",
+  "run_id": "41493303642",
+  "run_attempt": 1,
+  "driver_sha": "ae8d81c0865b84d31038f68d8463582ac1aee037",
+  "source_sha": "ad597d248847da47523155842524bb451a97f8d8",
+  "origin": "local; no original hosted Release producer",
+  "general_source_tests": {"passed": 3452, "failed": 0, "errors": 0, "skipped": 2},
+  "truss_source_tests": {"passed": 202, "failed": 0, "errors": 0, "skipped": 0},
+  "native": {
+    "status": "passed",
+    "runtime": {"python": "3.11", "sys_platform": "linux", "machine": "x86_64"},
+    "counts": {"passed": 64, "limit": 8, "failed": 0, "harness_error": 0, "host_specific": 0},
+    "versions": {"truss-toolkit": "0.0.50", "weft-sql": "0.4.51", "pgserver-pg18": "18.6.1"}
+  },
+  "umf": {
+    "status": "passed",
+    "engine_version": "0.10.0",
+    "python": "3.11.18",
+    "platform": "linux-x86_64",
+    "reference_matches": 139,
+    "empty_registry_matches": 139,
+    "skipped": 0,
+    "base_controls": 6,
+    "extra_controls": 10,
+    "cleanup": "validated by the existing full UMF receipt validator"
+  },
+  "ui": {
+    "status": "passed",
+    "platform": "linux",
+    "canonical_specs": 17,
+    "projects": {"chromium": 132, "schema-admin": 3, "browser": 70},
+    "passed": 205,
+    "failed": 0,
+    "skipped": 0,
+    "delivery_routes": ["prebuilt-page", "compiled-host"],
+    "surfaces_per_route": ["browser", "console"],
+    "visual": "skipped-non-Darwin",
+    "validation": "Existing complete UI validator checked original sidecars and acceptance resources from the exact pinned npm archive."
+  },
+  "public_consumers": {
+    "anonymous_assets": "all eight pinned assets verified",
+    "distribution": "passed; sdist-rebuilt verification wheel digest equals original final wheel",
+    "doctor_cases": 20,
+    "extension": "fresh-public-index-resolution; isolated installed imports",
+    "downstream": "passed on Python 3.11; original consumer JUnit receipt retained"
+  },
+  "limits": [
+    "This is hosted qualification of the original immutable local archives, not a hosted original Release publication.",
+    "General source tests retain two skips; the 202 Truss cases and 205 Linux UI cases have zero skips.",
+    "Native qualification retains eight explicit limits; no wider native support is inferred.",
+    "Original macOS visual/native/managed observations remain separately scoped by their historical artifact identities and measured correspondence in local-release-proof.json.",
+    "This record does not itself claim npm registry visibility or installed acceptance; those have separate postflight receipts."
+  ]
+}

@@ -16,6 +16,8 @@ export type { Area, Route };
 export { formatHash, parseHash };
 
 export interface ArrasConsoleProps {
+  /** Disable document title, window scroll and global shortcut effects in a host page. */
+  pageEffects?: boolean;
   /** Where the operator surface (CONTRACT-009) is mounted. */
   operateBase?: string;
   /** Where the console GraphQL surface (CONTRACT-006) is mounted. */
@@ -99,7 +101,7 @@ export function ArrasConsole(props: ArrasConsoleProps) {
   } = props;
   return (
     <Scope>
-      <ArrasProviderOnce {...conn}>
+      <ArrasProviderOnce {...conn} identity={identity}>
         <QuerySessionRoot key={identity ?? ""} session={querySession}>
           <Shell
             hashRouting={hashRouting}

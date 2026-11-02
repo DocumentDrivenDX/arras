@@ -1,0 +1,20 @@
+{
+  "cleanup_summary": {
+    "ambiguous_owned_processes": 0,
+    "group_cleanup_complete": null,
+    "remaining_owned_processes": 0,
+    "remaining_roots": 0,
+    "status": "passed"
+  },
+  "copied_original_artifact_files_verified": 5,
+  "errors": [],
+  "manifest_file_hashes_verified": 6,
+  "original_archive_expected_sha256": "d71dde12e0026d33b52cff576e1785f1291c773eba767ca40153981ffaa4d3db",
+  "original_archive_sha256": "d71dde12e0026d33b52cff576e1785f1291c773eba767ca40153981ffaa4d3db",
+  "privacy_scope": "Staged set contains verifier/cohort/binding/provenance and safe review receipts; no raw stdout/stderr, environment capture, credential fields, or provider credentials were added.",
+  "retention_manifest_sha256": "054c888af5a1bd487842556208f614dd147db0da76a2c0bd97689fb920e1b4d4",
+  "schema": "arras.native-macos-retention-review/1",
+  "scope": "Fresh hosted e5d Mac evidence only; no WAN acceptance claim.",
+  "staged_directory": "retention-stage-e5d/fresh-macos-e5d",
+  "status": "clear"
+}

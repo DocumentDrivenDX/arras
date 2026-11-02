@@ -70,7 +70,10 @@ The launcher's `env_prefix` is a bootstrap choice: it must be known before
 file cannot change it. Presentation defaults may be overridden by the existing
 committed file layers, field by field. Both credential namespaces are checked for
 ambiguity before alias precedence; a conflicting token or token-file source is a
-startup refusal, not a silent identity choice. Exact fields, bounds, precedence
+startup refusal, not a silent identity choice. Any other key set under both
+namespaces to different nonblank values is not ambiguous (the selected prefix
+wins) but is reported: a bounded warning on stderr names both variables and the
+one used, never a value, and startup continues. Exact fields, bounds, precedence
 and errors live in CONTRACT-005/007 rather than a second schema in this ADR.
 
 This keeps one schema/reader and one Brand model. The alternative of inferring an

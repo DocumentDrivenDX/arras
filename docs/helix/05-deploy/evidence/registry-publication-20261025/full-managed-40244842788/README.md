@@ -1,0 +1,3 @@
+# Arras 0.6.2 full managed qualification
+
+The original twelve Lakebase WAN cases passed on the exact candidate wheel. Original cleanup removed all five owned resources; the independent read-only audit, retained archive collection, targeted process/group census and custody handback passed. The projection keeps the earlier no-effect authorization refusal separate and explicitly corrects one frozen metadata label without editing its original bytes. Raw provider targets, credentials, logs, process identities and archives remain private. This is prepublication qualification, not a registry upload receipt.

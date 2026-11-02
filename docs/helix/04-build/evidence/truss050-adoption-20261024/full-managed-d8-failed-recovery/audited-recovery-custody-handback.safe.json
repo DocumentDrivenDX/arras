@@ -1,0 +1,32 @@
+{
+  "acceptance_passed": false,
+  "custody_returned": true,
+  "final_process_census": {
+    "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-0b80451e-445a-4ac1-87b8-69dc5193fd44/terminal-process-custody.after-recovery.safe.json",
+    "sha256": "26820275db2107ca24c3df96eb69ee4b61477a74b1170a980857366eb0e2a74a"
+  },
+  "fresh_independent_audit": {
+    "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-0b80451e-445a-4ac1-87b8-69dc5193fd44/independent-audit.after-recovery.safe.json",
+    "sha256": "95918d42f95c58ed449bf9509de6a80aad21e7a51170668c9e83cffdd17db0a9"
+  },
+  "native_cleanup": {
+    "path": "/private/tmp/truss-lakebase-049-20261023/qualification/f37-native-cleanup-0e4f3ff2-2512-48c2-b94c-b32377d34239/cleanup.safe.json",
+    "sha256": "27cf403eddcf92d77b3b8ce32f055181022b1e329594698d3767df114a4e2dd2"
+  },
+  "next": "Release owner fixes remaining campaign failures and supplies a fresh source freeze, exact bindings and reviewed one-shot activation window before any next full campaign.",
+  "no_active_exec_sessions": true,
+  "no_vm": true,
+  "original_campaign_counts": {
+    "blocked": 1,
+    "failed": 5,
+    "passed": 6
+  },
+  "original_campaign_terminal": {
+    "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T140000Z-0b80451e-445a-4ac1-87b8-69dc5193fd44/full-managed-terminal.safe.json",
+    "sha256": "f68e26642feab5674845b92a29608ff0510afc755084aef99afaa9b57052e8e6"
+  },
+  "recorded_at": "2026-10-24T16:22:03.856447+00:00",
+  "schema": "arras.f37-audited-recovery-custody-handback/1",
+  "source_and_resource_freeze_released_for_owner_fixes": true,
+  "status": "owned_cleanup_and_fresh_independent_audit_passed"
+}

@@ -1,0 +1,160 @@
+{
+  "campaign": {
+    "actual_campaign_result_sha256": "d600fba764770bf78935f293650f35792663758e17a971330817add70c888a1e",
+    "arrastoolkit_version": "0.6.1",
+    "counts": {
+      "blocked": 1,
+      "failed": 5,
+      "passed": 6,
+      "total": 12
+    },
+    "source_commit": "f37b308c8a2f4634ba94a74e9aade29d09e23b33",
+    "source_tree": "da1ee5d47b61d9c84b60293fe817ab7cb9046539",
+    "status": "FAILED_NOT_ACCEPTED_OWNED_RECOVERY_INDEPENDENTLY_VERIFIED",
+    "truss_version": "0.0.50"
+  },
+  "claim": "failed campaign retained with owned recovery and independent audit verified; no Lakebase acceptance",
+  "files": {
+    "README.md": {
+      "bytes": 2763,
+      "sha256": "38525e73bf1fb3006b7381fd711038a940a43bd32269a844c06066d1cf338626"
+    },
+    "actual-campaign-result.pending-recovery.safe.json": {
+      "bytes": 4596,
+      "sha256": "f9dfa4fd33093cb522b3650b6a3ecc3c7a3607478673fd262276dd9f1b4b3218"
+    },
+    "actual-campaign-result.safe.json": {
+      "bytes": 6152,
+      "sha256": "d600fba764770bf78935f293650f35792663758e17a971330817add70c888a1e"
+    },
+    "audit-failure-code.safe.json": {
+      "bytes": 331,
+      "sha256": "b988f791941fde56299a17d1e4db7c2c64612ec167eef5d3c94aca113593a3bf"
+    },
+    "audited-recovery-custody-handback.safe.json": {
+      "bytes": 1791,
+      "sha256": "e714dbbfeefbf6117f7d0615d2f07d4788b3e80501a80ab225d48ed728882e8a"
+    },
+    "fresh-macos-f37/artifact-build-api.json": {
+      "bytes": 739,
+      "sha256": "66c2f6d01276962955e66ea9db7a74332c4691944e87bb50c16b124c101a6ba5"
+    },
+    "fresh-macos-f37/candidate-wheel-provenance.json": {
+      "bytes": 547,
+      "sha256": "3b88f6698185d2b530ece7a4ad402bc7a1d44339edd6e6b1b7211ef57b1e67c5"
+    },
+    "fresh-macos-f37/canonical-macos-f37-sol-review.safe.json": {
+      "bytes": 3318,
+      "sha256": "8709670bb72908b9c017d01ed2d2e82414def09f551b2bcc805b7d1d9256252c"
+    },
+    "fresh-macos-f37/macos-arm64.find-links.html": {
+      "bytes": 1957,
+      "sha256": "a04f0e579585e30cc8a33830290ff66695bbe8fab264a3367ea0709152b8a40e"
+    },
+    "fresh-macos-f37/macos-arm64.json": {
+      "bytes": 4383,
+      "sha256": "724a5d033e4b34a20340bf35264729068b972428278bf5c51c96f410e99e3841"
+    },
+    "fresh-macos-f37/native-macos-cleanup-observation.json": {
+      "bytes": 195767,
+      "sha256": "3bca2c4b2892a69e9f1c8ce7ada23ad13b6036fa00d348f6ceb7ec7a58ac3506"
+    },
+    "fresh-macos-f37/native-macos-cohort-binding.json": {
+      "bytes": 893,
+      "sha256": "a06b005c5103be3869817c28e71baade552f3cdcb2686b6231ff39f77ccbc02d"
+    },
+    "fresh-macos-f37/native-macos-cohort.bound.json": {
+      "bytes": 4506,
+      "sha256": "6de88e06c7b387f037175c16acd2a995ac6d7b5e6373f7cd716b82041a2cbd9d"
+    },
+    "fresh-macos-f37/native-macos-consumer-provenance.json": {
+      "bytes": 2367,
+      "sha256": "ce70fb59fc985be191c355b8172a113ea878b7af4f3eb61f7b41a203b3360147"
+    },
+    "fresh-macos-f37/native-macos-job-api.json": {
+      "bytes": 3594,
+      "sha256": "ac43afb2d50d618b0f8095485d8fc57b05672f82ca29f0e00198b34cd74ffc22"
+    },
+    "fresh-macos-f37/native-macos-verification.json": {
+      "bytes": 381563,
+      "sha256": "24b51a88bd0af46990ab77ffc50f9bd0ef73c1c02230d96c847f5db85b2e0104"
+    },
+    "fresh-macos-f37/retention.json": {
+      "bytes": 3745,
+      "sha256": "655ade511c205bdcb295935966e633e9dc2816e073dd3750690411fd87ad1f34"
+    },
+    "full-diagnostics.safe.json": {
+      "bytes": 1412,
+      "sha256": "1553dfded25891bb461a171c03eb0abad3243dcb9ec98d06f95c6ebe1cb8c728"
+    },
+    "full-managed-terminal.safe.json": {
+      "bytes": 2177,
+      "sha256": "f68e26642feab5674845b92a29608ff0510afc755084aef99afaa9b57052e8e6"
+    },
+    "full-managed-terminal.safe.verifier.json": {
+      "bytes": 18220,
+      "sha256": "d3895eb3f480f71ea06bb462ffc3e9101e66116ff7192af7b510021998aca75a"
+    },
+    "independent-audit.after-recovery.safe.json": {
+      "bytes": 2279,
+      "sha256": "95918d42f95c58ed449bf9509de6a80aad21e7a51170668c9e83cffdd17db0a9"
+    },
+    "independent-audit.initial-failure.safe.json": {
+      "bytes": 1280,
+      "sha256": "43e2e84dd7936c9d0a7e1e80b126aeb763ceb8e81c6e12e5553af31e9ead6b75"
+    },
+    "native-cleanup-process-completion.source-bound.safe.json": {
+      "bytes": 597,
+      "sha256": "128aa1a492e7140e8ceec372515d26ea74c2b8ca8938be8361ca6062f9b3de58"
+    },
+    "native-cleanup-summary.source-bound.safe.json": {
+      "bytes": 1372,
+      "sha256": "2edaff4ab4eaa885abcb2ebe38fb807b39514e8e9c76affed795c54be4be6fed"
+    },
+    "terminal-process-custody.after-recovery.public-summary.safe.json": {
+      "bytes": 537,
+      "sha256": "41f3b0b83175295884cb64b14be17b54ce6d294fbd395ed9bf3821446888d59f"
+    }
+  },
+  "macos_consumer": {
+    "cleanup": {
+      "process_group_cleanup_complete": null,
+      "remaining_processes": 0,
+      "remaining_roots": 0
+    },
+    "counts": {
+      "failed": 0,
+      "harness_error": 0,
+      "host_specific": 0,
+      "limit": 8,
+      "passed": 64
+    },
+    "retention_source": "prior offline-reviewed staged f37 consumer result",
+    "retention_source_manifest_sha256": "655ade511c205bdcb295935966e633e9dc2816e073dd3750690411fd87ad1f34",
+    "status": "passed",
+    "wan_acceptance_claim": false
+  },
+  "private_sources_not_copied": [
+    "raw native catalog and endpoint-identity observations",
+    "private worker and supervisor stdout/stderr",
+    "raw cleanup source receipt containing database/schema OIDs",
+    "full final process census containing PID/PGID values"
+  ],
+  "recovery": {
+    "cleanup_process_projection_sha256": "128aa1a492e7140e8ceec372515d26ea74c2b8ca8938be8361ca6062f9b3de58",
+    "cleanup_process_terminal_source_sha256": "3638a98cbc03f210e702b5f5a21ae5eb8c6148718db009794f876915e2b0850b",
+    "cleanup_source_sha256": "27cf403eddcf92d77b3b8ce32f055181022b1e329594698d3767df114a4e2dd2",
+    "cleanup_summary_file": "native-cleanup-summary.source-bound.safe.json",
+    "cleanup_summary_sha256": "2edaff4ab4eaa885abcb2ebe38fb807b39514e8e9c76affed795c54be4be6fed",
+    "endpoint_after_get": "not claimed by cleanup receipt; fresh audit observed endpoint enabled",
+    "final_custody_source_sha256": "26820275db2107ca24c3df96eb69ee4b61477a74b1170a980857366eb0e2a74a",
+    "fresh_independent_audit_sha256": "95918d42f95c58ed449bf9509de6a80aad21e7a51170668c9e83cffdd17db0a9",
+    "handback_sha256": "e714dbbfeefbf6117f7d0615d2f07d4788b3e80501a80ab225d48ed728882e8a"
+  },
+  "schema": "arras.truss050-d8-failed-recovery-retention/1",
+  "stale_or_superseded": {
+    "cleanup_supervisor_v2_review": "superseded; v2 review did not authorize the v3 recovery supervisor",
+    "cleanup_supervisor_v3_go_sha256": "f2527ea165efc020e4bbc25adf25c6f3eaee406fc57f00d99070527fd14a5332",
+    "cleanup_supervisor_v3_sha256": "471623ac9a5c2c97d2c2da11891ba8c187f887862fa16ee8dd77129bde03af26"
+  }
+}

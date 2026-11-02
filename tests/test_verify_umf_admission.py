@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import base64
+import csv
 import hashlib
 import importlib.util
 import io
@@ -15,7 +16,7 @@ import zipfile
 from email.message import Message
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any
+from typing import Any, NamedTuple
 
 import pytest
 
@@ -186,6 +187,106 @@ def test_umf_wheel_identity_requires_the_official_release_artifact(tmp_path: Pat
     wrong.write_bytes(b"not the released wheel")
     with pytest.raises(verifier.VerificationError, match="unexpected-official-artifact"):
         verifier._wheel_details(wrong, expected="umf")
+
+
+def _write_arras_wheel(path: Path, requirements: tuple[str, ...]) -> None:
+    dist_info = "arras-0.6.2.dist-info"
+    metadata = (
+        "Metadata-Version: 2.4\nName: arras\nVersion: 0.6.2\n"
+        + "".join(f"Requires-Dist: {item}\n" for item in requirements)
+        + "\n"
+    ).encode()
+    members = {
+        f"{dist_info}/METADATA": metadata,
+        f"{dist_info}/WHEEL": b"Wheel-Version: 1.0\nRoot-Is-Purelib: true\nTag: py3-none-any\n",
+    }
+    record_rows: list[list[str]] = []
+    for name, payload in members.items():
+        digest = base64.urlsafe_b64encode(hashlib.sha256(payload).digest())
+        record_rows.append(
+            [name, f"sha256={digest.rstrip(b'=').decode('ascii')}", str(len(payload))]
+        )
+    record_rows.append([f"{dist_info}/RECORD", "", ""])
+    buffer = io.StringIO()
+    csv.writer(buffer, lineterminator="\n").writerows(record_rows)
+    members[f"{dist_info}/RECORD"] = buffer.getvalue().encode()
+    with zipfile.ZipFile(path, "w") as archive:
+        for name, payload in members.items():
+            archive.writestr(name, payload)
+
+
+@pytest.mark.parametrize(
+    "requirement",
+    [
+        'umf-core==0.10.0; extra == "umf"',
+        f"{verifier.UMF_REQUIREMENT}; extra == 'umf'",
+    ],
+)
+def test_arras_wheel_accepts_only_exact_umf_extra_requirement(
+    tmp_path: Path, requirement: str
+) -> None:
+    wheel = tmp_path / "arras-0.6.2-py3-none-any.whl"
+    _write_arras_wheel(wheel, (requirement,))
+
+    assert verifier._wheel_details(wheel, expected="arras")["version"] == "0.6.2"
+
+
+@pytest.mark.parametrize(
+    "requirements",
+    [
+        ("umf-core==0.10.1; extra == 'umf'",),
+        ("umf-core>=0.10.0; extra == 'umf'",),
+        (
+            'umf-core==0.10.0; extra == "umf"',
+            'umf-core==0.10.0; extra == "umf"',
+        ),
+        ("umf-core==0.10.0; extra == 'other'",),
+    ],
+)
+def test_arras_wheel_rejects_wrong_or_duplicate_umf_requirements(
+    tmp_path: Path, requirements: tuple[str, ...]
+) -> None:
+    wheel = tmp_path / "arras-0.6.2-py3-none-any.whl"
+    _write_arras_wheel(wheel, requirements)
+
+    with pytest.raises(verifier.VerificationError, match="optional-extra-not-pinned"):
+        verifier._wheel_details(wheel, expected="arras")
+
+
+def test_umf_extra_install_uses_the_same_explicit_qualified_wheel(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    wheel = tmp_path / "arras-0.6.2-py3-none-any.whl"
+    wheel.write_bytes(b"staged wheel")
+    calls: list[list[str]] = []
+
+    def capture(command: list[str], **_kwargs: Any) -> subprocess.CompletedProcess[str]:
+        calls.append(command)
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(verifier, "_run", capture)
+    verifier._install_requirement(
+        tmp_path / "python",
+        wheel,
+        extra=True,
+        cwd=tmp_path,
+        env={},
+        report=tmp_path / "report.json",
+    )
+    verifier._install_requirement(
+        tmp_path / "python",
+        wheel,
+        extra=False,
+        cwd=tmp_path,
+        env={},
+        report=tmp_path / "report.json",
+    )
+
+    assert calls[0][-1] == f"arras[umf] @ {wheel.as_uri()}"
+    assert "--report" in calls[0]
+    assert verifier.UMF_REQUIREMENT not in calls[0]
+    assert calls[1][-1] == f"arras @ {wheel.as_uri()}"
+    assert verifier.UMF_REQUIREMENT not in calls[1]
 
 
 def test_staged_artifact_identity_is_rechecked_after_install_probes(tmp_path: Path) -> None:
@@ -389,3 +490,161 @@ def test_cleanup_failure_cannot_be_serialized_as_success(
     monkeypatch.setattr(verifier.shutil, "rmtree", fail_cleanup)
     with pytest.raises(verifier.VerificationError, match="owned-temp-cleanup-failed"):
         verifier._remove_owned_temp(temp)
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        "valid",
+        "undeclared",
+        "noncanonical",
+        "absolute",
+        "outside",
+        "symlink",
+        "changed-bytes",
+        "missing-digest",
+        "missing-size",
+        "wrong-digest",
+        "wrong-size",
+        "invalid-name",
+        "scripts-outside",
+        "scripts-symlink",
+        "omitted-record",
+        "missing-file",
+        "duplicate-record",
+    ],
+)
+def test_installed_console_script_is_declared_confined_and_integrity_checked(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, case: str
+) -> None:
+    fixture = _installed_console_script_fixture(tmp_path, case)
+    selected_scripts, installed_record = _console_record_for_case(fixture, case)
+    site, venv, wheel = fixture.site, fixture.venv, fixture.wheel
+
+    class DistributionStub:
+        def locate_file(self, name: str) -> Path:
+            return site / name
+
+        def read_text(self, name: str) -> str | None:
+            return installed_record if name == "RECORD" else None
+
+    def get_distribution(_name: str) -> DistributionStub:
+        return DistributionStub()
+
+    def script_directory(_name: str) -> str:
+        return str(selected_scripts)
+
+    monkeypatch.setattr(probe.importlib.metadata, "distribution", get_distribution)
+    monkeypatch.setattr(probe.sys, "prefix", str(venv))
+    monkeypatch.setattr(probe.sysconfig, "get_path", script_directory)
+    if case == "valid":
+        assert probe._compare_installed_payload(wheel, "arras") == len(fixture.files)
+    else:
+        with pytest.raises(probe.VerificationError):
+            probe._compare_installed_payload(wheel, "arras")
+
+
+class _ConsoleInstallation(NamedTuple):
+    venv: Path
+    site: Path
+    scripts: Path
+    script: Path
+    script_bytes: bytes
+    wheel: Path
+    dist_info: str
+    files: dict[str, bytes]
+    rows: list[list[str]]
+
+
+def _installed_console_script_fixture(tmp_path: Path, case: str) -> _ConsoleInstallation:
+    """A wheel and its fresh installation, with generated launcher bytes kept separate."""
+    venv = tmp_path / "venv"
+    site = venv / "lib/python3.11/site-packages"
+    scripts = venv / "bin"
+    site.mkdir(parents=True)
+    scripts.mkdir()
+    script = scripts / "arras"
+    script_bytes = b"#!/venv/bin/python\nfrom arras.cli import run\nrun()\n"
+    script.write_bytes(script_bytes)
+    dist_info = "arras-0.6.5.dist-info"
+    command_name = "../arras" if case == "invalid-name" else "arras"
+    entry_points = (
+        b"[console_scripts]\nother = arras.cli:run\n"
+        if case == "undeclared"
+        else f"[console_scripts]\n{command_name} = arras.cli:run\n".encode()
+    )
+    files = {
+        "arras/__init__.py": b"qualified payload",
+        f"{dist_info}/METADATA": b"Name: arras\nVersion: 0.6.5\n",
+        f"{dist_info}/entry_points.txt": entry_points,
+    }
+    rows: list[list[str]] = []
+    for name, payload in files.items():
+        digest = base64.urlsafe_b64encode(hashlib.sha256(payload).digest()).rstrip(b"=")
+        rows.append([name, f"sha256={digest.decode()}", str(len(payload))])
+        destination = site / name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(payload)
+    rows.append([f"{dist_info}/RECORD", "", ""])
+    buffer = io.StringIO()
+    csv.writer(buffer, lineterminator="\n").writerows(rows)
+    wheel = tmp_path / "arras.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        for name, payload in {**files, f"{dist_info}/RECORD": buffer.getvalue().encode()}.items():
+            archive.writestr(name, payload)
+    return _ConsoleInstallation(
+        venv=venv,
+        site=site,
+        scripts=scripts,
+        script=script,
+        script_bytes=script_bytes,
+        wheel=wheel,
+        dist_info=dist_info,
+        files=files,
+        rows=rows,
+    )
+
+
+def _console_record_for_case(fixture: _ConsoleInstallation, case: str) -> tuple[Path, str]:
+    venv, site, scripts, script = fixture.venv, fixture.site, fixture.scripts, fixture.script
+    script_bytes, rows, dist_info = fixture.script_bytes, fixture.rows, fixture.dist_info
+    record_path = Path(os.path.relpath(script, site)).as_posix()
+    if case == "noncanonical":
+        record_path = "../../../bin/../bin/arras"
+    elif case == "absolute":
+        record_path = str(script)
+    elif case == "outside":
+        record_path = "../../../../outside/arras"
+    digest = base64.urlsafe_b64encode(hashlib.sha256(script_bytes).digest()).rstrip(b"=").decode()
+    script_hash = "" if case == "missing-digest" else f"sha256={digest}"
+    size = "" if case == "missing-size" else str(len(script_bytes))
+    if case == "wrong-digest":
+        script_hash = f"sha256={'0' * 43}"
+    elif case == "wrong-size":
+        size = str(len(script_bytes) + 1)
+    elif case == "changed-bytes":
+        script.write_bytes(b"tampered")
+    elif case == "symlink":
+        target = scripts / "target"
+        target.write_bytes(script_bytes)
+        script.unlink()
+        script.symlink_to(target)
+    selected_scripts = scripts
+    if case == "scripts-outside":
+        selected_scripts = venv.parent / "outside"
+        selected_scripts.mkdir()
+    elif case == "scripts-symlink":
+        selected_scripts = venv / "linked-bin"
+        selected_scripts.symlink_to(scripts, target_is_directory=True)
+    if case != "omitted-record":
+        rows.append([record_path, script_hash, size])
+    if case == "missing-file":
+        script.unlink()
+    elif case == "duplicate-record":
+        rows.append([record_path, script_hash, size])
+    buffer = io.StringIO()
+    csv.writer(buffer, lineterminator="\n").writerows(rows)
+    installed_record = buffer.getvalue()
+    (site / dist_info / "RECORD").write_text(installed_record)
+
+    return selected_scripts, installed_record

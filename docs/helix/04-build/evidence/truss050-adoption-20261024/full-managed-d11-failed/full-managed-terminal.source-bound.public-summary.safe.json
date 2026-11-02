@@ -1,0 +1,26 @@
+{
+  "entry_sha256": "c5bbbb40d907cb0941406806668275312daaa7fe1a8a27e7c1b039c724c624c0",
+  "final_acceptance": "not accepted; independent audit and handback followed",
+  "full_managed_exit_code": 1,
+  "full_managed_inner_gate": "failed",
+  "full_managed_inner_status": "failed",
+  "inner_receipt_sha256": "e6aa7c9885bbc62f56abfdfb12086592183b4736be0f0420329f1cc90fe5e3cf",
+  "installed_observation_before_after_equal": true,
+  "late_completion": false,
+  "limits": {
+    "cleanup_grace_seconds": 180,
+    "installer_operation_timeout_ms": 60000,
+    "installer_statement_timeout_ms": 60000,
+    "maximum_window_seconds": 14400,
+    "no_vm": true,
+    "provider_operation_timeout_seconds": 180
+  },
+  "schema": "arras.public50-D11-outer-terminal-public-summary/1",
+  "scope": "one original full-managed invocation; independent cleanup/audit obligations follow",
+  "source_freeze_sha256": "fd3f366e97264c2e7034566b6da619ec09e580b64704b87593fa71b12163ff4e",
+  "source_receipt_sha256": "39498ed804ffde6b953447980ae7e8161b1b69ded888a73455071bd9186ce469",
+  "stage_monotonic_elapsed_ns": 980656331541,
+  "stage_wall_start_utc": "2026-10-24T18:24:15Z",
+  "stage_wall_terminal_utc": "2026-10-24T18:40:36Z",
+  "window_sha256": "972434c1ae34a7da20e8289d9726a51ea3ed0c0decd62c898153ab9891a6763a"
+}

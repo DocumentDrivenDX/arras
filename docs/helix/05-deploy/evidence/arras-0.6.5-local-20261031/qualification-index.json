@@ -1,0 +1,151 @@
+{
+  "status": "QUALIFIED_CANDIDATE_PUBLICATION_PENDING",
+  "support": "CPython3.11 only; >=3.11 installerfloor permits later unqualified interpreters",
+  "qualificationSourceCommit": "ff672139389eb802bb1bdf8e88fa0fc85cdb6522",
+  "wheel": {
+    "filename": "arras-0.6.5-py3-none-any.whl",
+    "sha256": "beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b",
+    "size": 5174102
+  },
+  "candidateSdist": {
+    "sha256": "25e4c2ae1a4956385242cdb57762d16ebe495a779ace7298f5d9e7c3746f33a5",
+    "scope": "017 source only; final guard/proof source requires separate finalsdist build/parity beforetag"
+  },
+  "npm": {
+    "sha256": "26abe759e7bb918bf30c5144a34cff8deb7ecb4dd2ef531d41ec3ceab2155e0f",
+    "exactUnchanged": true
+  },
+  "originalQualificationInputArchive": {
+    "sha256": "6d9d0ce52b9338efcac2eb6bce1aff692e038a526d09942f42cc7306aee19ccc",
+    "scope": "Selfconsistent original17asset schema-v2 EBEB qualification bundle; final publication retains as separate clearlylabelled originalinput archive, never rebound by substitution"
+  },
+  "artifactIdentitySequence": [
+    {
+      "source": "ff8c22a6e74bba64e51abb9c0f4af061af48dad1",
+      "wheelSha256": "ebeb45b0b3e6a2fff5fc18094f355fd451a996171d76e2c48286c5b579170c1f",
+      "scope": "Original fullLinux/UI/native behavior inputs"
+    },
+    {
+      "source": "aebf3987ff2bfeccea21a9f0b2a68dbc0311d664",
+      "wheelSha256": "bba54479fd2c1b6e2b7558f188ff6eada6a4abe2547949ed0270f6be1d3a44aa",
+      "scope": "Metadata/README correction, fresh016checks; catalog incoherence found and correctednext"
+    },
+    {
+      "source": "ff672139389eb802bb1bdf8e88fa0fc85cdb6522",
+      "wheelSha256": "beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b",
+      "scope": "Current coherent3.11 catalog,12owningcontrols+all5 freshartifactgates pass"
+    }
+  ],
+  "retainedOriginalFiles": {
+    "original-attempts/012/operation-result.json": {
+      "sha256": "b0f8ee3ede909325414cdb29c020a66ab5c9f07eae670455f25ca0ba307ed31f",
+      "size": 3035
+    },
+    "original-attempts/012/metadata-build.stderr": {
+      "sha256": "6bc5b17bbed868f0a8478839f6d69e2504369e3afc8004de8d686fcf2d21178a",
+      "size": 160
+    },
+    "original-attempts/013/operation-result.json": {
+      "sha256": "b8d67d2377dd7e1e1f8a42ecd662fd1e37c7936f946296fc38ef5047dfc234c1",
+      "size": 1491
+    },
+    "original-attempts/013/metadata-build.stderr": {
+      "sha256": "c9bb7f669ffce768e6a0e6e46284bd38f984ebe5988601cff406b1167e5df1cf",
+      "size": 773
+    },
+    "original-attempts/014/operation-result.json": {
+      "sha256": "cb0a34b44b47a7730790b3407f92a09a8203e86829dd055475b42525b2b67bab",
+      "size": 2527
+    },
+    "original-attempts/014/metadata-build.stderr": {
+      "sha256": "edaccb26415d3267312ed2e86debc5a4497b3beb68fcfde709a8663bbabd06b8",
+      "size": 324
+    },
+    "original-attempts/014/distribution-parity.stderr": {
+      "sha256": "a1f045d3f258b8e35cf3097216f8317faa3cbd66c62c524896fdc10405b2dc8b",
+      "size": 2070
+    },
+    "original-attempts/015/operation-result.json": {
+      "sha256": "bd921fc2da8252702d237d30510c237dde0ba2f28d7caac3c1f99f914b9ea51a",
+      "size": 2223
+    },
+    "original-attempts/015/distribution-parity.stderr": {
+      "sha256": "b20a74e3a9497266dd211be92c299d8a9dc68e4b63ba75c2c4ff3e664d154b48",
+      "size": 3761
+    },
+    "original-attempts/016/operation-result.json": {
+      "sha256": "cde4b055172d0a41c48fbe67e7b1ada5394b6a027e758682b13a352811b4b03a",
+      "size": 6102
+    },
+    "original-attempts/016/driver-runtime.json": {
+      "sha256": "ac24275526ec352c0f5b2e7b95c39f976568caf4af3ae781ea42bb2e3809c37c",
+      "size": 691
+    },
+    "original-attempts/016/distribution-parity.stderr": {
+      "sha256": "d979bb6bb936adb80723d83f17bf315f7a922aaa7245313024c858720894f828",
+      "size": 738
+    },
+    "original-attempts/017/operation-result.json": {
+      "sha256": "b4922a8f6eaa192d7404841c1c83042cfd84f8986b66a4a8d8eb0cd30a0e2e01",
+      "size": 7471
+    },
+    "original-attempts/017/driver-runtime.json": {
+      "sha256": "ac24275526ec352c0f5b2e7b95c39f976568caf4af3ae781ea42bb2e3809c37c",
+      "size": 691
+    },
+    "original-attempts/017/distribution-parity.stderr": {
+      "sha256": "3f33658f1901010becd50e5d51588c6b3f0b03133fbd42494c82ae0283261b9d",
+      "size": 735
+    },
+    "qualified-wheel/source-catalog.xml": {
+      "sha256": "8559bf5a111e7c5bd1425f674e1d9e3675dac1ab6491bb0b062fc9dff909d39b",
+      "size": 1889
+    },
+    "qualified-wheel/descriptor-correspondence.json": {
+      "sha256": "2d1344f0dcd8f5575d6082f5d7b3901c475962e24eeaadde6703e34f8db23255",
+      "size": 28860
+    },
+    "qualified-wheel/distribution-verification.json": {
+      "sha256": "1b4ce9d8396a0bcc734223dec4ec97da95ad0b684ef13d2798d7507d7c5e20af",
+      "size": 2402
+    },
+    "qualified-wheel/doctor-installed.json": {
+      "sha256": "93e95010aa6d5e71ecee2c8e4095a59a873635359a88c0f7d70e05744bca4820",
+      "size": 15451
+    },
+    "qualified-wheel/extension-host.json": {
+      "sha256": "bada2f11860f5fc455bf4f472f5e2d8f36584b25f4d2444aee38afd619d95942",
+      "size": 12235
+    },
+    "qualified-wheel/umf-admission.json": {
+      "sha256": "abc1ba4f35a06f3f7d7bc96296ac7fa72885b1bd5a2c1212b33cfbd8b984418b",
+      "size": 23401
+    },
+    "qualified-wheel/installed-two.xml": {
+      "sha256": "dfbc92cf5d1c8b738ce1d8525909e3f12197bc6f8041c0f83e8cabde8b5fd2f0",
+      "size": 467
+    },
+    "original-metadata-correspondence.json": {
+      "sha256": "b1b8a5f181e065d762a9cfc96d8a65d6f701b12302376f6a4429618231ac0cc7",
+      "size": 28302
+    },
+    "catalog-carriage-audit.json": {
+      "sha256": "4228f5ab6ed760f27c3998a5b8b324500f6c22b8c61cbc6139feffd8d0cf0e03",
+      "size": 39534
+    },
+    "original-linux-timeout-reconciliation.json": {
+      "sha256": "93c9773ee87aa87b000b2f12a5b731f861a9672e48cca7701417c0edfd4020a7",
+      "size": 3342
+    },
+    "original-linux-timeout-signalling-terminal.txt": {
+      "sha256": "4a163b2e16543b9cfe41327b9a2fe41fa138c11fee844555a99c338f51689376",
+      "size": 3086
+    }
+  },
+  "limits": [
+    "LocalDarwinarm64CPython3.11.17 installed final-wheel checks; Linux3.11/native/UI original component evidence retained through measured exact payload correspondence.",
+    "No new macOS CI, no fresh final-wheel macOS native or managed Lakebase campaign claimed. Existing histories remain scoped to original artifacts.",
+    "Original full Linux controller deadline/signalling failure remains failed; actualcompleted3.11/native receipts retained and3.13requirement removed byhuman.",
+    "No Actions publication run, immutabletag, registryupload or publicconsumer success claimed before actualexecution."
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "actual_exception": {
+    "call": "registrar.document(\"lakebase_qualification\")",
+    "class": "Refused",
+    "function": "_person_public_api_checks",
+    "line": 676,
+    "source": "_lakebase_person.py",
+    "sqlstate": null
+  },
+  "canonical_arras_wheel_sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+  "cases_blocked": 10,
+  "cases_passed": 2,
+  "cleanup": "Original five-resource cleanup passed; fresh independent native/provider audit and exact parent/audit PID and process-group absence passed. No acceptance claim.",
+  "files": {
+    "actual-campaign-result.safe.json": "183bb7c7c90ca943838cf963654a7625cb449c47c41582bd0c52376d5ecb23ee",
+    "full-managed-terminal.safe.json": "f94f0b8dce84b18b2c02f5b6bab4ee51d4303104b79d6f89dcd502fc42de9eef",
+    "full-managed-terminal.safe.verifier.json": "218a75cf6327519fa9faf826aae4e35b6982eb948ac4cd78ff3765775becf26c",
+    "independent-audit.safe.json": "9a8787ae33f5f88f3283d2fb1f478ca834eded5ed3ae490381d91bb4ed361152",
+    "one-shot-ledger.jsonl": "b6b7a98dc24025a69e3ccc02a3206c2d039af0e408430a470e58b25c57f18f27",
+    "parent-launch-process.safe.json": "1d7d0b4561b046b186a1c422ae33ba2f00ee7cebad050c08c63c0f723e514149",
+    "person-exception.safe.json": "aa068e4f10c136fe16487d9070ae35c46ae9444df350a181c27337de885642d1",
+    "terminal-process-custody.safe.json": "41bc8b698c213eff7888f7bfbd624fe154dc3144d169e7d38aa0c2b38e85ea89"
+  },
+  "private_inputs_omitted": [
+    "target configuration",
+    "authorization configuration",
+    "credential references",
+    "fixture with target identities",
+    "raw stdout/stderr"
+  ],
+  "required_correction": "Assert the administrative refusal and retain independently observed registration, ordinary reader document retrieval and every subsequent full schedule. Preserve product authorization behavior.",
+  "schema": "arras.person-admin-read-failure-retention/1",
+  "source_commit": "d86ad4c968a72a5952ccadcb7080fb71fca2bfa3",
+  "source_explanation": "The same registrar is named as host administrative principal. Ontology.document requires an ordinary user; CONTRACT-001 and CONTRACT-005 prohibit administrative reads. The harness expected a forbidden read to succeed. This is not evidence of a missing database grant.",
+  "source_tree": "c65145478723fc3d47eb395edc3d81b377a60c7b",
+  "status": "BLOCKED_NOT_ACCEPTED_INDEPENDENT_CLEANUP_PASSED",
+  "truss_version": "0.0.50"
+}

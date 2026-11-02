@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
+
 import { useEffect } from "react";
+import { usePageEffects } from "../lib/pageEffects";
 import { type KeyIntent, keyIntent } from "../lib/shortcuts";
 import { AREAS, type Area } from "../route";
 import type { Go } from "./useRoute";
@@ -41,8 +43,9 @@ export function useAreaShortcuts(
   keys: { enabled: boolean; onHelp?: () => void },
 ) {
   const { enabled, onHelp } = keys;
+  const pageEffects = usePageEffects();
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || !pageEffects) return;
     const shown = AREAS.filter((a) => a !== "changes" || auditShown);
     const on = (e: KeyboardEvent) => {
       if (act(keyIntent(e, "operate"), { shown, current, go, lastAction, onHelp }))
@@ -50,5 +53,5 @@ export function useAreaShortcuts(
     };
     window.addEventListener("keydown", on);
     return () => window.removeEventListener("keydown", on);
-  }, [current, auditShown, go, lastAction, enabled, onHelp]);
+  }, [current, auditShown, go, lastAction, enabled, onHelp, pageEffects]);
 }

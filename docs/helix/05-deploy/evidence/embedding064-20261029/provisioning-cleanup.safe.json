@@ -1,0 +1,25 @@
+{
+  "actor_count": 4,
+  "checks": {
+    "denied_account_absent": true,
+    "denied_keychain_absent": true,
+    "denied_workspace_absent": true,
+    "endpoint_removed_or_disabled": true,
+    "installer_account_absent": true,
+    "installer_keychain_absent": true,
+    "installer_workspace_absent": true,
+    "project_delete_operation_passed": true,
+    "project_deleted": true,
+    "reader_account_absent": true,
+    "reader_keychain_absent": true,
+    "reader_workspace_absent": true,
+    "registrar_account_absent": true,
+    "registrar_keychain_absent": true,
+    "registrar_workspace_absent": true
+  },
+  "explicit_secret_deletion_count": 4,
+  "project_delete_done": true,
+  "schema": "arras.provisioning-cleanup-confirmation/1",
+  "status": "passed",
+  "unrelated_resources_modified": false
+}

@@ -1,0 +1,36 @@
+{
+  "files": {
+    "tests/test_lakebase_managed.py": "eb935a4a33067a21a85eec0d2089d76493655831dd2b87e2d11b64d2d87306d5",
+    "tools/_lakebase_managed.py": "b556b0ff6c90d447f80251ebc4a0be718660a8144b65d0a267e07479cd206849"
+  },
+  "local_validation": {
+    "diff_check": "passed",
+    "executor": "implementation agent",
+    "focused_producer_projector_and_isolation_tests_passed": 3,
+    "full_pyright_diagnostics": 0,
+    "managed_tests_passed": 73,
+    "native_case_deselected": 1,
+    "service_or_native_execution": false,
+    "whole_format": "passed",
+    "whole_ruff": "passed"
+  },
+  "recorded_at": "2026-10-24T18:07:28.188639+00:00",
+  "repair": "Retain the exact byte-count field as a strict non-bool integer from 1 through the same 32 MiB producer bound. Validate each case before storing a passed observation, fail malformed evidence under a fixed code, preserve independent case outcomes, and retain final receipt revalidation.",
+  "review": {
+    "human_approval_claim": false,
+    "independent_agent_source_review": "clear",
+    "independent_reviewer_executed_tests": false,
+    "root_source_review": "clear"
+  },
+  "runtime_and_acceptance": {
+    "actual_wan_gate": "failed_pending_fresh_full_campaign",
+    "old_failed_receipts_unchanged": true,
+    "private_fixture_sha256": "287461ba5751e1489b9160b1fc7d2e19a4df55be3afd9aaf9b5fb800420f3d2e",
+    "release_wheel_guard_changed": false,
+    "required_cases": 12,
+    "sql_limit_ms": 60000
+  },
+  "schema": "arras.managed-feed-projection-source-review/1",
+  "source_finding": "The real feed producer emits feed_payload_bytes; the previous exact restart feed projector omitted it. A successful restart return was therefore incompatible with the projector. The D10 receipt did not capture the exact exception; historical causality remains unproven.",
+  "status": "source_clear_not_managed_acceptance"
+}

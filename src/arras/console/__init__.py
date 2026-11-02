@@ -50,7 +50,16 @@ from arras.gqlschema import (
     coded,
     gql_error,
 )
-from arras.http import Receive, Request, Response, Scope, Send, parse_origin, post_origin_ok
+from arras.http import (
+    Receive,
+    Request,
+    Response,
+    Scope,
+    Send,
+    mounted_path,
+    parse_origin,
+    post_origin_ok,
+)
 from arras.serialize import jsonable
 from arras.telemetry import _logger
 from arras.types import Principal
@@ -209,11 +218,10 @@ class Console:
 
     async def handle(self, scope: Scope, receive: Receive) -> Response:
         method, raw_path = scope["method"], scope["path"]
-        root = scope.get("root_path") or ""
-        if root and raw_path.startswith(root):
-            raw_path = raw_path[len(root) :] or "/"  # a host's mount keeps the prefix in the path
-        if self.base and not (raw_path == self.base or raw_path.startswith(self.base + "/")):
+        resolved = mounted_path(scope, self.base)
+        if resolved is None:
             return self.err(404, "NOT_FOUND", "not found")
+        raw_path, root = resolved
         if self.base and raw_path == self.base:
             qs = scope.get("query_string", b"").decode()
             return 308, [("location", f"{root}{self.base}/" + (f"?{qs}" if qs else ""))], b""

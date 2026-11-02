@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import type { KeyboardEvent, RefObject } from "react";
+import { useId } from "react";
 import { QUERY_MAX_CHARS, type QueryConsistency } from "../api/types";
 import { Button } from "../components/ui";
 import type { QueryDraft } from "./queryHistory";
@@ -50,6 +51,8 @@ export function QueryEditor({
   inputRef: RefObject<HTMLTextAreaElement | null>;
   onRun: () => void;
 }) {
+  const inputId = useId();
+  const countId = useId();
   const over = count > QUERY_MAX_CHARS;
   const onKey = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
@@ -66,7 +69,7 @@ export function QueryEditor({
       }}
     >
       <label
-        htmlFor="query-sql"
+        htmlFor={inputId}
         className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-muted"
       >
         Query (Weft SQL, read-only)
@@ -75,7 +78,7 @@ export function QueryEditor({
         reads module <span className="arras-mono">{module}</span>
       </p>
       <textarea
-        id="query-sql"
+        id={inputId}
         ref={inputRef}
         data-testid="query-input"
         className="arras-mono block min-h-[4.5rem] w-full resize-y rounded border border-strong bg-surface p-2 text-fg"
@@ -85,7 +88,7 @@ export function QueryEditor({
         autoCapitalize="off"
         autoCorrect="off"
         autoComplete="off"
-        aria-describedby="query-count"
+        aria-describedby={countId}
         aria-invalid={over}
         placeholder={`SELECT u.code, u.name FROM ${module}.<Type> u`}
         value={draft.sql}
@@ -109,7 +112,7 @@ export function QueryEditor({
           <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Enter</kbd> runs
         </span>
         <span
-          id="query-count"
+          id={countId}
           data-testid="query-chars"
           className={`ml-auto text-[11px] ${over ? "font-semibold text-bad" : "text-muted"}`}
         >

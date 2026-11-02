@@ -1,0 +1,24 @@
+{
+  "files": {
+    "ci-40250804621-summary.safe.json": "69badf9705c52ff6091c912b1c23e85a68d6369aa51e77cbd1554ea703326fbb",
+    "doctor-installed-40250804621.safe.json": "ec8431a18bbc0c1a7e9a427e6619bdf3f8b362dd6c9f92732f2fe175402f571d",
+    "fresh-macos-40250804621/review-safe/README.md": "3828c9cb25c002cd0cfcbfc403ea21cda573d2f63aadd41aa80fcdaf596edf86",
+    "fresh-macos-40250804621/review-safe/candidate-wheel-provenance.json": "0327df47b2036d23b80594b68f3a9e2077821eae56bc2c15c103b786df3f3006",
+    "fresh-macos-40250804621/review-safe/macos-arm64.find-links.html": "a04f0e579585e30cc8a33830290ff66695bbe8fab264a3367ea0709152b8a40e",
+    "fresh-macos-40250804621/review-safe/macos-arm64.json": "724a5d033e4b34a20340bf35264729068b972428278bf5c51c96f410e99e3841",
+    "fresh-macos-40250804621/review-safe/native-macos-cleanup-summary.json": "189cc97f02944ef7169b51a18d2585f5fa134a5e26efb0ed2b70547a998ffbf7",
+    "fresh-macos-40250804621/review-safe/native-macos-cohort-binding.safe.json": "f00b2fc70d37b98f16206aeb30672909d8bf84df3a4e33b60c73004cb2b0d0f1",
+    "fresh-macos-40250804621/review-safe/native-macos-cohort.bound.json": "723d4f34829d57bd1b5bfb3d4ee047a3009754faf244a20d0e28f713a7fb70ea",
+    "fresh-macos-40250804621/review-safe/native-macos-consumer-provenance.json": "64a550f821d2412bd112df61cdbedbb90083edac8f3391d7f6da1799ed2056fb",
+    "fresh-macos-40250804621/review-safe/native-macos-verification.safe.json": "f71936a8426cb2f94fdcce0185491e7c48885f845624d34dd6863ffc3e138c14",
+    "fresh-macos-40250804621/review-safe/public-context-index.json": "ac6502fd72afca24dfde5784f7f04a49461c49661a6d2f08d9e3bc369e6db038",
+    "fresh-macos-40250804621/review-safe/review-safe-export.json": "773c90dd51cf1255c6fe7c46c3eeecc71875bf8e2fe44d7ae3822367d0585831",
+    "full-managed-40250804621/README.md": "8b9e5e50a8e04ae9333201aecd2b828ea7f2daee3b0c83976ae332de081ee338",
+    "full-managed-40250804621/final-evidence-projection.safe.json": "1c0f0e8b8b3690246b556c86622cf795fa6e5f0ada6d9e77f7529c10f44f3da7",
+    "root-release-qualification-063.json": "147796a806348679c13cb77e0d6388fc0a3bbacabcda9bd7b0de7ae81b8f1504",
+    "umf-admission-installed-40250804621.json": "7285f7e20d4b1d8a41578dfe2feb0801517bb989d091e257dadf22bec792219d"
+  },
+  "limits": "Exact qualified 0.6.3 bytes only; declared Mac limits and scope retained. These receipts do not attest a tag release or registry upload; those require their own successful workflow receipts.",
+  "schema": "arras.registry-063-qualification-retention/1",
+  "status": "prepublication_wheel_gates_passed"
+}

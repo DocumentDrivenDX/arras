@@ -23,6 +23,7 @@ from arras.results import (
     ImportResult,
     LoadsPage,
     MigrationResult,
+    Reason,
     Receipt,
     RecordsPage,
     RegisteredDocument,
@@ -32,6 +33,19 @@ from arras.results import (
 )
 from arras.searchplan import TextMatch
 from arras.types import Principal, Revision, Statement
+
+__all__ = [
+    "Answer",
+    "Backend",
+    "BackendInfo",
+    "Migrates",
+    "Plan",
+    "Provider",
+    "Reason",
+    "TextMatch",
+]
+# `Answer`, `BackendInfo`, `Plan`, `Reason` and `TextMatch` are re-exported because the protocols'
+# signatures name them: a backend written outside the package imports them from here.
 
 
 class Backend(Protocol):

@@ -1,0 +1,30 @@
+{
+  "acceptance_claim": false,
+  "installed_source_before_after_equal": true,
+  "native_checks": {
+    "all_four_ordinary_roles_present": true,
+    "all_native_memberships_match_bootstrap": true,
+    "all_native_role_attributes_match_bootstrap": true,
+    "exact_selected4_oid_binding": true,
+    "installer_identity_matches_bootstrap": true,
+    "ordinary_selected4_closures_false": true,
+    "owned_module_roles_absent": true,
+    "transaction_is_read_only": true,
+    "truss_schema_absent": true
+  },
+  "native_membership_count": 18,
+  "native_role_count": 33,
+  "new_native_role_count": 0,
+  "ordinary_selected4_closure_count": 16,
+  "ordinary_selected4_closures_false": true,
+  "provider_checks": {
+    "exact_project_endpoint_database_provider_identity": true,
+    "owned_compute_bounds_unchanged": true,
+    "owned_endpoint_restored_enabled": true
+  },
+  "schema": "arras.public50-D12-independent-audit-public-summary/1",
+  "scope": "baseline",
+  "source_receipt_sha256": "f24e1245e6fcd785ba63b722df14dfa17df74b60e2efbb2ddfb5066d49f1437f",
+  "stage": "baseline_six_diagnostic",
+  "status": "passed"
+}

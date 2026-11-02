@@ -2,9 +2,13 @@
 import { createContext, useContext } from "react";
 import type { MetaData } from "../api/types";
 import type { LinkTo } from "../kit";
+import type { FocusState } from "./focusAfter";
 import { type ExploreLocation, formatExplore } from "./location";
 
 export interface BrowserContext {
+  focus?: FocusState;
+  /** False in a controlled host: history and page scroll belong to the embedding application. */
+  ownsHistory?: boolean;
   meta: MetaData;
   /** Open a location (the fragment, or the host's `onLocation`). */
   go: (loc: ExploreLocation, opts?: { replace?: boolean }) => void;

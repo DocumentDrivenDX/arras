@@ -1,0 +1,148 @@
+{
+  "arras_wheel_sha256": "ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d",
+  "index_scope": "https://pypi.org/simple",
+  "install_selector": "arras[truss,umf]==0.6.3",
+  "installed_direct_url_references": 0,
+  "installed_distributions": 21,
+  "pip_check": "passed",
+  "pypi_report_sha256": "6ea7041361a2d5fc28e1a797e9bb6a35e9fbcf14569717fd2f445c811bef7368",
+  "qualified_github_dependency_sha256": {
+    "truss-toolkit": "7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00",
+    "umf-core": "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9",
+    "weft-sql": {
+      "linux-aarch64": "42f846d689ace027d6bb2951f27c587660d4e5151285fe911ce7a3006d0001de",
+      "linux-x86_64": "a23142f12b59444138b588a8a764666b025552a14036f62d83af022153f1a0a5",
+      "macos-arm64": "e60e552f02c670b43a43111b08d26d6b415aaa9b9de42f241c37ad1d9fdd2487"
+    }
+  },
+  "registry": "pypi",
+  "schema_version": 1,
+  "selected_distribution_count": 19,
+  "selected_distributions": {
+    "annotated-types": {
+      "filename": "annotated_types-0.8.0-py3-none-any.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0",
+      "version": "0.8.0"
+    },
+    "arras": {
+      "filename": "arras-0.6.3-py3-none-any.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d",
+      "version": "0.6.3"
+    },
+    "attrs": {
+      "filename": "attrs-26.1.0-py3-none-any.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309",
+      "version": "26.1.0"
+    },
+    "graphql-core": {
+      "filename": "graphql_core-3.3.1-py3-none-any.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "43ebcd0d9a0662a71b1a2f6562ba863d253057ec11cbc45835b2e2683a0a3770",
+      "version": "3.3.1"
+    },
+    "jsonschema": {
+      "filename": "jsonschema-4.26.0-py3-none-any.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "d489f15263b8d200f8387e64b4c3a75f06629559fb73deb8fdfb525f2dab50ce",
+      "version": "4.26.0"
+    },
+    "jsonschema-specifications": {
+      "filename": "jsonschema_specifications-2025.9.1-py3-none-any.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "98802fee3a11ee76ecaca44429fda8a41bff98b00a0f2838151b113f210cc6fe",
+      "version": "2025.9.1"
+    },
+    "mini-racer": {
+      "filename": "mini_racer-0.14.1-py3-none-macosx_11_0_arm64.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "56cc6965a1665a50d8d613bc43aa83b4cec6b1f09acc69dc4c2845dacb201463",
+      "version": "0.14.1"
+    },
+    "psycopg": {
+      "filename": "psycopg-3.3.6-py3-none-any.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "a1db9f7148b06a28606767efaca51fa6f9398c5c0a3810519be69d7000bdb631",
+      "version": "3.3.6"
+    },
+    "psycopg-binary": {
+      "filename": "psycopg_binary-3.3.6-cp311-cp311-macosx_11_0_arm64.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "f0535693ce476a722b718b002d5d2c27d47e71ca945276ac194409c98e74c492",
+      "version": "3.3.6"
+    },
+    "pydantic": {
+      "filename": "pydantic-2.14.1-py3-none-any.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "9195d967ec791692a04438115466764fb8b9a27b31f14a760437694f40d6b454",
+      "version": "2.14.1"
+    },
+    "pydantic-core": {
+      "filename": "pydantic_core-2.50.1-cp311-cp311-macosx_11_0_arm64.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "b6d0c2183008c188e19f4906d426b293bdc4f67ab17df8e180fe16cda208fa71",
+      "version": "2.50.1"
+    },
+    "referencing": {
+      "filename": "referencing-0.37.0-py3-none-any.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "381329a9f99628c9069361716891d34ad94af76e461dcb0335825aecc7692231",
+      "version": "0.37.0"
+    },
+    "rpds-py": {
+      "filename": "rpds_py-2026.9.1-cp311-cp311-macosx_11_0_arm64.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "3231c4c0e521dafa5be0c9f114ee2c2ad46650836f2d72caa86801950c3e7044",
+      "version": "2026.9.1"
+    },
+    "ruamel-yaml": {
+      "filename": "ruamel_yaml-0.19.1-py3-none-any.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "27592957fedf6e0b62f281e96effd28043345e0e66001f97683aa9a40c667c93",
+      "version": "0.19.1"
+    },
+    "truss-toolkit": {
+      "filename": "truss_toolkit-0.0.50-py3-none-any.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00",
+      "version": "0.0.50"
+    },
+    "typing-extensions": {
+      "filename": "typing_extensions-4.16.0-py3-none-any.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8",
+      "version": "4.16.0"
+    },
+    "typing-inspection": {
+      "filename": "typing_inspection-0.4.4-py3-none-any.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "65b8397ba37ccbce054456aaccddfc91e6e3083c92824df348d96ca832f3f147",
+      "version": "0.4.4"
+    },
+    "umf-core": {
+      "filename": "umf_core-0.10.0-py3-none-any.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "49633924b45a3c8499d4fcc1a24c30d5a8fcb34d974ab019bbda987cb47da0f9",
+      "version": "0.10.0"
+    },
+    "weft-sql": {
+      "filename": "weft_sql-0.4.51-cp39-abi3-macosx_11_0_arm64.whl",
+      "origin_host": "files.pythonhosted.org",
+      "sha256": "e60e552f02c670b43a43111b08d26d6b415aaa9b9de42f241c37ad1d9fdd2487",
+      "version": "0.4.51"
+    }
+  },
+  "smoke": {
+    "arras_import": "passed",
+    "doctor": "passed",
+    "toolkit_version": "0.0.50",
+    "truss_import": "passed",
+    "umf_distribution_version": "0.10.0",
+    "umf_document_admission": "valid_and_complete",
+    "weft_import": "passed",
+    "weft_support": "passed"
+  },
+  "status": "passed"
+}

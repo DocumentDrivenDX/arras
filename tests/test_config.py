@@ -599,3 +599,48 @@ attribute_namespace = "Example.attrs"
     with pytest.raises(ConfigError) as error:
         Config.from_env(invalid)
     assert error.value.problems == ["distribution.telemetry.attribute_namespace: invalid value"]
+
+
+def test_alias_values_that_differ_warn_by_name_and_the_custom_value_is_used() -> None:
+    from arras.distribution import DistributionConfig
+
+    selected = DistributionConfig(env_prefix="EXAMPLE")
+    c = Config.from_env(
+        {"EXAMPLE_DEV_USER": "alice", "ARRAS_DEV_USER": "bob-sentinel"}, distribution=selected
+    )
+    assert c.dev_user == "alice"
+    assert c.warnings == (
+        "EXAMPLE_DEV_USER and ARRAS_DEV_USER are both set to different values; "
+        "EXAMPLE_DEV_USER is used",
+    )
+    assert "bob-sentinel" not in " ".join(c.warnings) and "alice" not in " ".join(c.warnings)
+
+
+def test_equal_blank_and_single_aliases_do_not_warn() -> None:
+    from arras.distribution import DistributionConfig
+
+    selected = DistributionConfig(env_prefix="EXAMPLE")
+    for env in (
+        {"EXAMPLE_DEV_USER": "alice", "ARRAS_DEV_USER": " alice "},  # equal once trimmed
+        {"EXAMPLE_DEV_USER": " ", "ARRAS_DEV_USER": "bob"},  # a blank alias is unset
+        {"EXAMPLE_DEV_USER": "alice"},
+        {"ARRAS_DEV_USER": "bob"},
+    ):
+        assert Config.from_env(env, distribution=selected).warnings == ()
+    assert Config.from_env({"ARRAS_DEV_USER": "bob"}).warnings == ()  # one namespace
+
+
+def test_alias_warnings_are_bounded_and_never_carry_secret_looking_values() -> None:
+    from arras.distribution import DistributionConfig
+    from arras.mcp.config import MAX_WARNINGS
+
+    selected = DistributionConfig(env_prefix="EXAMPLE")
+    env = {
+        f"{p}_BACKEND_{n}_ENDPOINT": f"{p.lower()}-secret-{n}.example"
+        for n in "ABCDEFGHIJKLM"
+        for p in ("EXAMPLE", "ARRAS")
+    }
+    c = Config.from_env(env, distribution=selected)
+    assert len(c.warnings) == MAX_WARNINGS + 1
+    assert c.warnings[-1] == f"and {13 - MAX_WARNINGS} more alias conflicts"
+    assert "secret" not in " ".join(c.warnings)

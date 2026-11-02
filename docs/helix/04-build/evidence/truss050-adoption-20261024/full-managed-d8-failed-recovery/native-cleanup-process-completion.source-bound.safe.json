@@ -1,0 +1,14 @@
+{
+  "derivative": true,
+  "elapsed_seconds": 14.071681959088892,
+  "exit_code": 0,
+  "process_group_absent": true,
+  "process_identifiers_omitted": true,
+  "provider_mutations_authorized": false,
+  "schema": "arras.f37-native-cleanup-process-completion-public-summary/1",
+  "source_receipt_retained_privately": true,
+  "source_receipt_sha256": "3638a98cbc03f210e702b5f5a21ae5eb8c6148718db009794f876915e2b0850b",
+  "sql_authorized": "exact-census-owned-cleanup",
+  "worker_completed_within_work_budget": true,
+  "worker_sha256": "17059ae98809d968af5e69dc619db7c09482d247a535e310483f6280cba7c30b"
+}

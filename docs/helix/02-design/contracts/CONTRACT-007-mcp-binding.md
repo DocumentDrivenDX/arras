@@ -157,6 +157,16 @@ path, source content or callback exception text. No fallback or conflict policy
 may join one person's credential to another credential source. Existing token
 refresh and claim selection continue after this single check.
 
+For every other key set in both namespaces to different nonblank values (equal
+after the outer-whitespace trim, or blank on either side, is not a difference),
+the selected prefix's value is used, as above, and `Config.warnings` records one
+line: `<PREFIX>_<KEY> and ARRAS_<KEY> are both set to different values;
+<PREFIX>_<KEY> is used`. It names variables, never values, so an endpoint or
+other secret-looking value cannot reach a log. At most eight lines are kept,
+then `and N more alias conflicts`. The process prints each to stderr as
+`<label>: configuration: warning: <line>` before its startup line and exits as
+it otherwise would.
+
 **Tool mapping.** Let `n` be the existing fixed/action tool name after the current
 action collision-suffix rule. With empty prefix, expose `n`; otherwise expose
 `<prefix>_<n>`. This mapping is injective and covers fixed tools, generated action

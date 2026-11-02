@@ -2,6 +2,7 @@
 // The states every screen shares (DESIGN-GB, States): loading, not available, backend down and the
 // expired session. Each says what happened in words, never an error code or a backend message.
 import type { ReactNode } from "react";
+import { useId } from "react";
 import { Glyph, type GlyphName } from "./icons";
 
 export function Skeleton({ label = "Loading" }: { label?: string }) {
@@ -27,12 +28,13 @@ function State({
   children: ReactNode;
   action?: ReactNode;
 }) {
+  const heading = useId();
   return (
-    <section className="gb-state" data-testid="gb-state" aria-labelledby="gb-state-title">
+    <section className="gb-state" data-testid="gb-state" aria-labelledby={heading}>
       <span className="gb-state-icon">
         <Glyph name={glyph} size={26} />
       </span>
-      <h1 id="gb-state-title">{title}</h1>
+      <h1 id={heading}>{title}</h1>
       <p>{children}</p>
       {action}
     </section>

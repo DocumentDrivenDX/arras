@@ -1,0 +1,345 @@
+{
+  "acceptance_claim": false,
+  "canonical_arras_wheel_sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+  "cases": [
+    {
+      "case": "LB-ADMISSION",
+      "code": "identity_tls_server_match",
+      "status": "passed"
+    },
+    {
+      "case": "LB-INSTALL",
+      "code": "typed_strict_refusal_then_selected_install",
+      "status": "passed"
+    },
+    {
+      "case": "LB-PERSON",
+      "code": "human_identity_lifecycle_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-CUSTODY",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-SETTLEMENT",
+      "code": "original_request_journal_binding_missing",
+      "status": "failed"
+    },
+    {
+      "case": "LB-ACL",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    }
+  ],
+  "cleanup_independent_absence": {
+    "generated_roles_absent": true,
+    "truss_schema_absent": true
+  },
+  "counts": {
+    "blocked": 0,
+    "failed": 1,
+    "passed": 5
+  },
+  "custody_returned": true,
+  "diagnostic_note": "The selected LB-SETTLEMENT failed with original_request_journal_binding_missing. The private post-run journal inventory snapshot is not retained here, so historical relation details and actual journal xid-match are unknown. The separate owned archive proves the V18 cut-through-COMMIT/read-wait path; it does not prove the journal inventory contents.",
+  "elapsed_seconds": 647.417029791,
+  "failed_case_code": "original_request_journal_binding_missing",
+  "failed_cases": [
+    "LB-SETTLEMENT"
+  ],
+  "final_acceptance": "not_claimed; baseline-only diagnostic",
+  "fixture_sha256": "9942c8ce585b83ea8db6588cdad1587b7a70ea323bc00809924c620452021457",
+  "full_twelve_acceptance_passed": false,
+  "genuine_v18_commit_interruption_observed": true,
+  "genuine_v18_commit_interruption_stages": [
+    "fault_source_entered",
+    "connection_identity_matched",
+    "request_matched",
+    "logical_carrier_returned",
+    "selected_mutation",
+    "commit_hook_entry",
+    "original_driver_entry",
+    "commit_read_wait",
+    "transport_cut",
+    "original_driver_outcome",
+    "exception",
+    "fault_source_exit"
+  ],
+  "historical_relation_kind_name_parent_rowcount_and_leaf_journal_xid_match": "unknown; private post-run inventory snapshot was not retained",
+  "independent_audit_status": "passed",
+  "independent_audit_worker_sha256": "48ace19f981c3701e02037f107a95b8a54fdfaf99b864cd62a3781ff618d1779",
+  "installed_source_before_after_equal": true,
+  "managed_gate": "not_run",
+  "native_membership_count": 18,
+  "native_role_count": 33,
+  "new_native_role_count": 0,
+  "no_active_exec_sessions": true,
+  "no_vm": true,
+  "ordinary_selected4_closure_count": 16,
+  "ordinary_selected4_closures_false": true,
+  "original_cleanup_status": "passed",
+  "owned_fault_archive_status": "complete",
+  "parent_entry_sha256": "61d634df8e043835195fa6e15868e68960e3e8c5dd281c4a10519f96fcd04408",
+  "postrun_private_journal_inventory_retained": false,
+  "private_archive_commitments": [
+    {
+      "event_count": 3,
+      "event_stages": [
+        "fault_source_entered",
+        "connection_identity_matched",
+        "fault_source_exit"
+      ],
+      "events": [
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 555677947541,
+          "sqlstate": null,
+          "stage": "fault_source_entered"
+        },
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 556155965041,
+          "sqlstate": null,
+          "stage": "connection_identity_matched"
+        },
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 557093657583,
+          "sqlstate": null,
+          "stage": "fault_source_exit"
+        }
+      ],
+      "row_count": 3,
+      "sha256": "1fc07a7ad1cc61d0014d00eff2ffc5585e366eb8cb94f368159217e0ebcc922c",
+      "size_bytes": 1388
+    },
+    {
+      "event_count": 6,
+      "event_stages": [
+        "fault_source_entered",
+        "connection_identity_matched",
+        "request_matched",
+        "logical_carrier_returned",
+        "selected_mutation",
+        "fault_source_exit"
+      ],
+      "events": [
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 558916847000,
+          "sqlstate": null,
+          "stage": "fault_source_entered"
+        },
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 559349828416,
+          "sqlstate": null,
+          "stage": "connection_identity_matched"
+        },
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 560012472000,
+          "sqlstate": null,
+          "stage": "request_matched"
+        },
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 560094984000,
+          "sqlstate": null,
+          "stage": "logical_carrier_returned"
+        },
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 560095021791,
+          "sqlstate": null,
+          "stage": "selected_mutation"
+        },
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 560223193166,
+          "sqlstate": null,
+          "stage": "fault_source_exit"
+        }
+      ],
+      "row_count": 6,
+      "sha256": "65eb56593100162d3ea7ef8568c2c20fb3d6b3476dfa810aacb1a89eedafb3ee",
+      "size_bytes": 3078
+    },
+    {
+      "event_count": 12,
+      "event_stages": [
+        "fault_source_entered",
+        "connection_identity_matched",
+        "request_matched",
+        "logical_carrier_returned",
+        "selected_mutation",
+        "commit_hook_entry",
+        "original_driver_entry",
+        "commit_read_wait",
+        "transport_cut",
+        "original_driver_outcome",
+        "exception",
+        "fault_source_exit"
+      ],
+      "events": [
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 557095841125,
+          "sqlstate": null,
+          "stage": "fault_source_entered"
+        },
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 557554407250,
+          "sqlstate": null,
+          "stage": "connection_identity_matched"
+        },
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 558627393125,
+          "sqlstate": null,
+          "stage": "request_matched"
+        },
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 558803128333,
+          "sqlstate": null,
+          "stage": "logical_carrier_returned"
+        },
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 558803161583,
+          "sqlstate": null,
+          "stage": "selected_mutation"
+        },
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 558914768791,
+          "sqlstate": null,
+          "stage": "commit_hook_entry"
+        },
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 558914801625,
+          "sqlstate": null,
+          "stage": "original_driver_entry"
+        },
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 558914992833,
+          "sqlstate": null,
+          "stage": "commit_read_wait"
+        },
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 558915080666,
+          "sqlstate": null,
+          "stage": "transport_cut"
+        },
+        {
+          "exception_class": "OperationalError",
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 558915489208,
+          "sqlstate": null,
+          "stage": "original_driver_outcome"
+        },
+        {
+          "exception_class": "CommitUnknown",
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 558915569791,
+          "sqlstate": null,
+          "stage": "exception"
+        },
+        {
+          "exception_class": null,
+          "mode": "cut_transport_during_commit",
+          "offset_ns": 558915664000,
+          "sqlstate": null,
+          "stage": "fault_source_exit"
+        }
+      ],
+      "row_count": 12,
+      "sha256": "adc1b65f8799b455ee2a6d830f99ab907151aaaccd2f999ead3dc274f3f74496",
+      "size_bytes": 6346
+    }
+  ],
+  "provider_checks": {
+    "exact_project_endpoint_database_provider_identity": true,
+    "owned_compute_bounds_unchanged": true,
+    "owned_endpoint_restored_enabled": true
+  },
+  "provider_operation_timeout_seconds": 180,
+  "read_only_native_transaction": true,
+  "receipt_bindings": [
+    {
+      "sha256": "5ec5c1d5c77655f0e4abbc3fddd384affeda083bdc9d01a25230e020cf2cf04a",
+      "source_name": "baseline-six-terminal.safe.json"
+    },
+    {
+      "sha256": "2c0cdcb8a0f2f935ea895ea79d4348fe73bb3ee145e7aaea81f7561300c813e1",
+      "source_name": "baseline-six-terminal.safe.verifier.json"
+    },
+    {
+      "sha256": "0ff69186a58caaf3e41cdc6aea171058513a44e407d4ee93688e52b56927d05a",
+      "source_name": "baseline-six-diagnostics.safe.json"
+    },
+    {
+      "sha256": "902213614c313815deefa4dec4a9d922c528adb50c3f1c8818a050c7691eaf7e",
+      "source_name": "independent-baseline-six-audit.safe.json"
+    },
+    {
+      "sha256": "1793382cc07eb8860b3510c81c7ad2a45c5d8dba34b0887093774d99ddd8e4db",
+      "source_name": "owned-fault-archives.safe.json"
+    },
+    {
+      "sha256": "bd4415102c4896cd91743029ac5faed619a107c51e32d9ccacb2ceda6d370b65",
+      "source_name": "baseline-six-process-census.safe.json"
+    },
+    {
+      "sha256": "b58926e88db20bb0f3bdf5c81b2d75761f580f25f9b40b26e3a14b56f11cc981",
+      "source_name": "baseline-six-custody-handback.safe.json"
+    },
+    {
+      "sha256": "3cd863307fd3e441d8ebf820957dacf238aded191c661de93c150ed5e8d17db9",
+      "source_name": "parent-launch-process.safe.json"
+    },
+    {
+      "sha256": "1b01a9db5720efe2dc955711cb6ed84ff75ed3590a89c116522cef1abedcf721",
+      "source_name": "audit-supervisor-launch.safe.json"
+    },
+    {
+      "sha256": "59b7c3cad51f9101d8988d7374ba75fa967d544a50053b190be0e3279c44a70f",
+      "source_name": "fault-archives-before.private.json"
+    }
+  ],
+  "restoration_mutations_performed": false,
+  "schema": "arras.public50-baseline-v18-diagnostic-public-summary/1",
+  "scope": "baseline",
+  "source_commit": "2d1bc7e34af7499d5f4f582d4ee41e0d772920cc",
+  "source_tree": "396f50b8ddc10bc8d3e16a5baf7f81055e17efc4",
+  "sql_operation_timeout_ms": 60000,
+  "stage": "baseline_six_diagnostic",
+  "v18_observer_sha256": "24786741f39a02ca0af7058829e1afb95cdea3e5082945d6e3420fc503a7b682",
+  "wall_start": "2026-10-25T18:05:36Z",
+  "wall_terminal": "2026-10-25T18:16:23Z"
+}

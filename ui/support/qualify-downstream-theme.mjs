@@ -5,6 +5,27 @@ import assert from "node:assert/strict";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
+// A requirement of the host-build fixture (support/QUALIFICATION.md, "Host-build fixture contract"): a failure the host fixes by
+// changing its fixture, so its message (fixed text, never page content) is printed and recorded.
+const CONTRACT_DOC = "support/QUALIFICATION.md in @documentdrivendx/arras-ui, section 'Host-build fixture contract'";
+class HostRequirement extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "HostRequirement";
+  }
+}
+function requirement(condition, message) {
+  if (!condition) throw new HostRequirement(message);
+}
+const WIDGET_MARKERS = {
+  "[data-theme-button]": "Button",
+  "[data-theme-text-field]": "TextField",
+  "[data-theme-text-area]": "TextArea",
+  "[data-theme-select]": "Select",
+  "[data-theme-notice]": "Notice",
+  "[data-theme-mark]": "Mark",
+};
+const CONTROLS_REGION = "Downstream widget controls";
 function usage() {
   return "Usage: arras-ui-qualify <http(s) URL> [--host-build] [--console] [--output <dir>] [--baselines <dir>] [--update-baselines] [--help]";
 }
@@ -137,20 +158,34 @@ function contrast(first, second) {
 }
 async function assertFocusContrast(page, description) {
   qualificationPhase = `${description}: measuring focus indicator`;
-  const indicator = await page.evaluate(() => {
-    const element = document.activeElement;
-    if (!(element instanceof HTMLElement)) throw new Error("focused element is unavailable");
-    const measured = window.__arrasMeasureFocusBackdrop(element);
-    const style = getComputedStyle(element);
-    const outlineVisible = style.outlineStyle !== "none" && Number.parseFloat(style.outlineWidth) > 0;
-    const shadowColor = /rgba?\([^)]*\)|#[\da-f]{6}/i.exec(style.boxShadow)?.[0];
-    return {
-      visible: outlineVisible || style.boxShadow !== "none",
-      color: outlineVisible ? style.outlineColor : shadowColor,
-      width: outlineVisible ? Number.parseFloat(style.outlineWidth) : undefined,
-      background: measured.background,
-    };
-  });
+  let indicator;
+  try {
+    indicator = await page.evaluate(() => {
+      const element = document.activeElement;
+      if (!(element instanceof HTMLElement)) throw new Error("focused element is unavailable");
+      const measured = window.__arrasMeasureFocusBackdrop(element);
+      const style = getComputedStyle(element);
+      const outlineVisible = style.outlineStyle !== "none" && Number.parseFloat(style.outlineWidth) > 0;
+      const shadowColor = /rgba?\([^)]*\)|#[\da-f]{6}/i.exec(style.boxShadow)?.[0];
+      return {
+        visible: outlineVisible || style.boxShadow !== "none",
+        color: outlineVisible ? style.outlineColor : shadowColor,
+        width: outlineVisible ? Number.parseFloat(style.outlineWidth) : undefined,
+        background: measured.background,
+      };
+    });
+  } catch (error) {
+    const reason = String(error?.message ?? "");
+    requirement(
+      !/gradient focus backgrounds are unsupported/.test(reason),
+      `${description}: an ancestor of the focused control (up to html) has a background image or gradient; focus contrast cannot be measured. Give the controls' ancestors a solid background-color and no background-image`,
+    );
+    requirement(
+      !/ancestor opacity is unsupported/.test(reason),
+      `${description}: an ancestor of the focused control has opacity other than 1; focus contrast cannot be measured. Remove opacity from the controls' ancestors`,
+    );
+    throw error;
+  }
   assert.ok(indicator.visible && indicator.color, `${description}: focus indicator must have a measurable color`);
   if (indicator.width !== undefined) assert.ok(indicator.width >= 2, `${description}: focus outline must be at least 2px`);
   const ratio = contrast(indicator.color, indicator.background);
@@ -273,34 +308,43 @@ try {
         ]
       : ["button"];
     for (const selector of widgetSelectors) {
-      assert.ok(
-        await root.locator(selector).count(),
-        `host fixture is missing themed widget ${selector}`,
-      );
+      const present = await root.locator(selector).count();
+      if (hostBuild)
+        requirement(
+          present,
+          `the host fixture has no ${selector} element (the host ${WIDGET_MARKERS[selector]} widget) inside its first .arras-root; --host-build needs all six widgets rendered with their data-theme-* markers`,
+        );
+      else assert.ok(present, `host fixture is missing themed widget ${selector}`);
     }
     if (hostBuild) {
       qualificationPhase = `checking app-owned themed controls in ${scheme} mode`;
       const appSelector = surface === "console" ? '[data-testid="console-header"]' : ".gb";
       const app = page.locator(".arras-root").filter({ has: page.locator(appSelector) }).last();
-      assert.ok(await app.count(), `${surface} public ArrasApp did not mount`);
-      assert.ok(
-        await app.locator("[data-theme-mark]").count(),
-        `${surface} ArrasApp did not consume the host Mark for its configured brand`,
+      requirement(
+        await app.count(),
+        `no .arras-root contains the public ArrasApp (${surface === "console" ? '[data-testid="console-header"]' : ".gb"}); mount ArrasApp or the testkit AcceptanceHost beneath the host's DesignSystemProvider`,
       );
-      const appButton = root.locator('[aria-label="Downstream widget controls"] button[data-theme-button]').first();
-      assert.ok(await appButton.count(), "host fixture is missing its deterministic keyboard opener");
+      requirement(
+        await app.locator("[data-theme-mark]").count(),
+        `the ${surface} ArrasApp drew no [data-theme-mark]; give it a brand with logo "theme" (a <meta name="arras-brand"> with {"logo":"theme"}) and a host Mark widget that carries data-theme-mark`,
+      );
+      const appButton = root.locator(`[aria-label="${CONTROLS_REGION}"] button[data-theme-button]`).first();
+      requirement(
+        await appButton.count(),
+        `the host fixture has no button[data-theme-button] inside an element labelled aria-label="${CONTROLS_REGION}" in its first .arras-root; it is the keyboard opener the command palette check focuses`,
+      );
       await appButton.focus();
       await page.keyboard.press("ControlOrMeta+k");
       const palette = app.getByRole("dialog", { name: "Command palette" });
       await palette.waitFor({ state: "visible" });
       const paletteField = palette.getByRole("combobox", { name: "Search entities and commands" });
-      assert.ok(
+      requirement(
         await paletteField.evaluate((node) => node.matches("[data-theme-text-field]")),
-        `${surface} app-owned palette did not consume the host TextField`,
+        `the ${surface} command palette's search field is not a [data-theme-text-field]; the app must draw it through the host TextField (use DesignSystemProvider above ArrasApp)`,
       );
-      assert.ok(
+      requirement(
         await palette.locator("button[data-theme-button]").count(),
-        `${surface} app-owned palette did not consume the host Button`,
+        `the ${surface} command palette has no button[data-theme-button]; the app must draw its buttons through the host Button (use DesignSystemProvider above ArrasApp)`,
       );
       await paletteField.fill("entity");
       await page.keyboard.press("Escape");
@@ -416,13 +460,22 @@ try {
       `${scheme} axe violations`,
     );
     if (hostBuild) {
-      const widgetControls = root.getByRole("region", { name: "Downstream widget controls" });
+      const widgetControls = root.getByRole("region", { name: CONTROLS_REGION });
       const expected = [
         "[data-theme-button]",
         "[data-theme-text-field]",
         "[data-theme-text-area]",
         "[data-theme-select]",
       ];
+      requirement(
+        await widgetControls.count(),
+        `the host fixture has no region labelled "${CONTROLS_REGION}" (for example <section aria-label="${CONTROLS_REGION}">) in its first .arras-root`,
+      );
+      for (const selector of expected)
+        requirement(
+          await widgetControls.locator(selector).count(),
+          `the region labelled "${CONTROLS_REGION}" has no ${selector} element; it must hold the host Button, TextField, TextArea and Select, in that tab order`,
+        );
       const firstControl = widgetControls.locator(expected[0]).first();
       await firstControl.focus();
       assert.ok(
@@ -438,12 +491,12 @@ try {
       await assertFocusContrast(page, `${scheme}: host Button focus`);
       await page.keyboard.press("Tab");
       for (const [index, selector] of expected.slice(1).entries()) {
-        assert.ok(
+        requirement(
           await widgetControls
             .locator(selector)
             .first()
             .evaluate((node) => node === document.activeElement),
-          `keyboard order reaches ${selector}`,
+          `the region labelled "${CONTROLS_REGION}" does not reach ${selector} by Tab after the previous widget; the tab order must be Button, TextField, TextArea, Select with no other focusable element between`,
         );
         await assertFocusContrast(page, `${scheme}: ${selector} focus`);
         if (index < expected.length - 2) await page.keyboard.press("Tab");
@@ -571,6 +624,11 @@ try {
     phase: qualificationPhase,
     error: "qualification did not pass; see the runner output for the failing gate",
   };
+  if (error instanceof HostRequirement) {
+    receipt.requirement = error.message;
+    receipt.contract = CONTRACT_DOC;
+    receipt.error = "qualification did not pass: the host fixture does not meet the --host-build contract";
+  }
   try {
     mkdirSync(options.output, { recursive: true });
     writeFileSync(
@@ -578,6 +636,10 @@ try {
       `${JSON.stringify(receipt, null, 2)}\n`,
     );
   } catch {}
-  process.stderr.write(`${receipt.error} (${error?.name ?? "unknown error"})\n`);
+  process.stderr.write(
+    error instanceof HostRequirement
+      ? `${receipt.error} (${qualificationPhase}).\n${error.message}.\nContract: ${CONTRACT_DOC}.\n`
+      : `${receipt.error} (${error?.name ?? "unknown error"})\n`,
+  );
   process.exitCode = 1;
 }

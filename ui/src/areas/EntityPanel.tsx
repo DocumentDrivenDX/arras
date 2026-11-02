@@ -7,7 +7,7 @@ import { useModule } from "../api/queries";
 import { Button, CopyButton, ErrorPanel, Notice, Section, Spinner } from "../components/ui";
 import { type PropertyAction, propertyActions } from "../kit";
 import { fmtTime, fmtValue } from "../lib/format";
-import { requestInputFocus } from "../lib/formFocus";
+import { requestInputFocus, useFormFocus } from "../lib/formFocus";
 import { EntityActionBar } from "./EntityActionBar";
 import { Relationships } from "./EntityRelationships";
 import { type EntityData, type Entry, fetchEntity } from "./entity";
@@ -214,6 +214,7 @@ export function EntityPanel({
   onGraph,
   consistency = "LATEST",
 }: EntityPanelProps) {
+  const formFocus = useFormFocus();
   const client = useClient();
   const { module: m } = useModule(name);
   const entry = trail[trail.length - 1];
@@ -239,7 +240,7 @@ export function EntityPanel({
   const data: EntityData | null | undefined = entry.seed ?? q.data;
   const changes = sameModule ? propertyActions(m, entry.type) : {};
   const change = (c: PropertyAction) => {
-    requestInputFocus(c.action, c.input);
+    requestInputFocus(formFocus, c.action, c.input);
     onAction?.(c.action, { [c.keyInput]: entry.key });
   };
 

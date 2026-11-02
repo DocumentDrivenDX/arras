@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import { expect, type Page, test } from "@playwright/test";
-import { ORIGIN } from "./acceptance";
+import { acceptance, ORIGIN } from "./acceptance";
 import { control, ensureAtlas, ensureHub, moduleNames } from "./gb-fixtures";
 
 // Visual review (SD-011, Verification Plan 5; DESIGN-GB, Review): every screen of the design, from
@@ -21,6 +21,12 @@ const OPS_CASE = "uc-visual-ops";
 let hidden: string[] = [];
 
 test.beforeAll(async ({ playwright }) => {
+  // Only this project compares screenshots, so only it needs the host's reviewed baselines (testkit/config.ts).
+  if (!acceptance.baselineDir)
+    throw new Error(
+      "The visual project compares screenshots and needs baselineDir in createAcceptanceConfig(); " +
+        "run --project=chromium --project=schema-admin --project=browser to skip it",
+    );
   const request = await playwright.request.newContext({ baseURL: ORIGIN });
   await ensureAtlas(request);
   await ensureHub(request, HUB, 120, "Hub solution", "atlas");

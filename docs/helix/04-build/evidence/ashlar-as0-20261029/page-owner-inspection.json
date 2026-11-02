@@ -1,0 +1,22 @@
+{
+  "scope": "Source inspection only; no import/compile/SQL or installed proof.",
+  "ashlar_baseline": "5174a1fe9317cc550f9d67b52edca371ccae33be",
+  "files": [
+    {
+      "path": "src/ashlar_host/managed_current_weft_binding.py",
+      "sha256": "70b935211cd7fb843efe767982d4a1530a8bd7e38520b9607885ce9efe9445dd",
+      "matches_origin_main_baseline": true
+    },
+    {
+      "path": "src/ashlar_host/managed_current_query.py",
+      "sha256": "6809b3d0677ad4c225e5f0a38e0dc1cd72de54747d947786d88d84759d5c8ebb",
+      "matches_origin_main_baseline": true
+    },
+    {
+      "path": "src/ashlar/access.py",
+      "sha256": "d1a0599d9d4b81f0715c5006af655cdf50426996d64a83e10a95c9b0040751f2",
+      "matches_origin_main_baseline": true
+    }
+  ],
+  "runtime_gap": "ManagedCurrentReadOwner requires campaign source oracle/expected_rows and authorize_result compares fixture rows. A separate person-scoped production owner is needed; no generic compiler extension is missing for the first STRING page subset."
+}

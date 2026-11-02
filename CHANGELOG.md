@@ -1,5 +1,144 @@
 # Changelog
 
+## 0.7.0 — bounded UMF memory actions
+
+Adds opt-in `arras-umf-set/1` execution through the official generated synchronous
+client and `Ontology.execute`. The one-module STRING SET profile uses public
+`umf-core==0.10.5`; document/core semantics remain 0.10.0. The optional engine
+now requires its qualified Linux x86_64 or macOS ARM64 native wheel. Python 3.11
+remains the release interpreter. Memory replay lasts only for the current process;
+Truss/Ashlar action execution remains unqualified.
+
+## 0.6.5 — downstream integration
+
+Python 3.11 is the supported release profile. Later interpreters remain permitted
+by the installer minimum but are outside the supported qualification scope.
+
+The development host takes the groups its operator surface is offered to:
+`--operator-group NAME` (repeatable) on the command line, or `operator_groups=` on
+`arras.devhost.main` and `arras.devhost.DevHost`. The sandbox's operators join each
+named group; the default stays `admins` and `builders`.
+
+A key set under both a distribution's `env_prefix` and `ARRAS_` to different
+values (`EXAMPLE_DEV_USER=alice`, `ARRAS_DEV_USER=bob`) still uses the
+distribution's value, and now says so: `Config.warnings` and one stderr line per
+conflict (at most eight) name both variables, never a value. Token and
+token-file conflicts continue to refuse.
+
+- The official-engine cases in `tests/test_umf_projection.py` skip without the `umf` extra, and fail
+  under `ARRAS_REQUIRE_UMF=1`, as the other UMF tests do.
+
+The development host's Truss URL variable, credentials variable and per-user
+directory follow the distribution's `env_prefix`: `<PREFIX>_TRUSS_DEV_URL`,
+`<PREFIX>_TRUSS_DEV_CREDENTIALS` and `~/.<prefix>/` (`truss-dev.env`,
+`truss-dev-credentials/`), with the `ARRAS_` names and `~/.arras/` as fallbacks.
+`--help` prints the selected names. The default distribution is unchanged.
+
+- The Graph Browser's reset of its controls (`font` and `color` inherited) carries no specificity, so a host's
+  one-class button rule, or the class a design-system widget draws, is no longer overridden by it.
+  Restores the reviewed default typography of the Explore/Operate switch after an earlier reset changed it.
+
+The development host's default `--ui` falls back to the build the wheel carries
+(`arras.ui.STATIC`) when there is no source-tree `ui/dist`. An installed wheel's
+`python -m arras.devhost` served only the API and a "UI is not built" page; it now serves the page
+and its assets. A source build still takes precedence, and a directory named with `--ui` is served
+as given.
+
+Adds an `arras` console script. `arras doctor`, `arras devhost` and `arras mcp` run
+`python -m arras.doctor`, `python -m arras.devhost` and `python -m arras.mcp` with the rest of the
+command line, and `arras --version` prints the installed version. The module entry points and the
+launcher functions a distribution calls (`arras.devhost.main`, `arras.mcp.launch`) are unchanged.
+
+Fixes `ui.create_app`, `console.create_app` and the operate apps under a framework
+mount: with Starlette or FastAPI `Mount("/ontology", ui.create_app(..., base_path="/ontology"))`
+returned 404 for every path, because the prefix was removed twice. `base_path` equal to
+the mount prefix and `base_path=""` now serve the same URLs. Adds Starlette, FastAPI and
+httpx to the development group for the mount tests.
+
+- `arras.ui.assets.build_theme_manifest` and `python -m arras.ui theme-manifest` build a runtime
+  theme bundle (stylesheet, favicon, fonts and a validated `theme-manifest.json`) for
+  `create_app(theme_manifest=...)`.
+
+- `arras.backend` is a catalogued host module (`Backend`, `Provider`, `Migrates` and the names their
+  signatures use), and `arras.conformance.HarnessBase` is a supported base for a corpus harness, so a
+  backend written outside the package imports no internal module. `InMemory.person` takes `admin`
+  and `InMemory.set_available` takes a `reason`.
+
+- A runtime theme manifest may declare `entry.appearance` (`"light"` or `"dark"`): the served page's `<html>`
+  then carries `data-appearance`, so a theme that supplies one appearance's role tokens no longer breaks contrast
+  on a viewer whose system prefers the other. A theme without it must supply both. Documented: the prebuilt page
+  draws `Brand(logo="theme")` with the built-in mark; a theme-supplied mark is a host-built UI feature.
+
+- The acceptance testkit's `createAcceptanceConfig` takes `hostAppearanceProvider` (default `false`) for a host that
+  installs its own appearance provider: the `host-isolation` specs that assume a bare host are skipped, and the one
+  that asserts the library installs no appearance checks the Arras subtree alone.
+
+- `arras.alias.alias_package(name, *, target="arras", modules=None)` lets a thin package under
+  another import name serve `arras` itself: same module objects, canonical `__spec__`, working
+  `importlib.resources` and `python -m`, with an optional closed list of modules.
+
+- The acceptance testkit no longer refuses to build its config on macOS without `baselineDir`: only the `visual`
+  project compares screenshots, and it fails at its start, naming the missing directory, when none was given. A
+  run of the nonvisual projects needs none.
+
+- `arras-ui-qualify --host-build` names the host-fixture requirement a page misses (a marked widget, the controls
+  region, the keyboard opener, the app's Mark, a gradient or opacity behind a focus ring) on its error output and in
+  the failure receipt, and points to the fixture contract now written in `support/QUALIFICATION.md`.
+  `WidgetControls` in `@documentdrivendx/arras-ui/testkit/host` renders the controls region from the design system
+  in context.
+
+## 0.6.4 — embedding isolation
+
+Adds explicit identity/API session boundaries and optional `pageEffects=false`
+for compiled React consumers. Resets cached data, refusals, forms, drafts and
+viewer modes across sessions; guards shared-cache ownership and conflicting
+nested configuration. Controlled Explore preserves host history and scroll.
+Individual areas get a CSS scope, and instance-local labels, SVG resources,
+focus requests and edit portals avoid cross-widget collisions. Documents API-only
+ASGI hosting and compiled public npm entrypoints. Native/UMF pins and HTTP
+contract versions are unchanged. Published as [v0.6.4](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.4)
+on PyPI and npm. All ten release gates, public-byte checks, fresh installs and
+public PyPI extras checks on Linux x86_64/macOS arm64 passed; the
+[publication record](docs/helix/05-deploy/evidence/embedding064-20261029/registry-publication.safe.json)
+retains exact hashes and npm visibility-retry history.
+
+## 0.6.1 — release candidate
+
+Adopts exact public Truss 0.0.50 while keeping Weft 0.4.51 and official UMF
+core 0.10.0 fixed. Hosts may explicitly supply an immutable `tolerated_grantees`
+tuple for fresh Truss installation; reconnect preserves stored policy. Typed
+third-party grant refusals retain bounded diagnostics and the original rollback,
+uncertainty and quarantine behavior.
+
+The Truss native runtime manifest remains `truss-catalog-runtime/0.74-candidate`
+with SHA-256 `288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4`.
+The active migration manifest is versioned separately and retains the prior
+0.0.49 manifest. The 0.0.50 public source binding does not transfer earlier installed-native or
+Lakebase receipts. The exact canonical Arras wheel has since passed both complete
+0.6.1 campaigns; source-bound receipts are retained in the governed evidence tree.
+
+Adds separately authorized Lakebase qualification with original identity,
+transaction, feed, recovery and provider observations. The exact-wheel macOS
+campaign passed, and the original twelve-case managed campaign passed 12/12 with
+cleanup, audit, census and custody checks. Final review, exact-commit CI, release
+artifacts, merge/tag and publication remain open; execution results alone do not
+declare final release acceptance.
+
+As of 2026-10-25, source `20db67822b20c822ee91c6823a3fe73ebc3ae932` passed all
+five CI jobs in run `40221099126` and remains bound to the canonical wheel SHA-256
+`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`. Fresh Mac
+arm64 / CPython 3.11.9 qualification in run `40221099126` passed 64 cases with
+eight declared limits and seven replica-only cases inapplicable; native-wheel
+hashes, 172-file installed payload parity and cleanup passed. The repaired fresh
+Lakebase baseline passed 6/6. The separate original twelve-case Lakebase campaign
+passed 12/12 with original cleanup, independent audit, process census and custody
+handback passed. Source-bound safe receipts are retained in the governed evidence
+tree. The scoped supplemental census did not capture the direct supervisor PGID;
+no forced-cleanup claim is made. The initial journal-binding failure and earlier
+D11/D12 failures remain historical. Final review, exact-commit CI, release build,
+merge/tag and publication gates remain open; this remains a release candidate,
+not a published or finally accepted release.
+
 ## 0.6.0 — 2026-10-23
 
 Adds optional official UMF source admission through `arras.umf_admission` and an

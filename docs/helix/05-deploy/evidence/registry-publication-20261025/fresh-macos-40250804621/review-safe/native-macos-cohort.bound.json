@@ -1,0 +1,115 @@
+{
+  "arras": {
+    "sha256": "ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d",
+    "version": "0.6.3"
+  },
+  "corpus": {
+    "limits": {
+      "action.applies-atomically-and-reads-back": {
+        "detail": "wft-output-name",
+        "error": "Invalid",
+        "step": "step 3 (query)"
+      },
+      "action.conflict-rolls-back-the-unit": {
+        "detail": "wft-output-name",
+        "error": "Invalid",
+        "step": "step 4 (query)"
+      },
+      "action.keyed-retry-after-its-target-was-deleted-replays": {
+        "detail": "idempotency_key_reused",
+        "error": "Conflict",
+        "step": "step 2 (apply)"
+      },
+      "action.keyed-retry-of-a-delete-replays": {
+        "detail": "idempotency_key_reused",
+        "error": "Conflict",
+        "step": "step 1 (apply)"
+      },
+      "action.keyed-retry-of-an-unlink-replays": {
+        "detail": "idempotency_key_reused",
+        "error": "Conflict",
+        "step": "step 1 (apply)"
+      },
+      "action.same-key-from-another-person-replays": {
+        "detail": "fresh",
+        "error": "PreconditionFailed",
+        "step": "step 1 (apply)"
+      },
+      "read.relationship-columns-are-capped": {
+        "detail": "refused the statement (limits)",
+        "error": "Unsupported",
+        "step": "step 2 (query)"
+      },
+      "read.relationship-columns-follow-ends": {
+        "detail": "wft-output-name",
+        "error": "Invalid",
+        "step": "step 0 (query)"
+      }
+    },
+    "roles": [
+      "reader",
+      "provider"
+    ],
+    "version": 13
+  },
+  "find_links": {
+    "sha256": "a04f0e579585e30cc8a33830290ff66695bbe8fab264a3367ea0709152b8a40e"
+  },
+  "native_wheels": [
+    {
+      "distribution": "truss-toolkit",
+      "filename": "truss_toolkit-0.0.50-py3-none-any.whl",
+      "sha256": "7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00",
+      "url": "https://github.com/DocumentDrivenDX/truss/releases/download/v0.0.50/truss_toolkit-0.0.50-py3-none-any.whl",
+      "version": "0.0.50"
+    },
+    {
+      "distribution": "weft-sql",
+      "filename": "weft_sql-0.4.51-cp39-abi3-macosx_11_0_arm64.whl",
+      "sha256": "e60e552f02c670b43a43111b08d26d6b415aaa9b9de42f241c37ad1d9fdd2487",
+      "url": "https://github.com/DocumentDrivenDX/weft/releases/download/v0.4.51/weft_sql-0.4.51-cp39-abi3-macosx_11_0_arm64.whl",
+      "version": "0.4.51"
+    },
+    {
+      "distribution": "pgserver-pg18",
+      "filename": "pgserver_pg18-18.6.1-cp311-cp311-macosx_14_0_arm64.whl",
+      "sha256": "fd42f07982693e16478ed42a297890d142d22250116e08887146e690f0dd2649",
+      "url": "https://github.com/DocumentDrivenDX/pgserver/releases/download/pg18.6-pgv0.8.6-r2/pgserver_pg18-18.6.1-cp311-cp311-macosx_14_0_arm64.whl",
+      "version": "18.6.1"
+    },
+    {
+      "distribution": "psycopg-binary",
+      "filename": "psycopg_binary-3.3.6-cp311-cp311-macosx_11_0_arm64.whl",
+      "sha256": "f0535693ce476a722b718b002d5d2c27d47e71ca945276ac194409c98e74c492",
+      "url": "https://files.pythonhosted.org/packages/12/1d/1e06c0de7ed5aed898acb87544eac6ef0bc7d752a67ec6e5d6b835e9b40c/psycopg_binary-3.3.6-cp311-cp311-macosx_11_0_arm64.whl",
+      "version": "3.3.6"
+    },
+    {
+      "distribution": "mini-racer",
+      "filename": "mini_racer-0.14.1-py3-none-macosx_11_0_arm64.whl",
+      "sha256": "56cc6965a1665a50d8d613bc43aa83b4cec6b1f09acc69dc4c2845dacb201463",
+      "url": "https://files.pythonhosted.org/packages/09/bf/ecaad0c208b9d8bd8f2141f7fa5e520b66915945a2ed56c520524df75fcb/mini_racer-0.14.1-py3-none-macosx_11_0_arm64.whl",
+      "version": "0.14.1"
+    },
+    {
+      "distribution": "rpds-py",
+      "filename": "rpds_py-2026.9.1-cp311-cp311-macosx_11_0_arm64.whl",
+      "sha256": "3231c4c0e521dafa5be0c9f114ee2c2ad46650836f2d72caa86801950c3e7044",
+      "url": "https://files.pythonhosted.org/packages/9e/b2/632c3d034961149eff606e3e357547620a9ab37b849ae5815f67838753fd/rpds_py-2026.9.1-cp311-cp311-macosx_11_0_arm64.whl",
+      "version": "2026.9.1"
+    },
+    {
+      "distribution": "psutil",
+      "filename": "psutil-7.2.2-cp36-abi3-macosx_11_0_arm64.whl",
+      "sha256": "1a7b04c10f32cc88ab39cbf606e117fd74721c831c98a27dc04578deb0c16979",
+      "url": "https://files.pythonhosted.org/packages/80/c4/f5af4c1ca8c1eeb2e92ccca14ce8effdeec651d5ab6053c589b074eda6e1/psutil-7.2.2-cp36-abi3-macosx_11_0_arm64.whl",
+      "version": "7.2.2"
+    }
+  ],
+  "runtime": {
+    "machine": "arm64",
+    "python": "3.11",
+    "sys_platform": "darwin"
+  },
+  "schema_version": 1
+}

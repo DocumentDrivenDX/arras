@@ -3,7 +3,9 @@
 
 from __future__ import annotations
 
+import importlib.util
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -16,6 +18,23 @@ from arras.umf_admission import ProjectionReport, admit_document, project_docume
 ROOT = Path(__file__).parent
 FIXTURE = ROOT / "fixtures/umf-core-metadata/primary-string-record.json"
 REFERENCE = ROOT / "fixtures/umf-core-reference/current-conformance.json"
+
+
+@pytest.fixture
+def runs_without_engine() -> None:
+    """Marks a case that needs no engine: the one that checks what happens when it is missing."""
+
+
+@pytest.fixture(autouse=True)
+def _require_engine(request: pytest.FixtureRequest) -> None:
+    """Skip engine-backed cases without the optional extra; fail instead under ARRAS_REQUIRE_UMF=1."""
+    if "runs_without_engine" in request.fixturenames:
+        return
+    if importlib.util.find_spec("umf") is not None:
+        return
+    if os.environ.get("ARRAS_REQUIRE_UMF") == "1":
+        pytest.fail("ARRAS_REQUIRE_UMF=1 but the selected UMF engine is unavailable")
+    pytest.skip("install the optional arras[umf] dependency for official-engine tests")
 
 
 def _document() -> dict[str, Any]:
@@ -252,7 +271,9 @@ def test_valid_metadata_title_is_preserved_only_in_source_not_nested_repr() -> N
     assert "private valid-title sentinel 2cf16" not in repr(result.module)
 
 
-def test_missing_engine_never_falls_back_to_legacy_reader(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_missing_engine_never_falls_back_to_legacy_reader(
+    monkeypatch: pytest.MonkeyPatch, runs_without_engine: None
+) -> None:
     def missing(_: str) -> object:
         raise ModuleNotFoundError("no module named umf", name="umf")
 

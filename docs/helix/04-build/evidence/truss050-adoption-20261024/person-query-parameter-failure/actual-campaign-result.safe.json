@@ -1,0 +1,219 @@
+{
+  "acceptance_passed": false,
+  "actual_person_exception": {
+    "exception_type": "Unsupported",
+    "line": 567,
+    "sqlstate": null,
+    "traceback_frames": [
+      {
+        "function": "_run_person_controls",
+        "line": 567,
+        "source": "_lakebase_person.py"
+      },
+      {
+        "function": "_person_public_api_checks",
+        "line": 706,
+        "source": "_lakebase_person.py"
+      }
+    ]
+  },
+  "artifacts": {
+    "audit-launch-process.safe.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-c0b48179-422d-42b5-b61c-ab85fb7d1a63/audit-launch-process.safe.json",
+      "sha256": "3a99872f6d4d581cee452515ba48321b74ed85df24121233b98fcbffc93dc97e"
+    },
+    "full-managed-terminal.safe.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-c0b48179-422d-42b5-b61c-ab85fb7d1a63/full-managed-terminal.safe.json",
+      "sha256": "31103140ab778763d9ae124b48a1719429226f63931481da6bbdc86ae7bd35dc"
+    },
+    "full-managed-terminal.safe.verifier.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-c0b48179-422d-42b5-b61c-ab85fb7d1a63/full-managed-terminal.safe.verifier.json",
+      "sha256": "f7d4a6297b86ee4919a0dabcd68a8fc9ddb90e7a892b88410d57d7579ce53ac3"
+    },
+    "independent-audit.safe.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-c0b48179-422d-42b5-b61c-ab85fb7d1a63/independent-audit.safe.json",
+      "sha256": "2810f346431ac56f8ce65e0df6d610dc9cf8913e321cee6ebcb4a8e323e11837"
+    },
+    "parent-launch-process.safe.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-c0b48179-422d-42b5-b61c-ab85fb7d1a63/parent-launch-process.safe.json",
+      "sha256": "5820a264a371ec5853c181500511670e357b6091a0a5dc065584ae0803726175"
+    },
+    "person-exception.safe.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-c0b48179-422d-42b5-b61c-ab85fb7d1a63/person-exception.safe.json",
+      "sha256": "a7f041bd7e261bff9d0a2fd4dfd0f27b8b86a5dc1d1a7203eab5ba5ba647fa59"
+    },
+    "public-retention-review.safe.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-c0b48179-422d-42b5-b61c-ab85fb7d1a63/public-retention-review.safe.json",
+      "sha256": "649996d11d2f66696fe5f48f7d9d46de69a19a75718d63dc434afedd9f421420"
+    },
+    "terminal-process-custody.safe.json": {
+      "path": "/private/tmp/truss-lakebase-049-20261023/qualification/public50-fresh-window-20261024T110000Z-c0b48179-422d-42b5-b61c-ab85fb7d1a63/terminal-process-custody.safe.json",
+      "sha256": "90cec538146c7369b93a9e6350f89fa248fd3704bf57343b79d05b5999785f7d"
+    }
+  },
+  "cases_blocked": 10,
+  "cases_passed": 2,
+  "independent_audit": {
+    "elapsed_seconds": 16.50980979099404,
+    "installed_source_before_after_equal": true,
+    "native_checks": {
+      "all_four_ordinary_roles_present": true,
+      "all_native_memberships_match_bootstrap": true,
+      "all_native_role_attributes_match_bootstrap": true,
+      "exact_selected4_oid_binding": true,
+      "installer_identity_matches_bootstrap": true,
+      "ordinary_selected4_closures_false": true,
+      "owned_module_roles_absent": true,
+      "transaction_is_read_only": true,
+      "truss_schema_absent": true
+    },
+    "native_membership_count": 18,
+    "native_role_count": 33,
+    "new_native_role_count": 0,
+    "provider_checks": {
+      "exact_project_endpoint_database_provider_identity": true,
+      "owned_compute_bounds_unchanged": true,
+      "owned_endpoint_restored_enabled": true
+    },
+    "status": "passed"
+  },
+  "limits": {
+    "cleanup_grace_seconds": 180,
+    "installer_operation_timeout_ms": 60000,
+    "installer_statement_timeout_ms": 60000,
+    "maximum_window_seconds": 14400,
+    "no_vm": true,
+    "provider_operation_timeout_seconds": 180
+  },
+  "next": "release-owner pinnedWeft query syntax proof/correction and freshly reviewed source/proof/controller/trace/audit/newinvocation; no replay, VM, deadline or SQL limit extension",
+  "no_vm": true,
+  "ordered_cases": [
+    {
+      "case": "LB-ADMISSION",
+      "code": "identity_tls_server_match",
+      "status": "passed"
+    },
+    {
+      "case": "LB-INSTALL",
+      "code": "typed_strict_refusal_then_selected_install",
+      "status": "passed"
+    },
+    {
+      "case": "LB-PERSON",
+      "code": "identity_lifecycle_postcondition_unverified",
+      "status": "blocked"
+    },
+    {
+      "case": "LB-CUSTODY",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "LB-SETTLEMENT",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "LB-ACL",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-01",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-02",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-03",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-04",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-05",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-06",
+      "code": "person_prerequisite_not_verified",
+      "status": "blocked"
+    }
+  ],
+  "original_cleanup": {
+    "independent_absence": {
+      "generated_roles_absent": true,
+      "truss_schema_absent": true
+    },
+    "resources": [
+      {
+        "name_or_opaque_id": "f84f002b2bed908f227145cf7a04cca0d8ca76053f2b348ba281b92171d04dcf",
+        "removed": true,
+        "resource_kind": "schema"
+      },
+      {
+        "name_or_opaque_id": "b55e5749b4463256b172a864d0557735ce2606c3228b1368fb2f114d06dbb21f",
+        "removed": true,
+        "resource_kind": "role"
+      },
+      {
+        "name_or_opaque_id": "ecebc426a6fc794eea00dff5bb6760592b2fe3e58d6898307686650c428b07ce",
+        "removed": true,
+        "resource_kind": "role"
+      },
+      {
+        "name_or_opaque_id": "6e1663b6f72fb28982afe49ec787c1441b0ef6741bf32aea4d19f82b981fc231",
+        "removed": true,
+        "resource_kind": "role"
+      },
+      {
+        "name_or_opaque_id": "7729063f73debb66c575a9ba9f289a9adaabf7866841de6103de5034187fd7ad",
+        "removed": true,
+        "resource_kind": "role"
+      }
+    ],
+    "status": "passed"
+  },
+  "original_consumed_ledger": {
+    "path": "/private/tmp/arras-public50-qualification-20261024/activation-state/consumed-9af52f520df6107ad01cf28af27aaa18109e87ff8efc49b5eba0a92e7e71f878.jsonl",
+    "sha256": "3451da28d40f3c973f51589197a5db59f0e8060bb5738c42e84e50b8e30d6b33"
+  },
+  "process_custody": "CLEAR",
+  "public_retention": {
+    "excluded_private_artifacts": [
+      "target JSON",
+      "authorization JSON",
+      "actor/credential reference config",
+      "fixture source and state",
+      "raw stdout/stderr logs",
+      "Keychain and OAuth material"
+    ],
+    "publication_authorized": false,
+    "review_sha256": "649996d11d2f66696fe5f48f7d9d46de69a19a75718d63dc434afedd9f421420",
+    "status": "ELIGIBLE_SANITIZED_RECEIPTS_ONLY"
+  },
+  "recorded_at": "2026-10-24T11:55:51.636999+00:00",
+  "resources": "RETURNED_NO_ACTIVE_EFFECTS",
+  "schema": "arras.public50-D5-actual-campaign-result/1",
+  "source_revision": "93a5020007d343629c40ff7ea62caf7a4313f68a",
+  "status": "BLOCKED_NOT_ACCEPTED_INDEPENDENT_CLEANUP_PASSED",
+  "time": {
+    "cleanup_deadline_utc": "2026-10-24T15:03:00Z",
+    "deadline_verdict": "WITHIN_FIXED_DEADLINES",
+    "duration_seconds": 386.14673375,
+    "end_utc": "2026-10-24T11:51:49Z",
+    "initial_remaining_seconds": 11677.41322396556,
+    "late_completion": false,
+    "normal_expiry_utc": "2026-10-24T15:00:00Z",
+    "start_utc": "2026-10-24T11:45:23Z"
+  }
+}

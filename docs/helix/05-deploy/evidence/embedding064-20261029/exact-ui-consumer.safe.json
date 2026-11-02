@@ -1,0 +1,26 @@
+{
+  "artifacts": {
+    "npm_name": "documentdrivendx-arras-ui-0.6.4.tgz",
+    "npm_sha256": "d9bbc43609f3570eb96e81992b88b8d2c6dc9fa908190316158245f5205f3537",
+    "wheel_sha256": "29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2"
+  },
+  "browser": {
+    "browser": "153.0.8010.12",
+    "checks": [
+      "packed-public-exports",
+      "real-api",
+      "controlled-navigation",
+      "host-page-effects",
+      "unique-ids",
+      "raw-area-css-scope",
+      "identity-viewer-reset"
+    ],
+    "status": "passed",
+    "version": "0.6.4"
+  },
+  "browser_stdout_sha256": "fbb52b0020afaac69709fdc745dd3f0ca9e341874e6f2cce1deceaed18efafe8",
+  "consumer_stdout_sha256": "665c51e3177ba1970b2eb7177fa211ed4edff8fa3a7652a40dc729411cafd22a",
+  "packed_browser_script_sha256": "c21bc73804f07cff3633ccddba104c092e93eacffa03bd5a6f9a9c5e108bb7cb",
+  "schema": "arras.exact-ui-consumer/1",
+  "status": "passed"
+}

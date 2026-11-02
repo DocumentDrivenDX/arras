@@ -5,7 +5,7 @@ ddx:
   activity: design
   status: draft
   owner: Erik LaBianca
-  updated: 2026-10-22
+  updated: 2026-10-24
   authoring:
     home: repo
   links:
@@ -46,7 +46,7 @@ Terms. A backend is a named store with the roles `reader` and `provider` (CONTRA
 - In scope: starting, the backends and the placement, the connection sources, the administrative principal, the installing connection, install-or-verify, per-backend availability, the public-name boundary, mounting the console.
 - Out of scope: the operations (CONTRACT-001 to CONTRACT-003), the backend contract (CONTRACT-004), the console's endpoints (CONTRACT-006), provisioning database resources and Unity Catalog access. Running against a local PostgreSQL for development (EMB-05) and the Truss adapter's install-or-verify on the qualified PostgreSQL 18.6 are verified by the test plan (`docs/helix/03-test/test-plan.md`); they add no contract surface.
 - Owning system or team: Arras; each embedding host owns its integration.
-- Runtime: Python 3.11 or later. The base install requires no Truss or psycopg. The Truss adapter is an optional extra that requires Arras's selected public driver tuple: `truss-toolkit[native,query]==0.0.48`, `weft-sql==0.4.51`, native runtime `truss-catalog-runtime/0.74-candidate`, manifest SHA-256 `c4339ac7f09ab5a004c272ab00962107a970938004c1765ec4163e4d5ca9b6f0`, psycopg and psycopg-binary 3.3.6 with libpq 18.6, PostgreSQL 18.6, on Linux x86_64 or macOS arm64 (Windows is not supported by the extra). Truss refuses a connection to a different server or driver version when it adopts it. This selected tuple does not qualify a managed deployment. Distribution: neither `truss-toolkit` nor `weft-sql` is on PyPI, so a host that installs the extra vendors the pinned wheels (truss-toolkit, weft-sql, psycopg-binary and their pure-Python closure) into its own build, or passes the same find-links (`tools/find-links/index.html`, which carries the release digests). The extra's metadata is in the published wheel either way.
+- Runtime: Python 3.11 or later. The base install requires no Truss or psycopg. The Truss adapter is an optional extra that requires Arras's selected public driver tuple: `truss-toolkit[native,query]==0.0.50`, `weft-sql==0.4.51`, native runtime `truss-catalog-runtime/0.74-candidate`, manifest SHA-256 `288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4`, psycopg and psycopg-binary 3.3.6 with libpq 18.6, PostgreSQL 18.6, on Linux x86_64 or macOS arm64 (Windows is not supported by the extra). Truss refuses a connection to a different server or driver version when it adopts it. This selected tuple does not qualify a managed deployment. Distribution: the requested `arras[truss,umf]` installation must resolve the exact selected Truss/Weft/UMF tuple from public PyPI, without a wheelhouse or extra index. The original 0.6.3 publication receipt covers only the base package; separate public-extras acceptance has passed for the exact 0.6.3 cohort on hosted Linux x86_64 / CPython 3.11.17 and macOS arm64 / CPython 3.11.9. That fresh install verified public origins, zero direct-URL references, `pip check`, installed consumers and exact artifact digests against qualified GitHub release assets. See the [public-extras evidence](../../05-deploy/evidence/public-pypi-extras-20261026/README.md). `tools/find-links/index.html` retains the upstream release digests as provenance pins, not as an installation fallback for this gate. The optional-extra metadata remains version-pinned in the published wheel.
 
 ### Distribution and public API catalog — EX-01
 
@@ -65,7 +65,7 @@ and catalog version 1. No runtime keys are introduced for either. Python distrib
 and npm package versions follow `pyproject.toml`; they remain separate from the
 manifest schema, contract versions and the `arras.view` vocabulary version. The packagable host
 surface includes `arras.telemetry.dropped()` and the scoped naming composition values below,
-while emitters, operation/span objects and exporter internals remain private. The conformance selection is `Harness`, `Limit`, `Result`, `Report` and `run_corpus`; corpus
+while emitters, operation/span objects and exporter internals remain private. The conformance selection is `Harness`, `HarnessBase`, `Limit`, `Result`, `Report` and `run_corpus`, and `arras.backend` is a host module (`Backend`, `Provider`, `Migrates` and the names their signatures use); corpus
 loading helpers are not host API. Development-host and credential helpers are classified as
 development tooling, separately from the host import allowlist.
 
@@ -322,9 +322,44 @@ only after all required commands and identity checks succeeded; missing output,
 empty tests, a failed command or a skipped required stage fails. This later
 receipt remains separate from the immutable prepublication aggregate; do not
 rewrite published bundle bytes or invent successful publication/download evidence.
-Both optional registry jobs must depend on `downloaded-release` as well as the
-existing GitHub/reusable-consumer gates. An unconfigured publisher can remain
-explicitly deferred under the human's instruction; public download gates cannot.
+New releases MUST automatically publish the verified Python wheel/sdist to PyPI
+and the wheel-carried UI archive to npm after the complete release and anonymous
+public-download gates succeed. The publisher MUST bind the original successful
+release run, repository, workflow, source, immutable tag, driver and exact asset
+digests. A separate registry workflow MUST verify those prerequisites before
+requesting publishing authority; it MUST NOT rebuild the payload or execute
+untrusted release-source code with publishing credentials.
+
+Publishing uses OpenID Connect (OIDC), constrained to the repository, publishing
+workflow and named registry environment. Missing access fails the affected
+publication; it MUST NOT silently skip a required publisher or substitute a
+long-lived token. Historical registry deferrals retain their original scope.
+An existing version is recoverable only when registry-served files match the
+qualified bytes. A conflicting version, failed authentication or indeterminate
+network response MUST NOT be treated as an absent version.
+
+PyPI eligibility checks MUST reject direct-URL dependencies, including optional
+extras, before release publication. Metadata changes require a new qualified
+version; a publisher MUST NOT strip dependencies or upload an undisclosed
+same-version variant. After upload, verify anonymous registry-served digests and
+a fresh isolated registry installation with explicit consumer checks. Record
+registry delivery separately from GitHub publication and native qualification.
+
+Every future PyPI qualification MUST include a separate fresh isolated install
+of `arras[truss,umf]` from `https://pypi.org/simple`, with no wheelhouse, extra
+index, pip configuration or cache. It MUST verify public package origins,
+reject installed direct-URL dependencies, pass `pip check` and the installed
+consumer/doctor/UMF document checks, and compare the Arras, UMF, Truss and Weft
+artifact digests to the selected Arras release and qualified upstream GitHub
+assets. The original 0.6.3 publication receipt remains base-only historical
+evidence; the separate public-extras acceptance now passes for the exact 0.6.3
+cohort on hosted Linux x86_64 and macOS arm64 (see
+`docs/helix/05-deploy/evidence/public-pypi-extras-20261026/`). Future
+qualifications must repeat these checks for their own exact releases. A missing
+upstream PyPI release or byte mismatch fails the gate; a wheelhouse is not a
+substitute. Retain the exact upstream digests, selected installed cohort and
+the existing version/platform support limits; do not remove supported features
+or adopt a new upstream producer solely to make an upload succeed.
 
 Workflow tests check the actual dependency graph and exact tool/input wiring.
 Execute the actual extracted comparison/download shell with temporary trusted/
@@ -376,6 +411,21 @@ human help description. The canonical program invocation remains
 This is a development-tool seam, not an import for a production host. Mocked
 uvicorn tests must assert the exact selected value reaches the constructed app
 and banner without starting a database or server.
+
+`arras.alias.alias_package(name, *, target="arras", modules=None) -> None` serves `arras`
+under another import name for a downstream distribution that kept an older one. The
+distribution ships a thin package whose `__init__.py` calls `alias_package(__name__)`; every
+module imported below it (`name.model`, `name.ui.assets`) is then the `arras` module object itself,
+loaded once, so `name.X is arras.X`, `__name__` and `__spec__` stay canonical, and no second copy is
+created. The finder is inserted at the front of `sys.meta_path` (a repeated call replaces the
+earlier finder for the same name), the loader restores the module's `__spec__` after the import
+system replaces it, so `importlib.resources` works, and the loader has `get_code` and the spec an
+origin, so `python -m name.x` runs the real module. A module the alias package itself contains
+(`name/__main__.py`, a renamed launcher) is never replaced. `name` also forwards attribute access
+to `arras` (`name.Arras is arras.Arras`). `modules`, when given, closes the set: only the listed
+dotted submodules (`"model"`, `"ui.assets"`) and the packages leading to them import, and any other
+`name.<module>` is `ModuleNotFoundError`. It renames nothing on the wire: contract, vocabulary,
+action and CSS identities remain canonical.
 
 `arras.mcp.launch(argv=None, *, distribution=None, telemetry_factory=None) -> None` is the supported
 callable launcher for a thin downstream command. `argv` is a sequence of strings,
@@ -598,11 +648,32 @@ The manifest itself is not a hashed member of `files`.
 A theme bundle uses the same envelope with `kind: "theme"`, its own package
 identity, `contracts` matching its supported Arras surfaces, and
 `entry: {stylesheet: <listed CSS path>, fonts?: [<listed font paths>],
-favicon?: <listed image path>}`. It additionally requires
+favicon?: <listed image path>, appearance?: "light" | "dark"}`. It additionally requires
 `ui_versions: [<exact compatible UI versions>]`, a nonempty unique string list;
 the active page package version must be listed. A theme has no HTML/JavaScript
 entry, executable widget reference or schema_browser field. The stylesheet and
 optional font/favicon are trusted host-supplied assets, not module input.
+`appearance` declares that the theme supplies the values of one appearance only: the
+served page's `<html>` element then carries `data-appearance="<value>"` (replacing any
+the page had), which the stylesheet's nearest-ancestor rule reads (ADR-029), so the
+library's derived tokens follow the theme and not the system's preference. Without it
+the page follows the system, and the theme must supply the role tokens for both
+appearances (the dark ones under `@media (prefers-color-scheme: dark)`, or by
+`light-dark()`); a `color-scheme` in the theme's stylesheet is not an appearance the
+library reads. Any other value refuses the manifest.
+
+`arras.ui.assets.build_theme_manifest(output, *, stylesheet, favicon=None, fonts=(),
+package_name="theme", package_version="1", ui_versions=None) -> Path` builds such a
+bundle: it copies the stylesheet, optional favicon and fonts into `output` under their own
+file names, writes `theme-manifest.json` with each file's SHA-256, size and MIME type and the
+contract versions this build serves, defaults `ui_versions` to the installed Arras version, and
+reads the result back with `load_manifest(..., kind="theme")` before returning it. A bundle it
+returns is one `create_app(theme_manifest=...)` accepts; anything the loader would refuse
+(a missing or unsupported file, a repeated file name, a stylesheet that is not CSS) raises
+`ValueError` and leaves no manifest. `python -m arras.ui theme-manifest --css FILE --out DIR
+[--favicon FILE] [--font FILE]... [--package-name N] [--package-version V] [--ui-version V]...`
+is the same operation and prints the manifest path. Theme assets are served by manifest digest,
+as above.
 
 Manifest input is bounded to 1 MiB and 10,000 file entries; each file to 32 MiB
 and total listed bytes to 64 MiB. Paths are canonical relative POSIX paths with
@@ -635,8 +706,10 @@ Two downstream routes are supported:
   fonts, light/dark values and favicon. React/ReactDOM remain single host peers;
   downstream private design-system dependencies never enter Arras metadata.
 - A prebuilt page uses the theme manifest for CSS tokens/fonts/favicon and the
-  existing Brand name/title/wordmark/mark selection. It uses built-in widgets;
-  replacing React widgets requires the host-build route, not runtime code loading.
+  existing Brand name/title/wordmark selection. It uses built-in widgets, including
+  the built-in Mark: `Brand(logo="theme")` shows that mark there, and a theme-supplied
+  mark or replaced React widgets require the host-build route (a `Mark` in a
+  `DesignSystemProvider`), not runtime code loading.
 
 The neutral downstream proof includes an actual consumer-owned theme package,
 not only inline widget functions or a stylesheet directory. Its minimal shape is:
@@ -721,7 +794,14 @@ contract version 1: one `.arras-root` containing a region labelled
 `Downstream widget controls` with all six replacement markers
 `data-theme-button`, `data-theme-text-field`, `data-theme-text-area`,
 `data-theme-select`, `data-theme-notice`, `data-theme-mark`, and a
-`[data-arras-app]` subtree holding the actual public app. The actual app must use
+`.arras-root` holding the actual public app (`.gb`, or `[data-testid="console-header"]`
+with `--console`). The region holds the Button, TextField, TextArea and Select in
+that tab order. Focus-ring contrast is measured against the composited
+background colours of the controls' ancestors, so a background image, gradient or
+opacity on any of them is refused. A failed fixture requirement is reported by name
+(printed and recorded as `requirement`); the shipped `support/QUALIFICATION.md`
+states the full fixture contract, and `WidgetControls()` in the testkit host export
+renders the region from the design system in context. The actual app must use
 the replacement Mark plus an app-owned replacement Button/TextField: open its
 Command palette through the normal shortcut, fill its labelled combobox, close
 by Escape and verify focus restoration. Showcase-only markers or a root hook
@@ -765,12 +845,13 @@ opt-in subpaths, keeping existing production runtime/type/style entries unchange
 | Subpath | Export | Boundary |
 | --- | --- | --- |
 | `@documentdrivendx/arras-ui/testkit` | `createAcceptanceConfig(options)` plus `AcceptanceConfigOptions` (type) | Node-only Playwright configuration factory; never a production/browser import |
-| `@documentdrivendx/arras-ui/testkit/host` | `AcceptanceHost()` | Browser acceptance-fixture component reusing the canonical development-host toolbar/shell; no Node or Playwright in its browser graph |
+| `@documentdrivendx/arras-ui/testkit/host` | `AcceptanceHost()`, `WidgetControls()` | Browser acceptance-fixture components: the canonical development-host toolbar/shell, and the labelled region of the six widgets drawn from the design system in context (the `--host-build` fixture's controls); no Node or Playwright in its browser graph |
 
 The factory takes one strict object with required `baseURL: string`,
 `schemaBaseURL: string`, `outputDir: string`, and optional `themeId: string =
 "default"`, `expectedBrand` (existing Brand shape, default `{name: "Arras"}`),
-`expectedSurface: {light: string, dark: string}` and `baselineDir: string`.
+`expectedSurface: {light: string, dark: string}`, `baselineDir: string` and
+`hostAppearanceProvider: boolean = false`.
 Unknown keys, wrong types, empty values and unsafe URLs refuse configuration.
 Both URLs are credential/query/fragment-free HTTP(S) root origins with no path
 prefix in acceptance profile v1, and must differ because schema-administration
@@ -782,6 +863,12 @@ Output/baseline directories are explicit host-owned paths. Color expectations
 are opaque `rgb(r, g, b)` strings with integer channels from 0 through 255; normalize
 spacing before exact computed-color comparison. Use the existing documented
 default surfaces when omitted.
+`hostAppearanceProvider: true` states that the host installs its own appearance
+provider above the Arras root (`data-appearance` or an inline `color-scheme`, or a
+design-system provider that sets them). The `host-isolation` specs that plant their own
+appearance providers and read the system's preference then skip, because their
+premise is a bare host, and the appearance spec still asserts that nothing on or
+beneath the Arras root sets an appearance. It is the only assertion the flag relaxes.
 The selected expected Brand and surfaces parameterize the existing exact assertions,
 not exemptions from them. Hosts provide expectations matching their selected theme.
 
@@ -790,7 +877,10 @@ by the source suite. It requires all existing nonvisual projects (`chromium`,
 `schema-admin`, `browser`) without caller-supplied test filtering, skip lists,
 selector scripts or assertion callbacks. On Darwin it also runs the existing
 visual project with an explicit per-theme `baselineDir`; absent/missing/different
-baselines fail. Other platforms omit only the visual project and report that fact.
+baselines fail. The factory does not require `baselineDir` to build the config:
+only the visual project compares screenshots, so only it needs the directory, and
+it fails at its start, naming it, when none was given. A run of the nonvisual
+projects alone needs none. Other platforms omit only the visual project and report that fact.
 No automatic baseline rewrite is enabled. Generating/updating snapshots is an
 explicit developer Playwright action in a selected directory and is never an
 automatic CI recovery. Retain each test's viewport, contrast, incomplete-review,
@@ -859,6 +949,60 @@ substitute for the packed themed run.
 
 ## Normative Surface
 
+### Embedded API and compiled UI ownership
+
+A host MAY mount `arras.console.create_app`, `arras.operate.create_app` and
+`arras.operate.create_schema_app` independently, without importing `arras.ui` or
+serving the standalone page. The host MUST supply its principal mapping and
+explicit operator/schema/action policies where those surfaces are offered.
+Core MUST NOT depend on HTTP handlers or UI code. Its existing GraphQL schema
+servable check during registration/attachment remains part of admission.
+
+The public component artifact is `@documentdrivendx/arras-ui`: compiled ESM,
+declarations and `styles.css`, with root, `/browser` and `/shell` production
+entrypoints. React and ReactDOM remain host-supplied peers. `/testkit` is Node
+configuration and `/testkit/host` is an opt-in browser acceptance host; neither
+MUST enter production imports. Internal source paths are unsupported. Python
+and npm versions MUST match the verified release cohort; registry publication
+MUST use the exact qualified release artifacts, followed by public installation
+and digest checks. No independent Python core/API/UI wheels are required.
+
+`ArrasProvider`, `ArrasConsole`, `GraphBrowser` and `ArrasApp` accept an optional
+`identity: string` and `pageEffects: boolean` (default true). Hosts MUST change
+identity when the person, tenant or authorization session changes; a credential
+refresh for the same session need not change it. Changing identity or any API
+base MUST synchronously replace the rendered session boundary: old query data,
+refusals, forms, viewer modes and drafts MUST NOT appear in the new session.
+Late results from the old session MUST NOT populate the new cache. Released
+scopes MUST stop acquiring authentication headers and suppress late sign-in
+and revision callbacks to the host. The default
+cache is private to a provider scope. A supplied `queryClient` is an exclusive
+Arras cache, not the host application's general cache; it MAY be shared by providers with identical identity and API bases, but MUST
+refuse concurrent use across different scopes. On final release it is cancelled
+and cleared.
+Nested entry components share the enclosing provider; conflicting explicit
+identity, API bases or query client MUST fail rather than silently bind elsewhere.
+An explicit nested `ArrasProvider` creates an independent integration scope.
+Conflicting explicit headers or page-effect ownership MUST also fail.
+Every provider MUST establish the `.arras-root` stylesheet scope, including for
+hosts composing individual public area components.
+
+When `location`/`onLocation` control Explore, Arras MUST NOT read or write the
+host's URL/history state, restore window scroll or call browser Back. Search
+and type selection remain in local memory. Operate's `route`/`onRoute` retain
+the same URL ownership rule. With `pageEffects=false`, neither mode MUST write
+the document title, scroll the window or install global keyboard shortcuts;
+control-local keyboard behavior remains available. Accessibility IDs, SVG
+resources, focus requests and edit portals MUST be local to each component
+instance. The host owns page title,
+router, scroll container and application shortcuts in this mode.
+
+
+Action-input focus handoffs belong to the provider session rather than a module
+global. Action controls use instance-local IDs and resolve focus within their
+own form. A schema view observes its own host theme ancestry; a sibling view
+must not determine its appearance or theme-change subscription.
+
 | Element | Type / Shape | Required | Rules | Notes |
 |---------|---------------|----------|-------|-------|
 | `ConnectionSource` | `Callable[[Principal], ContextManager[psycopg.Connection]]` | for the Truss adapter | Each call MUST yield a connection to the adapter's database authenticated as that principal, with the principal's own token (ADR-017), closed or returned on exit. The host owns pooling and credential refresh, supplying the person's current credential for each newly acquired connection (ADR-017). Arras MUST NOT read ambient connection variables, create connections itself, or reuse a connection across principals. Connections MUST arrive idle, with autocommit off (psycopg's default), no open transaction, and the session role unset (`SET ROLE` is `none`), and the session authorization unchanged: a source MUST NOT run `SET SESSION AUTHORIZATION`, which only a superuser login may and which the adapter does not check for (it reads `current_setting('role')` only, so a service login switched to a person's authorization would pass), because Postgres gives no portable way to compare the session user with the login identity. A host that connects as a superuser is outside the model: the database's own grants are what bound a person, and a superuser has them all. The adapter sets the isolation level and access mode it needs on each transaction (`SET TRANSACTION`, its first statement, in the transaction the driver opens with it), sets `statement_timeout` with `SET LOCAL` (1 to 60,000 ms, as Truss requires before it adopts the connection; the host sets it with `statement_timeout_ms` on `create_backend`, default 10,000, and an import needs it at or above about 5,000 ms for each 32-record chunk, because Truss's deferred constraint check runs as a single statement at the commit and the adapter does not validate that floor), and MUST commit or roll back every transaction it opens and MUST NOT leave session state: it uses no session-level `SET`, no `conn.read_only` and no `SET ROLE`. When Truss reports a connection quarantined (its `detach()` returns false, or a call reports the transaction unusable), Arras closes that connection and the host's pool MUST discard a closed connection and never return it to service, because Truss keeps the quarantine on the connection object. Arras MUST work whether or not the connection prepares statements; a host behind a transaction-mode pooler MAY disable preparing (`prepare_threshold=None`). | What a person may read or write is what Postgres grants that person's role: membership in a module's reader and writer roles, and registrar membership to register, each granted by the database administrator with `WITH SET FALSE`. Arras holds no mapping from people to roles. |
@@ -868,13 +1012,13 @@ substitute for the packed themed run.
 | `Arras.start(backends, *, placement=None, default_placement=None, expected=(), wait_bound=0.0, admin=None, metadata_profile="legacy-arras/1")` over adapters, which the host registers under names it chooses (`{"<name>": backend}`, each matching `[a-z][a-z0-9_]{0,40}`; Arras defines none). The Truss adapter's factory, `arras.adapters.truss.create_backend(name, source, installing=None, *, module_access=None)`, takes the name it will be registered under (the adapter reports it in `BackendInfo.name`, `Revision` and `Freshness`; a name that does not match is a `ValueError`), the per-person `ConnectionSource`, the installing connection and, per module, the host's `ModuleAccess(document_id, reader_role, writer_role, auditor_role=None)`; it never connects, imports Truss or reads the environment | `-> Arras` | yes | `placement={"<module>": Placement(record, replicas, providers)}` and `default_placement` are the host's statement of where each module lives (CONTRACT-002); a module with neither is refused as `invalid_placement` at `register` or `attach`. `expected` is the set of configured backend names; a name that is in `expected` and has no backend is `not_configured`. MUST NOT raise for any availability failure; it returns an instance whose `status()` reports each backend. A host that wants an install at start calls `migrate()` itself, and the only bound on install is `migrate(*, timeout: float | None = None)`, in seconds: Arras sets `lock_timeout` and `statement_timeout` on the installing connection from it and reports `migration_failed` with detail `timeout` when it elapses; with `None` it waits. `start` itself does not install and needs no budget; a host that wants a bound passes `timeout`. Module reader and writer role names are the host's, supplied as `module_access` to the factory. A backend whose source is `None` is `not_configured`. | |
 | `Arras.status()` | `-> Status` | yes | `Status` maps each backend name to `BackendStatus` (CONTRACT-004): `available`, `reason` (`not_configured`, `unreachable`, `access_denied`, `migration_failed`, `unsupported_version`) or `None`, `detail`, and for a replica its position and lag. `reason` is `None` iff `available`. | `detail` MUST NOT contain credentials. |
 | `Arras.refresh()` | `-> Status` | yes | Probes each backend. Nothing is cached: `status()` is as live as `refresh()`, and an unavailable backend is probed again by the next operation and reported available once it is usable. An adapter that pools connections MAY throttle its own probe to once every 5 seconds. | A transient fault at start does not disable a backend until restart. |
-| `Arras.migrate(*, timeout: float | None = None)` | `-> MigrationResult` | yes | Install-or-verify of each adapter that has a store to install (the Truss adapter), on the installing connection and with no person. It takes `pg_advisory_xact_lock` inside its own transaction, then reads Truss's install status: an absent Truss is installed; a present Truss of the pinned release is verified and left alone; a present Truss of another release is `unsupported_version`. The decision comes from the status read, never from parsing an install error. `MigrationResult` has `ran: bool` (true only when this call installed), `revision: str` (Truss's release id), and `owner_role: str | None` and `registrar_role: str | None`, set only when `ran` is true: Truss reports them once, from the installation result, and a later status read does not repeat them. The host SHOULD persist them, because granting registrar membership to the administrative principal and to people needs the registrar name; if it did not, `TrussBackend.install_roles()` recovers both names on the installing connection (a refusal is `Unavailable` with the reason of Truss's typed refusal). An install Truss refuses before it begins (`InstallRefused`) is mapped by its code and installs nothing: `busy` is `Unavailable(busy)`, `incompatible` and `unsupported_postgres` are `unsupported_version`, `unauthorized` and `read_only` are `access_denied`, `already_installed` means another installer finished first (verified, `ran=False`), and `invalid_roles` and `role_exists` are `migration_failed`. If another instance is installing, this call waits for the lock, finds Truss present and returns `ran=False`. A failure sets the backend to `migration_failed` and raises `Unavailable`; the adapter remembers it, so `status()` reports `migration_failed` while Truss is still absent, until a `migrate` succeeds or Truss is seen installed. An installer role without the privileges above is `access_denied`, not a failed install: a missing database privilege is Truss's `42501`, and a missing `CREATEROLE`, which Truss refuses with its one opaque code, is named from the role's attributes the adapter reads first. A COMMIT of unknown outcome is settled by a status read on a new connection: `ran=True` with the names it holds is returned only when the installed installation id is the one this call's install produced; another id means another instance installed (`ran=False`, no names); absent or unreadable is `migration_failed`, detail `outcome unknown`. A refused or lock-timed-out operation maps `55P03` to `the catalog is busy` for `migrate` and `configure_access` (a concurrent registration). With several backends that migrate, `Arras.migrate` returns the result of the backend that ran (the first, when several did) and a host that needs every role pair calls each adapter's own `migrate`; a backend with no `migrate` is skipped. | Safe to call from every instance at start. Arras performs install-or-verify and does not invoke Truss's forward-migration API or recreate a database. A different installed release returns `unsupported_version`. A database administrator may use Truss 0.0.48's separately documented forward-migration procedure only when the source is eligible; Arras then verifies the pinned release. Arras makes no blanket migration promise. |
+| `Arras.migrate(*, timeout: float | None = None)` | `-> MigrationResult` | yes | Install-or-verify of each adapter that has a store to install (the Truss adapter), on the installing connection and with no person. It takes `pg_advisory_xact_lock` inside its own transaction, then reads Truss's install status: an absent Truss is installed; a present Truss of the pinned release is verified and left alone; a present Truss of another release is `unsupported_version`. The decision comes from the status read, never from parsing an install error. `MigrationResult` has `ran: bool` (true only when this call installed), `revision: str` (Truss's release id), and `owner_role: str | None` and `registrar_role: str | None`, set only when `ran` is true: Truss reports them once, from the installation result, and a later status read does not repeat them. The host SHOULD persist them, because granting registrar membership to the administrative principal and to people needs the registrar name; if it did not, `TrussBackend.install_roles()` recovers both names on the installing connection (a refusal is `Unavailable` with the reason of Truss's typed refusal). An install Truss refuses before it begins (`InstallRefused`) is mapped by its code and installs nothing: `busy` is `Unavailable(busy)`, `incompatible` and `unsupported_postgres` are `unsupported_version`, `unauthorized` and `read_only` are `access_denied`, `already_installed` means another installer finished first (verified, `ran=False`), and `invalid_roles` and `role_exists` are `migration_failed`. If another instance is installing, this call waits for the lock, finds Truss present and returns `ran=False`. A failure sets the backend to `migration_failed` and raises `Unavailable`; the adapter remembers it, so `status()` reports `migration_failed` while Truss is still absent, until a `migrate` succeeds or Truss is seen installed. An installer role without the privileges above is `access_denied`, not a failed install: a missing database privilege is Truss's `42501`, and a missing `CREATEROLE`, which Truss refuses with its one opaque code, is named from the role's attributes the adapter reads first. A COMMIT of unknown outcome is settled by a status read on a new connection: `ran=True` with the names it holds is returned only when the installed installation id is the one this call's install produced; another id means another instance installed (`ran=False`, no names); absent or unreadable is `migration_failed`, detail `outcome unknown`. A refused or lock-timed-out operation maps `55P03` to `the catalog is busy` for `migrate` and `configure_access` (a concurrent registration). With several backends that migrate, `Arras.migrate` returns the result of the backend that ran (the first, when several did) and a host that needs every role pair calls each adapter's own `migrate`; a backend with no `migrate` is skipped. | Safe to call from every instance at start. Arras performs install-or-verify and does not invoke Truss's forward-migration API or recreate a database. A different installed release returns `unsupported_version`. A database administrator may use the selected Truss 0.0.50 tool's separately documented forward-migration procedure only when the source is eligible; Arras then verifies the pinned release. Arras makes no blanket migration promise. |
 | Install lock | Postgres advisory lock in the Truss adapter's database | yes | Concurrent installs MUST be serialized by a transaction-scoped advisory lock (`pg_advisory_xact_lock`) taken inside the install transaction before the status read, so it holds behind a transaction-mode pooler; Truss does not serialize installs itself, and without the lock a losing installer fails. Install and status run as the installing connection. Arras keeps no migration history, schema or version table of its own: the store's layout, its release and its upgrades are Truss's. | A person's connection cannot read Truss's install status (an ordinary member gets a permission error); it can read only Truss's minimal person status (`person_runtime_status_in_transaction`: the installation absent, compatible or incompatible, and the catalog empty, accepted or unknown, for any enrolled reader, writer or auditor), which the adapter asks to tell an empty install from another release. `status()` has no person, so it reads install state on the installing connection only and never probes as a person. |
 | Operations when a backend is unavailable | | yes | Every operation that needs an unavailable backend MUST raise `Unavailable(backend, reason, detail)` promptly, with no retry loop, and an operation that does not need it MUST still work. | CONTRACT-001 states which backend each level needs. |
 | `Arras.session(principal)` | `-> Ontology` | yes | CONTRACT-001. | |
 | `Arras.close()` | `-> None` | yes | Releases anything Arras holds. It does not close the host's pool or connections. | |
 | Public names | `arras.__all__` and the deliberate host/launcher module names in the carried public catalog | yes | The host MUST import only its selected catalogued names, including the narrow launcher subset above. Arras MUST NOT import any module of the host. A build check fails on a violation in either direction. | CI check in each repository; concrete promised-seam import/composition smoke. |
-| `arras.testing.InMemory()`, `example_module()` | the memory adapter's two backends, `memory` (reader and provider) and `memory_replica` (reader), the people they know, and a `Arras` over them | no (host tests) | The only public way to get in-memory backends; `arras.fakes` is internal. It follows the backend contract and passes its conformance corpus: refusals, freshness, outages and attribution behave as on the other adapters. The replica copies `memory` only on `sync()`. `person(user, module, *modes)` grants access, `register`, `import_records` and `start(backends=...)` act as the administrator, and `set_available(backend, up)` takes a backend down. Access is a grant table, not Postgres roles or Unity Catalog. It places its modules itself (record store `memory`, replica `memory_replica`). | A host's own tests use it; it measures neither latency, migration nor connection sources. |
+| `arras.testing.InMemory()`, `example_module()` | the memory adapter's two backends, `memory` (reader and provider) and `memory_replica` (reader), the people they know, and a `Arras` over them | no (host tests) | The only public way to get in-memory backends; `arras.fakes` is internal. It follows the backend contract and passes its conformance corpus: refusals, freshness, outages and attribution behave as on the other adapters. The replica copies `memory` only on `sync()`. `person(user, module, *modes, admin=False)` grants access, `register`, `import_records` and `start(backends=...)` act as the administrator, and `set_available(backend, up, *, reason="unreachable")` takes a backend down, saying why. Access is a grant table, not Postgres roles or Unity Catalog. It places its modules itself (record store `memory`, replica `memory_replica`). | A host's own tests use it; it measures neither latency, migration nor connection sources. |
 | `arras.console.create_app(arras, *, principal_for_request, base_path="")` | `-> ASGIApp` | yes (P1) | See CONTRACT-006. | |
 | `python -m arras.mcp` | stdio MCP server | no | The only code that reads the environment, in one module (`arras.mcp.config`): it builds a `Arras` from its own configuration and one `Principal` from the user's token. See CONTRACT-007. | A host that embeds the library never goes through it. |
 
@@ -1299,8 +1443,8 @@ change Truss 0.0.45, or permit reads/actions as an installing identity.
 | `TrussBox(..., credential_source=None)` | Forward the source. Assign each initial registrar/module membership only when the person role or that membership's target managed role was newly created by this instance. Startup, restart and repeated `load()` of an existing module MUST NOT regrant revoked access, reset expiry or remove independent memberships. Existing modules attach without default-grant reconciliation; empty-state seeding is separate from identity bootstrap. |
 | Explicit sandbox selection, `TrussBox.person(name, role)` | Reconcile only the installing role's direct grants of known managed reader/writer/auditor roles and the current installation's registrar role, across hosts rather than only this process's `minted` map. Preserve independent grantors' rows, unrelated memberships, inherited rights and role attributes. A selected sandbox label does not promise exclusive effective privileges: PostgreSQL's full current authorization remains authoritative. Ordinary startup and principal reads MUST NOT invoke reconciliation implicitly. Existing explicit grant/revoke/expiry development controls remain explicit; no broad grantor/inheritance revocation is added. |
 | Persistent `set_password` / `use_token` | Refuse credential replacement; these development helpers remain usable on throwaways. Coordinated persistent rotation is outside EX-06. Never change a shared database password behind the source or another host's principal. |
-| Devhost composition | `devhost.build(..., credential_source=None)` forwards an explicitly supplied source; persistent programmatic construction without it refuses rather than reading or creating files implicitly. CLI composition alone constructs the file source below: `--truss-credentials PATH`, then `ARRAS_TRUSS_DEV_CREDENTIALS`, then the default. Core/adapter do not read ambient environment or credential files. An explicit path option without persistent Truss is a startup argument error. |
-| Shared credential file | Default `~/.arras/truss-dev-credentials/<scope>.json`; `scope` is a stable hash of credential-free host/port and installer role, excluding database because roles span databases. Aliased endpoints are not automatically equated: sharing hosts must select the same file. Version 1 contains a role-to-password map. The host-owned source atomically gets/creates independent random per-role passwords only when `create=True`; `create=False` never creates a missing file/entry. |
+| Devhost composition | `devhost.build(..., credential_source=None)` forwards an explicitly supplied source; persistent programmatic construction without it refuses rather than reading or creating files implicitly. CLI composition alone constructs the file source below: `--truss-credentials PATH`, then `<PREFIX>_TRUSS_DEV_CREDENTIALS` (the distribution's `env_prefix`; absent for `ARRAS`), then `ARRAS_TRUSS_DEV_CREDENTIALS`, then the default. Core/adapter do not read ambient environment or credential files. An explicit path option without persistent Truss is a startup argument error. |
+| Shared credential file | Default `~/.arras/truss-dev-credentials/<scope>.json` (`~/.<prefix>/...` for a distribution whose `env_prefix` is not `ARRAS`); `scope` is a stable hash of credential-free host/port and installer role, excluding database because roles span databases. Aliased endpoints are not automatically equated: sharing hosts must select the same file. Version 1 contains a role-to-password map. The host-owned source atomically gets/creates independent random per-role passwords only when `create=True`; `create=False` never creates a missing file/entry. |
 | File integrity/concurrency | Hold an exclusive stable sidecar process lock across read/validate/get-or-create and atomic same-directory replacement; locking a replaced data inode is insufficient. Use current-user ownership, private parent directory and 0600 regular data/lock files; refuse symlinks, unsafe existing permissions, malformed/unknown-version/duplicate-key data and oversized input without clobbering. Check existing ancestors before making missing directories, then validate the resulting parent; an unsafe ancestor must not create children behind its link. Open paths so nonregular FIFO/device entries cannot block validation. Bound reads to 64 KiB, flush writes before publishing, and release locks on failure. Never log contents, passwords, source exception text or credential-bearing URLs. |
 
 Existing development roles whose old generated passwords were not retained need
@@ -1327,7 +1471,7 @@ rules. A database reset does not implicitly reset the shared credential file.
 | A backend refuses the identity, or the installing role lacks install privileges | that backend `access_denied` | no | Platform owner grants access |
 | No installing connection is given | that backend reports `not_configured` until a per-person call has been made, because the adapter cannot read the store's release and never probes as a service; after a call it reports what that call showed (available when it reached Truss, unavailable with the reason when it could not), so a host with only the person's token (the MCP process) reports the database it is serving. Reads and writes are not gated on the report: they are served and refused by the database as the person. Consumers of the status (the console's all-down answer, search) treat the backend as down while it is `not_configured` | no | Host supplies the installing connection when it wants the status |
 | Install fails | that backend `migration_failed`, detail `truss <code>` (no server or Truss text) | after the cause is fixed | Fix and restart |
-| The database holds a Truss release other than the pinned one | that backend `unsupported_version` | no | Do not recreate automatically. Arras does not invoke an upgrade. If the source is eligible, the database administrator may use Truss 0.0.48's separately documented forward-migration procedure, then run Arras install-or-verify; otherwise retain the database and resolve compatibility with the operator |
+| The database holds a Truss release other than the pinned one | that backend `unsupported_version` | no | Do not recreate automatically. Arras does not invoke an upgrade. If the source is eligible, the database administrator may use the selected Truss 0.0.50 tool's separately documented forward-migration procedure, then run Arras install-or-verify; otherwise retain the database and resolve compatibility with the operator |
 | Truss quarantines a connection | Arras closes it; the call raises `Unavailable(unreachable)`, detail `the connection was quarantined`. Truss 0.0.45 has no deterministic trigger that quarantines a live connection, so the tests set the flag that the `transaction_unusable` and `commit_unknown` outcomes set | yes, on a new connection | The host's pool discards it |
 | A source yields a connection with autocommit on, an open transaction or a session role | the call raises `Unavailable(access_denied)` before any Truss call; a connection with a session role is also closed, because the role is session state, and the host's pool MUST discard it | no | Fix the host's source |
 | Truss or its toolkit is not installed (`ImportError` in a call), or Truss raises an exception that is not a programming error (`ValueError`, `RuntimeError`, `OSError`) | `Unavailable(not_configured)`, detail `the truss extra is not installed`, or `Unavailable(unreachable)`, detail `truss error`; neither carries the exception's text; `AssertionError`, `TypeError`, `AttributeError`, `NameError`, `LookupError` and `NotImplementedError` propagate unchanged | no | Install the extra, or fix the cause |
@@ -1369,3 +1513,34 @@ ontology.query("catalog", "SELECT u.workArea, COUNT(*) FROM catalog.UseCase u GR
 ## Non-Normative Notes
 
 The embedding host supplies a current person credential for each new connection through its own pool; a per-principal connection source keeps Arras out of credential handling and keeps every backend call attributable to the person (ADR-017). Whether the host installs at startup or as a deploy step is the host's choice: it calls `migrate()` at start or runs it as a deploy step. The adapter needs no executable on `PATH`: Truss prepares a module in an embedded V8 and spawns no process, so registration, a write, an import and a key lookup all work with no Bun, no Node and an empty `PATH`. The module role names are the host's `module_access`, and whoever holds the installing connection calls `configure_access` after a runtime registration of a new module (the host's decision, which Arras does not take). Warehouse credential delivery and refresh belong to the embedding host under ADR-017. CONTRACT-007 defines the stdio token-file reread and claim-selection mechanisms; the host owns their deployment wiring.
+
+## Later public 0.0.49 managed-host handoff
+
+This later-tranche amendment leaves the published 0.6.0 release and its
+receipts unchanged. The host may supply `tolerated_grantees=()` through the
+explicit Truss factory/backend constructor (CONTRACT-004). Construction performs
+no connection, environment lookup or SDK import; fresh install alone forwards
+the tuple. Reconnect verifies upstream stored policy without replacing it.
+The setting is not a policy-change, migration or role-management API.
+
+Managed execution requires the exact human-authorized provider target, secure
+credential source and disposable resource scope. The designated Truss owner alone
+provisions the Lakebase target; Arras must not create a competing instance.
+Public Truss installs the fixed `truss` namespace and creates installation roles.
+Authorization for an unrelated disposable schema is insufficient. Dedicated
+database or explicit fixed-namespace/created-role custody must be established
+before effects, with unrelated installations and resources left untouched.
+
+The installer and each person use their own authorized connection sources.
+TLS verification, provider identity, token expiry/refresh, actual role privileges,
+server/driver/native tuple and resource custody require original observations.
+No service-identity fallback, trigger disabling, inferred superuser/extension
+trust, automatic role widening or compatibility retry is permitted. Missing
+target/source/privilege/control requirements block dependent cases; local or
+synthetic evidence cannot satisfy actual Lakebase acceptance.
+
+## Current public 0.0.50 source selection — final release gates open
+
+The current Arras 0.6.1 candidate selects public Truss 0.0.50, wheel SHA-256 `7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00`, from source `a687d0a226dad5745cbd909377bf99c7c1cddc66`. The native runtime manifest remains `truss-catalog-runtime/0.74-candidate`, SHA-256 `288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4`; the distinct active migration manifest is SHA-256 `4c6baf0282e3d0b5492f070c9c07d89ff0c9a819e748f3820f60b11c1f51c7aa` and retains the prior 0.0.49 manifest. The additive [source-binding record](../../04-build/evidence/truss050-adoption-20261024/extension-source-binding.json) documents the unchanged inventory of 50 native SQL files and five JSON resources and references a source-only dependency review; it is not a database observation or managed acceptance.
+
+This current selection supersedes the earlier 0.0.49 pin for the candidate. The 0.0.49 amendments and receipts above remain historical at their original scope. The exact Arras 0.6.1 wheel passed fresh-installed Mac arm64 / CPython 3.11.9 qualification (64 passed, eight declared limits, seven replica-only cases inapplicable), with seven native archive hashes, 172 installed Arras payload hashes and cleanup verified. The repaired fresh Lakebase baseline passed 6/6. The separately bound original twelve-case Lakebase campaign passed 12/12 with zero failures or blocked cases, and original cleanup, independent audit, process census and custody handback passed. Source-bound safe records are retained under `docs/helix/04-build/evidence/truss050-adoption-20261024/`. The scoped supplement did not capture the direct supervisor PGID; no forced-cleanup claim is made. These execution facts do not change this contract or declare final release acceptance; final review, exact-commit CI, merge/tag and publication remain open. The reusable ordinary actor setup is already provisioned; no new VM or repeated administrator provisioning is required.

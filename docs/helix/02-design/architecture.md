@@ -200,6 +200,7 @@ Each module of the `arras` package belongs to one group, and a group imports onl
 | `devhost`, `devtruss` | The development host: the console, the operator surface and the built UI at one origin over the sandbox's fakes or, with `--truss`, a real Truss: on the persistent PostgreSQL server a connection URL names (state kept across restarts, seeded only when empty, `--truss-reset` to start clean) or, with no URL, on a throwaway local PostgreSQL (`devtruss` provisions either through `adapters.truss.local`) | `python -m arras.devhost` | Foundation, domain, core, doubles, adapters, console, operate, ui | None |
 | `mcp` | The stdio MCP server, its configuration (files and environment) and token source (CONTRACT-007) | `python -m arras.mcp` | Foundation, domain, contract, core, adapters, doubles (for the sandbox switch only; the checker admits the whole group, so this limit is a review obligation) | Console, `devhost` |
 | `__init__` (root) | The public surface: re-exports `arras.__all__` | Names in `arras.__all__` | Foundation, domain, core | Bindings, doubles |
+| `cli` | The `arras` console script: `doctor`, `devhost` and `mcp` hand the rest of the command line to the module's own `main`, so those entry points and the distribution launchers (`devhost.main`, `mcp.launch`) are unchanged | `arras`, `python -m arras.cli` | Foundation, doctor, devhost, mcp | Everything else |
 | `boundary` | The host-facing boundary check (US-033); reads the inert `arras/public-api.json` package resource and derives the host module allowlist from the reviewed catalog | `python -m arras.boundary` | The package root and catalog | Everything else |
 
 ### Official admission and core metadata — bounded A2
@@ -288,6 +289,23 @@ edges. Native engine loading remains adapter-only, the sole TOML-parser check
 remains intact, and no cycle or module-length ceiling is waived.
 
 ### UI module boundaries (`ui/src/`)
+
+API hosting and React composition are independent: a host mounts `console`,
+`operate` and optional schema ASGI factories without `ui`; the npm root, browser
+and shell are compiled public UI entrypoints. `ui` is a convenience composition
+of those APIs and runtime assets, never a core dependency. One Python/npm version
+pins the release cohort. Core registration retains the GraphQL servable check.
+
+`api/context` owns the identity/API session boundary, private default caches,
+shared-cache leases and inherited entry configuration. Scope changes replace the
+whole subtree before cached data or viewer modes can cross identities. Shared
+clients require the identical identity/API scope; final release cancels and
+clears them. Provider roots scope CSS even for individual public areas.
+`lib/pageEffects` holds page-effect ownership; controlled Explore keeps view
+state in memory, and `pageEffects=false` disables title, window scroll and global
+shortcuts. Browser focus state, accessibility IDs and portal targets belong to
+individual instances. Internal modules remain private to their existing group.
+
 
 The UI's groups follow the same rule: a group imports only the groups listed, `tests` guard it (`ui/src/test/`), and the two modes never import each other (SD-011, SD-013).
 

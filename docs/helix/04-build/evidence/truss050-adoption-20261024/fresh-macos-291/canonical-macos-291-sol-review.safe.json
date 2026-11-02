@@ -1,0 +1,87 @@
+{
+  "artifact": {
+    "archiveMemberCount": 10,
+    "extractedTreeExactlyMatchesArchive": true,
+    "files": {
+      "artifacts/native-macos-cleanup-observation.json": {
+        "bytes": 199563,
+        "sha256": "39e050cfe62877dfc1cb39b7275a99d46cc2d6dce7f98a828512cca3ddf11964"
+      },
+      "artifacts/native-macos-cohort-binding.json": {
+        "bytes": 893,
+        "sha256": "a06b005c5103be3869817c28e71baade552f3cdcb2686b6231ff39f77ccbc02d"
+      },
+      "artifacts/native-macos-cohort.bound.json": {
+        "bytes": 4506,
+        "sha256": "6de88e06c7b387f037175c16acd2a995ac6d7b5e6373f7cd716b82041a2cbd9d"
+      },
+      "artifacts/native-macos-consumer-provenance.json": {
+        "bytes": 2367,
+        "sha256": "ad5f1ec1cf2bda5a73345b0ed570aa026fa5e443f51e4fdccece3adebbf29c59"
+      },
+      "artifacts/native-macos-verification.json": {
+        "bytes": 381563,
+        "sha256": "d011f0c275e277841eca3dee9d80836a0ac509f426b573350942c8f447d7e5e4"
+      },
+      "artifacts/native-macos-verifier.stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "artifacts/native-macos-verifier.stdout.log": {
+        "bytes": 76,
+        "sha256": "ac9fbf62d6c0221ce9422f84f49963eb9baf1418af2ecfcc6d5f7b4690e80d8c"
+      }
+    },
+    "id": 12561101383,
+    "noDuplicateMembers": true,
+    "zipBytes": 143453,
+    "zipSHA256": "70eb9b1936693ad847d9968a8e3dde060ea501df63cf5f074ae152d870f99549"
+  },
+  "cleanup": {
+    "ambiguousProcessIdentities": 0,
+    "nativeTempRootsRemaining": 0,
+    "normalCompletionForcedGroupCleanupField": null,
+    "note": "Normal completion keeps the original forced-group-cleanup field null; no forced-termination claim is made.",
+    "ownedProcessesRemaining": 0,
+    "status": "passed",
+    "verifierExitCode": 0
+  },
+  "cohort": {
+    "boundManifestSha256": "6de88e06c7b387f037175c16acd2a995ac6d7b5e6373f7cd716b82041a2cbd9d",
+    "corpusVersion": 13,
+    "findLinksSha256": "a04f0e579585e30cc8a33830290ff66695bbe8fab264a3367ea0709152b8a40e",
+    "nativeDistributions": 7,
+    "templateSha256": "724a5d033e4b34a20340bf35264729068b972428278bf5c51c96f410e99e3841",
+    "unchangedDeclaredLimits": 8
+  },
+  "conformance": {
+    "failed": 0,
+    "harnessError": 0,
+    "hostSpecific": 0,
+    "limits": 8,
+    "passed": 64,
+    "systemDynamicLinkAudit": "not performed",
+    "uniqueApplicable": 72
+  },
+  "findings": [],
+  "schema": "arras.hosted-macos-independent-review/1",
+  "scope": "Fresh hosted macOS arm64 installed-native evidence only; reviewer performed offline artifact/provenance/payload checks and did not run native tests, builds, services, or provider operations. No WAN or public-repeat qualification inferred.",
+  "source": {
+    "artifactBuildId": "12560810699",
+    "ciJob": "native-macos",
+    "ciRunId": "40094776682",
+    "pullRequestHead": "291cd2fb6c7de0212c2156fdbcbaf713a31547ed",
+    "sevenHarnessHelperHashesBoundInProvenance": true,
+    "syntheticSourceCommit": "7a549640c734d5982ec3b032055b0b291e21a4f8",
+    "tree": "f63f192a08ac93a40a6fae0e902c2b0f93106ebe"
+  },
+  "status": "clear",
+  "wheel": {
+    "allPayloadHashesMatch": true,
+    "installedPayloadMembers": 172,
+    "name": "arras-0.6.1-py3-none-any.whl",
+    "sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+    "version": "0.6.1",
+    "wheelPayloadMembersExcludingInstallerGeneratedRECORD": 172
+  }
+}

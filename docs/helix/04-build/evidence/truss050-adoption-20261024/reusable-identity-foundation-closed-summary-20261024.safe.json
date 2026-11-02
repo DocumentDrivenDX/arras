@@ -1,0 +1,75 @@
+{
+  "acceptance_status": "NOT_PASSED",
+  "credential_lifetimes_observed_days": [
+    90.0
+  ],
+  "credential_reference_metadata_remains_private": true,
+  "current_installer_admin_claim_from_historical_observation": false,
+  "disposable_cleanup_scope": "Owned campaign schemas and generated module roles only; reusable OAuth identities and secure credential references retained.",
+  "factory_smokes_were_configuration_only": true,
+  "historical_active_credential_count": 4,
+  "historical_active_principal_count": 4,
+  "historical_credential_reference_count": 4,
+  "historical_one_time_privileged_bootstrap": "Identity provisioning, project delegation and SQL-role registration are a separate historical bootstrap phase. Retained evidence of creation/configuration does not establish current account/workspace admin membership.",
+  "historical_requested_and_observed_scopes_match": true,
+  "historical_stored_count": 4,
+  "identity_factory_historical_passed": true,
+  "latest_actual_campaign_result": {
+    "acceptance_passed": false,
+    "sha256": "bf379ae2c54a95f636337311c03c0395b214be519fb1f4cd1ca9f9e892fabee5"
+  },
+  "new_credentials_minted": false,
+  "new_provider_or_iam_calls": false,
+  "not_authorized_by_this_record": [
+    "Delete project, database, IAM identities, service principals or secure credential entries",
+    "Publish raw private source documents",
+    "Infer current credential status or global account/workspace administrative membership",
+    "Claim routine refresh or platform acceptance from bootstrap/factory smoke evidence"
+  ],
+  "provider_factory_historical_passed": true,
+  "recorded_at": "2026-10-24T18:05:14.872484+00:00",
+  "rotation": {
+    "agent_has_ongoing_rotation_authority_or_automation": false,
+    "credential_references_have_finite_expiry": true,
+    "expected_rotation_period_days": 90,
+    "named_rotation_custodian_in_reviewed_receipts": "UNKNOWN_NOT_ASSUMED",
+    "new_credential_rotation_performed": false,
+    "ownership_required": "The user or designated workspace credential administrator owns renewing or replacing these credentials and updating secure references before expiry; release owner must track that handoff."
+  },
+  "routine_identity_scope": "Historical actors and their private secure references are reusable inputs. Each future run must freshly validate identity, authorization, expiry and exact target bindings. Full routine platform qualification remains incomplete.",
+  "schema": "arras.lakebase-reusable-identity-foundation-closed-summary/1",
+  "scope": "Historical bootstrap references and reusable identity custody; no current acceptance or admin-free lifecycle claim.",
+  "secret_values_read_or_exported": false,
+  "sources": {
+    "bootstrap_readiness": {
+      "private_original_retained": true,
+      "public_copy_of_original_authorized": false,
+      "sha256": "7dccc0086e50a17654b75dee70b1158da69957b58aec275ca1776cd04a6defde"
+    },
+    "credential_references": {
+      "private_original_retained": true,
+      "public_copy_of_original_authorized": false,
+      "sha256": "50dad9c63b43dab2f251a18095748cb7117bead1211b7ba439cc3549ef8805df"
+    },
+    "identity_factory": {
+      "private_original_retained": true,
+      "public_copy_of_original_authorized": false,
+      "sha256": "c95a0be0a62f5b0df54421528ece6d03ce7e8131b81384db66ecbd6d05d6734f"
+    },
+    "initial_principals": {
+      "private_original_retained": true,
+      "public_copy_of_original_authorized": false,
+      "sha256": "52d29754666fdd511d283134d5881d75fe94e4112c7450927bb1bcdf2dab8f0f"
+    },
+    "installer_account_role": {
+      "private_original_retained": true,
+      "public_copy_of_original_authorized": false,
+      "sha256": "cac61410602c928a34fa099d670a574ccd52f65fb939cf278cba81403854a99f"
+    },
+    "provider_factory": {
+      "private_original_retained": true,
+      "public_copy_of_original_authorized": false,
+      "sha256": "b33cdde90f341ac9b74fba9226b41755b09bad27dcb607aed0dc54176a28945c"
+    }
+  }
+}

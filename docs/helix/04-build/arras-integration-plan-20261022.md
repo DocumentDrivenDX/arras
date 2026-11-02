@@ -25,6 +25,112 @@ ddx:
 
 # Arras integration build plan
 
+## Embedded composition completion — 2026-10-29
+
+The operator requests complete core/API/UI embedding, documented visibility and
+scope ownership, and publication for downstream consumers. Work starts from
+upstream `2dbaf40`, preserving local documentation changes in the older checkout.
+The candidate is 0.6.4, with unchanged native/UMF pins and public export names.
+
+- Govern exact session/page ownership in CONTRACT-005; keep core/API/UI boundaries
+  and one Python/npm release cohort, without exporting private implementation.
+- Replace UI session state on identity/API-base changes; guard shared-cache scope,
+  inherited configuration and stale responses. Preserve same-scope cache sharing.
+- Keep controlled navigation, accessibility IDs, focus requests and edit portals
+  local to each instance. Supply CSS scope for individually composed public areas.
+- Document independent API mounting, compiled npm consumption, host ownership,
+  runtime UMF assets, public entrypoints and design-system integration.
+- Run source regressions, full UI unit/types/lint, packed exports, real browser
+  tests and fresh distribution consumers. Qualify final release bytes through
+  existing exact-tag/public-download/registry gates before claiming publication.
+
+Implementation was merged in [PR 20](https://github.com/DocumentDrivenDX/arras/pull/20).
+The expanded UI suite passes 1,462 cases, including StrictMode and late 401
+callback controls; TypeScript/Biome pass. The default Python run passed 3,325
+cases, with socket-blocked devhost cases rerun successfully (13 server cases).
+Public API-only construction, module/catalog boundaries and fixture checks pass.
+The first local wheel passed packed ESM/type/deep-import checks, Chromium 153
+embedding against a real local API, source/sdist installed parity, official UMF
+and macOS native qualification. Those receipts bind their original wheel;
+callback corrections and the extension-example 0.6.4 pin require rebuilt bytes.
+
+The user authorized a fresh disposable Lakebase qualification target and four
+temporary identities with project-scoped grants and two-hour keychain credentials.
+Project creation succeeded with 0.5–1 CU and 300-second autosuspend. After the
+operator activated PIM and the development login was refreshed, all four
+identities and project-only grants were created. Lakebase API-created roles
+receive replication privileges; the unchanged ordinary-person admission refused
+them before installation. The test roles were recreated with the documented
+login-only OAuth SQL provisioner, then independently checked for no superuser,
+role/database creation, bypass-RLS, replication or effective elevated privileges.
+The frozen full managed campaign now binds the exact CI wheel
+`c69eb11da743f736c3c6151e29f0c20eef50777fe5742a641ada9bdf556eb524`.
+No old authorization or managed result is reused. Cleanup remains mandatory.
+
+The corrected candidate in CI `40966444386` passes Python, lint/types/build,
+installed doctor, official UMF, full live UI integration and packed Chromium
+embedding. Its fresh-installed macOS native qualification passed on the same
+wheel. The full CI run passed all five required jobs, including the PostgreSQL adapter.
+The corrected managed campaign on this earlier wheel passed all twelve cases,
+and independent read-only cleanup passed all checks. These results remain
+bound to that earlier wheel; final integrated bytes require fresh qualification.
+
+At that candidate stage, no 0.6.4 artifact was claimed available. Historical 0.6.3 and
+native/managed qualification receipts retain their original scope.
+
+The final multi-instance audit additionally replaced the remaining global action
+input-focus handoff with a provider-owned scope, generated default form input
+IDs per instance, and anchored UMF theme observation to each view's own host.
+Regressions exercise two forms with the same action, local label activation,
+actual property-to-action focus navigation, and independent schema-view themes.
+These changes require the final wheel and carried npm archive to be rebuilt.
+
+### Upstream Ashlar composition and release source
+
+Upstream PR21 added private Ashlar preparation/read bridges during release
+qualification. Their optional owner imports were absent from the production
+dependency declarations, so integrated CI refused the source. The bridges now
+accept explicit host-supplied owners: `SingletonReads(..., read_singleton=...)`
+and `prepare_managed_page(..., owners=(request_builder, from_original))`.
+No undeclared package is discovered or imported. Missing owners produce the
+existing typed unavailable result before session/compiler work. The base install
+and public catalog remain unchanged; a qualified Ashlar factory and installed
+owner cohort remain unfinished. Original AS-0 source-local receipts retain their
+original source scope. Fresh composition controls cover explicit forwarding.
+
+The integrated source adds Python wheel members, so the earlier embedding wheel
+and managed results cannot qualify the final release bytes. A new exact CI wheel,
+fresh macOS qualification and a fresh complete managed invocation are required.
+
+### Final selected embedding artifacts qualified
+
+Source `fcd14abc600a9cdcdf9913faba0d072ac50242f4` passed full CI `40973828432`.
+The selected 0.6.4 wheel is `29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2`. Its carried npm archive, fresh Mac
+native qualification and separate fresh twelve-case managed campaign pass;
+independent cleanup and deletion of all temporary identities, credentials and
+the disposable project are confirmed. The final UI suite passes 1,465 cases.
+Earlier local/candidate results above retain their original bytes and scope.
+The [qualified evidence](../05-deploy/evidence/embedding064-20261029/README.md)
+closes original artifact qualification. Final-source CI [40977136028](https://github.com/DocumentDrivenDX/arras/actions/runs/40977136028) reproduced the selected wheel byte for byte.
+PR 20 merged as `e1458af83518b801d9c97a9e57d5518b315459f0`. Immutable annotated
+tag `v0.6.4` selects qualified source `11be778eae8050fd5b2e8b446479e8bea081778a`;
+tag object `5828c7dff4d2f2930fc7f6ae7eaecbc198b6e844` remains fixed.
+[Release run 40978080176](https://github.com/DocumentDrivenDX/arras/actions/runs/40978080176)
+reproduced the selected wheel and npm tarball. All ten release gates and registry
+publication now pass.
+
+[Release 40978080176](https://github.com/DocumentDrivenDX/arras/actions/runs/40978080176)
+passed all ten gates, including anonymous public downloads and fresh consumers.
+[Registry run 40980958496](https://github.com/DocumentDrivenDX/arras/actions/runs/40980958496)
+completed publication of [`arras==0.6.4`](https://pypi.org/project/arras/0.6.4/) and
+[`@documentdrivendx/arras-ui@0.6.4`](https://www.npmjs.com/package/@documentdrivendx/arras-ui/v/0.6.4).
+Public bytes and fresh base/npm installs match; fresh isolated public-PyPI
+`arras[truss,umf]==0.6.4` installs pass on Linux x86_64 and macOS arm64. npm's first
+accepted OIDC upload briefly exposed metadata before its tarball (HTTP 404);
+attempt two skipped upload, verified the existing exact bytes and passed install.
+The original refusal and successful receipts are retained in the publication record.
+See the [publication record](../05-deploy/evidence/embedding064-20261029/registry-publication.safe.json).
+
 ## Scope
 
 Adopt official UMF semantics and the generated client's public transport in
@@ -185,8 +291,11 @@ Official Python core supplies model admission/preservation and explicit registri
 no portable core projection/action-plan API is integrated in Arras. The experimental
 official `umf_access.native_actions` host adapter does contain execution/admission
 machinery; its existence is not portable core API parity or qualified Arras use.
-Select and qualify the authoritative model/API or host-adapter boundary with its
-owner rather than copying an evaluator. Current compiler/browser parity work and
+Before the next execution slice, pin a released authoritative action/value
+extension API and its conformance vectors with the UMF owner. That boundary
+remains unresolved; private constraint/literal kernels are not a substitute.
+Qualify the selected model/API or host-adapter boundary rather than copying an
+evaluator. Current compiler/browser parity work and
 pending installed/sdist qualification do not themselves close Arras adoption.
 
 Ashlar already has scoped publication/query/feed work, including older UMF 0.8/
@@ -195,30 +304,170 @@ candidate. These do not qualify Arras or managed authorization. TD-006 proposes
 bounded incremental publication as a replacement for whole-history processing.
 The owner identifies `resolve_publication`/`read_singleton` with exact snapshot
 pins and mandatory policy owners, plus `AshlarTarget` scoped typed reads/pages,
-as usable surfaces. An installed Arras-compatible cohort is still unqualified;
-the current `.4-xxhash64` managed-page target also conflicts with an older
-`AshlarTarget` allowlist and must be reconciled. Opaque Truss feed cursors in
+as usable surfaces. An installed Arras-compatible cohort is still unqualified.
+Current `AshlarTarget` source explicitly maps the managed
+`0.2.0-managed-current-core-xxhash64-pages-candidate` target to
+`ashlar-delta/0.4-xxhash64` and `spark-xxhash64-typed-key/0.1`; the earlier
+allowlist conflict is no longer a source blocker. This source inspection does
+not qualify an installed Arras/Ashlar cohort. Opaque Truss feed cursors in
 publication progress are not a general `reached(receipt)` API; generic
 `minimumProgress`/`reached` remain contract-only. Source ACK never establishes
 destination visibility.
 Publication/receipt/freshness contract design can proceed now without a new seed,
 scale trial or cloud run. Separate seed/scale approvals do not block that design.
 
-Managed Truss 0.0.49/PR 30 is a separate lane awaiting the public Weft 0.4.51/
-Truss 0.0.48 base and its own final qualification. Its candidate/local stand-in
-passes are not public 0.0.49 or actual Lakebase evidence. Managed roles/ACL/TLS/
-token behavior remains unrun; no new public value/action/lowering API is implied.
-It is not a dependency of the bounded 0.0.48 local Arras release unless a managed
-service deployment is separately selected.
+
+### Ashlar adapter and Truss replication queue
+
+Queued by the human on 2026-10-29. Both capabilities remain required product work:
+[FR-24/27](../01-frame/prd.md),
+[FEAT-004 BE-03/04/06](../01-frame/features/FEAT-004-backends.md),
+[US-023](../01-frame/user-stories/US-023-serve-bounded-reads-from-ashlar.md),
+[US-026](../01-frame/user-stories/US-026-see-how-far-behind-a-replica-is.md),
+CONTRACT-001/002/004 and TP-001 govern acceptance. This expands the existing P2
+entry into ordered work; it does not demote the product requirements or make
+these capabilities prerequisites for the already published Arras release.
+
+| Slice | Owning area | Dependency | Deliverable and acceptance evidence |
+| --- | --- | --- | --- |
+| AS-0: receipt and publication agreement | Existing Arras coordinator with Ashlar and Truss maintainers | Current public contracts and exact API/cohort inspection | Resolve the existing [feed-position questions](../02-design/ashlar-feed-position-question.md): opaque receipt mapping, complete transactions including no-ops, source/epoch identity, publication snapshot, person-scoped disclosure and zero-wait inclusion. Record unsupported or missing APIs explicitly before dependent code. |
+| AS-1: Truss-to-Ashlar replication feed | Truss source-feed and Ashlar ingestion/publication owners; Arras consumes their public boundary | AS-0; qualified source-feed and destination publication APIs | Implement a bounded incremental path from committed Truss changes to published Ashlar state. Verify seed/resume, multi-member transaction completeness, no-op coverage, duplicate delivery, interrupted publication/restart and source epoch changes. Applied progress must describe the state readers actually see; delivery or source ACK alone cannot advance visibility. |
+| AS-2: Arras Ashlar reader adapter | Existing Arras implementation owner, coordinated with Ashlar owner `01a15c6c-3938-71e2-8a35-bdb7ed8d9867` | AS-0; agreed projection, Weft target and installed runtime cohort | Add the read-only adapter, host construction/placement and its conformance Harness. First prove one bounded publication-pinned lookup/page with the current person's token. Then qualify declared query profiles, freshness/status/lag and receipt checks; refuse writes and unsupported profiles. Run the shared reader corpus without weakening assertions. |
+| AS-3: replicated read acceptance | Arras integration owner with source/destination owners | AS-1 and AS-2 | Through the public host, commit a Truss action and use its receipt against Ashlar: demonstrably behind before publication, included after publication, unknown when evidence is missing/incomparable. Prove rows and progress share a snapshot, revocation/row-column restrictions, pagination bounds and cleanup. Record exact installed artifacts, hashes, dependencies and platform with each result. |
+
+AS-1 and AS-2 may proceed independently after their AS-0 dependencies are
+settled; AS-2's read-only fixture does not establish working replication. Neither
+waits for every optional action or cross-module feature. The existing owners keep
+their scopes; this queue creates no new chat, agent, tracker or parallel test lane.
+The human subsequently authorized implementation on 2026-10-29 in Stack chat
+`01a17418-5d70-7c60-bd3f-af32c98cf22c`, turn
+`01a18988-f3e3-7d02-a742-a9dd71055b36` ("Get this work in flight.").
+The existing Arras owner executes AS-0 through AS-3; no new owner or test lane
+is created. Release, Actions, cloud and spending remain outside this authorization.
+
+AS-0 reconciliation is recorded below; dependent implementation proceeds only
+where the actual owning APIs support it. Historical candidate
+versions above are inspection leads, not selected support pins. Transport,
+bootstrap/recovery details and latency budgets remain open until that reconciliation.
+No service identity may substitute for a person's read credentials. Unknown
+progress/lag stays unknown, and opaque tokens must never be numerically ordered.
+
+Verification starts with the smallest affected contract cases and reuses valid
+unchanged evidence. Before native execution, record the selected cases, cumulative
+time/attempt allowance and shared-machine admission mechanism in continuation
+evidence. Use one expensive job at a time and at most two CPU-heavy workers across
+participating owners; a resume does not reset the allowance. No heavy test starts
+without that admission. Token cost is currently unknown; no new spending, cloud
+dispatch or Actions run is authorized by this queue. Keep required native and
+managed authorization evidence open until separately authorized and actually run;
+local doubles do not close it. Preserve failures and stop at the allowance rather
+than raising caps, reducing assertions or rerunning unchanged full suites.
+
+
+### AS-0 API reconciliation and implementation continuation — 2026-10-29
+
+**Authorization and source custody.** Implementation authorization is recorded
+above. Work is isolated on `codex/arras-ashlar-integration` in
+`/private/tmp/arras-ashlar-integration-20261029`, based on main
+`2dbaf400de3d6415a6dd80a464261afd27b8b9b4`. The original checkout's uncommitted
+plan/index edits are untouched and backed up under
+`/private/tmp/arras-ashlar-as0-20261029`; its stale whole-file patch was not applied.
+Only the AS queue was reconciled into current main, preserving the newer managed
+page-profile correction and all historical release records.
+
+Inspection baseline: Truss released `v0.0.51` source
+`26c1b9171718ad0f6291b82f65c8cef0406886fb`; Ashlar local source
+`63f5cd890a0bdc6f80ade9402c63b0d36c473396`, origin/main
+`5174a1fe9317cc550f9d67b52edca371ccae33be`. The inspected Ashlar modules below
+have no differences between those two Ashlar commits. This is source inspection,
+not installation or native qualification. File identities are retained in
+[evidence](evidence/ashlar-as0-20261029/source-inspection.json).
+
+| Existing question | Actual owning APIs / observation | Supported decision and remaining operation |
+| --- | --- | --- |
+| 1. Opaque receipt mapping | Truss `Assembly.reached_in_transaction(transaction, token, consumer_id=...)` calls `truss.feed_reached`, which compares an authoritative issued receipt to the consumer's current committed ACK checkpoint. Ashlar `source_checkpoint.truss_checkpoint` retains original opaque before/after cursors, page digest and batch identity. | Arras does not decode receipts or order cursor/xid fields. Source ACK is not destination visibility. An owning comparison against the **exact held Ashlar publication**, with original source receipt and complete published coverage, is still needed. No generic numeric `minimumProgress` mapping is implemented. |
+| 2. Complete transactions and no-ops | Ashlar `truss_native_feed.native_feed_batch` validates the original native transaction page and members. `TrussFeedSessions` admits only `FeedPage.outcome == transaction`; `continue_truss_graph` stops at `empty_interval`. | Reuse transaction publication and original bytes; do not split groups or reconstruct synthetic events. Empty-interval/no-op coverage cannot currently advance published evidence through this composition. Source and destination owners must define/implement durable complete coverage, including no-op receipts, without treating every empty interval as a no-op receipt. |
+| 3. Epoch/restore/fork | Native feed admission and continuation bind installation, source epoch, consumer and registration. Continuation refuses changed identities. | Keep old epochs incomparable. No automatic old-token inclusion, reseed or lineage authority is inferred. Cross-epoch seed/lineage proof remains an explicit upstream operation and acceptance case. |
+| 4. Person and snapshot | `resolve_publication` authorizes before descriptor disclosure, validates exact manifest and native UUID/version. `read_singleton` holds the whole pin vector, binds descriptor policy and applies current row policy, including absence; it rechecks admission before release. `AshlarTarget.read/page` uses the corresponding pinned Weft owner boundary. | Supply fresh host ports authenticated as the requesting person on every call; no ambient/service fallback. Missing evidence is unknown; typed denial is refusal. Publication-pinned rows are implementable now. Receipt checks must use that same publication, not a separately selected latest descriptor. |
+| 5. Zero-wait | Truss receipt comparison is one read-only operation and never waits. Ashlar's resolver/singleton execute once; `AshlarTarget` requires an explicit deadline owner. Generic Ashlar `minimumProgress`/`waitMs` is not an implemented callable here. | Arras retains retry ownership and no internal polling is added. SQL warehouse cost/latency and token cost are unknown; no cheap/interactive guarantee is claimed. The host must supply bounded native deadlines before a real session is admitted. |
+| 6. Unseen tokens | Truss returns typed receipt availability/reasons; private `_receipt_position` decoding proves syntax only. Current Ashlar receipt-reopen APIs validate original publication/ACK custody, not arbitrary unseen action-token issuance. | Only authoritative evidence can yield false or invalid. Missing/expired evidence, foreign installation/epoch and unobservable tokens stay unavailable. A false result requires a proved issued token and comparable complete publication coverage. |
+
+The current `AshlarTarget` managed `.4-xxhash64` allowlist is already present;
+there is no allowlist repair in this change. `managed_current_receipt_read` opens
+an **original destination ACK receipt** under configured custody; it is not a
+generic `reached(action_token)` implementation. `TrussFeedSessions` already
+provides publication-before-ACK, exact retained destination receipts and read-only
+reconciliation. AS-1 extends those owning operations rather than duplicating a
+publisher inside Arras. Current Ashlar source cohort admission names Truss through
+0.0.50; rename-only Truss 0.0.51 still needs explicit upstream cohort admission
+and installed evidence. No dependency pin changes are made here.
+
+**Upstream handoff.** Stack was sent the exact comparison, no-op coverage and
+cohort-admission gaps in its existing chat. It routes work to the existing owning
+sessions. Those gaps block dependent receipt/replication acceptance, not the
+person-scoped read bridge. Required comparison results remain included,
+authoritatively issued-and-behind, authoritative invalid, and unknown/refused;
+publication ID/full vector and current-person authority must bind the answer.
+
+**AS-2 first code slice.** `arras.adapters.ashlar.singleton` is an internal
+bridge to the existing public `ashlar.singleton.read_singleton` operation. The
+host supplies fresh person-authenticated executor/backend/pins/vector/policy,
+context and explicit supported profiles/revisions. Missing tokens are refused
+before SDK/session access. Native carriers stay unchanged; a result is returned
+only after both pin and host-session release. Failures return no rows and expose
+fixed safe diagnostics. It creates no Position from a row timestamp and makes
+no receipt, lag, full Backend, host-factory or supported-installation claim.
+
+Boundary adoption uses the existing architecture `adapters` group: foundation,
+domain, contract and adapter imports only; core, doubles and bindings remain
+forbidden. The helper has no public catalog entry. `tests/test_modules.py` now
+recognizes Ashlar as an engine import and checks that the base/package imports
+load no SDK. The existing forbidden-edge and cycle controls remain required.
+`tests/test_ashlar_singleton.py` covers exact person/port/selection forwarding,
+unchanged scalar carriers, absence, fresh sessions, missing-token priority,
+open/read/close denial/outage and unavailable SDK. These are bridge unit controls,
+not native policy or provider evidence.
+
+**Observed verification.** The final serial focused campaign passed 63 bridge,
+module-boundary and host-boundary cases in 1.66 seconds, with zero skips; Ruff,
+formatting and strict Pyright passed. The focused Pyright configuration preserves
+the project's Python version/strict rules and resolves this isolated source plus
+the existing selected interpreter. Initial import-path/type-environment failures
+and an ignored-include invocation are retained without acceptance credit in
+[verification](evidence/ashlar-as0-20261029/verification.json). Local semantic
+review added a compound-failure control: a release denial cannot reclassify a
+read outage as refusal. Independent/native review remains open. These checks
+exercise doubles and source boundaries, not actual warehouse authorization,
+managed deadlines, installed artifact compatibility or replica convergence.
+
+**Execution limits and next slice.** No expensive tests may start: the shared
+20-minute/two-attempt native allowance is exhausted and is not reset here. No
+Actions, cloud, spending, deployment, publication or new agent/chat is authorized.
+Only bounded non-native affected checks run serially. Token estimate/metering is
+unknown; no additional spending is authorized. Native, managed, shared reader
+corpus and AS-3 receipt-before/after-publication gates stay open. Next implement
+the read-only Backend's admitted Weft query/catalog and publication-position
+binding after inspecting the existing Weft compilation/typed target contract;
+refuse unsupported profiles. No string parsing of SQL or permissive policy
+shim is an acceptable substitute. Complete paging and host placement follow;
+AS-3 waits for owning receipt/coverage operations and actual native authorization.
+
+Public Truss 0.0.49 and Weft 0.4.51 are available. The separate Arras adoption
+branch pins those exact artifacts; its [local qualification](evidence/truss049-adoption-20261023/local-qualification.json)
+records 199 adapter cases and two transaction-mode cases on editable source
+`40ed2481507f11a61ed81260fbfffbfc8ff91eba`. These local results do not qualify
+fresh installed artifacts or actual Lakebase behavior. Managed roles/ACL/TLS/
+token acceptance remains `not_run`; no new public value/action/lowering API is
+implied. This adoption leaves the earlier bounded 0.0.48 release evidence intact.
 
 “Subgraph” currently means a placed module; `Backend.query` refuses cross-module
 statements. Ashlar is a reader/replica, not a write provider. Arbitrary federation
 and cross-backend atomic writes are not promised. GraphQL/schema-admin servability
 coupling remains architecture debt; this release does not claim a decoupled pure
 kernel. Address it along affected later contract slices, not as a new P0 feature.
-The exact authoritative UMF execution boundary and refreshed public native
-artifacts remain unresolved; owner reports above are not independently rerun
-native evidence.
+The exact authoritative UMF execution boundary and Arras qualification of later
+native capabilities remain open. Public artifact availability alone does not
+close either integration obligation.
 
 ### A1 installed-release probe — completed locally 2026-10-22
 
@@ -1643,6 +1892,1016 @@ gates above are reviewable. It does not establish integration completion.
   publication and supplemental fresh public-download evidence; remaining A2–A7 semantic work
   stays separately open.
 
+## Later public Truss 0.0.49 adoption — isolated work
+
+The isolated adoption branch began at `df923164840cb225a278d760ba911c106fa3c080`
+with package metadata 0.5.1. After the release-owner handoff and PR 8 merge,
+it merged released main `8542d477c411c96a553ea84572b86c95c59d7cf2`; current
+package metadata is 0.6.0. The published 0.6.0 release retains its original
+Truss 0.0.48/Weft 0.4.51 cohort. Earlier adoption receipts remain bound to their
+captured 0.5.1 sources; the merge does not retarget them or qualify a new wheel.
+Merged-head checks and installed-artifact qualification remain separate gates.
+No new version/tag/publication follows from this plan. Runtime campaigns require
+separately coordinated resource slots.
+
+| Owner | Bounded deliverable | Gate and retained boundary |
+| --- | --- | --- |
+| Sol | CONTRACT-004/005 and TP-001 later-tranche amendments; source/evidence review | Preserve frontmatter/history; distinguish forwarding, local qualification and real managed acceptance |
+| Luna A | Exact public49 pin/lock/artifact references; factory/backend/lifecycle forwarding and safe named refusal; catalog/signature and pure controls | Empty strict default; no reconnect widening or ACL-policy interpreter; keep 926-line ceiling and error/transaction precedence |
+| Luna B | Explicit target/authority/fixture-bound executable Lakebase harness and pure gate controls | Actual public operations after admission; original redacted service evidence; no local fallback, inferred provider trust or fabricated MP pass |
+
+The selected public49 source is
+`dd13e95804abc30202d449a756240c6a684ab942`, wheel SHA-256
+`7ea14b2787f02cbeec9ad99d835adbcc30c684fd5be8e0765a1d8198b50e7182`.
+Native digest is `288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4`;
+migration digest is `96addcdb95523f478d8f50b0b47198e47a860680c7400dd359711930e837e535`.
+Weft stays 0.4.51, source `557153731e9f5d0583193a1189a07c6ed485d3d3`.
+The Truss/public49 and managed-target owner
+`01a16383-183c-7680-9518-f69ff40383e5` retains the immutable public49 proof and
+Lakebase custody. The independent A2/0.6.0 release owner
+`01a16023-fabd-7fa3-9abf-44d42e7fd673` provided the integration handoff after
+the published release and PR 8 merge.
+The published49 proof labels actual Lakebase `not_run`. The separate
+[source review](evidence/truss049-adoption-20261023/source-review.json) binds
+the harness and reported 52 pure controls. The
+[local qualification](evidence/truss049-adoption-20261023/local-qualification.json)
+binds the later source-native 199-case run and coordinator-observed two local
+transaction-mode passes. Its editable Arras 0.5.1, runtime, cleanup and artifact
+capture limits remain explicit; neither receipt is a managed-service result.
+
+The human authorized the managed-target owner to create a dedicated Lakebase
+with the Databricks CLI. That target is now provisioned; its read-only preflight
+observes PostgreSQL 18.6 (`180006`), psycopg 3.3.6/libpq `180006`, verified TLS
+with a maintained CA bundle, and no `truss` schema. No service mutation is implied
+by these observations. An ordinary OAuth identity remains blocked by workspace
+service-principal creation permission; the owner awaits the human identity
+handoff. Neither a native-password baseline nor a nonhuman OAuth actor may be
+reported as human-token acceptance. The secure source, exact authorized roles
+and operational controls still require handoff without private coordinates in
+these artifacts. MP-01–06 and actual consumer acceptance remain open until
+original service evidence and confirmed owned cleanup pass. Official UMF
+value/action and Ashlar work remain separate.
+
+### PR 9 release execution continuation — 2026-10-23
+
+The human requested completion of the installed 0.0.49 and actual Lakebase gates,
+review, merge and release. The release owner now exclusively owns the adoption
+checkout and publication lane; action/constraint work proceeds in a separate
+checkout. The original draft/source receipts remain historical. The required
+managed schedules now have separate implementation and Sol review lanes, with
+the target owner supplying only private factual provider/credential controls.
+The TP-001 execution amendment governs mixed identities, original service proof,
+pre-cleanup sequencing and reusable setup without repeated admin activation.
+
+The first fresh installed native attempt failed conformance validation and then
+exposed a failure-receipt path serialization defect. Its failed logs and capture
+limitation are retained privately; it is not a pass. The reviewed Path-only
+serialization fix and regression test are committed separately, and the same
+candidate wheel is being rerun. Exact wheel/sdist parity, packed imports, doctor
+controls and fresh official UMF qualification passed for that candidate. These
+results do not qualify a later version bump, final release wheel or Lakebase.
+Actual service execution and publication remain pending their original evidence.
+
+The rerun of that original candidate passed 64 native cases with eight unchanged
+declared limits and zero failed/harness-error cases. A subsequent 0.6.1 candidate
+exposed incomplete version updates: its example host still required 0.6.0, and
+the public API catalog and theme fixture retained the previous version. The
+failed installed-doctor and extension-consumer attempts are retained; the version
+references are corrected together before rebuilding and qualifying a new wheel.
+The earlier wheel identities are candidate evidence only.
+
+Databricks bootstrap is now complete for the dedicated target: separately
+authenticated ordinary OAuth actors include one human writer and three service
+principals, all without elevated database attributes or ownership. Reusable
+credential references remain in private Keychain custody. Bootstrap and identity
+smoke evidence qualify setup only; the actual twelve-case managed campaign and
+independently confirmed owned cleanup are still pending.
+
+The corrected 0.6.1 wheel has SHA-256
+`7608193d46257e2666b11fabad2696f35d976f9253b032600868729041c60e02`.
+Its twenty installed doctor controls, fresh extension consumer and official UMF
+gate pass. Independent installed payload comparison covers 172 Arras and 474
+Truss wheel members, with the observed public49 archive/native/migration hashes.
+The prior `90e613e2...` candidate's native campaign reached the 35-minute command
+deadline without a conformance report. Its original failed receipt has SHA-256
+`9da367940231af13a3e136686c644ccd9cd7824377da68aeeb2104618e8eb203`;
+the exact owned PostgreSQL process was independently identified and stopped, and
+zero owned PID files/processes remained. The private failed state and supplemental
+cleanup record are retained. The reviewed optional conformance deadline preserves
+the 2,100-second default, bounds explicit overrides to 1–7,200 seconds, records
+the selected deadline and changes no acceptance assertion or operation timeout.
+The corrected wheel still requires its own installed native proof.
+
+Source checkpoint `9377a902fbc1fd8ab457de0c093329875770fedf` passed Linux
+source/build, default Python and UI CI, while the native job passed 201 cases and
+failed the new managed API case. The selected49 history emitter preserves typed
+UMF string cells; the decoder incorrectly expected bare strings. The reviewed
+correction preserves the exact `{kind: "string", text: ...}` cell and extracts
+text only for the independent Probe comparison, with closed-shape refusal
+controls. The actual local public49 API test then passed in 59.59 seconds,
+retaining three original feed pages privately, and no qualification PostgreSQL
+process remained. The rebound pure runner suite passed 163 cases with the one
+explicit Truss-marked test deselected.
+
+The broad Mac default run recorded 3,209 passes, sandbox-denied loopback server
+cases and a 100 ms interpreter-start timing assertion. All thirteen server tests
+passed in the targeted permitted environment. The reviewed timeout-test fixture
+now uses isolated no-site Python startup while preserving its 100 ms deadline,
+production runner, stdout and process-reaping assertions; the isolated test and
+combined runner suite pass. Original failures remain retained. Final-source CI,
+corrected-wheel native qualification and actual Lakebase remain separate gates.
+
+
+Source `8e807dbfee8bd5d06877a723ea827ab46186a2e2` passed all four CI jobs
+in run `39992131372`. The actual Lakebase execution then stopped twice before
+SQL admission: the first attempt encountered an expired human CLI refresh token;
+ordinary same-profile SSO repaired that credential without renewed admin setup.
+The second attempt exposed a verifier defect that indexed the global `mixed`
+authentication profile instead of the actor-specific profile. All twelve cases
+remained `not_run`, cleanup was `not_attempted`, and the original failed receipt
+and equal before/after installed-artifact binding remain retained privately.
+
+The reviewed correction resolves credential provenance against each authorized
+actor label. Pure controls cover the actual human-writer/three-service-principal
+arrangement, the allowed native-reader variant, profile/subject/provider mismatch
+refusals before connection acquisition, and homogeneous schema1 behavior. The
+credential-source repair and verifier correction do not qualify managed cases.
+A new source/harness/entry freeze and independently rebound private fixture are
+required before a fresh actual campaign. Existing failed attempts stay intact.
+
+
+The third actual attempt passed credential-source admission, then stopped during
+service admission. The original failed installed-execution binding is retained;
+no installation, module mutation or provider restart occurred. Read-only diagnosis
+confirmed that the fixture and four public harness call sites referenced the
+nonexistent psycopg3 `ConnectionInfo.dsn_parameters` property. The selected driver
+is psycopg 3.3.6 and exposes `get_parameters()` instead. The corrected observers
+retain exact endpoint, verify-full TLS, root-certificate and native role checks;
+updated test doubles use the actual driver surface and transport refusals remain
+explicit. The private fixture has separate review and 48 passing offline controls.
+A subsequent actual read-only smoke observed all five authenticated connections,
+expected native identities and TLS facts, with Truss absent. This is admission
+readiness evidence only; all twelve managed acceptance cases still require a new
+full campaign with refreshed source, fixture and authorization bindings.
+
+
+Source `e7cddb7711e0fc565d8f117725230168c33e1976` passed all four CI jobs
+in run `39996494637`. The fourth managed attempt stopped before installation
+because fixture-owned preflight reads left the supplied connection in a
+transaction. The separately reviewed private correction settles those owned
+reads before handoff and enforces idle, non-autocommit connections. All 49
+combined private controls and the actual complete public read-only admission
+path then passed, including the exact not-installed backend status.
+
+The fifth actual attempt passed LB-ADMISSION but blocked at the strict-install
+probe. Its original receipt and equal before/after artifact binding are retained.
+A rollback-contained diagnostic observed successful host adoption and assembly
+construction, then an execution cancellation under the probe's 30-second bound;
+caller work and complete native state remained unchanged. The reviewed probe
+correction uses the existing adapter installer's 60-second statement/operation
+bounds within public49's supported maximum. Product defaults, other operation or
+fault budgets, refusal semantics and state-preservation assertions are unchanged.
+The failed 30-second attempt is not a managed pass.
+
+The corrected-wheel installed Mac conformance run completed with 63 passes,
+eight declared limits, zero failed cases and one harness error:
+`registry.validate-reports-without-applying`, fixture seed step 5, reported a
+timeout/cancellation. Its original failed receipt has SHA-256
+`26e445cecd6af4407a176333cd80a7ed0d0542a7c1a467cfbaaf1eb188036548`.
+Independent cleanup confirmed zero owned PostgreSQL/conformance processes and
+postmaster PID files. The verifier removed its temporary native environment after cleanup; the
+original receipt remains retained for reproduction from a fresh environment.
+The fresh-installed native gate remains open.
+
+
+The sixth actual attempt passed admission and the strict-empty-policy probe,
+including actual selected-role and caller/native containment checks, then stopped
+at selected-policy installation. Rollback-contained diagnostics identified a
+second exact platform role, `databricks_superuser`, through the public typed
+`third_party_grant` relation/pre-ownership result. The typed identity proof has
+SHA-256 `9b4aecbcbc91463860c88212ee746c5d13b193cd8dd9cc6b54d96adbb2c7353c`.
+An exhaustive owned scratch-object census covered schema, relation, sequence,
+routine, type and column ACLs, with no manual grants; the exact external set was
+four existing provider roles, with no unknown grantee. Its private proof has
+SHA-256 `a4748a0ecba5174a0c1d1213c0d60f16563693034641ebfb42309beef5b618f2`.
+Scratch objects were rolled back, native/bootstrap state was unchanged, and all
+sixteen ordinary-actor/platform-role membership, SET and USAGE closures were
+false. Independent review cleared only that explicit four-role target policy;
+this acknowledges existing provider raw access and grants no ordinary authority.
+Target/auth bindings were replaced explicitly; any additional role or identity
+or ACL drift remains blocked. The full managed gate remains open.
+
+The isolated seed case subsequently completed in 17.41 seconds, with its four
+record seed taking 0.40 seconds and no driver SQL error. This source-local
+diagnostic compared 104 Python/corpus members with the candidate wheel; it is
+not installed qualification. A post-report wrapper property error and its
+independent zero-process/PID cleanup supplement are retained separately.
+
+A later fresh-installed Mac retry of wheel `7608193d...` was intentionally
+cancelled after CI's Linux-built candidate was observed as different bytes
+(`5dc897a9a153fb004926dcbd69b3537f969875a2a4cc26f09d2de0cd25d7bfe8`).
+No partial corpus count is inferred. The original cancellation logs and receipt
+limitation remain retained, and independent cleanup confirmed zero owned native
+processes/PID files. Cancellation exposed missing parent interrupt reaping in
+the qualification helper, which is corrected separately. CI now retains its
+exact wheel/sdist alongside installed UMF evidence so canonical release-builder
+bytes can be selected before both full campaigns. README wording is made neutral
+before this final artifact freeze; no passed gate is transferred across a byte
+change. Final installed campaign and public-wheel identities must match exactly.
+
+The four-role rollback-only public49 timing diagnostic reached the unchanged
+60,000 ms operation limit. Its 1,272 delegated driver calls consumed 60.38
+seconds; client process CPU was 0.245 seconds over 61.71 seconds of scoped wall
+time. This supports sequential round-trip cost as the next investigation target,
+without separating wire time from server execution. Hooks were restored, caller
+and native state were unchanged, and Truss remained absent. The private timing
+proof has SHA-256
+`a1cd6f2c43877ee43a70ba51f12b20934be9e7f3a6f0ac665f9423dbb5971de8`;
+the independent fresh native-absence proof has SHA-256
+`77b0874e0cb122897142fe106aa5a51a5e884ba049e2ef73930f114da7892b7d`.
+No final Arras acceptance is asserted. A closer runner is being assessed before
+any provisioning, credential transport or new full campaign.
+
+CI run `40005187951` retained the wheel built at `91c6308a` with SHA-256
+`c31b56e53fa653ba090e08f2dcff1edb85849f56489b543b150108ae75eab57f`.
+Its build and installed UMF checks passed; the other CI jobs and both complete
+final-wheel campaigns remain pending. The release build must reproduce that
+exact filename and digest before verification or artifact upload. Updating a
+future release's admitted digest requires its own complete qualification. The
+guard's workflow-order and actual matching/changed/missing-byte controls passed
+with the native workflow shell controls (21 tests; retained log SHA-256
+`f8ccf0196fb70c0d2db8e62e87e98b0e147085c6876973ba6e32fd28525ddf46`).
+Workflow and documentation edits must still be followed by a CI
+rebuild comparison before this wheel is frozen for the campaigns.
+
+#### Canonical installed checkpoint, 2026-10-23
+
+CI run `40006406325` at source
+`e3e253c06129faa85ad18c1607880d318acd33d9` independently reproduced the exact
+`c31b56e53fa653ba090e08f2dcff1edb85849f56489b543b150108ae75eab57f` wheel.
+All four jobs passed, including 3,242 ordinary Python tests and 202 PostgreSQL
+adapter tests. The installed UMF receipt remained byte-identical to the first
+CI build. The exact-wheel fresh-installed doctor passed all 20 cases; its
+receipt has SHA-256
+`601a98926ed81cc3b3ed1baaa3c1fc8650e3635b16b0405ace11895d7c3fcc18`.
+
+The complete fresh-installed macOS arm64 / CPython 3.11.17 native campaign then
+completed all 72 applicable corpus-v13 cases: 64 passed and eight unchanged declared
+limits, with zero failed, harness-error or host-specific results. The original
+receipt has SHA-256
+`686417142143b507d2f7aa175a206a21ef1b807fe1b520d675c5dd18246e763e`;
+its bound cohort has SHA-256
+`32942570f4974c7f78aea9f2173f9c4d7f5d518baac03ce22cd3f639b400b5e1`.
+Independent review checked the unique complete case inventory, exact eight
+limits, all seven native archive identities, installed payloads and native-file
+hashes. The PostgreSQL archive's identical public bytes were retained from a
+separate verified cache after normal campaign cleanup removed the run's copy;
+that custody distinction is recorded and no campaign was retargeted or rerun.
+
+Independent process/filesystem closeout confirmed zero owned PostgreSQL or
+conformance processes, zero postmaster PID files and removal of the temporary
+environment, with the source and qualification-tool hashes unchanged. Its
+receipt has SHA-256
+`b9f578d0055d9d12e48a33ee3236586d29ac91ffef9e45fd6ce526ea0cf75b42`.
+Unrelated persistent PostgreSQL instances were left untouched. This closes the
+named final-wheel Mac campaign only. Full actual Lakebase acceptance remains
+open: the local selected-policy diagnostic reached the supported installer
+deadline, and explicit operator authorization for the reviewed disposable
+colocated runner and temporary subnet is pending. No new infrastructure has
+been created. Merge, tag, release-build and public-download gates remain open.
+
+## Current public Truss 0.0.50 adoption continuation — 2026-10-24
+
+The active 0.6.1 candidate now selects public Truss 0.0.50, source
+`a687d0a226dad5745cbd909377bf99c7c1cddc66`, wheel SHA-256
+`7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00`.
+The Arras source-binding record is
+`docs/helix/04-build/evidence/truss050-adoption-20261024/extension-source-binding.json`
+(SHA-256 `7ce3846a77f705fa5d1b6cabca98cbf46dec4497a53ab652dd239e4035ee2329`).
+The source-only Truss 0.0.50 dependency review has SHA-256
+`841579af03e375d1bafa1e6a19dc483d9d5ab096fe9a75fd36d834dfb48ee894` and found
+no newly introduced extension dependency. Direct archive comparison found 50
+native SQL runtime files and five JSON resources byte-identical to the prior
+pinned inventory. The separate Truss v0.0.50 exact-tag workflow
+[passed](https://github.com/DocumentDrivenDX/truss/actions/runs/40068606364)
+its Linux release gates, including 107 migration tests, 62 HF cases and 174
+managed-grant tests. Its selected small functional workload also passed; this is
+not a general performance result or Arras managed acceptance. The native
+manifest is unchanged
+(`288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4`), while
+the active migration manifest is separately versioned
+(`4c6baf0282e3d0b5492f070c9c07d89ff0c9a819e748f3820f60b11c1f51c7aa`) and
+preserves the public 0.0.49 migration manifest
+(`96addcdb95523f478d8f50b0b47198e47a860680c7400dd359711930e837e535`). This is
+public artifact/source binding only. It does not create a new database
+observation or transfer the earlier 0.0.49 installed-native or managed receipts.
+
+The adoption gates below bind to the exact eventual Arras wheel. Their current
+execution status is recorded in the checkpoint that follows:
+
+- Complete fresh-installed macOS arm64 / CPython 3.11.9 qualification: all 72
+  applicable cases, including the 64 expected passes and eight unchanged
+  declared limits, plus independent cleanup.
+- Complete actual Lakebase qualification for all twelve required cases and
+  independently confirmed owned-resource cleanup, using the already-provisioned
+  reusable ordinary actor setup. No new VM or repeated administrator
+  provisioning is part of this continuation.
+- Final source, artifact, and hosted release gates after both receipts bind to
+  the same canonical wheel bytes.
+
+The old 0.0.49 sections above remain historical. The current source pin changes
+neither the published 0.6.0 cohort nor the earlier receipts, and it does not
+qualify managed service behavior. The runtime layout/native manifest, UMF
+catalog/application schema, and Truss migration manifest remain distinct
+versioned boundaries; no migration edge or schema transition is inferred from
+the shared native manifest.
+
+### MP-02 source correction checkpoint — 2026-10-24
+
+The exact Arras 0.6.1 wheel SHA-256
+`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18` completed the fresh-installed macOS arm64 / CPython 3.11.9 campaign in CI run `40094776682`: 64 applicable cases passed and eight unchanged declared limits were retained. Independent cleanup and review are retained with the [Mac verification](evidence/truss050-adoption-20261024/fresh-macos-291/native-macos-verification.json), [cleanup observation](evidence/truss050-adoption-20261024/fresh-macos-291/native-macos-cleanup-observation.json), and [review records](evidence/truss050-adoption-20261024/fresh-macos-291/); the [independent retention review](evidence/truss050-adoption-20261024/retention-stage-291-review.safe.json) confirms the staged files match their originals. The Mac gate for these wheel bytes is complete; this does not qualify the managed-service campaign.
+
+The bounded MP-02 connection diagnostic remains a failure with no acceptance
+credit. The installer connection's driver PID was `1008999823`, while SQL in
+that same read-only transaction reported `2677`. The reader probe ran before
+the fixture's installer source populated actor OIDs; its generic error does
+not establish that this ordering caused the recorded failure. The original
+[diagnostic and process-custody receipts](evidence/truss050-adoption-20261024/mp02-readonly-diagnostic/)
+preserve these limits. MP-02 now reads and validates the server PID after
+`BEGIN READ ONLY`, before adopting that same transaction, while retaining
+actor, TLS, target-session, and stale-handle checks. Focused offline controls
+pass; actual service qualification of this correction remains open.
+
+The complete twelve-case Lakebase campaign and independent cleanup remain open and must bind to the same canonical wheel. The MP-02 diagnostic is not a substitute for that campaign. No release or managed-support claim follows from the source patch or diagnostic.
+
+### Instrumented WAN campaign and corrective harness checks — 2026-10-24
+
+CI run `40098437810` passed all five jobs at source
+`e5d8100fc544837b4cf14cc89e4465f468cc9f98`. Its fresh installed Mac campaign
+again recorded 64 passes and eight unchanged declared limits for the exact
+`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`
+wheel. The retained Mac verification and independent review accompany the
+[campaign evidence](evidence/truss050-adoption-20261024/full-managed-factory-and-feed-failures/).
+
+The actual Mac-to-Lakebase WAN campaign ran from 14:03:56 to 14:15:47 UTC
+(711.369 seconds) with the original twelve-case inventory and limits. Seven
+cases passed: admission, installation, person lifecycle, custody, ACL, MP-03,
+and MP-06. Settlement, MP-01, MP-04, and MP-05 failed; MP-02 was blocked during
+transaction or assembly adoption. The original owned cleanup, fresh independent
+native/provider audit, and both actual process-group absence checks passed.
+The audit preserved the 33-role and 18-membership baseline; all sixteen
+ordinary-principal platform-closure checks remained false. This campaign is
+not accepted.
+The [retention manifest](evidence/truss050-adoption-20261024/full-managed-factory-and-feed-failures/retention.json)
+binds the original receipts and their exact hashes. No temporary VM was used.
+
+The diagnostic observer located both MP-01 and MP-04 failures at the private
+destination's `apply_page` boundary. Source comparison found that this fixture
+expected bare property strings while the selected decoder preserves typed
+string cells. The correction requires the exact typed cell and retains the
+canonical properties, page, and receipt without extracting or stringifying it.
+No private exception message was captured. The settlement observer found no
+matching validated event group; it did not establish that the raw stream was
+empty or that the interruption worker lost a timing race.
+
+The settlement and MP-05 harness now instantiate the fixture's returned
+connection factory with the exact principal before entering its context. The
+prior function-as-context-manager call could fail before the fault was armed.
+MP-02 now establishes a local 10,000 ms statement timeout before transaction
+adoption, meeting the pinned SDK's finite-caller-timeout precondition while
+preserving the existing budget. The previous receipt did not record the actual
+timeout or distinguish the two adoption outcomes, so its cause remains
+unproven. New fixed failure codes distinguish transaction adoption from assembly
+construction, and failure cleanup detaches and rolls back. These corrections
+retain the original identity, genuine-interruption, request, generation, order,
+and stale-handle assertions. Source controls do not close the required fresh
+twelve-case WAN campaign or its independent cleanup gate.
+
+### Second instrumented WAN campaign and owned recovery — 2026-10-24
+
+CI run `40102957160` passed all five jobs at source
+`f37b308c8a2f4634ba94a74e9aade29d09e23b33`. The canonical wheel remained
+`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`.
+Its fresh installed Mac campaign again recorded 64 passes and eight unchanged
+declared limits, with independent cleanup and review. The
+[retained campaign records](evidence/truss050-adoption-20261024/full-managed-d8-failed-recovery/)
+keep those Mac results separate from the actual managed-service results.
+
+The actual Mac-to-Lakebase WAN campaign ran from 14:46:52 to 15:06:44 UTC
+(1192.488 seconds). Admission, installation, person lifecycle, custody, ACL,
+and MP-03 passed. Settlement, MP-02, MP-04, MP-05, and MP-06 failed; MP-01 was
+blocked before its restart callback while reading the backend PID. The original
+cleanup was blocked, and the first independent audit could not establish an
+installer connection. These failures remain immutable and confer no acceptance
+credit. No temporary VM was used.
+
+An independent provider inspection found the exact endpoint disabled in
+`IDLE`. One owned recovery enabled it, obtained a fresh read-only ownership and
+dependency census, and removed only the census-bound installation and four
+generated roles. Native cleanup committed in 5.707 seconds. The subsequent
+independent audit passed: all 33 original role records and 18 memberships
+matched the baseline, the owned schema and roles were absent, all sixteen
+ordinary-principal platform-closure checks remained false, endpoint identity
+and configuration were preserved, and source bindings were unchanged. A fresh
+process census found no remaining campaign workers or process groups; source
+and resource custody were explicitly returned. Recovery does not change the
+original campaign result.
+
+The reviewed corrections use a native SQL backend PID for MP-01 and require
+MP-02 to confirm termination, observe the old native PID absent, and prove the
+old client connection closed or unusable before accepting a no-row stale-query
+outcome. A replacement transaction still requires the exact foreign-handle
+refusal. Private fixture corrections bind fault evidence to the armed physical
+connection, recognize the provider's disabled `IDLE` state, wake an enabled
+idle endpoint with bounded SQL, and retain actual mutation responses before
+parsing. Native postmaster generation change remains mandatory for restart.
+The earlier failure receipts did not capture enough private phase facts to
+attribute every downstream failure to one cause. Offline controls and recovery
+do not replace a fresh complete twelve-case WAN campaign.
+
+
+### Managed schedule projection repair — 2026-10-24
+
+CI run `40111502711` passed all five jobs at source
+`a937d74a516f8108af8e4a9c5bb1a2b5c4981434`. Its exact canonical Arras 0.6.1
+wheel remained `259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`.
+The [fresh installed Mac records](evidence/truss050-adoption-20261024/fresh-macos-a937/)
+retain 64 passes, eight unchanged declared limits, no failures, exact installed
+payload correspondence and successful cleanup. These records do not claim a
+system dynamic-link audit or execution of forced process-group cleanup.
+
+The [D9 WAN records](evidence/truss050-adoption-20261024/full-managed-d9-failed/)
+retain the original 8 passed, 4 failed, 0 blocked result. Original cleanup, the
+fresh independent audit and process custody passed. The separate archive
+admission check found a source/config precondition refusal, but the original
+private exception was not captured; that refusal is not asserted as the
+historical cause. A separate [shared-resource incident record](evidence/truss050-adoption-20261024/shared-resource-incident.source-bound.safe.json)
+retains an unrelated session's reported test-preparation/build and failed Docker
+pull during D9's reserved window. Exact process start/end and family were not
+captured; the retained filesystem timestamps and scoped absence check do not
+prove complete global isolation. Subsequent runtime/build activity was held.
+No campaign failure or latency is attributed to this incident, and no performance
+comparison is claimed. Subsequent private fixture controls use the actual installed
+Truss 0.0.50 SDK and native typed request bytes. The current twelve-case schedule
+uses COMMIT interruption; separate fake ACK controls do not establish native SDK
+ACK admission or service behavior.
+
+The [D10 WAN records](evidence/truss050-adoption-20261024/full-managed-d10-failed/)
+retain the original 3 passed, 9 failed, 0 blocked result from 17:44:30 to
+18:00:53 UTC (983.617550166 seconds). Admission, installation and person lifecycle
+passed. All nine managed case rows report `managed_schedule_result_unavailable`;
+this does not establish nine independent operation failures. The diagnostic
+captured no underlying schedule exception and no matching validated settlement
+event group; it does not prove the raw event stream was empty. Original cleanup,
+the fresh native/provider audit and process custody passed. The audit retained
+all 33 baseline roles and 18 memberships, no new roles, all sixteen ordinary
+platform-closure checks false, exact endpoint configuration, and unchanged
+source. Both campaigns ran from the Mac across the WAN with the original limits
+and no temporary VM. Neither campaign is accepted.
+
+Source inspection found a deterministic producer/projector mismatch: the real
+feed producer emits `feed_payload_bytes`, but the restart evidence projector's
+exact field set omitted it. A successful MP-01 return was therefore incompatible
+with that projector, and a projection refusal could discard the entire managed
+schedule. This is compatible with D10's result, not a proven historical cause.
+The repair retains that field as a strict integer from 1 through the producer's
+32 MiB aggregate bound. Each case now passes its closed observation validator
+before a pass is recorded; malformed facts fail that case under a fixed safe
+code while preserving independent case outcomes. Final receipt validation stays
+mandatory. The actual producer-to-projector and case-isolation controls passed;
+the managed suite passed 73 tests with one native case deselected, and full Ruff,
+format and Pyright checks passed. The [source review](evidence/truss050-adoption-20261024/managed-feed-projection-repair-review.safe.json)
+is distinct from service acceptance.
+
+The [reusable identity foundation](evidence/truss050-adoption-20261024/reusable-identity-foundation-closed-summary-20261024.safe.json)
+records historical one-time privileged provisioning separately from disposable
+schema/role cleanup. Existing ordinary identities and private secure references
+are reusable; their observed credential lifetime was 90 days. The user or a
+designated workspace credential administrator must own renewal and secure-reference
+updates before expiry; no ongoing agent rotation automation or perpetual
+admin-free lifecycle is claimed. Each campaign must freshly validate identity,
+expiry, authorization and target bindings.
+
+The complete twelve-case WAN gate remains open after this source correction.
+A fresh campaign, independent cleanup/audit and exact artifact/source bindings
+are required before merge or tagging. The release wheel guard remains unchanged
+until both installed and managed gates pass against the same canonical bytes.
+
+### Historical Mac proof and failed WAN continuation — 2026-10-24 (superseded by the 2026-10-25 outcome below)
+
+Source `2d1bc7e34af7499d5f4f582d4ee41e0d772920cc`, tree
+`396f50b8ddc10bc8d3e16a5baf7f81055e17efc4`, passed all five jobs in CI run
+[`40119390075`](https://github.com/DocumentDrivenDX/arras/actions/runs/40119390075).
+The complete wheel remains byte-identical to canonical Arras 0.6.1 SHA-256
+`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`.
+The [same-source fresh Mac proof](evidence/truss050-adoption-20261024/fresh-macos-40119390075/)
+retains all 72 applicable cases: 64 passes and eight unchanged declared limits,
+plus seven inapplicable replica-only cases. All 172 hashed installed Arras
+payload rows, seven native archive bindings and cleanup were independently
+reviewed. System-wide dynamic-link inspection was not performed; forced
+process-group cleanup execution is not claimed.
+
+The [D11 full WAN campaign](evidence/truss050-adoption-20261024/full-managed-d11-failed/)
+ran from the Mac to Lakebase from 18:24:15 to 18:40:36 UTC, taking
+980.656331541 seconds. Ten cases passed; LB-SETTLEMENT and MP-05 failed with
+`genuine_transport_interruption_not_observed`; none were blocked. Compute
+restart and durable-feed recovery passed in this run. Original cleanup, the
+fresh independent native/provider audit and explicit process-custody handback
+passed. The original pre-fault cause was not captured. An empty selected
+observer group does not establish that the raw event stream was empty.
+
+The separate [D12 baseline-six diagnostic](evidence/truss050-adoption-20261024/baseline-six-diagnostic/)
+ran from 19:37:54 to 19:48:17 UTC, taking 623.288901375 seconds. Five baseline
+cases passed; LB-SETTLEMENT failed with
+`genuine_transport_interruption_not_observed`; none were blocked. The managed
+gate was not run. Retained private archive commitments show the selected
+request reached the original COMMIT driver, which returned normally in
+51.759458 ms; no transport-cut row was recorded. The worker's exact cause
+remains unknown, and D12 does not establish D11 causality. The observer's
+loader-filename limitation prevents interpreting its empty selected group as
+raw absence evidence. Original cleanup, the fresh independent audit, process
+census and explicit custody handback passed. Each audit retained the baseline
+33 roles and 18 memberships, no new roles, sixteen ordinary platform-closure
+checks false, and three passing provider checks. Raw archives, target/identity
+material and process identifiers remain private; retained summaries bind to
+the originals by hash.
+
+Both runs retained the 60,000 ms SQL-operation limit and used the existing WAN
+path without a VM. Neither failed campaign supplies acceptance credit. A fresh
+baseline campaign and its cleanup/audit/custody must pass before a separately
+bound original twelve-case campaign. The latter must pass all cases and its
+cleanup/audit/custody before merge or tagging. Source review and offline
+controls cannot close those service gates. The release digest guard remains
+unapplied until the complete installed Mac and actual twelve-case WAN
+campaigns qualify the same canonical bytes.
+
+On 2026-10-25 the human explicitly resumed the owned-database recovery
+qualification. The earlier failed coordinator turn is not evidence of a tool
+approval rejection or a verified continuing account restriction; no feedback
+clearance is claimed. Controller preflight passed 6/6 checks and collector
+controls passed 8/8; these are controls, not acceptance evidence. The first
+post-resume baseline at source 2d remains a 5-pass / 1-fail diagnostic for
+`original_request_journal_binding_missing`; its receipt is preserved as failed
+history. The bounded partition-ancestry source repair is present in source
+`20db67822b20c822ee91c6823a3fe73ebc3ae932` (tree
+`5ef9170c03e0f9575649757850fe15e03ce94c7c`); its focused managed tests recorded
+76 passes with one native test deselected and typing reported no diagnostics.
+The subsequent fresh baseline at source 20db passed all six cases, with original
+cleanup, fresh independent audit (`560f5c20…`), process census (`8da9…`) and
+custody handback (`9a599e22…`) passing. These are supplied receipt prefixes, not
+complete digests; safe evidence copies are being staged and no full hash or link
+is inferred here. D11 remains 10/12 with LB-SETTLEMENT and MP-05 failing
+`genuine_transport_interruption_not_observed`; D12 remains a 5/6 baseline
+diagnostic with LB-SETTLEMENT failing and its managed gate not run. Both retain
+separate passing cleanup, audit and custody results and neither grants
+acceptance credit. CI run `40221099126` supplies the same-source Mac proof as exact-wheel component evidence:
+64 passes, eight unchanged declared limits, seven replica-only cases skipped as
+inapplicable, seven native wheel hashes and 172 exact Arras payload hashes;
+cleanup passed. Its review-safe export is prepared for the evidence destination
+`evidence/truss050-adoption-20261024/fresh-macos-40221099126/review-safe/`;
+export manifest SHA-256 is `8877fe5ecf490f6c626a173de7561bf260911776d0a7616477b9f1b96bd4474a`
+and its source-bound export manifest is retained in the repository. The original full twelve-case campaign on the same canonical wheel passed 12/12 with zero failures or blocked cases; original cleanup, independent audit, process census and custody handback passed. See [full managed records](evidence/truss050-adoption-20261024/full-managed-20db-passed-20261025/). The supplemental scoped census found all three known process groups absent, zero exact owned-script matches and zero inspection denials. The direct supervisor PGID was not captured and no forced-cleanup claim is made; the public-safe projection is retained with the full run. The initial 2d failure and D11/D12 failures remain historical. The wheel guard now binds the qualified canonical wheel. At this prepublication checkpoint, final review, exact-commit CI, release-built artifact, merge/tag and publication gates remained open; the later published outcome is recorded below.
+
+### Consolidated source accounting — 2026-10-25
+
+This bounded reconciliation covers the four named source chats and assigned
+Arras/Truss records. It does not claim a global repository audit or acceptance.
+
+| Source record | Disposition and correspondence | Owner / next action |
+| --- | --- | --- |
+| PR9 corrections `93a5020`, `69f4ab3`, `291cd2f`, `e5d8100`, `f37b308`, `a937d74` and partition-ancestry repair in `20db67822b20c822ee91c6823a3fe73ebc3ae932` | Integrated in the current clean source `20db67822b20c822ee91c6823a3fe73ebc3ae932` (tree `5ef9170c03e0f9575649757850fe15e03ce94c7c`), which pins Truss 0.0.50. The ancestry repair closes the source-deterministic empty-parent journal-binding defect underlying the failed 2d baseline; focused tests reported 76 passed / one native deselected and typing reported no diagnostics. No required PR9 runtime-code delta is absent within this bounded source set. | Root Arras retains the candidate and continues exact-wheel acceptance; no source mutation in this document update. |
+| Survivor chat and 39-file preparation bundle | Source remains unchanged; the bundle README digest is `8423b20af136efecaccd6375de71e69a42bf46dea92456e76de0cba236c634e6`. The governed documents are reconciled in the authorized release candidate; this source accounting does not claim final release acceptance. | Root Arras carries the candidate through final review and exact-commit release gates. |
+| Release-coordination chat | Four Truss requirement/findings documents are recorded, but no exact code commit/path correspondence is established in the bounded ledger. | Root Arras maps any still-required item against the candidate before acceptance; unresolved required runtime work blocks qualification. |
+| Shared UMF integration chat | PR9 corrections above are integrated. Portable 114/0 is not native or WAN acceptance. The expression-matcher and launcher findings have no additional Arras runtime commit correspondence in this candidate. | UMF/Weft owner carries shared tooling findings; Root Arras addresses a candidate-specific required delta only if exact source correspondence establishes one. |
+| Lakebase source chat | Historical worktree is unavailable. Preserved records bind D11 (10/12 failed) and D12 baseline (5/6 failed), plus the initial 2d post-resume baseline (5/6, `original_request_journal_binding_missing`). The repaired source 20db has a later 6/6 baseline PASS with cleanup, independent audit, census and custody PASS; safe source-bound copies are retained in `baseline-20db-passed-20261025`; a fresh full campaign is retained in `full-managed-20db-passed-20261025`. | Root Arras retains the failed history and records the completed gate evidence; final review, exact-commit CI, release artifacts, merge/tag and publication remain. |
+| PR10 integration `27a1915124aaa47944a4722328dcba63b7107e99`, handoff `e3188af0ba1f1d38c1db4205d0ff9162cae2ccbdd9872cc62c69b85a731c5391` | Deferred as a separate future Arras cohort (actions/UMF integration; schema v3 / 18 planned assets); not merged into frozen PR9 and not assigned its version. | Root Arras starts a separate batch after verified public PR9 handoff, then binds its own wheel, Mac and full twelve-case cleanup/acceptance evidence. |
+| Truss 0.0.50 published source `a687d0a226dad5745cbd909377bf99c7c1cddc66`; wheel `7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00`; installer candidate `0b61b51`; Arras wheel `259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18` | Integrated as the exact published dependency for PR9; no duplicate Truss release. Metadata 0.0.49 is not a substitute for frozen 0.0.50. | Root Arras retains the exact pin and wheel binding. |
+| Truss PWS03 snapshot `8bc82edd270a0043cd48ef8073fb2ef755eb017b` (parent `14e16ce852381fd376da1d2187fc941683903ab2`) and UMF counterpart `5f0d603df3b391bbc7ec88fe06a2e7b53b02c7b4` | Deferred from PR9 into a separate upstream Truss integration/release batch: it adds `inspectAccessViews` / `ResolvedField.temporal` under CONTRACT-075 profile `umf-access-temporal/0.1.0`, outside the frozen Truss 0.0.50 contract. Its historical bridge producer `5df7d94ab20d02c76b34016429207bb1d4fcb97f8c1e8d9fce234d1139725bcb`, UMF source `f323a2dec16132c00eb1bc75c65c416f94804c26`, bundle `7f2a434b4b1bd0a2b8c1fe6ef47130f9f1543848a49445679c372d3fa6099856` and excluded archive `972396293616cf930a99c29249ff0490f131fc76c832931b6def2d3278f491cb` remain separately retained. The source closes records/diagnostics and preserves original document hash/FieldView pointer; timestamp remains distinct localTimestamp preparation 2.1. PWS05 is a draft and PWS04 a prerequisite, not a prepared guard or native qualification; no current test execution is claimed. | Surviving Arras/Truss owner coordinates the separate Truss batch after PR9. First agree exact UMF interface/version/content pins with UMF/Weft migration owner `01a1602c-4669-7391-b16c-aadff7fe7035` and its qualified successor cohort (`5f0d603…`). Then run required Truss tests and qualify/release a new public Truss version; Root Arras may adopt only that exact published dependency in a later candidate and qualify its resulting wheel. |
+| Older Truss refs `1ed2dc0`, `b681490`, `f581130`; UMF action SDK `b530ea2`; Arras baseline `df92316` | Superseded or integrated upstream according to the committed bounded coverage ledger; `b681490` is an older 0.0.45 adoption outside its recorded main. None maps to an absent PR9 runtime delta. | No PR9 action; preserve original refs and provenance. |
+
+
+
+The earlier dated execution notes and consolidated source table above preserve their original state at capture. The final current outcome is recorded below: both exact-wheel campaigns and managed cleanup/audit/custody controls passed, followed by successful exact-tag public release and downloaded-consumer qualification.
+
+### Published Arras 0.6.1 exact-wheel closure — 2026-10-25
+
+Arras PR 9 merged as `243f1ebaf8b32beb0abc30d0d4fdcd9dd7b5ea92` (tree
+`9ee467d942ba7440d6adaa9b891b8f00aa2d8c1c`). Immutable annotated tag
+`v0.6.1` (object `99609317f1cfc95a2e8e3768f2481910dcf42e23`) points to that commit. The public
+[GitHub release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.1) carries the exact canonical Arras wheel
+SHA-256 `259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`; all 17 public assets (16 payloads plus `SHA256SUMS`)
+match the workflow's trusted assembly, use release-evidence schema v2, and the
+wheel-carried npm tarball matches the published npm asset.
+
+The exact-tag [release workflow run 40227314485](https://github.com/DocumentDrivenDX/arras/actions/runs/40227314485) passed all ten
+mandatory jobs, including source/tag checks, build, native, official UMF, UI,
+assembly, GitHub publication, installed downstream and the complete anonymous
+public-download repeat. That repeat's public UMF receipt matched 139 ordered
+reference and 139 separate fresh-empty Registry cases, six base and ten extra
+controls, zero skips and passing cleanup. Public distribution and doctor checks
+passed; the installed extension consumer passed four tests and all 72 memory
+cases; the packed Linux theme suite passed 205 nonvisual checks with no unexpected
+skips. The complete source-bound Mac and actual Lakebase WAN results above remain
+bound to the same exact wheel bytes. Historical D11/D12 and the initial 2d failure
+remain failed records; the 20db baseline and original twelve-case campaign remain
+the passing managed evidence. The direct supervisor PGID was not captured, so no
+forced-cleanup claim is made. Optional PyPI/npm publishing jobs were skipped as
+configured; GitHub assets are the delivery route.
+
+The runtime remains latest-only: databases from every admitted UMF 0.10 lineage
+forward-migrate to latest without an age cutoff; historical migration tools are
+not supported application runtimes, and no pre-0.10 compatibility is added. The
+separate PR10 actions/UMF cohort and Truss PWS03 temporal-access integration remain
+deferred to their own qualified cohorts; neither is folded into this frozen PR9
+release.
+
+### Registry publication continuation — 2026-10-25
+
+The human requests automatic registry publication for future releases and chose
+unchanged npm 0.6.1 plus a new Python 0.6.2 release. The original 0.6.1 Python
+wheel declares a direct UMF URL, which PyPI rejects even under an optional extra.
+Its GitHub assets and immutable tag remain unchanged; no same-version metadata
+variant is permitted. The 0.6.2 preparation changes dependency metadata to the
+same qualified UMF core 0.10.0 version and digest, without adopting the separate
+open producer or changing latest-only runtime support.
+
+The one-time scope-owner npm 0.6.1 publication is complete. Anonymous registry
+download matches tarball SHA-256
+`9c741538b1a32f21b37afcd39f10c24285a1728194a7073cbac9cda2d93e2285`;
+a fresh unauthenticated consumer has all 321 package files byte-identical,
+imports the UI and testkit, and resolves browser, shell and CSS exports. This
+Node 26.12.1 / npm 11.20.0 proof does not rerun or broaden the original browser
+or native campaigns, and it does not attest an OIDC upload. The [retained registry receipts](../05-deploy/evidence/registry-publication-20261025/) preserve both phases.
+
+The publisher workflow must verify the original successful release and complete
+public-download gates, use exact GitHub assets and OIDC, refuse conflicting
+registry versions, and verify registry bytes plus clean installs. Main-only
+GitHub environments `pypi` and `npm` are configured under explicit human
+approval. Both exact trusted-publisher grants are configured and recorded in
+[the safe configuration receipt](../05-deploy/evidence/registry-publication-20261025/trusted-publishers.safe.json).
+The temporary npm CLI bootstrap login was revoked after verification. Hosted
+publisher execution still requires completion evidence. The PyPI base route is plain-index; UMF/Truss
+extras retain the qualified upstream wheelhouse route until their dependencies
+have separate registry publication. Python 0.6.2 is not yet published or
+qualified by the historical 0.6.1 receipt alone.
+
+
+### Python 0.6.2 prepublication qualification — 2026-10-26
+
+The selected new wheel is `82cd5ef7e7284ded7bb7af98934fe0c3f6840450948205e3430d99ff0478f176`,
+built by CI `40244842788` from synthetic checkout `3563e12cc6c5229cfd38fc08a5b5aa05eeb67d9d`,
+PR head `66f2e0f624d046489fd0c2d5177063240853054d`, shared tree
+`1ffa5d07610574c28794897ba9bba3176001d472`. All five required CI jobs passed.
+The new Mac gate passed 64 cases with eight unchanged limits, seven replica-only
+cases inapplicable, 172 payload files and cleanup verified. Its observed
+GraphQL dependency is 3.3.1; the separate WAN install retains the prior exact
+GraphQL 3.3.0 cohort. Neither is silently generalized to other cohorts.
+
+The original full12 WAN run passed 12/12 with no failures or blocked cases.
+Original cleanup removed all five owned resources; the independent read-only
+audit passed without restoration mutations, archive collection retained six
+owned archives with no issues, and actual targeted process/group inspection
+confirmed parent, audit supervisor and worker absent before custody handback.
+The earlier oversized authorization reference was refused before fixture import
+or target effects and remains a separate failed record. The immutable source
+freeze's mislabeled cohort-binding digest is transparently clarified in the
+projection; checked cohort and payload bytes did not change.
+
+The [qualification index](../05-deploy/evidence/registry-publication-20261025/qualification-062-index.json)
+retains the new source/wheel-bound Mac, full12, official UMF and metadata records.
+The exact-wheel release guard now selects this 0.6.2 wheel. Final-source CI and
+the subsequent immutable-tag/public-download/registry receipts are separate
+controls. The subsequent doctor refusal below prevented publication of 0.6.2;
+its earlier receipts do not override that outcome. No open upstream
+0.10.2 or PR10/PWS03 cohort is adopted, and latest-only runtime support remains.
+
+
+### 0.6.2 doctor refusal and 0.6.3 correction — 2026-10-26
+
+PR12 merged as `30b49d5f8e1873c29d2c3152fa6e24bbbb2373cc`; immutable tag
+`v0.6.2` is object `b087d3ea5738df237d41e967f1eb2ac81d0c0c21`. Its release run
+`40249110726` passed the exact selected wheel guard and distribution rebuild,
+but the installed doctor correctly refused carried catalog versions 0.6.1
+against package/UI 0.6.2. No GitHub release or registry upload happened. The
+[failed doctor receipt](../05-deploy/evidence/registry-publication-20261025/release062-failed-doctor.safe.json)
+preserves that result. Prior Mac/WAN passes remain observations of their exact
+bytes and do not establish a completed release.
+
+The correction uses a new 0.6.3 version without moving the failed tag. Source
+catalog, project, lock and active example identity agree; a source regression
+and actual installed-wheel doctor gate now precede CI candidate admission.
+Dependency versions, latest-only runtime policy and registry grants remain
+unchanged. A new qualified wheel and its required release gates remain necessary.
+
+
+### 0.6.3 corrected artifact qualified — 2026-10-26
+
+CI `40250804621` passed all five jobs on PR head `0d306a92d49853c10adbe079b2f4d3708fcf4ede`,
+shared tree `493f656fcccdb7fd3455e4ec8574acf2ccf84417`. The new actual built-wheel
+doctor passed all 20 cases. Fresh Mac qualification passed 64 cases with eight
+declared limits and seven replica-only cases inapplicable; all 172 payload files
+matched and cleanup left no processes or temporary roots. Mac observed
+GraphQL 3.3.1; the separate WAN environment preserves its qualified GraphQL 3.3.0
+cohort with Truss 0.0.50, Weft 0.4.51 and UMF 0.10.0.
+
+The new original full12 WAN invocation passed all twelve cases. Original cleanup
+removed five owned resources, V3 retained six archives with zero issues, and the
+independent read-only audit passed all native/provider checks with no restoration
+mutation. Actual parent, audit supervisor and worker identities and groups were
+absent before custody returned. Root independently rehashed the direct originals.
+A prelaunch static refusal caused by an incorrectly rebound deny sentinel is
+preserved separately; it consumed no ledger and imported no fixture or provider.
+The current source freeze correctly binds the fresh Mac cohort receipt.
+
+The strict release guard now selects the corrected 0.6.3 wheel
+`ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d`.
+The [qualification index](../05-deploy/evidence/registry-publication-20261025/qualification-063-index.json) retains safe evidence and scope limits.
+Final-source CI must reproduce that exact wheel before normal merge/tag release.
+Exact-tag/public-download and both registry OIDC/anonymous-byte/clean-install
+outcomes remain subsequent gates. The failed immutable 0.6.2 tag stays unchanged;
+latest-only runtime support and the qualified optional-dependency wheelhouse
+boundary remain in force.
+
+
+### 0.6.3 orchestration-only release recovery — 2026-10-26
+
+The first exact-tag run `40254727933` failed the repository-only neutral-theme
+fixture peer check (0.6.1 versus selected npm 0.6.3), after the runtime wheel,
+installed doctor, source/sdist, native Linux, UMF, Chromium and fresh extension
+host gates passed. The [retained refusal](../05-deploy/evidence/registry-publication-20261025/release063-failed-theme.safe.json) records the failure before any GitHub release or registry upload.
+
+Recovery uses the reviewed default-branch driver with immutable tag `v0.6.3`,
+tag object `04af6523b7cba0388bb4848215078f9f30cc8575`, target source
+`81d560310f46f1d2c105e6635d70b0eeb97d4684`, and the already qualified wheel
+`ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d`.
+Only the temporary copied test theme's Arras peer is bound to the selected
+wheel-carried npm version; the tagged fixture, runtime source, package/API
+version and artifact bytes are unchanged. The driver helper is staged explicitly
+for both original and public-download qualification, with driver identity kept
+separate from payload identity. Version binding is checked before expensive
+qualification so future releases do not require a fixture pin bump.
+
+Run the normal ten release gates from scratch using the existing unpublished
+immutable tag and its exact expected source. The earlier fresh Mac and actual
+WAN gates remain valid for these unchanged runtime bytes; no local campaign or
+reviewer chain is repeated. Successful recovery still requires public-download,
+then automatic PyPI/npm trusted publishing, anonymous registry bytes and fresh
+consumer installs. A driver-only recovery does not itself prove publication.
+
+
+### 0.6.3 release complete; registry label correction — 2026-10-26
+
+Recovery Release `40257854519` passed all ten gates, including anonymous public
+download/consumer qualification, and created GitHub release `423807244` with
+17 assets. Its immutable source/tag and selected wheel are unchanged. Automatic
+registry run `40260560271` then refused the actual successful reusable-workflow
+job's full display name before either upload; the [refusal record](../05-deploy/evidence/registry-publication-20261025/registry063-job-label-refusal.safe.json) retains the exact name and failure.
+The publisher now requires that exact API name, with missing, wrong-suffix,
+failed, skipped and duplicate cases tested. All ten gates and other identity,
+artifact and provenance checks remain required. Recover registry publication
+from the successful release using its exact run/tag/source/tag-object/SUMS/wheel
+pins; do not rerun the release or change artifacts for this publisher-only fix.
+Future successful releases use the same corrected automatic publisher.
+
+### 0.6.3 registry publication complete — 2026-10-26
+
+[Registry run 40261690123](https://github.com/DocumentDrivenDX/arras/actions/runs/40261690123)
+completed successfully on attempt two. PyPI accepted the exact wheel and sdist
+through its trusted publisher; anonymous bytes and a fresh plain-index base
+installation passed. npm accepted the exact tarball through GitHub OIDC with
+signed provenance on attempt one. Its public endpoint remained absent beyond
+the initial 180-second postflight limit, then exposed matching bytes. The retry
+skipped the matching upload and passed byte verification and a fresh install;
+its receipt correctly records `existing_exact_bytes`, not another OIDC upload.
+The [publication record](../05-deploy/evidence/registry-publication-20261025/registry063-publication.safe.json) retains both outcomes and receipt hashes.
+
+Future successful tagged releases automatically publish the qualified assets
+through the configured main-only `pypi` and `npm` trusted publishers without
+stored registry tokens or per-release approval. npm postflight now allows up to
+600 seconds for visibility within a 20-minute job limit; PyPI retains 180 seconds.
+Only absence is retried; conflicting bytes and other errors still fail
+immediately. The published 0.6.3 runtime, tag and all 17 release assets are
+unchanged. Optional UMF/Truss extras retain the qualified wheelhouse boundary;
+the PyPI fresh-install claim covers the base package. Runtime support remains
+latest-only with forward migration for admitted UMF 0.10 lineages.
+
+
+### AS-0 exact-boundary API and AS-2 page preparation — 2026-10-29
+
+The continuing Arras branch preserves commit `162e352`. The Truss owner has now
+specified `reached_at_feed_receipt_in_transaction(..., boundary=FeedAckReceipt)`
+in its existing receipt-position proposal/CONTRACT-006 and implementation plan.
+A bare unsigned cursor is insufficient. The candidate reuses authoritative
+committed action-receipt admission and exact immutable source-retained ACK receipt
+correspondence, comparing the selected original target inside Truss rather than
+today's ACK. A typed conditional boundary result becomes replica reached only
+after Ashlar binds the exact held publication, complete predecessor/seed/no-op
+coverage and current person. Unretained/pre-ACK seeds remain unknown. This is a
+specified future native API, not an operation implemented by Truss0.0.51; it
+requires explicit new runtime recipe/profile, preserving forward migration and
+ordinary-person/native/installed gates. No historical runtime SQL was changed.
+
+The owning query extension point is now explicit:
+`ashlar_host.managed_current_weft_binding.managed_current_sdk_pages_request`
+(accepted source bundle + original receipt.weftBindingInputs + unchanged SQL +
+STRING parameter carriers) -> Weft `compile_engine_page_json` under
+`weft.engine-page/0.1` / `ashlar-spark4-pages` -> UMF
+`EngineRead.from_original` -> existing `AshlarTarget.page`. The managed builder
+already selects the exact `.4-xxhash64` Backend02 identity; no new Weft dialect,
+parser or generic compiler API is needed for this first subset. Required
+facetless singleton STRING fields and authored keys are the selected subset;
+other types/shape/navigation claims stay open. Original source/model/catalog and
+physical manifest/UUID/vector identities are provided by the owning builder.
+
+`arras.adapters.ashlar.pages.prepare_managed_page` now implements the preparation
+composition with unchanged Statement SQL, exact STRING parameter carriers and
+strict owner-supplied parameter/result models. It verifies model values were not
+normalized, bounds page size and original request/program bytes, consumes the
+original compiler program through UMF, and checks complete original request
+correspondence. It never executes SQL, discovers credentials, creates a policy,
+changes dependency pins or qualifies a managed host. Raw private request/program
+carriers are retained only in the internal result, whose repr is disabled.
+
+Boundary adoption adds one exact reviewed SDK edge: this private page helper may
+import only `EngineRead` from `umf_access.engine_catalog`; its module-root,
+other-symbol, sibling-module and dynamic-import negative controls remain denied.
+All other UMF root/codegen/access imports retain the existing rules. Both
+`ashlar` and `ashlar_host` count as engine imports confined to adapters. The base
+import remains free of them. Public catalog, host factory and capabilities are
+unchanged. Focused source controls and failed initial attempts are retained in
+[page verification](evidence/ashlar-as0-20261029/page-composition-verification.json);
+[owner inspection](evidence/ashlar-as0-20261029/page-owner-inspection.json)
+binds the actual inspected modules. These are non-native doubles/static checks.
+Final page/boundary controls passed 43 cases in 1.22 seconds, zero skips;
+Ruff, formatting and strict selected-source Pyright passed. No native compiler
+was invoked.
+
+**One precise upstream execution gap:** existing `ManagedCurrentReadOwner`
+requires `ManagedCurrentSourceOracle`, schedule/step and `expected_rows`, and
+`authorize_result` enforces equality to those fixture rows. That campaign owner
+must remain unchanged. Ashlar needs a separate person-authenticated managed
+read-session/policy owner for the existing resolver/pins/AshlarTarget, enforcing
+current UC row/column permissions, original source/publication/vector, bounded
+deadlines and final release without requiring a campaign oracle. Stack received
+this exact requirement. Arras must not invent expected results, relax the oracle
+assertion or substitute a permissive policy. Once available, compose this prepared
+entry with that owner, map only its admitted module/catalog and returned native
+carriers/position, and run the bounded reader corpus when authorized.
+
+Ashlar's reported advancing-empty-interval/no-op coverage work (41 focused local
+checks) remains an uncommitted owner candidate at this inspection. Await its
+actual commit and original evidence; do not overwrite the earlier AS-0 source
+receipts or treat that report as installed/managed proof. Truss0.0.50 support pins
+remain selected until separately authorized installed0.0.51 qualification.
+The shared heavy budget remains exhausted; no native/installed/Actions/cloud,
+release, new agents/chats or reset attempts were launched here.
+
+### Downstream integration release0.6.5 — local execution authority
+
+The human directed review, normal merging and the next Arras release for the
+fifteen downstream changes. The existing Stack owner accepted their source
+review, subject to the PR23 empty-operator-groups correction and combined actual
+qualification. The integration preserves all fifteen original head ancestors;
+older PR10 UMF actions are excluded from this batch pending a separate comparison.
+
+The candidate includes explicit operator groups and development namespace/path
+selection, safe alias conflict diagnostics, wheel-carried development UI,
+console entrypoints, real framework mount prefixes, theme manifests/appearance,
+backend conformance support, explicit host-isolation assumptions, public alias
+packages and strict visual-baseline selection. Explicit empty operator defaults
+must refuse before startup; an explicit flag retains precedence.
+
+All overlap resolutions preserve the original requirements and tests: changelog
+entries, namespace-warning and development-path rules, installed devhost and CLI
+gates, backend/alias catalog exports and both host-isolation/visual test groups.
+Routine CI remains lean; full qualification remains explicitly selected. No
+unreviewed baseline is regenerated to obtain a green result, and host-provider
+opt-in is not enabled to hide a bare-host failure. Mandatory UMF qualification uses ARRAS_REQUIRE_UMF=1.
+
+Version0.6.5 selects unchanged qualified Truss0.0.50, Weft0.4.51 and official
+Python Core0.10.0. It does not request Access. Truss0.0.52's separate actual
+Accessdev8 runtime-identity failure is preserved in its owning plan and does not
+qualify or block an unrelated unchanged Arras dependency cohort.
+
+The human authorized local qualification/publication with existing credentials,
+without Actions, cloud provisioning, new grants or spending. The coordinator
+recorded4504seconds under the existing shared lock:3600qualification,
+900publication/public-consumer verification and two runner reserves. Previous
+usage and failed attempts remain intact. One expensive job at a time, at most
+two heavy workers, original command assertions/timeouts, no automatic retries or
+allowance borrowing apply. The estimate uses1842seconds of serial0.6.4 release
+jobs plus matrix, local emulation and fresh public-consumer work; fit is not yet
+measured. At the ceiling, retain actual results and remaining gates.
+
+The first visual campaign at `2e5d0b4` passed 57 cases and failed 10 operator views.
+The [retained Chromium diagnostic](evidence/arras-0.6.5-local-20261030/mode-switch-cascade/binding-receipt.json)
+measures both actual 0.6.4 and first 0.6.5 wheel styles at `12px/20px/600`; the explicitly
+reconstructed reset preceding `f7e0015` (October 22) and proposed mode-only
+`font:inherit` yield `15px/22px/400`. This earlier change predates PR27. Existing
+Stack review accepted restoring the checked-in visual contract through only the
+mode control, retaining PR27's zero-specificity host reset and all 67 canonical
+baseline bytes, masks, counts and thresholds. The draft mockup's `12px/600` segmented control
+still differs from that reviewed contract; full prototype/design alignment
+remains open. Canonical goldens remain unchanged. The CSS correction requires
+new package bytes and fresh artifact-bound proofs; earlier passing installed
+receipts retain their original hashes and do not qualify the rebuilt artifact.
+
+The packed-host campaign at `d962966` retained 262 passes and 10 visual failures:
+its neutral-theme goldens expected compact `12px/20px/600`, conflicting with the
+canonical `15px/22px/400` contract. The existing Stack owner and release owner
+reviewed every affected light/dark, wide/narrow pair and accepted only the mode
+text and its two-pixel flow change. The [pair review](evidence/arras-0.6.5-local-20261030/neutral-mode-baseline-review.json)
+binds ten actual captured images to their original hashes; original bytes and the
+failed campaign remain retained. Only those ten neutral-theme images change;
+the other 57 themed and all 67 canonical images, masks, thresholds and counts
+stay unchanged, with no theme-specific CSS. The original full campaign remains
+failed. The evidence assembler requires a fresh complete producer receipt, so a
+new whole themed campaign must pass; a synthetic combination of partial runs
+cannot replace it. Rebuild the sdist for these changed test-source bytes and
+verify the already qualified wheel/npm bytes remain identical.
+
+Ordered qualification:
+
+1. Freeze the combined source, exact reviewed heads and resolutions. Run public
+   content, module/manifest, Ruff, formatting, strict types and the complete
+   Python 3.11 suite, including real framework mounts and alias identity/entrypoints.
+2. Run UI lint/type/unit/integration, public manifest, CSS/external and canonical
+   browser/themed/packed-host qualification with original assertions/baselines.
+3. Build wheel, sdist and wheel-carried npm0.6.5 from the frozen product source.
+   Replace the historical0.6.4 release-wheel guard only with the measured0.6.5
+   artifact selection, preserving mismatch/missing-archive controls. Rebuild and
+   establish final-source/sdist/wheel payload correspondence before release.
+4. Verify fresh installed doctor, development host, extension host, UMF139+139
+   comparisons, source Truss and installed Linux native profiles/cleanup against
+   exact artifacts. Keep original platform limits. Managed/Mac native reuse
+   requires explicit unchanged qualified input correspondence and reviewed
+   source delta; no whole-candidate/unrun pass can be inferred from old receipts.
+5. After review and the normal integration merge, bind the exact source/tag and
+   immutable17-asset schema-v2 bundle. Temporarily prevent automatic release
+   workflow events before tagging/publication, retaining prior workflow states
+   and safe restoration; every head and merge uses a skip-ci marker.
+6. Publish the exact qualified bytes locally. Verify anonymous GitHub/PyPI/npm
+   served bodies and fresh base/npm/public-PyPI extras consumers on their actual
+   named platforms. Keep distinct pre-publication/public-recheck receipts.
+
+No qualification, public merge, tag or publication success is claimed by this
+source preparation. The existing release checklist/contract requirements remain
+binding, with the human's local publication path replacing Actions transport for
+this release only.
+
+
+### Python support scope correction — 2026-10-30
+
+The human narrowed Python support to 3.11: “I don't care about python outside
+3.11”. This supersedes the remaining 3.13 qualification prerequisite. The prepared
+420-second continuation is cancelled without a launch or additional allowance.
+Existing 3.12 results are incidental evidence; 3.13 remains unqualified. Original
+failed attempts, elapsed accounting and cleanup observations remain retained.
+The separate 900-second publication/public-consumer allowance is unchanged.
+
+The candidate declares only the Python 3.11 classifier. The `>=3.11` installer
+minimum remains permissive; later-version installation permission is not a
+support claim. Routine CI and the release workflow already select 3.11 and stay
+unchanged. Every existing required product, UI, native, UMF and public-consumer
+assertion remains in scope on its named platform.
+
+The existing Linux CPython 3.11.17 source receipt has 3,452 passes; its two
+installed-wheel cases pass separately. The source-native suite has 202 passes
+and the installed native campaign has 64 passes plus eight declared limits.
+These receipts qualify their original wheel
+`ebeb45b0b3e6a2fff5fc18094f355fd451a996171d76e2c48286c5b579170c1f`.
+Removing classifiers and changing the packaged README requires new wheel/sdist
+bytes. Preserve every original receipt, rebuild into a separate owned directory,
+and verify complete runtime/UI/npm byte equality against that wheel. Permit only
+the exact reviewed package-metadata changes and their RECORD hashes; retain
+source-archive correspondence and a new explicit artifact-binding receipt.
+No old receipt may acquire a substituted wheel digest or a fabricated fresh-run
+claim. Review the finite rebuild/parity/fresh-installed operation before running
+it, then update the strict selected-wheel guards to the actual measured digest.
+Publication and normal merge remain pending the resulting final packet review.
+
+The first corrected wheel's installed distribution, doctor, extension, UMF and
+two entrypoint checks passed on the canonical CPython 3.11.17 driver. Those
+results retain wheel `bba54479fd2c1b6e2b7558f188ff6eada6a4abe2547949ed0270f6be1d3a44aa`.
+The public catalog still listed three declared Python classifiers, which the
+existing catalog consistency test requires to match `pyproject.toml`. Correct
+only `distribution.declared_python` to `["3.11"]`; retain the separate
+unqualified-version observations. The archive audit finds this catalog only at
+wheel member `arras/public-api.json`, with no corresponding npm member. The npm
+archive and all executable Python, JavaScript, CSS, native and dependency inputs
+stay unchanged. The corrected wheel requires explicit descriptor correspondence
+and fresh artifact-bound checks; the earlier wheel's receipts remain original
+evidence, without substituted hashes or a final-candidate pass claim.
+
+The corrected source `ff672139389eb802bb1bdf8e88fa0fc85cdb6522` passed all
+twelve catalog controls and the five fresh installed-artifact gates, with zero
+skips. Its wheel is `beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b`;
+the [governed receipt index](../05-deploy/evidence/arras-0.6.5-local-20261031/qualification-index.json)
+retains the original results and descriptor correspondence. Bind the existing
+release guard to these measured bytes while preserving its missing/mismatch
+controls. Final source archive parity, normal merge, local publication and
+fresh public-index proof remain separate required steps.
+
 ## Next A3/A4 cut — candidate implementation, qualification pending
 
 This checkout starts at released main
@@ -1935,3 +3194,56 @@ gates. Do not rebase, merge, adopt its pins, bump a version or publish through
 this action tranche. Root and the release coordinator retain those handoffs.
 Local native/Spark/mutation-copy campaign restrictions remain in force; remote
 PR CI may supply broad source gates without a competing local campaign.
+
+
+## PR 10 successor reconciliation — 2026-11-02
+
+The human transferred exclusive implementation ownership of the isolated
+`/private/tmp/umf-stack-release-arras` clone after UI evidence PR 43 merged as
+`b381a52802bf4d1eebb7a36edec35156775d4fba`. UI 0.6.5 delivery is complete;
+its immutable artifacts, original failures and recovery evidence stay separate.
+Original PR 10 head `27a1915124aaa47944a4722328dcba63b7107e99` is retained
+as a parent of the reconciliation with delivered main. Primary dirty documents
+and shared UMF/Ashlar source remain untouched.
+
+The successor is 0.7.0: the optional UMF dependency changes from a universal pure
+wheel to a bounded native-platform cohort, narrowing installation compatibility.
+CONTRACT-001/005 and the README compatibility policy govern this minor increment.
+The supported release interpreter stays Python 3.11. The selected distribution
+is public `umf-core==0.10.5`, coupled to separately versioned UMF SDK 0.10.1 at
+source `90cb61eb63aec3f5a77b5991a56e3dfc3d10bd27`. Document/core semantics
+remain 0.10.0; the newer producer is not selected and action scope is unchanged.
+
+### Execution contract and validation
+
+FEAT-003, CONTRACT-002/003/004/005, TP-001 and bounded A3/A4 acceptance above
+continue to govern `arras-umf-set/1`. The human authorizes implementation,
+qualification, independent review, normal PR merge and successor publication.
+Existing module-map and negative import controls remain required. Token estimate
+is unknown: no comparable baseline or reliable task meter is available. Source
+reconciliation starts with focused checks and one independent blocking review;
+repeat only changed-scope checks after findings. Keep one expensive job at a time
+and the existing two-worker limit. No managed campaign inherits previous proof.
+
+1. Merge main retaining modern historical 17-asset gates, registry direct-URL
+   refusals, recovery driver and core 0.10.0 `validate_receipt` compatibility.
+2. Adopt version-only 0.10.5 metadata with closed exact public platform URL/hash
+   selection; migrate admission/action, release/provenance and registry checks
+   together while retaining historical cohorts and original source bindings.
+3. Retain exact wheel/sdist and run fresh Linux/Mac Python 3.11 installed proofs
+   without overrides/skips: 139 reference plus 139 fresh-empty Registry cases,
+   generated Apply/Validate, constraints, no-op/replay, current denial, uncertainty
+   and payload custody. Real memory execution remains mandatory.
+4. Complete source/UI/native regression gates and independent source/artifact
+   review before merge. Bind the successor guard to its own qualified bytes;
+   preserve frozen historical 0.6.5 behavior. Do not transfer managed evidence.
+5. Complete release and anonymous public-asset/registry-install gates before
+   claiming delivery. Primary checkout or shared-repository edits are excluded.
+
+### Continuation
+
+Reconciliation is in progress. Dependency resolution selects public 0.10.5;
+focused source/receipt/registry controls are next. Earlier read-only Python
+3.13.16 Mac diagnostics passed preparation, generated Apply/Validate, memory-host
+controls and 139+139 comparisons after an in-memory version allowlist change.
+Those diagnostics do not replace the required Python 3.11 installed proof.

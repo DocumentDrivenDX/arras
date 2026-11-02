@@ -1,0 +1,230 @@
+{
+  "artifact_sha256": {
+    "audit_supervisor_consumed": "a76fbddab128bf83b0e1b9cb4b3477bbc77436b8eb013ee042199d4be3cfb1b3",
+    "collector_receipt": "bb3ca599fff1163bf910f56a46278c4b4d3601362a0453365588d32f3cebbb59",
+    "custody_handback": "f90da2489c9ea5a36d5668fa2df25ba59564d4b95747ae5bdeae13c23d4ce5b7",
+    "independent_audit": "b2acdee967ca7ba374b5eb19ea1baeb87f7e89cc4ce4d597227aa7eaf98bfc4c",
+    "installed_artifact_observation": "a7344d05484686f17e1ef5453ae562a3c31f49c9e5f28adf6debe77ef587f7ff",
+    "native_cohort_binding": "723d4f34829d57bd1b5bfb3d4ee047a3009754faf244a20d0e28f713a7fb70ea",
+    "operational_go": "3a03bb5243d6e8d91b2f162ff4d7d16587003190a600224f9decba4fea2f4fe5",
+    "original_terminal": "d5e84ab1cafb7b67c417826bdc112e7489e7e0df92500899d29cf12891504413",
+    "original_verifier": "2f87ef6b0da3886d2da5f21c10b435b0290b3ab1076bd533a6eb2720b0d24bc1",
+    "pre_correction_dispatch": "32225434c06e4f6cd62567c84d915e869a00fb1a260aeca775d13a28bf5b85c7",
+    "pre_correction_manifest": "3ae88baa2da5e414ca3e2180e77ebbc80e6a2625f5f8be0795aad7b7328e2cbe",
+    "pre_correction_packet": "4b239eb08c9abacc6b815676a28423383f41387b4940a5952e21786b3f56264c",
+    "pre_correction_window": "4cab4a8d214cdac2bb0100e1ad6bb9459714289749f7ab8301383cca17bd6276",
+    "process_census": "f44ddab303368790515f5e0e16dedfa65fdd6a44f2971dfa99e3b5a54ae8bf10",
+    "root_original_admission": "c1e4d2cedb8813e30b66aad2b964c54d0f4c973a331d0a8390a4afa8f5f2e78b",
+    "root_static_refusal": "fc92b4429d5a11ffa2433477a06b1f1c07087d237b4f1cb232537093f0e29262",
+    "source_freeze": "4fe768ebf14ade34560882de57aafe3eb4536d41b17a1ca5a3d8e482a0197b0b"
+  },
+  "artifacts": {
+    "candidate_wheel_provenance_sha256": "0327df47b2036d23b80594b68f3a9e2077821eae56bc2c15c103b786df3f3006",
+    "ci_run_id": 40250804621,
+    "doctor_receipt_sha256": "33e035713929b3ef439f7749593128730c518aff2bf28e8e966749c8c9efe135",
+    "fresh_installed_payload_parity_sha256": "a72873d349130a1c14a3162d6c514d0f39225d4bed05eee9c20d30205c4f7bb4",
+    "installed_artifact_observation": "Payload/source and PEP 610 metadata matched the exact selected wheel; fixture was not imported and no provider/database was used.",
+    "installed_artifact_observation_sha256": "a7344d05484686f17e1ef5453ae562a3c31f49c9e5f28adf6debe77ef587f7ff",
+    "required_ci_jobs": "All five required jobs and the fresh native Mac job passed."
+  },
+  "campaign": {
+    "authorization_sha256": "64894efd132c79e07bd088e488561bab7ff661f9f1293137a8ef916d78566979",
+    "cleanup_deadline": "2026-10-26T04:53:00Z",
+    "dispatch_sha256": "916d4efefc8ef40327960f6130e2485533ae57dadc7a6f516e825ce238d8c918",
+    "expires_at": "2026-10-26T04:50:00Z",
+    "invocation_id": "d131e357-b3ca-4adf-9632-165d1ad72d8d",
+    "manifest_sha256": "e0ebeed5197120d5a3ac2e830832a138a60ddc994d3a54aa268c3a54e6522baa",
+    "not_before": "2026-10-26T00:50:00Z",
+    "package": "arras",
+    "root_go_sha256": "3a03bb5243d6e8d91b2f162ff4d7d16587003190a600224f9decba4fea2f4fe5",
+    "scope": "One original full12 managed campaign; no replay.",
+    "started_utc": "2026-10-26T00:59:25Z",
+    "terminal_utc": "2026-10-26T01:16:54Z",
+    "version": "0.6.3",
+    "window_sha256": "10646f3218cd8ece5b1228f122a9de928bfae44603a97eaa8cbe18fecbb00efd"
+  },
+  "cohort_binding_metadata_annotation": {
+    "actual_mac_cohort_binding_receipt_sha256": "4aae419e193c9182bfa201b488df8c4c11aedda0ac779a2ce98cd64093d00424",
+    "annotation": "This is the current Mac cohort-binding receipt. Candidate-wheel provenance is a separate artifact and is not used as the binding-receipt label.",
+    "bound_native_cohort_sha256": "723d4f34829d57bd1b5bfb3d4ee047a3009754faf244a20d0e28f713a7fb70ea",
+    "mac_outcomes": {
+      "applicable_passes": 64,
+      "cleanup_ambiguous": 0,
+      "cleanup_left": 0,
+      "cleanup_observed": 1503,
+      "inapplicable_payloads": 7,
+      "limits": 8,
+      "payloads_matched": 172
+    },
+    "mac_verification_sha256": "43e6c21e03221625b8a3979bbc24ea051ff47eab2b7b685fb167cda943475af2"
+  },
+  "final_acceptance": "not_claimed; Root owns release decision",
+  "historical_failed_attempts": {
+    "static_admission_refusal": {
+      "effect_started": false,
+      "fixture_imported": false,
+      "ledger_consumed": false,
+      "pre_correction_dispatch_sha256": "32225434c06e4f6cd62567c84d915e869a00fb1a260aeca775d13a28bf5b85c7",
+      "pre_correction_manifest_sha256": "3ae88baa2da5e414ca3e2180e77ebbc80e6a2625f5f8be0795aad7b7328e2cbe",
+      "pre_correction_packet_sha256": "4b239eb08c9abacc6b815676a28423383f41387b4940a5952e21786b3f56264c",
+      "pre_correction_window_sha256": "4cab4a8d214cdac2bb0100e1ad6bb9459714289749f7ab8301383cca17bd6276",
+      "provider_or_database_used": false,
+      "refusal_receipt_sha256": "fc92b4429d5a11ffa2433477a06b1f1c07087d237b4f1cb232537093f0e29262",
+      "status": "refused_before_effect",
+      "summary": "A pre-correction static admission refused because the parent carried the wrong historical authorization-deny sentinel. The sentinel and dependent hashes were corrected before the single authorized run; no fixture, ledger, provider, or database effect occurred."
+    }
+  },
+  "independent_audit": {
+    "acceptance_claim": false,
+    "elapsed_seconds": 13.13982429204043,
+    "installed_source_before_after_equal": true,
+    "native_checks": {
+      "all_four_ordinary_roles_present": true,
+      "all_native_memberships_match_bootstrap": true,
+      "all_native_role_attributes_match_bootstrap": true,
+      "exact_selected4_oid_binding": true,
+      "installer_identity_matches_bootstrap": true,
+      "ordinary_selected4_closures_false": true,
+      "owned_module_roles_absent": true,
+      "transaction_is_read_only": true,
+      "truss_schema_absent": true
+    },
+    "native_membership_count": 18,
+    "native_role_count": 33,
+    "new_native_role_count": 0,
+    "ordinary_selected4_closure_count": 16,
+    "provider_checks": {
+      "exact_project_endpoint_database_provider_identity": true,
+      "owned_compute_bounds_unchanged": true,
+      "owned_endpoint_restored_enabled": true
+    },
+    "read_only_native_transaction": true,
+    "restoration_mutations_performed": false,
+    "status": "passed"
+  },
+  "original_cleanup": {
+    "generated_roles_absent": true,
+    "removed_by_kind": {
+      "role": 4,
+      "schema": 1
+    },
+    "removed_resource_count": 5,
+    "status": "passed",
+    "truss_schema_absent": true
+  },
+  "original_full12": {
+    "case_counts": {
+      "blocked": 0,
+      "failed": 0,
+      "passed": 12
+    },
+    "exit_code": 0,
+    "late_completion": false,
+    "ordered_cases": [
+      {
+        "case": "LB-ADMISSION",
+        "code": "identity_tls_server_match",
+        "status": "passed"
+      },
+      {
+        "case": "LB-INSTALL",
+        "code": "typed_strict_refusal_then_selected_install",
+        "status": "passed"
+      },
+      {
+        "case": "LB-PERSON",
+        "code": "human_identity_lifecycle_verified",
+        "status": "passed"
+      },
+      {
+        "case": "LB-CUSTODY",
+        "code": "managed_postconditions_verified",
+        "status": "passed"
+      },
+      {
+        "case": "LB-SETTLEMENT",
+        "code": "managed_postconditions_verified",
+        "status": "passed"
+      },
+      {
+        "case": "LB-ACL",
+        "code": "managed_postconditions_verified",
+        "status": "passed"
+      },
+      {
+        "case": "MP-01",
+        "code": "managed_postconditions_verified",
+        "status": "passed"
+      },
+      {
+        "case": "MP-02",
+        "code": "managed_postconditions_verified",
+        "status": "passed"
+      },
+      {
+        "case": "MP-03",
+        "code": "managed_postconditions_verified",
+        "status": "passed"
+      },
+      {
+        "case": "MP-04",
+        "code": "managed_postconditions_verified",
+        "status": "passed"
+      },
+      {
+        "case": "MP-05",
+        "code": "managed_postconditions_verified",
+        "status": "passed"
+      },
+      {
+        "case": "MP-06",
+        "code": "managed_postconditions_verified",
+        "status": "passed"
+      }
+    ],
+    "receipt_sha256": "2f87ef6b0da3886d2da5f21c10b435b0290b3ab1076bd533a6eb2720b0d24bc1",
+    "receipt_valid": true,
+    "status": "passed"
+  },
+  "owned_fault_archive_collection": {
+    "issues": 0,
+    "new_owned_directory_count": 6,
+    "other_process_archive_count": 0,
+    "raw_archives_remain_private": true,
+    "retained_archive_count": 6,
+    "status": "complete",
+    "target_operations_performed": false
+  },
+  "privacy_note": "No private paths, provider targets, identities, credentials, catalog values, process identifiers, or raw archives are included. Raw logs and fault archives remain in private custody.",
+  "process_custody": {
+    "absent_process_group_count": 3,
+    "absent_process_identity_count": 3,
+    "census_sha256": "f44ddab303368790515f5e0e16dedfa65fdd6a44f2971dfa99e3b5a54ae8bf10",
+    "custody_sha256": "f90da2489c9ea5a36d5668fa2df25ba59564d4b95747ae5bdeae13c23d4ce5b7",
+    "custody_status": "OWNED_CUSTODY_RETURNED_TO_ROOT",
+    "exact_owned_script_match_count": 0,
+    "forced_group_cleanup_performed": false,
+    "roles_observed": [
+      "parent",
+      "audit_supervisor",
+      "audit_worker"
+    ],
+    "scan_access_denied_count": 0,
+    "tracked_role_count": 3
+  },
+  "schema": "arras.public50.full-managed-safe-evidence-projection/1",
+  "source": {
+    "clean": true,
+    "commit": "0d306a92d49853c10adbe079b2f4d3708fcf4ede",
+    "delta_note": "PR13 updates package/catalog/example identity to 0.6.3; the five managed acceptance harness files match 0.6.2, while catalog/runtime metadata changed.",
+    "source_freeze_sha256": "4fe768ebf14ade34560882de57aafe3eb4536d41b17a1ca5a3d8e482a0197b0b",
+    "tree": "493f656fcccdb7fd3455e4ec8574acf2ccf84417",
+    "truss_dependency": {
+      "version": "0.0.50",
+      "wheel_sha256": "7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00"
+    },
+    "wheel_sha256": "ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d",
+    "wheel_version": "0.6.3"
+  },
+  "status": "full_managed_pass_audit_pass_custody_returned"
+}

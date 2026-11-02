@@ -1,0 +1,480 @@
+{
+  "schema": "arras.ui.doctor-installed-qualification.v1",
+  "status": "passed",
+  "verifier_source_sha256": "26147f4301c8ea4790d06e31224573f8ca5e5f47b359b8bae475fdb917a37e05",
+  "generated_probe_sha256": "2dd054ff5b832f279195d8e644027474181ff247d29d6b59ee0e8c2889836e0f",
+  "platform": {
+    "os": "darwin",
+    "architecture": "arm64",
+    "release": "27.0.0"
+  },
+  "wheel": {
+    "filename": "arras-0.6.5-py3-none-any.whl",
+    "sha256": "beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b",
+    "version": "0.6.5"
+  },
+  "npm_sha256": "26abe759e7bb918bf30c5144a34cff8deb7ecb4dd2ef531d41ec3ceab2155e0f",
+  "qualification_command": "uv run --no-sync python tools/verify_doctor.py --wheel <wheel> --output-json <receipt>",
+  "python": "3.11.17",
+  "installed_origin": {
+    "arras_origin": "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/temporary/arras-doctor-installed-9v6pdgar/venv/lib/python3.11/site-packages/arras/__init__.py",
+    "doctor_origin": "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/temporary/arras-doctor-installed-9v6pdgar/venv/lib/python3.11/site-packages/arras/doctor.py",
+    "catalog_origin": "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/temporary/arras-doctor-installed-9v6pdgar/venv/lib/python3.11/site-packages/arras/public-api.json",
+    "example_host_origin": "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/temporary/arras-doctor-installed-9v6pdgar/venv/lib/python3.11/site-packages/extension_host/__init__.py",
+    "example_config_origin": "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/temporary/arras-doctor-installed-9v6pdgar/venv/lib/python3.11/site-packages/extension_host/config/default.toml"
+  },
+  "cwd_outside_source": "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/temporary/arras-doctor-installed-9v6pdgar/consumer",
+  "source_path_injected_but_isolated": "/private/tmp/arras-ashlar-integration-20261029/src",
+  "python_path": [
+    "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python311.zip",
+    "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11",
+    "/Users/erik/.local/share/uv/python/cpython-3.11-macos-aarch64-none/lib/python3.11/lib-dynload",
+    "/private/tmp/arras-065-release-20261029/python311-catalog-results-continuation-017/temporary/arras-doctor-installed-9v6pdgar/venv/lib/python3.11/site-packages"
+  ],
+  "source_referencing_pth_files": 0,
+  "dependency_install": "uv pip install from https://pypi.org/simple in a new venv without system site packages",
+  "cases": [
+    {
+      "name": "positive installed wheel with page/theme/config/Brand/env/module inputs",
+      "status": 0,
+      "codes": [
+        "credential_sources_possible"
+      ]
+    },
+    {
+      "name": "package pin",
+      "status": 1,
+      "codes": [
+        "credential_sources_possible",
+        "package_mismatch"
+      ]
+    },
+    {
+      "name": "contract pin",
+      "status": 1,
+      "codes": [
+        "contract_mismatch",
+        "credential_sources_possible"
+      ]
+    },
+    {
+      "name": "Python export",
+      "status": 1,
+      "codes": [
+        "credential_sources_possible",
+        "python_export_missing"
+      ]
+    },
+    {
+      "name": "npm export",
+      "status": 1,
+      "codes": [
+        "credential_sources_possible",
+        "npm_export_missing"
+      ]
+    },
+    {
+      "name": "role token",
+      "status": 1,
+      "codes": [
+        "credential_sources_possible",
+        "role_token_missing"
+      ]
+    },
+    {
+      "name": "unsupported range pin",
+      "status": 3,
+      "codes": [
+        "capability_unsupported",
+        "credential_sources_possible"
+      ]
+    },
+    {
+      "name": "environment key name",
+      "status": 1,
+      "codes": [
+        "credential_sources_possible",
+        "env_name_unknown"
+      ]
+    },
+    {
+      "name": "committed config key",
+      "status": 1,
+      "codes": [
+        "config_invalid",
+        "credential_sources_possible"
+      ]
+    },
+    {
+      "name": "theme cohort",
+      "status": 1,
+      "codes": [
+        "credential_sources_possible",
+        "theme_incompatible"
+      ]
+    },
+    {
+      "name": "legacy module document",
+      "status": 1,
+      "codes": [
+        "credential_sources_possible",
+        "module_invalid"
+      ]
+    },
+    {
+      "name": "unsupported official UMF profile",
+      "status": 3,
+      "codes": [
+        "capability_unsupported",
+        "credential_sources_possible"
+      ]
+    },
+    {
+      "name": "missing module profile",
+      "status": 3,
+      "codes": [
+        "credential_sources_possible",
+        "module_profile_unsupported"
+      ]
+    },
+    {
+      "name": "Brand semantic validation",
+      "status": 1,
+      "codes": [
+        "distribution_invalid"
+      ]
+    },
+    {
+      "name": "duplicate request keys",
+      "status": 2,
+      "codes": [
+        "request_invalid"
+      ]
+    },
+    {
+      "name": "unknown CLI option redaction",
+      "status": 2,
+      "codes": [
+        "request_invalid"
+      ]
+    },
+    {
+      "name": "help before request access",
+      "status": 0,
+      "codes": []
+    },
+    {
+      "name": "environment/file/network/subprocess/registration/import tripwires",
+      "status": 0,
+      "codes": []
+    },
+    {
+      "name": "installed public launcher Brand/help/startup/alias probes",
+      "status": 0,
+      "codes": []
+    },
+    {
+      "name": "installed SDK resources, direct/MCP/worker-backed ASGI, launcher names",
+      "status": 0,
+      "codes": []
+    }
+  ],
+  "tripwire_report": {
+    "tripwires": "passed",
+    "positive": {
+      "schema_version": 1,
+      "ok": true,
+      "complete": true,
+      "observed": {
+        "provenance": "installed metadata and package resource agree",
+        "catalog_schema_version": 1,
+        "contracts": {
+          "CONTRACT-001": 2,
+          "CONTRACT-002": 2,
+          "CONTRACT-003": 2,
+          "CONTRACT-004": 6,
+          "CONTRACT-005": 3,
+          "CONTRACT-006": 2,
+          "CONTRACT-007": 2,
+          "CONTRACT-008": 1,
+          "CONTRACT-009": 2,
+          "CONTRACT-010": 1,
+          "CONTRACT-011": 1
+        },
+        "python_package_version": "0.6.5",
+        "npm_package": {
+          "name": "@documentdrivendx/arras-ui",
+          "version": "0.6.5",
+          "tarball_sha256": "26abe759e7bb918bf30c5144a34cff8deb7ecb4dd2ef531d41ec3ceab2155e0f",
+          "provenance": "wheel-carried archive package metadata"
+        },
+        "distribution": {
+          "brand": "Extension Host Example",
+          "mcp_server_name": "Extension Host Example MCP",
+          "mcp_tool_prefix": "ext_host",
+          "env_prefix": "EXTENSION_HOST",
+          "provenance": "validated typed request"
+        },
+        "asset_manifest": {
+          "sha256": "8ff78f7c3e3ff4bd36b978529a48563235a3fcf01273ebaee0ff273b5019a638",
+          "version": 1,
+          "provenance": "validated selected manifest"
+        },
+        "theme_manifest": {
+          "sha256": "f8ed43f3f60509f3c5ce9e3db8be357b580d832bc00ce52780e1de5fce4c055d",
+          "version": 1,
+          "provenance": "validated selected manifest"
+        },
+        "module_documents": [
+          {
+            "path": "module_documents[0]",
+            "module": "notes",
+            "revision": {},
+            "profile": "legacy-arras",
+            "reader_expected_core": "0.10.0",
+            "reader_expected_vocabularies": {
+              "umf.ddd": "0.1.0",
+              "arras.view": "0.1.0"
+            },
+            "provenance": "existing Arras reader subset"
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "credential_sources_possible",
+          "severity": "warning",
+          "surface": "environment",
+          "path": "env_names",
+          "message": "both token and token-file source names are present; values were not read"
+        }
+      ]
+    },
+    "invalid_config": {
+      "schema_version": 1,
+      "ok": false,
+      "complete": true,
+      "observed": {
+        "provenance": "installed metadata and package resource agree",
+        "catalog_schema_version": 1,
+        "contracts": {
+          "CONTRACT-001": 2,
+          "CONTRACT-002": 2,
+          "CONTRACT-003": 2,
+          "CONTRACT-004": 6,
+          "CONTRACT-005": 3,
+          "CONTRACT-006": 2,
+          "CONTRACT-007": 2,
+          "CONTRACT-008": 1,
+          "CONTRACT-009": 2,
+          "CONTRACT-010": 1,
+          "CONTRACT-011": 1
+        },
+        "python_package_version": "0.6.5",
+        "npm_package": {
+          "name": "@documentdrivendx/arras-ui",
+          "version": "0.6.5",
+          "tarball_sha256": "26abe759e7bb918bf30c5144a34cff8deb7ecb4dd2ef531d41ec3ceab2155e0f",
+          "provenance": "wheel-carried archive package metadata"
+        },
+        "distribution": {
+          "brand": "Extension Host Example",
+          "mcp_server_name": "Extension Host Example MCP",
+          "mcp_tool_prefix": "ext_host",
+          "env_prefix": "EXTENSION_HOST",
+          "provenance": "validated typed request"
+        },
+        "asset_manifest": {
+          "sha256": "8ff78f7c3e3ff4bd36b978529a48563235a3fcf01273ebaee0ff273b5019a638",
+          "version": 1,
+          "provenance": "validated selected manifest"
+        },
+        "theme_manifest": {
+          "sha256": "f8ed43f3f60509f3c5ce9e3db8be357b580d832bc00ce52780e1de5fce4c055d",
+          "version": 1,
+          "provenance": "validated selected manifest"
+        },
+        "module_documents": [
+          {
+            "path": "module_documents[0]",
+            "module": "notes",
+            "revision": {},
+            "profile": "legacy-arras",
+            "reader_expected_core": "0.10.0",
+            "reader_expected_vocabularies": {
+              "umf.ddd": "0.1.0",
+              "arras.view": "0.1.0"
+            },
+            "provenance": "existing Arras reader subset"
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "credential_sources_possible",
+          "severity": "warning",
+          "surface": "environment",
+          "path": "env_names",
+          "message": "both token and token-file source names are present; values were not read"
+        },
+        {
+          "code": "config_invalid",
+          "severity": "error",
+          "surface": "config",
+          "path": "request",
+          "message": "committed configuration contains unsupported keys or values"
+        }
+      ]
+    },
+    "unsupported": {
+      "schema_version": 1,
+      "ok": false,
+      "complete": false,
+      "observed": {
+        "provenance": "installed metadata and package resource agree",
+        "catalog_schema_version": 1,
+        "contracts": {
+          "CONTRACT-001": 2,
+          "CONTRACT-002": 2,
+          "CONTRACT-003": 2,
+          "CONTRACT-004": 6,
+          "CONTRACT-005": 3,
+          "CONTRACT-006": 2,
+          "CONTRACT-007": 2,
+          "CONTRACT-008": 1,
+          "CONTRACT-009": 2,
+          "CONTRACT-010": 1,
+          "CONTRACT-011": 1
+        },
+        "python_package_version": "0.6.5",
+        "npm_package": {
+          "name": "@documentdrivendx/arras-ui",
+          "version": "0.6.5",
+          "tarball_sha256": "26abe759e7bb918bf30c5144a34cff8deb7ecb4dd2ef531d41ec3ceab2155e0f",
+          "provenance": "wheel-carried archive package metadata"
+        }
+      },
+      "diagnostics": [
+        {
+          "code": "capability_unsupported",
+          "severity": "unsupported",
+          "surface": "module",
+          "path": "module_profile",
+          "message": "the requested document validation profile is unavailable in this package cohort"
+        }
+      ]
+    }
+  },
+  "launcher_probes": {
+    "custom_mcp_help": "passed",
+    "custom_mcp_unsupported_args": "passed",
+    "alias_conflict_refused": "passed",
+    "custom_devhost_help": "passed",
+    "custom_devhost_unsupported_args": "passed",
+    "custom_devhost_startup_forwarding": "passed",
+    "effective_telemetry_names": "observed through public launch factory",
+    "native_and_server_work": "mocked or not imported"
+  },
+  "telemetry_probes": {
+    "status": "passed",
+    "public_direct_library": "passed",
+    "public_mcp_frame": "passed",
+    "public_worker_backed_asgi": "passed",
+    "sdk_resource_names": [
+      "extension-alpha",
+      "extension-beta"
+    ],
+    "concurrent_and_nested_contexts": "passed",
+    "default_deny_and_failure_isolation": "passed",
+    "launcher_effective_names": {
+      "attribute_namespace": "extension_host",
+      "log_prefix": "extension_host",
+      "event_prefix": "extension_host"
+    },
+    "global_provider_unchanged": true,
+    "versions": {
+      "opentelemetry-api": "1.45.2",
+      "opentelemetry-sdk": "1.45.2"
+    },
+    "phases": {
+      "direct": {
+        "spans": 8,
+        "events": 2,
+        "logs": 8,
+        "service_name": "extension-alpha+extension-beta"
+      },
+      "mcp_frame": {
+        "spans": 1,
+        "events": 1,
+        "logs": 1,
+        "service_name": "extension-beta"
+      },
+      "worker_backed_asgi_console": {
+        "spans": 1,
+        "events": 1,
+        "logs": 3,
+        "service_name": "extension-alpha"
+      },
+      "worker_backed_asgi_operate": {
+        "spans": 1,
+        "events": 1,
+        "logs": 1,
+        "service_name": "extension-alpha"
+      },
+      "concurrent_nested": {
+        "spans": 8,
+        "events": 2,
+        "logs": 8,
+        "service_name": "extension-alpha+extension-beta"
+      },
+      "nested_ambient_restoration": {
+        "spans": 4,
+        "events": 1,
+        "logs": 4,
+        "service_name": "extension-alpha"
+      },
+      "finish_time_snapshot": {
+        "spans": 4,
+        "events": 1,
+        "logs": 4,
+        "service_name": "extension-alpha"
+      },
+      "provider_fault_isolation": {
+        "spans": 4,
+        "events": 4,
+        "logs": 4,
+        "service_name": "extension-alpha"
+      }
+    },
+    "false_pass_controls": [
+      "MCP successful empty result",
+      "ASGI successful HTTP 200 empty body",
+      "finish-time ambient-context misrouting"
+    ],
+    "generated_probe_sha256": "2dd054ff5b832f279195d8e644027474181ff247d29d6b59ee0e8c2889836e0f"
+  },
+  "limitations": [
+    "Static catalog/manifests and legacy-Arras document parsing do not establish official UMF validity, rendered accessibility, backend registration, native semantics, or publication.",
+    "This receipt qualifies only the recorded wheel and Python/platform cohort.",
+    "Results do not transfer to another artifact or dependency cohort; repeat qualification when those inputs change."
+  ],
+  "versions": {
+    "uv": "uv 0.13.3 (Homebrew 2026-10-20 aarch64-apple-darwin)",
+    "python_distributions": {
+      "arras": "0.6.5",
+      "example-extension-host": "0.1.0",
+      "graphql-core": "3.3.1",
+      "opentelemetry-api": "1.45.2",
+      "opentelemetry-sdk": "1.45.2"
+    },
+    "extension_host_wheel": {
+      "filename": "example_extension_host-0.1.0-py3-none-any.whl",
+      "sha256": "882f3d22493a5d36cba8e3eeb32fd360c10af517fff603412ca603900fed1601"
+    },
+    "theme_assets": "CSS/favicon fixture from tests/downstream/theme-package",
+    "telemetry_sdk": {
+      "opentelemetry-api": "1.45.2",
+      "opentelemetry-sdk": "1.45.2"
+    }
+  }
+}

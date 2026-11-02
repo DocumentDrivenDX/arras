@@ -30,6 +30,29 @@ _DEFAULT_PORTS = {"http": 80, "https": 443}
 _HOST = re.compile(r"[A-Za-z0-9.-]+|\[[0-9A-Fa-f:.]+\]")  # a name, IPv4, or a bracketed IPv6
 
 
+def mounted_path(scope: Scope, base: str) -> tuple[str, str] | None:
+    """The request path relative to the host root and the prefix a host has placed in front of
+    `base`, or None when the request is outside `base`.
+
+    A host's mount names its prefix in `root_path`. Some frameworks keep that prefix in `path`
+    (Starlette, FastAPI) and strip it from the paths they dispatch, so the app's `base_path` may
+    repeat the mount prefix or be empty. Both spellings resolve to the same URLs: when the path,
+    with `root_path` removed, is outside `base` but the whole path is inside it, `root_path` is part
+    of `base` and the returned prefix is empty."""
+    root = scope.get("root_path") or ""
+    full = scope["path"]
+    path = full[len(root) :] or "/" if root and full.startswith(root) else full
+
+    def within(candidate: str) -> bool:
+        return not base or candidate == base or candidate.startswith(base + "/")
+
+    if within(path):
+        return path, root
+    if root and (base == root or base.startswith(root + "/")) and within(full):
+        return full, ""
+    return None
+
+
 def parse_origin(value: str) -> tuple[str, str, int] | None:
     """`scheme://host[:port]` as (scheme, lower-case host, port with the scheme's default), or
     None for anything else (`null`, a path, no scheme)."""

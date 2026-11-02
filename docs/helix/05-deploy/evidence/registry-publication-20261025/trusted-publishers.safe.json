@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "configured; hosted OIDC upload not yet demonstrated",
+  "human_approval": "Exact repository/workflow/environment grants explicitly approved on 2026-10-25",
+  "repository": "DocumentDrivenDX/arras",
+  "workflow": "publish-registries.yml",
+  "pypi": {
+    "project": "arras",
+    "environment": "pypi",
+    "state": "registered pending publisher",
+    "observation": "PyPI success notification and exact pending-publisher table row"
+  },
+  "npm": {
+    "package": "@documentdrivendx/arras-ui",
+    "environment": "npm",
+    "state": "registered",
+    "id": "cd48b00f-3591-42f9-a48e-1b391e642c3b",
+    "permissions": [
+      "publish",
+      "stage publish"
+    ],
+    "observation": "npm trust creation exit0 and subsequent npm trust list exact configuration"
+  },
+  "github_environments": {
+    "allowed_branch": "main",
+    "per_release_reviewers": false,
+    "pypi_id": 25302229264,
+    "npm_id": 25302229836
+  },
+  "bootstrap_session": "temporary task-local npm CLI login revoked successfully after verification",
+  "stored_registry_tokens_added_to_github": false
+}

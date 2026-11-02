@@ -34,9 +34,9 @@ const THEME_ATTRIBUTES = ["data-appearance", "data-theme", "class", "style"];
  * The elements a host's theme provider may write its attributes on: the page's root element and every ancestor
  * of the console's root, which is where a provider wraps it. Each is watched for its attributes only.
  */
-function themeTargets(): Element[] {
+function themeTargets(from: Element | null): Element[] {
   const targets = new Set<Element>([document.documentElement]);
-  for (let a = document.querySelector(".arras-root")?.parentElement ?? null; a; a = a.parentElement)
+  for (let a = from?.closest(".arras-root")?.parentElement ?? null; a; a = a.parentElement)
     targets.add(a);
   return [...targets];
 }
@@ -50,7 +50,7 @@ function themeTargets(): Element[] {
  * ancestor (the console was moved) is no longer watched: an observer cannot drop one target, so when the set
  * differs it is disconnected and observes the current set.
  */
-function subscribeTheme(on: () => void): () => void {
+function subscribeTheme(on: () => void, from: Element | null): () => void {
   const q = window.matchMedia?.(DARK);
   q?.addEventListener("change", on);
   const options = { attributes: true, attributeFilter: THEME_ATTRIBUTES };
@@ -60,7 +60,7 @@ function subscribeTheme(on: () => void): () => void {
     on();
   });
   const resolve = () => {
-    const now = themeTargets();
+    const now = themeTargets(from);
     if (now.length === watched.size && now.every((t) => watched.has(t))) return;
     watch.disconnect();
     watched = new Set(now);
@@ -89,10 +89,11 @@ function subscribeTheme(on: () => void): () => void {
  * tokens, as one string so that a change of either (a theme switched with the appearance unchanged) is a new
  * snapshot. Kept current.
  */
-function useThemeKey(): string {
+function useThemeKey(from: Element | null): string {
+  const subscribe = useMemo(() => (on: () => void) => subscribeTheme(on, from), [from]);
   return useSyncExternalStore(
-    subscribeTheme,
-    () => JSON.stringify(hostTheme(document)),
+    subscribe,
+    () => JSON.stringify(hostTheme(from ?? document)),
     () => "",
   );
 }
@@ -145,7 +146,8 @@ export function UmfSource({
     [catalog.data, catalog.error],
   );
   const listed = !!entries?.some((e) => e.id === entryId(module));
-  const theme = useThemeKey();
+  const [themeRoot, setThemeRoot] = useState<HTMLDivElement | null>(null);
+  const theme = useThemeKey(themeRoot);
   const annotations = useMemo(
     () =>
       entries && meta.data ? annotationsFor(meta.data.modules, meta.data.status, entries) : {},
@@ -277,7 +279,7 @@ export function UmfSource({
   const failed = mount.state === "failed" || mount.state === "sign_in";
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-2" data-testid="umf-source">
+    <div ref={setThemeRoot} className="flex min-h-0 flex-1 flex-col gap-2" data-testid="umf-source">
       <Notice>
         <strong>The declared UMF document</strong>, as it was registered, in UMF&apos;s schema
         browser. The badges are this deployment&apos;s <strong>live registry</strong>: what each

@@ -1,0 +1,21 @@
+{
+  "acceptance_claim": false,
+  "files": {
+    "baseline-20db-passed.public-summary.safe.json": "af5d9104db062ffe5f1326a985c93378c6e2d8fc04da42584b24093e1b3683c9",
+    "source-evidence-bindings.safe.json": "d09b10b2b5c54a850ca32f1e364773e4e0e390152fa3dcc0bfb24f1fce7e5726"
+  },
+  "private_source_receipt_hashes": {
+    "baseline-six-custody-handback.safe.json": "9a599e22bf4231577b9c061c9eed79f265b0617bddc224b2a40b3f296b43cbe7",
+    "baseline-six-diagnostics.safe.json": "59685d18c87001a887d54a1b36ce74a81c68d14a659ab3051d3a49e7b4ed6f7d",
+    "baseline-six-process-census.safe.json": "8da9a9a1fb1fb94540a35d151da75269c89eeee4ad7a345b8ad5d3a437505838",
+    "baseline-six-terminal.safe.json": "9eb38fbf68a1490976c7eb004ae724695f2b1a816fbb8d96f5df4528ac083b0d",
+    "baseline-six-terminal.safe.verifier.json": "f5e234ce5d53a8ea84fa9c45fa46543df8ecb530b5434b600b82b2fdffe5a95b",
+    "independent-baseline-six-audit.safe.json": "560f5c20b4e5680434156f6f23df385758c6d158c3f9c752385f5f4da3d01f4b",
+    "owned-fault-archives.safe.json": "28e9e0b8444127d05241f9c475918dfc971f715aca489034a1930bf8b50e37c8"
+  },
+  "raw_archives_copied": false,
+  "schema": "arras.public50.baseline-retention-index.v1",
+  "source_commit": "20db67822b20c822ee91c6823a3fe73ebc3ae932",
+  "source_tree": "5ef9170c03e0f9575649757850fe15e03ce94c7c",
+  "stage": "baseline-20db-passed-20261025"
+}

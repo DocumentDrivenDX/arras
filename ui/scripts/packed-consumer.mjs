@@ -193,8 +193,8 @@ const text: TextFieldProps = field;
 const system: DesignSystem = defaultDesignSystem;
 const allTypes: [ButtonProps, FieldChrome, MarkProps, NoticeProps, SelectProps, TextAreaProps, TextFieldProps] =
   [props, field, mark, notice, select, area, text];
-const browserProps: GraphBrowserProps = { singleKeys: false };
-const shellProps: ArrasAppProps = { defaultMode: "user" };
+const browserProps: GraphBrowserProps = { singleKeys: false, identity: "tenant:person", pageEffects: false, location: { module: "catalog" }, onLocation: () => {} };
+const shellProps: ArrasAppProps = { defaultMode: "user", identity: "tenant:person", pageEffects: false };
 const button: ComponentType<ButtonProps> = system.Button;
 void [role, allTypes, browserProps, shellProps, button];
 
@@ -257,6 +257,9 @@ import { ArrasApp } from "@documentdrivendx/arras-ui/shell";
 
 assert.equal(typeof DesignSystemProvider, "function");
 assert.equal(typeof GraphBrowser, "function");
+for (const path of ["dist/index.js", "src/api/context", "kit", "ds", "dev"]) {
+  await assert.rejects(import("@documentdrivendx/arras-ui/" + path), { code: "ERR_PACKAGE_PATH_NOT_EXPORTED" });
+}
 assert.equal(typeof ArrasApp, "function");
 assert.equal(ROLE_TOKENS.length, 18);
 assert.ok(defaultDesignSystem.Button);

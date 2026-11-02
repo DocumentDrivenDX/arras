@@ -20,7 +20,7 @@ It holds no credential or token, stores nothing in the browser (a file you choos
 only; so is the query history), and puts no input, person, query or document in a URL (audit filters, queries and documents travel in a POST body); the only values in its fragment are the module, area, type, an entity key, an action name, a key-column filter value, a change group's opaque id, a sort column and direction, two instants and the view words `umf` and `loads` (see "Routes").
 A host supplies the viewer's identity (`getHeaders`, `onUnauthorized`); the only writes are invoking a declared
 action and, as the viewer, registering a UMF document through the separate schema surface. It imports nothing
-from the Python package and checks `GET /version` at load, refusing to render when `contracts.operate` is not 1.
+from the Python package and checks `GET /version` against the supported HTTP contract versions at load.
 
 ## Run
 
@@ -127,6 +127,7 @@ statement; the serving backend refuses one that writes, and the grid has no edit
 | `npm run format` | Biome: apply the formatting |
 | `npm run lint` | Biome: lint only |
 | `npm test` | The unit tier: Vitest with a fetch double (`src/test/fake.ts`); fast, no Python |
+| `npm run test:packed-browser` | Build a separate host from the packed public package and verify session/page isolation in Chromium against a real local API |
 | `npm run test:integration` | The integration tier: the real components and client against the real dev host (needs `uv` and a prior `npm run build`) |
 | `npm run test:all` | Both tiers in one run |
 | `npm run coverage` | Both tiers with merged V8 coverage (`coverage/`) |
@@ -159,7 +160,7 @@ const options: AcceptanceConfigOptions = {
   themeId: "neutral-theme",
   expectedBrand: { name: "Neutral Host", title: "Neutral Host Console", logo: "theme" },
   expectedSurface: { light: "rgb(248, 250, 252)", dark: "rgb(2, 6, 23)" },
-  // Required on Darwin; points to reviewed, theme-specific snapshots.
+  // Needed on Darwin only by the visual project; points to reviewed, theme-specific snapshots.
   baselineDir: "./tests/arras-baselines/neutral-theme",
 };
 
@@ -208,10 +209,23 @@ inventory and every file digest, then materializes that verified suite in a temp
 the consumer project so Node resolves its installed peers and module type normally. A global teardown
 removes the materialized copy. It never falls back to an Arras checkout. The canonical suite contains
 17 specs and requires all three nonvisual projects (`chromium`, `schema-admin`, `browser`); the `visual`
-project runs on Darwin only and compares theme-specific snapshots. Darwin callers must supply
-`baselineDir`. Linux reports visual comparison as skipped while still running every nonvisual project.
+project runs on Darwin only and compares theme-specific snapshots, so `baselineDir` is needed by that project
+alone: the factory builds the config on Darwin without it, and a run that selects only the nonvisual projects
+(`--project=chromium --project=schema-admin --project=browser`) compares no screenshot and needs none. A run
+that includes the `visual` project without a `baselineDir` fails at its start with a message that names it.
+Linux reports visual comparison as skipped while still running every nonvisual project.
 Snapshot updates are disabled by the factory. Create or change baselines only through an explicit,
 reviewed update workflow; do not reuse the default-theme snapshots for a different theme.
+
+The `host-isolation` spec assumes a bare host: it plants its own `data-appearance` and `color-scheme` providers
+around the Arras root and checks that the root follows the nearest one, then the system's preference, so it only
+means something where nothing above the root already says an appearance. A host that sets `data-appearance` or
+an inline `color-scheme` above the root (or wraps a design-system provider that does) sets
+`hostAppearanceProvider: true`: the two specs that plant providers are then skipped, and the appearance spec
+keeps its half that does not depend on the host: no element on or beneath the Arras root carries
+`data-appearance`, `data-theme` or an inline `color-scheme`, whichever way the system's preference goes. Arras
+installs none either way. The default is `false`, and the host's own appearance
+behaviour is then a matter for the host's own tests.
 
 `baseURL` and `schemaBaseURL` must be distinct credential-free root HTTP(S) origins. `outputDir` is
 consumer-owned and should be unique for simultaneous runs. `themeId` defaults to `default`; `expectedBrand` defaults to `{ name: "Arras" }`, and
@@ -219,6 +233,13 @@ consumer-owned and should be unique for simultaneous runs. `themeId` defaults to
 step: provision Chromium using the consumer's normal Playwright setup. The `AcceptanceHost` browser
 entry is intended for a consumer-owned compiled host; the suite itself exercises its public HTTP
 surface and does not depend on private Arras source modules.
+
+`arras-ui-qualify --host-build` (checked by the package's `support/QUALIFICATION.md`) is a separate, narrower
+check with its own fixture contract: a first `.arras-root` with six widgets marked `data-theme-*`, a region labelled
+`Downstream widget controls` with the four controls in tab order, the public app drawn through the host's widgets, and
+no gradient, image or opacity behind the focus rings. The runner names the first requirement a fixture misses; the
+contract is the section "Host-build fixture contract" of that file, and `WidgetControls` from
+`@documentdrivendx/arras-ui/testkit/host` renders the region from the design system in context.
 
 ### Visual baselines
 
@@ -283,32 +304,104 @@ npm run build && npx playwright install chromium && npm run e2e
 
 ## Embed in a host
 
+Install the scoped release package, with the same version as your Python `arras`
+package. The source workspace is named `arras-ui`; downstream applications use
+`@documentdrivendx/arras-ui`. Registry publication and installed-consumer evidence
+are recorded in the release notes. You can also install the exact `.tgz` carried
+by the Python wheel (`python -m arras.ui npm-package`) or the GitHub release.
+
+The published package contains compiled ESM, declarations and compiled scoped
+CSS. The host does not need Tailwind, Vite or TypeScript compilation of Arras's
+source. It supplies React/ReactDOM matching the published peer ranges (currently
+React 19); TanStack Query and the exact UMF schema browser are package dependencies.
+
 ```tsx
-import { ArrasConsole } from "arras-ui";
-import "arras-ui/styles.css"; // scoped to `.arras-root`, which every entry component renders; see "Styles in a host page"
+import { ArrasConsole } from "@documentdrivendx/arras-ui";
+import "@documentdrivendx/arras-ui/styles.css";
 
 <ArrasConsole
-  operateBase="/api/operate"        // default
-  consoleBase="/api/console"        // default
-  getHeaders={() => ({ /* the host's own auth headers */ })}
-  onUnauthorized={() => signInAgain()}
+  identity={`${tenantId}:${userId}:${authorizationSession}`}
+  operateBase="/ontology/operate"
+  consoleBase="/ontology/console"
+  schemaBase="/ontology/schema"
+  getHeaders={() => ({ /* current host authentication headers */ })}
+  onUnauthorized={signInAgain}
+  pageEffects={false}
+  route={route}
+  onRoute={(next) => setRoute(next)}
 />;
 ```
 
-| Prop | Meaning |
-|------|---------|
-| `operateBase`, `consoleBase` | Where CONTRACT-009 and CONTRACT-006 are mounted |
-| `getHeaders` | Read on every request; the console stores no token |
-| `onUnauthorized` | Called on a 401 so the host can sign the viewer in again; when given, an expired-sign-in panel also offers a "Sign in again" button that calls it (what was typed in a form or query stays, and the panel says so); without it the panel keeps Retry and the guidance |
-| `hashRouting` | Keep the route in `location.hash` (see "Routes"); off when embedded, where the route is in memory |
-| `route`, `onRoute` | A host that owns the location passes the `Route` the console shows and takes every change through `onRoute(route, {replace})`; the console then neither reads nor writes the URL |
-| `toolbar` | Extra header content |
-| `explorerBase` | Where the host serves the `assets/` directory of UMF's schema browser package (default `/umf-explorer`); see "UMF source" |
-| `schemaBase` | Where the schema administration surface (CONTRACT-011) is mounted (default `/api/schema`). The Model area offers import only when `GET {schemaBase}/version` answers a contract this console speaks (a 404 or a network failure means the host did not mount it); see "Schema import and export" |
+| Public entry | Intended consumer |
+| --- | --- |
+| `@documentdrivendx/arras-ui` | `ArrasConsole`, `ArrasProvider`, client factories, public types, area components and the design-system provider |
+| `@documentdrivendx/arras-ui/browser` | `GraphBrowser` and its location types/helpers |
+| `@documentdrivendx/arras-ui/shell` | `ArrasApp`, combining Explore and Operate |
+| `@documentdrivendx/arras-ui/styles.css` | Import once in the host bundle; styles stay under `.arras-root` |
+| `@documentdrivendx/arras-ui/testkit` | Node-side opt-in Playwright configuration, never a production import |
+| `@documentdrivendx/arras-ui/testkit/host` | Browser-side opt-in synthetic acceptance host |
 
-The parts are exported for a host that wants its own layout, inside `<ArrasProvider>` (same connection
-props): `SchemaBrowser`, `SchemaImport`, `SchemaExport`, `EntityTable`, `ActionForm`, `AuditView`. The package is consumed as TypeScript source
-(`main` is `src/index.ts`), so the host's bundler needs React 19 and Tailwind 4 with `@import "tailwindcss"`.
+The export map is closed: imports from `src/`, `dist/` internals, `kit/`, `ds/`,
+`dev/` and private API/context hooks are unsupported. Add a deliberate public
+export upstream when a host needs another reusable capability. The reviewed
+`arras/public-api.json` catalog and packed-consumer checks enforce the surface.
+
+| Prop | Ownership |
+| --- | --- |
+| `operateBase`, `consoleBase`, `schemaBase` | Independently mounted API surfaces; changing one replaces the session |
+| `identity` | A nonsecret person/tenant/authorization-session identifier; change it whenever that security scope changes |
+| `getHeaders`, `onUnauthorized` | Current host authentication, read per request, and host sign-in recovery |
+| `pageEffects` | Default true for standalone use. Set false to keep title, window scrolling and global shortcuts with the host; local control keyboard behavior remains |
+| `route`, `onRoute` | Host-controlled Operate routing; otherwise the console uses memory, or the fragment with `hashRouting` |
+| `location`, `onLocation` | Host-controlled Explore routing on `GraphBrowser`/`ArrasApp`; no fragment/history-state reads or writes, browser Back, or window scroll restoration |
+| `explorerBase` | Same-origin URL for UMF schema-browser static assets; default `/umf-explorer` |
+| `brand`, `toolbar` | Host presentation and additional header content |
+| `queryClient` | Optional cache dedicated to Arras; private by default. Sharing requires identical identity and API bases, never the host application's general cache |
+
+Identity/API changes remount the provider's children before they can render old
+cached data, refusals, viewer modes, forms or query drafts. Late reads stay in the
+old scope; released scopes no longer acquire headers or deliver sign-in/revision
+callbacks to the host. Pending server-side actions may already have committed; changing
+identity does not undo them. Credential refresh for the same session need not
+change identity. Reset any host-owned `querySession` along with identity.
+
+Prefer one `ArrasProvider` for areas that share a session. It supplies the CSS
+root as well as clients and cache. A nested entry component inherits it;
+conflicting explicit identity, API bases, headers, cache or page-effect settings
+throw. Use an explicit nested provider for an independent session. Supplied
+caches are cancelled/cleared when their last Arras owner unmounts. Independent
+providers default to private caches, and component labels/SVG IDs and navigation
+focus requests are scoped to their instances. Action-input focus handoffs belong
+to their provider, form labels use instance-local IDs, and each UMF schema view
+observes the theme of its own host.
+
+```tsx
+import {
+  ArrasProvider, DesignSystemProvider, EntityTable, SchemaBrowser,
+} from "@documentdrivendx/arras-ui";
+
+<DesignSystemProvider designSystem={{ Button: HostButton }}>
+  <ArrasProvider identity={sessionKey} pageEffects={false}
+    consoleBase="/ontology/console" operateBase="/ontology/operate">
+    <div className="host-layout">
+      <SchemaBrowser module="catalog" />
+      <EntityTable module="catalog" type="catalog.Solution" />
+    </div>
+  </ArrasProvider>
+</DesignSystemProvider>;
+```
+
+Other exported areas include `SchemaImport`, `SchemaExport`, `ActionForm`,
+`AuditView` and `QueryArea`; use their public declaration types for required props.
+UI `canEdit` and hidden controls are presentation decisions. Server callbacks and
+backend grants enforce authorization on every request. Serve APIs at the host's
+origin, or supply the necessary host CORS/auth/proxy policy for another origin;
+`allowed_origins` is an origin-admission rule, not a CORS middleware.
+
+The UMF source view additionally needs the exact schema-browser `assets/` copied
+and served at `explorerBase`, plus its documented CSP. Building a host UI does not
+require mounting `arras.ui` or serving Arras's standalone page. The React views
+are browser components; no complete SSR/hydration guarantee is made.
 
 ## Narrow screens
 
@@ -613,6 +706,24 @@ check leaves fresh registry installation and publication qualification separate.
 dev host, and `src/embed.tsx`, the page `arras.ui` serves) use the built-in design system and load no
 theme. Nothing in the library sets an attribute, a class, a style or a storage entry on the host's document.
 
+**A runtime theme (the prebuilt page).** `arras.ui.create_app(theme_manifest=...)` links a host's stylesheet,
+favicon and fonts into the page the wheel carries (CONTRACT-005); that page draws with the built-in widgets, so
+a runtime theme is tokens and CSS only. Three limits follow:
+
+- *Both appearances, or one declared.* A theme that sets the role tokens for one appearance only (say the
+  eighteen light values) breaks on a viewer whose system prefers dark: the derived tokens (the alternate row
+  colour, the error ink, the shadow, `color-scheme`) follow `prefers-color-scheme` while the theme's text stays
+  dark, and axe reports `color-contrast` on the Operate view. A `color-scheme` set in the theme's stylesheet is
+  not read; the library reads only `data-appearance` on an ancestor or an inline `color-scheme` on one. A theme
+  therefore either supplies both sets of values (the dark one under `@media (prefers-color-scheme: dark)`, or with
+  `light-dark()`), or declares its appearance in the manifest, `"entry": {"stylesheet": "theme.css",
+  "appearance": "light"}` (`"light"` or `"dark"`), and the served page's `<html>` then carries
+  `data-appearance="light"` whatever the system prefers.
+- *The mark.* `Brand(logo="theme")` draws the design system's `Mark`; the prebuilt page has only the built-in
+  one, so it shows the built-in mark. A theme-supplied mark needs the host-built route: a `Mark` widget in a
+  `DesignSystemProvider`. The theme manifest has no mark entry.
+- *Widgets.* Replacing a widget (`Button`, `TextField`, ...) is the host-built route as well.
+
 **Accessibility.** The built-in text and control colours meet WCAG 2.1 AA in both appearances (4.5:1 for text, 3:1
 for control borders and the focus ring); every control has a visible focus ring on `:focus-visible`; a field's
 label, hint and error are tied to it by `for`, `id` and `aria-describedby`; a `Notice` carries a role and a glyph
@@ -746,6 +857,10 @@ fails if a built stylesheet has a selector outside the root; CI runs it on the l
 - **Cascade.** The rules stay in Tailwind's layers, with the `.arras-*` classes unlayered above them.
   A host's layered rules (its own Tailwind) do not override the root's, which are the more specific; a host's
   *unlayered* element rule (`button { ... }`) outranks the layered ones inside the root.
+  The Graph Browser's reset of its own controls (`font` and `color` inherited by `button`, `input` and `select`) is
+  unlayered but carries no specificity (`:where(.arras-root .gb) :where(...)`), so a host's rule on its own control
+  class, or the class a design-system widget draws, wins over it without `!important`, whatever its order in the
+  page; the `.arras-btn` widgets and the `.gb-*` classes are unaffected.
 - **Tests.** `src/test/scope-css.test.ts` for the scoper; `e2e/host-isolation.spec.ts` for the built page
   with a host's markup and rules planted around the root: the host's elements keep their browser defaults,
   its same-named tokens do not reach the root, the appearance follows the host's `data-appearance`, then the OS,

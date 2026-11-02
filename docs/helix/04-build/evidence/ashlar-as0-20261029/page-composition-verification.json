@@ -1,0 +1,114 @@
+{
+  "scope": "Focused non-native doubles/static checks only; no compiler/native/installed gate.",
+  "checks": [
+    {
+      "name": "pages-and-boundary",
+      "command": [
+        "/Users/erik/Projects/arras/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_ashlar_pages.py",
+        "tests/test_modules.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "duration_seconds": 2.322,
+      "stdout": "...............F..........................                               [100%]\n=================================== FAILURES ===================================\n___________________ test_the_library_keeps_its_module_rules ____________________\n\n    def test_the_library_keeps_its_module_rules() -> None:\n>       assert violations(sources(SRC)) == []\nE       AssertionError: assert ['arras.adapt...t umf_access'] == []\nE         \nE         Left contains one more item: 'arras.adapters.ashlar.pages:32: unauthorized official UMF import umf_access'\nE         Use -v to get more diff\n\ntests/test_modules.py:25: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_modules.py::test_the_library_keeps_its_module_rules - Asser...\n1 failed, 41 passed in 2.09s\n",
+      "stderr": ""
+    },
+    {
+      "name": "lint",
+      "command": [
+        "/Users/erik/Projects/arras/.venv/bin/ruff",
+        "check",
+        "src/arras/adapters/ashlar/pages.py",
+        "tests/test_ashlar_pages.py",
+        "tests/test_modules.py"
+      ],
+      "exit_code": 1,
+      "duration_seconds": 0.019,
+      "stdout": "UP035 [*] Import from `collections.abc` instead: `Callable`\n  --> src/arras/adapters/ashlar/pages.py:14:1\n   |\n12 | import json\n13 | from dataclasses import dataclass\n14 | from typing import Any, Callable, cast\n   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n15 |\n16 | from arras.errors import Unavailable, Unsupported\n   |\nhelp: Import from `collections.abc`\n   |\n13 | from dataclasses import dataclass\n   - from typing import Any, Callable, cast\n14 + from typing import Any, cast\n15 + from collections.abc import Callable\n16 |\n   |\n\nFound 1 error.\n[*] 1 fixable with `--fix`.\n",
+      "stderr": ""
+    },
+    {
+      "name": "types",
+      "command": [
+        "/Users/erik/Projects/arras/.venv/bin/pyright",
+        "--pythonpath",
+        "/Users/erik/Projects/arras/.venv/bin/python",
+        "--project",
+        "/private/tmp/arras-ashlar-integration-20261029/docs/helix/04-build/evidence/ashlar-as0-20261029/pyright-pages.json"
+      ],
+      "exit_code": 1,
+      "duration_seconds": 1.223,
+      "stdout": "/private/tmp/arras-ashlar-integration-20261029/src/arras/adapters/ashlar/pages.py\n  /private/tmp/arras-ashlar-integration-20261029/src/arras/adapters/ashlar/pages.py:30:9 - error: Type of \"managed_current_sdk_pages_request\" is unknown (reportUnknownVariableType)\n  /private/tmp/arras-ashlar-integration-20261029/src/arras/adapters/ashlar/pages.py:35:29 - error: Type of \"from_original\" is unknown (reportUnknownMemberType)\n2 errors, 0 warnings, 0 informations\n",
+      "stderr": ""
+    },
+    {
+      "name": "final-pages-and-boundary",
+      "command": [
+        "/Users/erik/Projects/arras/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_ashlar_pages.py",
+        "tests/test_modules.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 1.438,
+      "stdout": "...........................................                              [100%]\n43 passed in 1.22s\n",
+      "stderr": ""
+    },
+    {
+      "name": "final-lint",
+      "command": [
+        "/Users/erik/Projects/arras/.venv/bin/ruff",
+        "check",
+        "src/arras/adapters/ashlar/pages.py",
+        "tests/test_ashlar_pages.py",
+        "tests/modules_check.py",
+        "tests/test_modules.py"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.022,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "name": "final-format",
+      "command": [
+        "/Users/erik/Projects/arras/.venv/bin/ruff",
+        "format",
+        "--check",
+        "src/arras/adapters/ashlar/pages.py",
+        "tests/test_ashlar_pages.py",
+        "tests/modules_check.py",
+        "tests/test_modules.py"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.011,
+      "stdout": "4 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "name": "final-types",
+      "command": [
+        "/Users/erik/Projects/arras/.venv/bin/pyright",
+        "--pythonpath",
+        "/Users/erik/Projects/arras/.venv/bin/python",
+        "--project",
+        "/private/tmp/arras-ashlar-integration-20261029/docs/helix/04-build/evidence/ashlar-as0-20261029/pyright-pages.json"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.666,
+      "stdout": "0 errors, 0 warnings, 0 informations\n",
+      "stderr": ""
+    }
+  ],
+  "verified_payload": {
+    "src/arras/adapters/ashlar/pages.py": "d02647b4b6f62aae6e66a38bf52cc41bf14698fad809e2a7cc217d066cf71a81",
+    "tests/test_ashlar_pages.py": "adf4d4f9fcc17a0033ac80e89cb16d6f7b0559713931f8776701d5e5ae10ac6f",
+    "tests/modules_check.py": "44145863c5f4afab85dc3cee57129ce7135d33fc03d1a322265f0a164eada5be",
+    "tests/test_modules.py": "5df3b765bb42b59d3bf66ce3095a14f77fcdfc6eb075d002b307a5b97c7bfb91"
+  }
+}

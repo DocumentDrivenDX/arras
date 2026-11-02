@@ -1,0 +1,14 @@
+{
+  "job_id": 123820765248,
+  "npm_oidc_upload": "passed",
+  "postflight": "failed_before_fresh_install",
+  "public_metadata": "correct package and version",
+  "pypi_base_and_both_extras_jobs": "passed",
+  "raw_job_log_sha256": "7190530f7f3354d89751c94fc72cfac97ec8a6255a494f439e39225ea6bc88a2",
+  "run_attempt": 1,
+  "run_id": 40980958496,
+  "schema": "arras.registry-npm-postflight-refusal/1",
+  "scope": "Registry tarball HTTP failure after accepted OIDC upload; does not qualify npm availability. No artifact/tag mutation or gate bypass.",
+  "tarball_http_status_observed": 404,
+  "version": "0.6.4"
+}

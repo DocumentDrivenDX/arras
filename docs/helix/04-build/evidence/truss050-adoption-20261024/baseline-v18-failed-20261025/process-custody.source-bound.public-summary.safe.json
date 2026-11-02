@@ -1,0 +1,11 @@
+{
+  "acceptance_claim": false,
+  "all_checked_processes_absent": true,
+  "checked_process_count": 3,
+  "custody_returned": true,
+  "no_remaining_process_group_members": true,
+  "permission_denials": 0,
+  "schema": "arras.public50-baseline-process-custody-public-summary/1",
+  "source_receipt_sha256": "bd4415102c4896cd91743029ac5faed619a107c51e32d9ccacb2ceda6d370b65",
+  "status": "passed"
+}

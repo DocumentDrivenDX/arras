@@ -1,0 +1,13 @@
+{
+  "status": "anonymous_registry_bytes_match_qualified_release",
+  "package": "@documentdrivendx/arras-ui",
+  "version": "0.6.1",
+  "tarball_url": "https://registry.npmjs.org/@documentdrivendx/arras-ui/-/arras-ui-0.6.1.tgz",
+  "tarball_sha256": "9c741538b1a32f21b37afcd39f10c24285a1728194a7073cbac9cda2d93e2285",
+  "tarball_size": 2412650,
+  "registry_shasum": "58d84c61b964c30aed70e96a473f4dd7304a58a6",
+  "registry_integrity": "sha512-oGAvQ68ohTMsHyBN1kFwPKGFAPLqCKTxoOTADLF6aTLofEmv7EkBbCzeSa/LsQbL+iQJ3F+tMtEaSzR+GIt5hQ==",
+  "retrieval": "anonymous HTTPS; no auth headers",
+  "publication_mode": "one-time interactive scope-owner bootstrap; OIDC setup follows",
+  "clean_registry_install": "pending"
+}

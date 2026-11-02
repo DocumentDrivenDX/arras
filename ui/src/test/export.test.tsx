@@ -133,7 +133,7 @@ describe("the Export controls", () => {
     await waitFor(() =>
       expect(api.log.some((r) => r.path.endsWith("schema-catalog.json"))).toBe(true),
     );
-    expect(container).toBeEmptyDOMElement();
+    expect(container.querySelector(".arras-root")).toBeEmptyDOMElement();
   });
 });
 

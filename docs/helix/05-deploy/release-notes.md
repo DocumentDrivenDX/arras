@@ -17,6 +17,298 @@ ddx:
 
 # Arras release notes
 
+## 0.6.5 downstream integration
+
+Installed development hosts serve their wheel-carried UI and console entrypoints.
+Operators can select explicit groups and development namespaces, framework
+mounts preserve their prefixes, and theme manifests state their appearance.
+External backends receive a public conformance base, alias packages preserve
+module identity, and the acceptance testkit separates host isolation and visual
+baseline selection. The [changelog](../../../CHANGELOG.md#065--downstream-integration)
+records the fifteen integrated downstream changes.
+
+Python 3.11 is the sole supported Python release profile. The installer minimum
+remains `>=3.11`, permitting later interpreters without qualifying their support.
+The completed 3.12 checks remain incidental observations; 3.13 is unqualified
+and is outside this release's required gates. Full UI, native, UMF and public
+consumer qualification remains required on the named platforms.
+
+Wheel `beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b`
+passed twelve catalog controls and fresh distribution, doctor, extension, UMF
+and installed CLI/development-host checks on CPython 3.11.17 / Darwin arm64.
+The [original receipts and correspondence](evidence/arras-0.6.5-local-20261031/README.md)
+retain the distinct source/artifact identities, unchanged executable and npm
+payloads, historical Linux/UI/native component evidence and platform limits.
+The immutable GitHub and PyPI release retains its local publication origin.
+The exact UI archive is now published as `@documentdrivendx/arras-ui@0.6.5` through
+the separately qualified default-branch OIDC backfill, run `41493303642`.
+Anonymous npm-served bytes match archive
+`26abe759e7bb918bf30c5144a34cff8deb7ecb4dd2ef531d41ec3ceab2155e0f`,
+and its fresh registry installation/import passes. The new hosted qualification
+includes 202 Truss cases, 64 native passes with eight limits, 139+139 official
+UMF admission comparisons and all 205 Linux UI cases. General source tests
+retain two skips; native and Mac support remains scoped to the recorded cohorts.
+The [delivery receipts and failed-attempt history](evidence/registry065-20261102/README.md)
+preserve the distinct local origin, new hosted driver, original Mac evidence
+limits and exact archive identities. No public asset was replaced or retagged;
+this backfill did not republish PyPI or claim a new PyPI-extras campaign.
+
+## 0.6.4 embedded composition
+
+The published 0.6.4 release completes session and host-page ownership for embedders:
+identity/API changes reset Arras-owned UI state, shared caches refuse different
+security/API scopes, individual public areas get scoped CSS, and controlled
+Explore preserves host history and scroll. `pageEffects=false` leaves title,
+window scroll and global shortcuts with the host. Accessibility IDs, SVG
+resources, navigation focus and edit portals remain local to their instances.
+
+The Python core and independently mountable API factories remain in `arras`;
+compiled ESM/types/CSS and root/browser/shell exports remain in the matching
+`@documentdrivendx/arras-ui` package. Private source imports remain unsupported.
+See the [integration guide](../../../ui/README.md#embed-in-a-host) and
+[API-only hosting example](../../../README.md#serve-only-the-api-and-bundle-the-components).
+Existing HTTP contract versions and native/UMF pins are unchanged.
+
+The selected 0.6.4 wheel `29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2` passed full CI, fresh macOS native
+qualification (64 cases and eight declared limits) and all twelve fresh managed
+Lakebase cases. Independent cleanup and temporary identity/project deletion
+passed. Compiled public exports and the exact wheel-carried npm archive passed
+real Chromium embedding. See the [qualification evidence](evidence/embedding064-20261029/README.md).
+[Release 40978080176](https://github.com/DocumentDrivenDX/arras/actions/runs/40978080176)
+passed all ten gates, including anonymous public downloads and fresh consumers.
+[Registry run 40980958496](https://github.com/DocumentDrivenDX/arras/actions/runs/40980958496)
+completed publication of [`arras==0.6.4`](https://pypi.org/project/arras/0.6.4/) and
+[`@documentdrivendx/arras-ui@0.6.4`](https://www.npmjs.com/package/@documentdrivendx/arras-ui/v/0.6.4).
+Public bytes and fresh base/npm installs match; fresh isolated public-PyPI
+`arras[truss,umf]==0.6.4` installs pass on Linux x86_64 and macOS arm64. npm's first
+accepted OIDC upload briefly exposed metadata before its tarball (HTTP 404);
+attempt two skipped upload, verified the existing exact bytes and passed install.
+The original refusal and successful receipts are retained in the publication record.
+See the [publication record](evidence/embedding064-20261029/registry-publication.safe.json).
+Historical 0.6.3 receipts retain their original artifact scope.
+
+## 0.6.3 catalog correction
+
+The Python and wheel-carried npm versions in `public-api.json` now agree with
+`pyproject.toml`. CI checks source catalog/version consistency and runs the real
+installed-wheel doctor before accepting a candidate, with a separate retained
+receipt. The qualified dependency versions and runtime behavior are unchanged.
+This patch completes the registry compatibility work below with corrected
+package identity. Its new artifact requires its own qualification and exact-tag
+publication gates; earlier 0.6.2 observations do not qualify new wheel bytes.
+
+The corrected wheel passed all five CI jobs in `40250804621`, including the new
+20-case installed doctor gate. Its fresh Mac native gate passed 64 cases with
+8 declared limits and 7 replica-only cases inapplicable; 172 payload files and
+cleanup matched. The separate actual Lakebase full12 gate passed 12/12 with
+original cleanup, six retained archives, independent read-only audit and actual
+parent/supervisor/worker process and group absence before custody handback.
+The [0.6.3 qualification index](evidence/registry-publication-20261025/qualification-063-index.json)
+records exact source, wheel and evidence digests, dependency cohort boundaries
+and the retained prelaunch static refusal. The release guard selects wheel
+`ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d`.
+Exact-tag release, public-download and registry OIDC/byte/install gates remain
+separate required evidence; their status is recorded by the release workflows.
+
+The first exact-tag 0.6.3 run (`40254727933`) stopped in a repository-only packed-theme
+fixture: its copied peer pin remained 0.6.1. The exact-wheel guard, doctor,
+source/sdist rebuild, Linux native, UMF, Chromium and fresh extension-host gates
+had passed. No GitHub release or registry upload occurred. The
+[orchestration refusal record](evidence/registry-publication-20261025/release063-failed-theme.safe.json)
+retains that result. A reviewed recovery driver binds only the temporary theme
+fixture copy to the exact wheel-carried npm version and records its source/helper
+identity. Both the initial and anonymous public-download theme gates use that
+driver. The immutable 0.6.3 tag, package version, source and wheel stay unchanged;
+all ten release gates and subsequent registry checks remain required.
+
+Recovery Release `40257854519` subsequently passed all ten gates and published the
+GitHub bundle. The first automatic registry run refused a shorthand-versus-full
+reusable-job label mismatch before uploads; the
+[registry refusal record](evidence/registry-publication-20261025/registry063-job-label-refusal.safe.json)
+retains it. The publisher now requires the exact successful API display name,
+with negative cases kept fail-closed. Registry backfill uses the successful
+release's exact immutable pins; runtime and release assets do not change.
+
+
+### 0.6.3 registry publication complete — 2026-10-26
+
+[Registry run 40261690123](https://github.com/DocumentDrivenDX/arras/actions/runs/40261690123)
+completed successfully on attempt two. PyPI accepted the exact wheel and sdist
+through its trusted publisher; anonymous bytes and a fresh plain-index base
+installation passed. npm accepted the exact tarball through GitHub OIDC with
+signed provenance on attempt one. Its public endpoint remained absent beyond
+the initial 180-second postflight limit, then exposed matching bytes. The retry
+skipped the matching upload and passed byte verification and a fresh install;
+its receipt correctly records `existing_exact_bytes`, not another OIDC upload.
+The [publication record](evidence/registry-publication-20261025/registry063-publication.safe.json) retains both outcomes and receipt hashes.
+
+Future successful tagged releases automatically publish the qualified assets
+through the configured main-only `pypi` and `npm` trusted publishers without
+stored registry tokens or per-release approval. npm postflight now allows up to
+600 seconds for visibility within a 20-minute job limit; PyPI retains 180 seconds.
+Only absence is retried; conflicting bytes and other errors still fail
+immediately. The published 0.6.3 runtime, tag and all 17 release assets are
+unchanged. That run's PyPI fresh-install receipt covered only the base package;
+the separate public-extras qualification is recorded below. Future PyPI release
+qualifications require a separate post-publication fresh install of both
+`arras[truss,umf]` from the public PyPI index with no wheelhouse or extra index,
+exact digest checks for the selected qualified UMF/Truss/Weft GitHub assets,
+installed-origin/direct-URL checks, `pip check`, and public import, doctor and
+UMF document smokes. Runtime support remains latest-only with forward migration
+for admitted UMF 0.10 lineages.
+
+### 0.6.3 public PyPI extras qualification complete — 2026-10-26
+
+Hosted [workflow run 40370325928](https://github.com/DocumentDrivenDX/arras/actions/runs/40370325928)
+passed the separate `arras[truss,umf]==0.6.3` public-index install on Linux
+x86_64 / CPython 3.11.17 and macOS arm64 / CPython 3.11.9. Each hosted job
+resolved 19 selected distributions from `files.pythonhosted.org`, reported zero
+direct-URL references, passed `pip check`, and passed the Arras import/doctor,
+Truss and Weft import/support, and UMF document admission checks. Arras, UMF,
+Truss and platform-specific Weft digests matched the selected release assets.
+The [final receipt set](evidence/public-pypi-extras-20261026/README.md) records
+both hosted platform artifacts and hashes; the separate local macOS result is
+supplemental. This result qualifies only the named 0.6.3 cohort and those two
+platforms. It does not qualify Windows, managed deployment or native/provider
+behavior, and it does not change the latest-only runtime or forward-migration
+policy.
+
+## 0.6.2 failed before publication
+
+The [exact-tag release run 40249110726](https://github.com/DocumentDrivenDX/arras/actions/runs/40249110726)
+passed the PostgreSQL, wheel guard and distribution rebuild gates, then the
+installed doctor refused the stale carried catalog (0.6.1 versus package 0.6.2).
+No GitHub release or registry upload occurred. The immutable tag remains as a
+failed build record. The [failure receipt](evidence/registry-publication-20261025/release062-failed-doctor.safe.json)
+keeps the failure separate from the passing Mac/WAN observations below. The
+correction ships as 0.6.3.
+
+
+This release makes the Python distributions acceptable to PyPI by replacing the
+optional UMF direct URL with the exact version pin `umf-core==0.10.0`. The
+qualified UMF wheel and its digest remain unchanged. Plain-index PyPI support
+covers the base package; UMF and Truss extras continue to use the documented
+qualified wheelhouse. Truss remains 0.0.50, Weft 0.4.51 and UMF core 0.10.0.
+Runtime support remains latest-only with forward migration for admitted UMF
+0.10 lineages and no pre-0.10 compatibility.
+
+The selected wheel SHA-256 is
+`82cd5ef7e7284ded7bb7af98934fe0c3f6840450948205e3430d99ff0478f176`.
+[CI run 40244842788](https://github.com/DocumentDrivenDX/arras/actions/runs/40244842788)
+passed all five jobs. Its fresh macOS arm64 / CPython 3.11.9 installation passed
+64 cases, retained eight declared limits and excluded seven replica-only cases;
+172 payload files and cleanup matched. The separate CPython 3.11.17 WAN
+installation used the exact prior dependency cohort and passed all twelve
+Lakebase cases. Original cleanup removed five resources; archive collection,
+independent read-only audit, targeted parent/supervisor/worker process and group
+census, and custody handback passed. The first authorization-reference refusal
+had no target effects and remains a separate failed record. The official UMF
+installed gate matched 139 reference and 139 fresh-empty Registry cases plus
+six base and ten extra controls, with zero skips and passing cleanup.
+The [retained qualification index](evidence/registry-publication-20261025/qualification-062-index.json)
+binds these scoped observations, including each platform's actual dependency
+versions and an explicit correction to one frozen evidence label.
+
+Future tagged releases publish the exact qualified GitHub assets to PyPI and npm
+through trusted GitHub OIDC publishers after all ten Release jobs and complete
+public-download gates succeed. Registry byte conflicts, missing access and
+failed fresh installs fail publication. Main-only `pypi` and `npm` environments
+and their exact publisher grants are configured; no registry publishing tokens
+are stored. The unchanged npm 0.6.1 tarball is already published and verified by
+an anonymous clean consumer. The failed 0.6.2 tag outcome is recorded above; successful registry delivery
+requires its own [publisher workflow receipts](https://github.com/DocumentDrivenDX/arras/actions/workflows/publish-registries.yml).
+
+## 0.6.1 published
+
+This release selects public Truss 0.0.50 and preserves Weft 0.4.51 and official UMF
+core 0.10.0. Fresh installation accepts an explicit immutable
+`tolerated_grantees` tuple; reconnect verifies stored policy without widening it.
+The existing metadata-only profile, runtime support boundaries and historical
+0.6.0 release artifacts remain unchanged.
+
+The public Truss 0.0.50 wheel is pinned by SHA-256
+`7b0483bb0c624c98515cf38ec30bbbf1ca43c1250e8880e5d00d520b4b7eec00`, from
+source `a687d0a226dad5745cbd909377bf99c7c1cddc66`. Its native runtime manifest
+remains `truss-catalog-runtime/0.74-candidate` with SHA-256
+`288801f7177338328441b5d3ce9328af31740ebf513f04ea45e30ae316a9f3a4`; migration
+manifest `4c6baf0282e3d0b5492f070c9c07d89ff0c9a819e748f3820f60b11c1f51c7aa`
+retains the prior public 0.0.49 manifest unchanged. The additive
+[source-binding record](../04-build/evidence/truss050-adoption-20261024/extension-source-binding.json)
+documents wheel/source correspondence and references the source-only Truss 0.0.50
+dependency review. That review found no newly introduced extension dependency;
+the archive comparison matched 50 native SQL files and five JSON resources. The
+source-binding record is not a PostgreSQL observation or managed acceptance;
+it reports Lakebase acceptance as `not_run` and is distinct from the exact-tag
+Truss release result. Truss v0.0.50 tag run
+[`40068606364`](https://github.com/DocumentDrivenDX/truss/actions/runs/40068606364)
+passed its Linux release gates, including 107 migration tests, 62 HF cases and
+174 managed-grant tests. Its selected small functional workload also passed; it
+does not establish a general performance result or Arras Lakebase acceptance.
+
+The exact canonical Arras 0.6.1 wheel SHA-256 is
+`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`.
+At source `2d1bc7e34af7499d5f4f582d4ee41e0d772920cc`, CI run
+[`40119390075`](https://github.com/DocumentDrivenDX/arras/actions/runs/40119390075)
+passed all five jobs. Its [fresh-installed Mac campaign](../04-build/evidence/truss050-adoption-20261024/fresh-macos-40119390075/)
+on macOS arm64 / CPython 3.11.9 completed 72 applicable cases: 64 passes and
+eight unchanged declared limits, with seven replica-only cases inapplicable.
+Exact installed-payload correspondence and cleanup passed. No system-wide
+dynamic-link audit or execution of forced process-group cleanup is claimed.
+
+The human authorized resumption of the owned-database recovery qualification
+on 2026-10-25. Controller preflight passed 6/6 checks and collector controls
+passed 8/8; these are controls, not acceptance evidence. The first post-resume
+2d baseline remains a 5/6 journal-binding failure. After the bounded
+partition-ancestry repair, the fresh source-20db baseline passed 6/6 with
+original cleanup, independent audit (`560f5c20…`), process census
+(`8da9…`) and custody handback (`9a599e22…`) also passing. The source-bound records are retained in
+[baseline-20db-passed-20261025](../04-build/evidence/truss050-adoption-20261024/baseline-20db-passed-20261025/). CI run `40221099126` source-20db Mac run passed 64 cases, retained eight unchanged
+limits and skipped seven inapplicable replica cases; native-wheel hashes,
+172-file payload parity and cleanup passed. The full original twelve-case
+Lakebase campaign on that wheel passed 12/12 with zero failures or blocked cases;
+original cleanup, independent audit, process census and custody handback passed.
+Its source-bound records are in [full-managed-20db-passed-20261025](../04-build/evidence/truss050-adoption-20261024/full-managed-20db-passed-20261025/).
+The scoped supplemental census records all three known groups absent, zero
+owned-script matches and zero denials. The direct supervisor PGID was not
+captured; no forced-cleanup claim is made. Historical D11/D12 and the initial
+2d failure remain preserved as failed evidence. The final PR 9 source is
+`243f1ebaf8b32beb0abc30d0d4fdcd9dd7b5ea92` (tree
+`9ee467d942ba7440d6adaa9b891b8f00aa2d8c1c`), published as annotated tag
+`v0.6.1` (tag object `99609317f1cfc95a2e8e3768f2481910dcf42e23`). The exact-tag
+[release workflow](https://github.com/DocumentDrivenDX/arras/actions/runs/40227314485) passed all ten mandatory jobs, including
+release build/assembly, installed downstream and anonymous public-download
+qualification. The [GitHub release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.1) carries the exact canonical
+wheel; public assets and the completed public repeat are described below.
+
+The historical [full WAN campaign, D11](../04-build/evidence/truss050-adoption-20261024/full-managed-d11-failed/),
+finished 10 passed / 2 failed; the separate [D12 baseline diagnostic](../04-build/evidence/truss050-adoption-20261024/baseline-six-diagnostic/)
+finished 5 passed / 1 failed and did not run the managed gate. Those failed
+results remain historical and do not replace the completed 20db campaign. The already-provisioned
+ordinary actor setup is reusable; no VM was created or required for these WAN
+runs. Credential renewal remains with the user or designated workspace
+credential administrator. Historical 0.0.49 receipts retain their original scope.
+Both complete campaigns bind to the same canonical Arras wheel SHA-256
+`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`; any future wheel-byte change requires both campaigns rebound and rerun.
+
+The earlier PR 9 candidate with 0.6.0 package metadata passed fresh installed
+native conformance (64 cases and eight unchanged declared limits), artifact
+parity, doctor and official UMF checks. Those receipts retain their original wheel
+identity and remain historical. The 0.6.1 public bundle has 17 assets (16 listed
+in `SHA256SUMS`), release-evidence schema v2 and an exact wheel SHA-256 of
+`259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18`. The anonymous public-download qualification verified every asset against
+the exact assembled release stage and confirmed that the npm tarball matches the
+wheel-carried bytes. On the downloaded wheel, the public UMF repeat matched all
+139 ordered reference and 139 fresh-empty Registry cases, with six base and ten
+extra-enabled controls, zero skips and passing cleanup. The public doctor passed
+20 cases; the installed extension consumer passed four tests and 72 memory-corpus
+cases. The public Linux theme suite passed all 205 nonvisual checks with no
+unexpected skips; visual checks were inapplicable on Linux. All results are
+bounded to the named wheel and recorded cohorts. Release run `40227314485` passed
+all mandatory jobs. Optional `publish-pypi` and `publish-npm` jobs were skipped as
+configured; GitHub assets remain the delivery route. The TP-001 and integration-
+plan amendments continue to govern the original managed proof and reusable
+least-privilege identity setup. The [retained public-repeat receipts](../04-build/evidence/truss050-adoption-20261024/public-release-qualification-20261025/) bind the downloaded wheel and actual postpublication UMF phase.
+
 ## 0.6.0
 
 Arras 0.6.0 adds optional official source admission and bounded core-metadata

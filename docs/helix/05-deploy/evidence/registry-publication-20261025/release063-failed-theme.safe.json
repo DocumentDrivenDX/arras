@@ -1,0 +1,30 @@
+{
+  "failed_gate": "repo-only downstream packed-theme peer coherence",
+  "failed_job_id": 121356700800,
+  "failure": "Temporary fixture retained peer0.6.1 while selected wheel-carried npm package is0.6.3. Assertion before browser packed-theme qualification; wheel runtime catalog and metadata agree.",
+  "github_release_created": false,
+  "passed_before_failure": [
+    "tag/source",
+    "PostgreSQL18.6",
+    "full Python suite",
+    "official UMF comparison",
+    "exact wheel guard",
+    "source/sdist rebuilt-wheel equality",
+    "installed doctor",
+    "installed UMF admission",
+    "Linux native",
+    "Chromium UI",
+    "fresh extension host"
+  ],
+  "raw_job_log_sha256": "f42ca92ffe7d0db3073443748d123c8cb4447c014d6d0e0bd608514c559a361f",
+  "recovery": "Reviewed default-branch orchestration driver binds copied fixture peer to selected npm version and is staged in both original and public-download theme gates. Same immutable tag, source and runtime artifact; all ten release gates rerun. No new Mac/WAN campaign.",
+  "registry_upload_performed": false,
+  "release_run_id": 40254727933,
+  "schema": "arras.registry-063-orchestration-refusal/1",
+  "source_commit": "81d560310f46f1d2c105e6635d70b0eeb97d4684",
+  "source_tree": "38f8de3349d38920849aba7b3e48279e8f36e832",
+  "status": "failed_before_publication",
+  "tag": "v0.6.3",
+  "tag_object_sha": "04af6523b7cba0388bb4848215078f9f30cc8575",
+  "wheel_sha256": "ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d"
+}

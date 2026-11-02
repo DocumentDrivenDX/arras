@@ -1,0 +1,17 @@
+{
+  "acceptance_claim": false,
+  "actual_configured_directory_is_directory": true,
+  "actual_configured_directory_mode_octal": "0755",
+  "actual_configured_directory_same_owner": true,
+  "actual_operation_or_endpoint_response_projection_available": false,
+  "current_mode_guard_would_refuse": true,
+  "fixture_sha256": "ab5a4cec486eab8becf4d3e2aff7b9810554c590f299a8645131497b5c59a157",
+  "historical_cause_claim": "Current source/config refusal is deterministic and compatible with MP-01/MP-04 traces; original exception reason was not retained, so historical causation is qualified.",
+  "matching_actual_parent_pid_archive_count": 0,
+  "new_provider_auth_sql_or_runtime_effects": false,
+  "observed_at": "2026-10-24T16:53:56.566526+00:00",
+  "original_private_exception_message_retained": false,
+  "schema": "arras.D9-readonly-operation-archive-admission-facts/1",
+  "source_guard": "_open_private_operation_directory requires directory, same owner and mode & 0077 == 0 before restart archive/provider mutation",
+  "source_or_directory_modified": false
+}

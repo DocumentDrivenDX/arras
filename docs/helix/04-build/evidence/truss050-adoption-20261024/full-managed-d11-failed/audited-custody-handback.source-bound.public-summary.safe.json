@@ -1,0 +1,20 @@
+{
+  "acceptance_passed": false,
+  "custody_returned": true,
+  "independent_audit_receipt_sha256": "c556afeea9d0acf28f798b637fcb9c3259e02eaaf164409277ff6282f957a772",
+  "no_active_exec_sessions": true,
+  "no_vm": true,
+  "original_campaign_counts": {
+    "blocked": 0,
+    "failed": 2,
+    "passed": 10
+  },
+  "performance_isolation_claim": false,
+  "process_custody_receipt_sha256": "fea34c1d51e8deade9faa0241178dd4f4b25c2369d16760450b22bc42aec2f1b",
+  "schema": "arras.public50-D11-custody-handback-public-summary/1",
+  "shared_resource_incident_observed_for_this_run": false,
+  "source_and_owned_target_freeze_released_for_owner_fixes": true,
+  "source_receipt_sha256": "b47a89ba846fb82d747d8154e1abc7bdd0511a7903391b3658d32d8c54215b2f",
+  "status": "OWNED_SOURCE_AND_TARGET_CUSTODY_RETURNED",
+  "terminal_receipt_sha256": "39498ed804ffde6b953447980ae7e8161b1b69ded888a73455071bd9186ce469"
+}

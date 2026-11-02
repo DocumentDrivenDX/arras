@@ -1,0 +1,189 @@
+{
+  "campaign": {
+    "acceptance_claim": false,
+    "canonical_arras_wheel_sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+    "counts": {
+      "blocked": 0,
+      "failed": 1,
+      "passed": 5
+    },
+    "elapsed_seconds": 647.417029791,
+    "failed_case_code": "original_request_journal_binding_missing",
+    "failed_cases": [
+      "LB-SETTLEMENT"
+    ],
+    "managed_gate": "not_run",
+    "no_vm": true,
+    "provider_operation_timeout_seconds": 180,
+    "result_receipt_sha256": "2c0cdcb8a0f2f935ea895ea79d4348fe73bb3ee145e7aaea81f7561300c813e1",
+    "scope": "baseline",
+    "source_commit": "2d1bc7e34af7499d5f4f582d4ee41e0d772920cc",
+    "source_tree": "396f50b8ddc10bc8d3e16a5baf7f81055e17efc4",
+    "sql_operation_timeout_ms": 60000,
+    "stage": "baseline_six_diagnostic",
+    "truss_version": "0.0.50",
+    "wall_start": "2026-10-25T18:05:36Z",
+    "wall_terminal": "2026-10-25T18:16:23Z"
+  },
+  "claim": "V18 baseline-six diagnostic only; LB-SETTLEMENT failed; full acceptance not established",
+  "cleanup_and_audit": {
+    "acceptance_credit": false,
+    "cleanup_status": "passed",
+    "custody_returned": true,
+    "independent_audit_status": "passed",
+    "installed_source_before_after_equal": true,
+    "native_membership_count": 18,
+    "native_role_count": 33,
+    "new_native_role_count": 0,
+    "no_active_exec_sessions": true,
+    "ordinary_selected4_closures_false": true,
+    "provider_checks": 3
+  },
+  "diagnostic_scope": {
+    "archive_collection_status": "complete",
+    "genuine_v18_commit_read_wait_cut_observed": true,
+    "historical_relation_details_and_actual_journal_xid_match": "unknown",
+    "postrun_private_journal_inventory_retained": false,
+    "private_archive_commitments": [
+      {
+        "event_count": 3,
+        "event_stages": [
+          "fault_source_entered",
+          "connection_identity_matched",
+          "fault_source_exit"
+        ],
+        "row_count": 3,
+        "sha256": "1fc07a7ad1cc61d0014d00eff2ffc5585e366eb8cb94f368159217e0ebcc922c",
+        "size_bytes": 1388
+      },
+      {
+        "event_count": 6,
+        "event_stages": [
+          "fault_source_entered",
+          "connection_identity_matched",
+          "request_matched",
+          "logical_carrier_returned",
+          "selected_mutation",
+          "fault_source_exit"
+        ],
+        "row_count": 6,
+        "sha256": "65eb56593100162d3ea7ef8568c2c20fb3d6b3476dfa810aacb1a89eedafb3ee",
+        "size_bytes": 3078
+      },
+      {
+        "event_count": 12,
+        "event_stages": [
+          "fault_source_entered",
+          "connection_identity_matched",
+          "request_matched",
+          "logical_carrier_returned",
+          "selected_mutation",
+          "commit_hook_entry",
+          "original_driver_entry",
+          "commit_read_wait",
+          "transport_cut",
+          "original_driver_outcome",
+          "exception",
+          "fault_source_exit"
+        ],
+        "row_count": 12,
+        "sha256": "adc1b65f8799b455ee2a6d830f99ab907151aaaccd2f999ead3dc274f3f74496",
+        "size_bytes": 6346
+      }
+    ],
+    "source_level_partition_issue_is_separate_from_actual_target_evidence": true
+  },
+  "files": {
+    "README.md": {
+      "bytes": 1561,
+      "retention": "authored_summary",
+      "sha256": "fa62fe6adf49f628ba8443e56fc7fea83935d6a81d7527c0326c8cc63691c057"
+    },
+    "actual-baseline-six-diagnostic-result.source-bound.public-summary.safe.json": {
+      "bytes": 11217,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "a66e5cf63699fe742073a641e616a3205f151df073a87ebed493dbc6388612b7"
+    },
+    "baseline-six-diagnostics.source-bound.public-summary.safe.json": {
+      "bytes": 853,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "5e3c5a15604a09a3c1e7902d0d2da92db40df1e93fe96c4e1770caffe24261fa"
+    },
+    "baseline-six-inner.source-bound.public-summary.safe.json": {
+      "bytes": 1164,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "bbb3039753377077fbe61ce1f5c6ecdfdc302ff257178beaa892c9fc0c85e646"
+    },
+    "baseline-six-terminal.source-bound.public-summary.safe.json": {
+      "bytes": 1135,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "02a6540e29c9a193e1398755366208be87a7f3e6ffdc2db571bc1e9a4368dddb"
+    },
+    "custody-handback.source-bound.public-summary.safe.json": {
+      "bytes": 707,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "9e84d530ba2aef043bab458f0b53a3aa0631c53d6e7e1c2ccd408824f60bffca"
+    },
+    "independent-audit.source-bound.public-summary.safe.json": {
+      "bytes": 1197,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "df55f7e529d1335b460b8da392b97b49eff501aca9e91ccb3231c5c27301439b"
+    },
+    "process-custody.source-bound.public-summary.safe.json": {
+      "bytes": 392,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "f72d6d3d084a81ef7150b15b1f81613747c8b1f97dad63cf3fe5dbe1a68ca275"
+    }
+  },
+  "private_sources_not_copied": [
+    "raw fault archives",
+    "private stdout/stderr and launch logs/scripts",
+    "credentials and target/provider identity details",
+    "native catalogs",
+    "authorization/window/dispatch material",
+    "private source paths, PIDs/PGIDs and opaque resource identifiers"
+  ],
+  "schema": "arras.public50-baseline-v18-six-diagnostic-retention/1",
+  "source_receipt_bindings": [
+    {
+      "sha256": "5ec5c1d5c77655f0e4abbc3fddd384affeda083bdc9d01a25230e020cf2cf04a",
+      "source_name": "baseline-six-terminal.safe.json"
+    },
+    {
+      "sha256": "2c0cdcb8a0f2f935ea895ea79d4348fe73bb3ee145e7aaea81f7561300c813e1",
+      "source_name": "baseline-six-terminal.safe.verifier.json"
+    },
+    {
+      "sha256": "0ff69186a58caaf3e41cdc6aea171058513a44e407d4ee93688e52b56927d05a",
+      "source_name": "baseline-six-diagnostics.safe.json"
+    },
+    {
+      "sha256": "902213614c313815deefa4dec4a9d922c528adb50c3f1c8818a050c7691eaf7e",
+      "source_name": "independent-baseline-six-audit.safe.json"
+    },
+    {
+      "sha256": "1793382cc07eb8860b3510c81c7ad2a45c5d8dba34b0887093774d99ddd8e4db",
+      "source_name": "owned-fault-archives.safe.json"
+    },
+    {
+      "sha256": "bd4415102c4896cd91743029ac5faed619a107c51e32d9ccacb2ceda6d370b65",
+      "source_name": "baseline-six-process-census.safe.json"
+    },
+    {
+      "sha256": "b58926e88db20bb0f3bdf5c81b2d75761f580f25f9b40b26e3a14b56f11cc981",
+      "source_name": "baseline-six-custody-handback.safe.json"
+    },
+    {
+      "sha256": "3cd863307fd3e441d8ebf820957dacf238aded191c661de93c150ed5e8d17db9",
+      "source_name": "parent-launch-process.safe.json"
+    },
+    {
+      "sha256": "1b01a9db5720efe2dc955711cb6ed84ff75ed3590a89c116522cef1abedcf721",
+      "source_name": "audit-supervisor-launch.safe.json"
+    },
+    {
+      "sha256": "59b7c3cad51f9101d8988d7374ba75fa967d544a50053b190be0e3279c44a70f",
+      "source_name": "fault-archives-before.private.json"
+    }
+  ]
+}

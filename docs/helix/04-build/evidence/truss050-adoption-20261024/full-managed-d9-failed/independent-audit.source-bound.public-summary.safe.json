@@ -1,0 +1,40 @@
+{
+  "acceptance_claim": false,
+  "bound_manifest_sha256": "fdd6c4190da9223ef009bf399800f66f3ae5217447da168943af173530f6f40c",
+  "derivative": true,
+  "dispatch_go_sha256": "076300060bf50a3c6af2680cb9a1d4aa9ffeef66d62981b09d5856100a8dae82",
+  "elapsed_seconds": 11.266561000025831,
+  "fixture_sha256": "ab5a4cec486eab8becf4d3e2aff7b9810554c590f299a8645131497b5c59a157",
+  "installed_source_before_after_equal": true,
+  "native_checks": {
+    "all_four_ordinary_roles_present": true,
+    "all_native_memberships_match_bootstrap": true,
+    "all_native_role_attributes_match_bootstrap": true,
+    "exact_selected4_oid_binding": true,
+    "installer_identity_matches_bootstrap": true,
+    "ordinary_selected4_closures_false": true,
+    "owned_module_roles_absent": true,
+    "transaction_is_read_only": true,
+    "truss_schema_absent": true
+  },
+  "native_membership_count": 18,
+  "native_role_count": 33,
+  "new_native_role_count": 0,
+  "ordinary_selected4_closure_count": 16,
+  "parent_ledger_sha256": "465f3dcfeaf6b4287e2ae0a5f2e76d0742c443666a8a13ed19e85b0cb50e8aee",
+  "parent_terminal_sha256": "3d3cef959550d7b14730f69fa654d1985df49b68f1af9b7bd407b56c61e9e756",
+  "process_identifiers_omitted": true,
+  "provider_checks": {
+    "exact_project_endpoint_database_provider_identity": true,
+    "owned_compute_bounds_unchanged": true,
+    "owned_endpoint_restored_enabled": true
+  },
+  "read_only_native_transaction": true,
+  "restoration_mutations_performed": false,
+  "schema": "arras.public50-independent-owned-absence-audit/1",
+  "source_freeze_sha256": "a0c2544724bfaa9f7c6c42029f5f0104ac7a1e3c5e82b41a07d1aac904aebe9e",
+  "source_receipt_retained_privately": true,
+  "source_receipt_sha256": "d19a0eda7b74e7ac46925970b2f7d34dbf62951e67205780714116754bdf59a3",
+  "status": "passed",
+  "window_sha256": "e83a8c94f20d8e75cfb036811859ac88f7c1a7f6d903fa4fe3917d9df6034763"
+}

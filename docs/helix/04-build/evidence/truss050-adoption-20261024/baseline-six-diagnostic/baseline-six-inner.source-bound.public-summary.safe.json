@@ -1,0 +1,49 @@
+{
+  "acceptance_claim": false,
+  "cases": [
+    {
+      "case": "LB-ADMISSION",
+      "code": "identity_tls_server_match",
+      "status": "passed"
+    },
+    {
+      "case": "LB-INSTALL",
+      "code": "typed_strict_refusal_then_selected_install",
+      "status": "passed"
+    },
+    {
+      "case": "LB-PERSON",
+      "code": "human_identity_lifecycle_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-CUSTODY",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-SETTLEMENT",
+      "code": "genuine_transport_interruption_not_observed",
+      "status": "failed"
+    },
+    {
+      "case": "LB-ACL",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    }
+  ],
+  "cleanup_absence": {
+    "generated_roles_absent": true,
+    "truss_schema_absent": true
+  },
+  "cleanup_status": "passed",
+  "expected_versions": {
+    "postgres_version_num": "180006",
+    "truss": "0.0.50",
+    "weft": "0.4.51"
+  },
+  "managed_gate": "not_run",
+  "schema": "arras.public50-D12-baseline-inner-public-summary/1",
+  "scope": "baseline",
+  "source_receipt_sha256": "64040193b303d19e8eee2dde5741a5746e4df7e88fe7116c6982ae481851ddb0"
+}

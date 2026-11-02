@@ -1,0 +1,31 @@
+Original terminal result: shared runner exit124; owned continuation elapsed2142.7205765seconds.
+The following traceback is retained from tool session21593; no passing Linux-gate result is inferred.
+
+Traceback (most recent call last):
+  File "/private/tmp/arras-ashlar-integration-20261029/tools/_native_process.py", line 56, in run_owned
+    stdout, stderr = process.communicate(timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11/subprocess.py", line 2116, in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+  File "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11/subprocess.py", line 1253, in _check_timeout
+    raise TimeoutExpired(
+subprocess.TimeoutExpired: Command '['docker', 'run', '--pull=never', '--platform=linux/amd64', '--name', 'arras065-local-linux', '--init', '--cpus=2', '--memory=4g', '--mount', 'type=bind,src=/private/tmp/arras-065-release-20261029/linux-node,dst=/opt/arras-node,readonly', '--mount', 'type=bind,src=/private/tmp/arras-ashlar-integration-20261029,dst=/source,readonly', '--mount', 'type=bind,src=/private/tmp/arras-065-release-20261029,dst=/control,readonly', '--mount', 'type=bind,src=/private/tmp/arras-065-release-20261029,dst=/out', 'sha256:e3038abd93d7b6e8bbf90422536af62863c2f5d68faf51fe4f1544c577346666', 'bash', '/control/linux-container.sh']' timed out after 1714 seconds
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/private/tmp/arras-065-release-20261029/qualify-local.py", line 116, in <module>
+    gate('linux-python-and-native',['docker','run','--pull=never','--platform=linux/amd64','--name',names[0],'--init','--cpus=2','--memory=4g',*tool_mount,'--mount',f'type=bind,src={repo},dst=/source,readonly','--mount',f'type=bind,src={out},dst=/control,readonly','--mount',f'type=bind,src={out},dst=/out',image,'bash','/control/linux-container.sh'],2100)
+  File "/private/tmp/arras-065-release-20261029/qualify-local.py", line 25, in gate
+    result=run_owned(command,cwd=cwd,env={**env,**(extra_env or {})},timeout=max(1,int(min(seconds,remaining))))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/arras-ashlar-integration-20261029/tools/_native_process.py", line 67, in run_owned
+    _stop_group(process)
+  File "/private/tmp/arras-ashlar-integration-20261029/tools/_native_process.py", line 103, in _stop_group
+    _force_kill_group(process)
+  File "/private/tmp/arras-ashlar-integration-20261029/tools/_native_process.py", line 169, in _force_kill_group
+    os.killpg(process.pid, signal.SIGKILL)
+PermissionError: [Errno 1] Operation not permitted

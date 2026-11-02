@@ -1,0 +1,47 @@
+{
+  "archives": [
+    {
+      "bytes": 2695,
+      "kind": "endpoint",
+      "sha256": "053aa3f4b4d73e939a02b4b657d4d6ba636ef7105ea906706b31b3b6fccbfdfb"
+    },
+    {
+      "bytes": 3084,
+      "kind": "fault",
+      "sha256": "a7073c04772ae804ef946fe463dabdca5c6b0de4ce06fdd7eff0025a3e5e6d65"
+    },
+    {
+      "bytes": 6358,
+      "kind": "fault",
+      "sha256": "138a56ecbaddf5f4d79819da04fae0dd0968bef92f9be36794b41042bba6b0c1"
+    },
+    {
+      "bytes": 1391,
+      "kind": "fault",
+      "sha256": "57e45eb56fa599a4e43601f05b7a021be31c89670535966873c682729b159d80"
+    },
+    {
+      "bytes": 1391,
+      "kind": "fault",
+      "sha256": "bcd45559d5779ff98340d6be510e6673d4bb0a12faa0fcab54f9137f3b962f96"
+    },
+    {
+      "bytes": 6358,
+      "kind": "fault",
+      "sha256": "18fe57ca261b7c9a995530dd66cdcb75d62f8c48a384cbe631cc5afcac66f82a"
+    },
+    {
+      "bytes": 2695,
+      "kind": "endpoint",
+      "sha256": "2efeba269bf7c453851cf7925a01a0a52ddd2c7a157583d3685440c6b6f945c4"
+    },
+    {
+      "bytes": 3084,
+      "kind": "fault",
+      "sha256": "20631ff602e45c7d2171a87835b3010aae8f2f3339a07ca20eb9fd611d811c43"
+    }
+  ],
+  "endpoint_archive_count": 2,
+  "fault_archive_count": 6,
+  "status": "retained_privately"
+}

@@ -1,0 +1,103 @@
+{
+  "canonical_arras_wheel_sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+  "cases": [
+    {
+      "case": "LB-ADMISSION",
+      "code": "identity_tls_server_match",
+      "status": "passed"
+    },
+    {
+      "case": "LB-INSTALL",
+      "code": "typed_strict_refusal_then_selected_install",
+      "status": "passed"
+    },
+    {
+      "case": "LB-PERSON",
+      "code": "human_identity_lifecycle_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-CUSTODY",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-SETTLEMENT",
+      "code": "genuine_transport_interruption_not_observed",
+      "status": "failed"
+    },
+    {
+      "case": "LB-ACL",
+      "code": "person_state_observation_invalid",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-01",
+      "code": "managed_operation_failed",
+      "status": "failed"
+    },
+    {
+      "case": "MP-02",
+      "code": "backend_pid_unavailable",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-03",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-04",
+      "code": "managed_operation_failed",
+      "status": "failed"
+    },
+    {
+      "case": "MP-05",
+      "code": "native_setting_observation_type_invalid",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-06",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    }
+  ],
+  "cleanup": "Original five-resource cleanup, fresh independent native/provider audit and exact parent/audit PID and process-group absence passed. No acceptance claim.",
+  "confirmed_seams": [
+    "LB-ACL consumer expects three person-state fields; actual successful person producer has four including validated sequence allocation evidence.",
+    "MP-05 fixture returns server_version_num int180006; current consumer and native SHOW comparison expect text."
+  ],
+  "counts": {
+    "blocked": 3,
+    "failed": 3,
+    "passed": 6
+  },
+  "files": {
+    "actual-campaign-result.safe.json": "89686e1a041b208f194de49d444f1d771da1878e230839a77e16aca056cac00f",
+    "audit-launch-process.safe.json": "bdde4b8fdfb531e1fdd64ccc29afb5cd8a9b5b7d80a0817b7c3964f0020a4905",
+    "full-managed-terminal.safe.json": "baff1fa6145ce60e0733d7f28034c81d00eed984b8dc4e29567c8a705468af43",
+    "full-managed-terminal.safe.verifier.json": "ffb946f59d5d9669984c4c503671dea2184f91288a3c59acb3d373547d3a82ee",
+    "independent-audit.safe.json": "8c65212b75844b3597e9d645904c9a8789f7dbdc3947f492eed891457fe1c7c4",
+    "one-shot-ledger.jsonl": "3b7ddde6bb2a7988f71978debb70e155f7b0e4b261ac90acc74e4590605eee39",
+    "parent-launch-process.safe.json": "bc8d39b43f93b23825e96f3998b2d04c19588bf2b8b69b4ad69cb3332d90e1db",
+    "person-exception.safe.json": "ba4862b106bbff717fb29431ac3cdb202e8e4acdd97e1f8b36c10da4f93c320a",
+    "terminal-process-custody.safe.json": "e6dcdfbcdf52686cc9bab65f56639b9201344d1b8a1be3ea8284746eec19d2d3"
+  },
+  "independent_public_retention_review_sha256": "437ff7ca79bc756200094c2f29cd86b265ffaff0305a8548f1a70c21883593c7",
+  "private_inputs_omitted": [
+    "target/auth configurations",
+    "credential and secure references",
+    "fixture containing actor identities",
+    "raw stdout/stderr and fixture state"
+  ],
+  "schema": "arras.managed-case-observation-failures-retention/1",
+  "source_commit": "69f4ab3c498e58636b4102ac921cacc5f18cacbb",
+  "source_tree": "8d5d9b0976836b1d7db44b2a1d44acc6a4b27390",
+  "status": "NOT_ACCEPTED_INDEPENDENT_CLEANUP_PASSED",
+  "truss_version": "0.0.50",
+  "unresolved": [
+    "LB-SETTLEMENT lacks the required complete ordered genuine interruption evidence; retained receipt omits actual fault-event phases.",
+    "MP-01 and MP-04 generic managed_operation_failed omit escaping exception class and callsite.",
+    "MP-02 backend_pid_unavailable omits actual API PID type/value; no gateway explanation inferred."
+  ]
+}

@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 // The search box (the `search` landmark): focused by `/` anywhere outside a text field (while the
 // host's single-key shortcuts are on), cleared by Escape. It holds what the reader types; the search itself waits for a pause (useSearch).
+
 import { useEffect, useRef } from "react";
+import { usePageEffects } from "../lib/pageEffects";
 import { Glyph } from "./icons";
 
 const isTyping = (t: EventTarget | null) => {
@@ -24,8 +26,9 @@ export function SearchBox({
   slashFocus?: boolean;
 }) {
   const input = useRef<HTMLInputElement>(null);
+  const pageEffects = usePageEffects();
   useEffect(() => {
-    if (!slashFocus) return;
+    if (!slashFocus || !pageEffects) return;
     const on = (e: KeyboardEvent) => {
       if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey || isTyping(e.target)) return;
       if (dialogOpen()) return;
@@ -34,7 +37,7 @@ export function SearchBox({
     };
     window.addEventListener("keydown", on);
     return () => window.removeEventListener("keydown", on);
-  }, [slashFocus]);
+  }, [slashFocus, pageEffects]);
   return (
     <search className="gb-search">
       <Glyph name="search" size={18} />

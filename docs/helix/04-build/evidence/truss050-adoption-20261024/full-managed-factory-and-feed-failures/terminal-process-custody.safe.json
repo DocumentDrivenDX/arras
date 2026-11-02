@@ -1,0 +1,47 @@
+{
+  "actual_pgids": [
+    87853,
+    94671
+  ],
+  "checked_at": "2026-10-24T14:16:54.395309+00:00",
+  "claims_lakebase_acceptance": false,
+  "group_members": [],
+  "numeric_groups_checked": 1537,
+  "permission_denials": 0,
+  "processes": [
+    {
+      "identity_matches": true,
+      "phase": "parent",
+      "pid_exists_now": false,
+      "preexec": {
+        "observed_wall_unix": 1792850634.513013,
+        "pgid": 87853,
+        "phase": "full_managed_launch_shell_before_exec",
+        "pid": 87853,
+        "start_time_unix": 1792850634.414389
+      },
+      "terminal": {
+        "pid": 87853,
+        "start_time_unix": 1792850634.414389
+      }
+    },
+    {
+      "identity_matches": true,
+      "phase": "audit",
+      "pid_exists_now": false,
+      "preexec": {
+        "observed_wall_unix": 1792851375.42865,
+        "pgid": 94671,
+        "phase": "audit_launch_shell_before_exec",
+        "pid": 94671,
+        "start_time_unix": 1792851375.296552
+      },
+      "terminal": {
+        "pid": 94671,
+        "start_time_unix": 1792851375.296552
+      }
+    }
+  ],
+  "schema": "arras.terminal-process-custody/1",
+  "status": "passed"
+}

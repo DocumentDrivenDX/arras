@@ -26,7 +26,8 @@ def _length(text: str) -> int:
 class Brand:
     """What the console is called. `title` is the page title (default `name`); `wordmark` is text or an
     `https://` URL; `tagline` is a line under the name;
-    `logo` is `"theme"` to show the theme's mark before the name."""
+    `logo` is `"theme"` to show the design system's mark before the name (the built-in one on the page
+    `arras.ui` serves; a host-built UI supplies its own)."""
 
     name: str = "Arras"
     title: str | None = None

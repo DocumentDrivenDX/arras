@@ -21,7 +21,7 @@ from arras.model import (
 from arras.types import Revision
 
 _ENGINE_DISTRIBUTION = "umf-core"
-_ENGINE_VERSIONS = frozenset({"0.10.0", "0.10.1"})
+_ENGINE_VERSIONS = frozenset({"0.10.0", "0.10.1", "0.10.5"})
 _BASELINE_ENGINE_VERSION = "0.10.0"
 _PROFILE = "umf-core-empty-registry/1"
 _METADATA_PROFILE = "umf-core-metadata/1"

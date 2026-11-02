@@ -1,0 +1,241 @@
+{
+  "acceptance": {
+    "accepted": false,
+    "actual_result_status": "FAILED_NOT_ACCEPTED_CLEANUP_INDEPENDENTLY_VERIFIED",
+    "independent_audit_acceptance_claim": false
+  },
+  "case_counts": {
+    "blocked": 1,
+    "failed": 4,
+    "passed": 7
+  },
+  "cleanup_and_audit": {
+    "acceptance_claim": false,
+    "audit_status": "passed",
+    "parent_process_custody_status": "passed",
+    "restoration_mutations_performed": false
+  },
+  "diagnostic_interpretation": {
+    "exception_messages_captured": false,
+    "interpretation": "No matching validated event group was selected/observed. This does not establish that the raw event stream was empty.",
+    "managed_operation_exceptions": [
+      {
+        "case": "MP-01",
+        "exception_type": "FixtureBlocked",
+        "function": "_run_restart",
+        "sqlstate": null,
+        "traceback_frames": [
+          {
+            "function": "_run_restart",
+            "line": 407,
+            "source": "_lakebase_managed_lifecycle.py"
+          },
+          {
+            "function": "_feed_delivery",
+            "line": 302,
+            "source": "_lakebase_managed_feed.py"
+          },
+          {
+            "function": "_drain_feed_pages",
+            "line": 207,
+            "source": "_lakebase_managed_feed.py"
+          },
+          {
+            "function": "_apply_destination",
+            "line": 32,
+            "source": "_lakebase_managed_feed_destination.py"
+          }
+        ]
+      },
+      {
+        "case": "MP-04",
+        "exception_type": "FixtureBlocked",
+        "function": "_run_mp04",
+        "sqlstate": null,
+        "traceback_frames": [
+          {
+            "function": "_run_mp04",
+            "line": 34,
+            "source": "_lakebase_managed_feed_cases.py"
+          },
+          {
+            "function": "_feed_delivery",
+            "line": 302,
+            "source": "_lakebase_managed_feed.py"
+          },
+          {
+            "function": "_drain_feed_pages",
+            "line": 207,
+            "source": "_lakebase_managed_feed.py"
+          },
+          {
+            "function": "_apply_destination",
+            "line": 32,
+            "source": "_lakebase_managed_feed_destination.py"
+          }
+        ]
+      }
+    ],
+    "mp02_cause": "Unknown; this attempt was blocked before timeout due to a missing known SDK precondition, as recorded by the safe result. No stronger root-cause claim is made.",
+    "settlement_fault_observation": "no_matching_validated_event_group"
+  },
+  "fresh_macos_e5d": {
+    "directory": "fresh-macos-e5d",
+    "files": {
+      "canonical-macos-e5d-sol-review.safe.json": {
+        "bytes": 4159,
+        "sha256": "f5b12bfbe04d9f7212ff1ace8523173e9ccbcf761428dbbc8b2783c66a5788a5"
+      },
+      "native-macos-cleanup-observation.json": {
+        "bytes": 198901,
+        "sha256": "6987da419f039ab3a6cf3e946504c89bdce00846cf1c5d8a460cff352a3a7794"
+      },
+      "native-macos-cohort-binding.json": {
+        "bytes": 893,
+        "sha256": "a06b005c5103be3869817c28e71baade552f3cdcb2686b6231ff39f77ccbc02d"
+      },
+      "native-macos-cohort.bound.json": {
+        "bytes": 4506,
+        "sha256": "6de88e06c7b387f037175c16acd2a995ac6d7b5e6373f7cd716b82041a2cbd9d"
+      },
+      "native-macos-consumer-provenance.json": {
+        "bytes": 2367,
+        "sha256": "d9ed2d0a0c8a59796fb2d467b4d37aa0110f6c6cfde04a08fecfe31f8dba1417"
+      },
+      "native-macos-verification.json": {
+        "bytes": 381563,
+        "sha256": "c32e97c3068b0ee0f40fb89fb471283c881ef801781f01c1577fc7cd0127491b"
+      },
+      "retention.json": {
+        "bytes": 1812,
+        "sha256": "054c888af5a1bd487842556208f614dd147db0da76a2c0bd97689fb920e1b4d4"
+      },
+      "staging-review.safe.json": {
+        "bytes": 1003,
+        "sha256": "720c8423326e5b9ee2391eb4b4b06e21d5771a9256283a952a49c4f84aa7f9af"
+      }
+    },
+    "review_status": "clear for fresh Mac artifact only",
+    "wan_acceptance_claim": false
+  },
+  "invocation": {
+    "canonical_wheel_sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+    "inner_exit_code": 1,
+    "inner_gate": "failed",
+    "inner_status": "failed",
+    "invocation_id": "4d2a4f49-9fd7-4a6b-868d-9abf8c4f1c9e",
+    "parent_status": "full_managed_failed_or_blocked_audit_required",
+    "parent_terminal_utc": "2026-10-24T14:15:47Z",
+    "source_artifact_id": "12562081358",
+    "source_directory": "public50-fresh-window-20261024T140000Z-f34519c3-27a5-40c9-88dc-1307864b030e",
+    "source_run_id": "40098437810",
+    "started_utc": "2026-10-24T14:03:56Z"
+  },
+  "ordered_cases": [
+    {
+      "case": "LB-ADMISSION",
+      "code": "identity_tls_server_match",
+      "status": "passed"
+    },
+    {
+      "case": "LB-INSTALL",
+      "code": "typed_strict_refusal_then_selected_install",
+      "status": "passed"
+    },
+    {
+      "case": "LB-PERSON",
+      "code": "human_identity_lifecycle_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-CUSTODY",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-SETTLEMENT",
+      "code": "genuine_transport_interruption_not_observed",
+      "status": "failed"
+    },
+    {
+      "case": "LB-ACL",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-01",
+      "code": "managed_operation_failed",
+      "status": "failed"
+    },
+    {
+      "case": "MP-02",
+      "code": "transaction_or_assembly_adoption_failed",
+      "status": "blocked"
+    },
+    {
+      "case": "MP-03",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "MP-04",
+      "code": "managed_operation_failed",
+      "status": "failed"
+    },
+    {
+      "case": "MP-05",
+      "code": "genuine_transport_interruption_not_observed",
+      "status": "failed"
+    },
+    {
+      "case": "MP-06",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    }
+  ],
+  "public_retention_review_sha256": "9001b36d609c958c64c9b2775516f9b48f7210e2c5b40dea2a35a39bc70f482d",
+  "retained_files": {
+    "actual-campaign-result.safe.json": {
+      "bytes": 6197,
+      "sha256": "ba29108beea1781d5acf4a85c8483c84fe8c2f464d729d7979b456a327800375"
+    },
+    "audit-launch-process.safe.json": {
+      "bytes": 151,
+      "sha256": "de3c5a0442f4ec0616d784244c17e02bd7d26533726eb25ba881ab38fca92d71"
+    },
+    "consumed-cf47463b7150e2ebb2e7eea895c7bc06006cca58f6521b376ff9d52eadcc92d1.jsonl": {
+      "bytes": 1060,
+      "sha256": "72f40e57fd5f170ae11a94b429f070f26c0839327d4b5e93981d6bf789b0f986"
+    },
+    "full-diagnostics.safe.json": {
+      "bytes": 1936,
+      "sha256": "ccbdd7142b4024d98c12f6925942627f342f3d79f58525ba6831c5db83feb09d"
+    },
+    "full-managed-terminal.safe.json": {
+      "bytes": 2176,
+      "sha256": "74f14e339ddb9369e4fb7ebf04a41735ffc2ca107c733bb447a51e80e3112516"
+    },
+    "full-managed-terminal.safe.verifier.json": {
+      "bytes": 19839,
+      "sha256": "2fa079a037dd7aa84f1bae8829cc7fa9453f9ad5d38174c211189030e383b6d5"
+    },
+    "independent-audit.safe.json": {
+      "bytes": 2280,
+      "sha256": "648a0acb544e2ebdde8d044878f55295fe07d87ea88f42b1d1236d9347c5a916"
+    },
+    "operational-go-consumed.safe.json": {
+      "bytes": 410,
+      "sha256": "1f85af6a504ba100857b47067fc6a6d7c3b0adb353d1ed3f659a7be53dfd9c85"
+    },
+    "parent-launch-process.safe.json": {
+      "bytes": 159,
+      "sha256": "01426ca8832cba8178836aeb3dad1a00608c5f1afe287381e5a2c2c3a06d33e4"
+    },
+    "terminal-process-custody.safe.json": {
+      "bytes": 1148,
+      "sha256": "3ced2a94a9529c5a5ea7ff35626928c6ea5226031909dc2c3d18b6a25673baf7"
+    }
+  },
+  "schema": "arras.truss050-managed-failure-retention/1",
+  "scope": "Retained safe evidence for the original one-shot full-managed e5d attempt and subsequent independent cleanup audit. This is failure evidence, not acceptance."
+}

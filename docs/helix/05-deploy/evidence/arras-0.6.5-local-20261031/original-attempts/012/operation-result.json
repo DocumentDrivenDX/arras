@@ -1,0 +1,82 @@
+{
+  "status": "failed",
+  "sourceCommit": "aebf3987ff2bfeccea21a9f0b2a68dbc0311d664",
+  "startedAtUtc": "2026-10-30T16:01:04.756184+00:00",
+  "endedAtUtc": "2026-10-30T16:01:05.443891+00:00",
+  "elapsedSeconds": 0.6877102910075337,
+  "budgetSeconds": 180.0,
+  "gates": [
+    {
+      "gate": "strict-original-input-assembly",
+      "argv": [
+        "/private/tmp/arras-pypi-extras-20261026/public-extras-macos/bin/python",
+        ".github/scripts/assemble_release_evidence.py",
+        "--build-bundle",
+        "/private/tmp/arras-065-release-20261029/build-bundle-065",
+        "--native-receipt",
+        "/private/tmp/arras-065-release-20261029/linux/native-verification.json",
+        "--native-binding",
+        "/private/tmp/arras-065-release-20261029/linux/native-cohort-binding.json",
+        "--native-cohort",
+        "/private/tmp/arras-065-release-20261029/linux/native-cohort.bound.json",
+        "--native-index",
+        "/private/tmp/arras-ashlar-integration-20261029/tests/downstream/native-cohorts/linux-x86_64.find-links.html",
+        "--ui-receipt",
+        "/private/tmp/arras-065-release-20261029/downstream-darwin-new/qualification-darwin.json",
+        "--consumer-receipt",
+        "/private/tmp/arras-065-release-20261029/extension-host.json",
+        "--umf-admission-receipt",
+        "/private/tmp/arras-065-release-20261029/umf-admission.json",
+        "--expected-version",
+        "0.6.5",
+        "--expected-wheel",
+        "arras-0.6.5-py3-none-any.whl",
+        "--expected-wheel-sha256",
+        "ebeb45b0b3e6a2fff5fc18094f355fd451a996171d76e2c48286c5b579170c1f",
+        "--output-dir",
+        "/private/tmp/arras-065-release-20261029/python311-metadata-results/original-ebeb-qualified-inputs"
+      ],
+      "sourceCommit": "aebf3987ff2bfeccea21a9f0b2a68dbc0311d664",
+      "pid": 61839,
+      "exitCode": 0,
+      "elapsedSeconds": 0.292358374921605
+    },
+    {
+      "gate": "metadata-build",
+      "argv": [
+        "uv",
+        "build",
+        "--wheel",
+        "--sdist",
+        "--out-dir",
+        "/private/tmp/arras-065-release-20261029/python311-metadata-results/artifacts"
+      ],
+      "sourceCommit": "aebf3987ff2bfeccea21a9f0b2a68dbc0311d664",
+      "pid": 61842,
+      "exitCode": 2,
+      "elapsedSeconds": 0.022821249905973673
+    }
+  ],
+  "cleanup": [
+    {
+      "pid": 61839,
+      "pgid": 61839,
+      "createdNewSession": true,
+      "signals": [],
+      "directChildReaped": true,
+      "groupAbsent": true
+    },
+    {
+      "pid": 61842,
+      "pgid": 61842,
+      "createdNewSession": true,
+      "signals": [],
+      "directChildReaped": true,
+      "groupAbsent": true
+    }
+  ],
+  "originalInputPinsSha256": "3bb80cef1aeee2087c266504fdacc223a7805e8a9771eb93b5b8d68423f354a8",
+  "supportedPython": "3.11",
+  "driverRuntime": "3.11.17 (main, Oct  3 2026, 00:54:14) [Clang 22.1.3 ]",
+  "remainingFinalization": "Final measured digest guard/source commit and final sdist/source parity, owner review/merge, public bytes/consumers/publication remain separate."
+}

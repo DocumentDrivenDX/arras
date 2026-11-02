@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 // The node card: header (tone rule, icon tile, title, summary, badges), the sections of the
 // resolved view, and the footer with attribution and freshness (DESIGN-GB, Screen 2).
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useId, useRef } from "react";
 import type { BackendStatus, FieldView, TypeView } from "../api/types";
 import { editPlan } from "../kit";
 import { evaluate, placeholders, segments, titleOf, valueText } from "../lib/template";
@@ -92,17 +92,30 @@ function useRepeats(entity: Entity, order: string[]): Set<string> {
   return muted;
 }
 
-export function Header({ view, entity, title }: { view: TypeView; entity: Entity; title: string }) {
+export function Header({
+  view,
+  entity,
+  title,
+  heading,
+}: {
+  view: TypeView;
+  entity: Entity;
+  title: string;
+  heading?: string;
+}) {
+  const ownHeading = useId();
+  const titleId = heading ?? ownHeading;
+  const titleRef = useRef<HTMLHeadingElement>(null);
   const summary = view.summary ? evaluate(view.summary, (n) => valueText(entity[n])).trim() : "";
   const badges = headerBadges(view, entity);
-  const { editing } = useBrowser();
+  const { editing, focus } = useBrowser();
   const placed = new Set([...placeholders(view.title), ...placeholders(view.summary)]);
   const muted = useRepeats(entity, [...placed, ...badges.map((b) => b.field.property)]);
   // The key stands in for a title that comes out empty: nothing to edit there.
   const titled = titleOf(view.title, entity, "") !== "";
   useEffect(() => {
-    if (takeEntityFocus()) document.getElementById("gb-title")?.focus();
-  }, []);
+    if (takeEntityFocus(focus)) titleRef.current?.focus();
+  }, [focus]);
   return (
     <header className="gb-card-h">
       <EditToggle />
@@ -112,7 +125,7 @@ export function Header({ view, entity, title }: { view: TypeView; entity: Entity
       </span>
       <div>
         <div className="gb-eyebrow">{view.label}</div>
-        <h1 id="gb-title" tabIndex={-1}>
+        <h1 ref={titleRef} id={titleId} tabIndex={-1}>
           {titled ? (
             <Templated template={view.title} view={view} entity={entity} muted={muted} />
           ) : (
@@ -233,10 +246,16 @@ export interface NodeCardProps {
 }
 
 export function NodeCard({ view, entity, keyText, status, entry }: NodeCardProps) {
+  const heading = useId();
   return (
-    <article className={`gb-card ${toneClass(view.tone)}`} aria-labelledby="gb-title">
+    <article className={`gb-card ${toneClass(view.tone)}`} aria-labelledby={heading}>
       <EditTarget value={entry ? { entry, keyText, entity } : null}>
-        <Header view={view} entity={entity} title={entityTitle(view, entity, keyText)} />
+        <Header
+          heading={heading}
+          view={view}
+          entity={entity}
+          title={entityTitle(view, entity, keyText)}
+        />
         <Sections view={view} entity={entity} />
       </EditTarget>
       <Footer entity={entity} status={status} entry={entry} keyText={keyText} />

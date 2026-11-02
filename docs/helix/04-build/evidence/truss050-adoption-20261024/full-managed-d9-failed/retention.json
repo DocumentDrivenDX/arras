@@ -1,0 +1,105 @@
+{
+  "campaign": {
+    "acceptance_passed": false,
+    "counts": {
+      "blocked": 0,
+      "failed": 4,
+      "passed": 8,
+      "total": 12
+    },
+    "failed_cases": [
+      "LB-SETTLEMENT",
+      "MP-01",
+      "MP-04",
+      "MP-05"
+    ],
+    "newly_passing_vs_D8": [
+      "MP-02",
+      "MP-06"
+    ],
+    "result_source_sha256": "e2911bce7acf2993806ff40b631a1ee5ccd8bfe06355d7a2ee7e7eaf8a3cbc03",
+    "source_commit": "a937d74a516f8108af8e4a9c5bb1a2b5c4981434",
+    "source_tree": "4aeaa446a2579cce8315be627cd7bd18d32e736a",
+    "version": "0.0.50"
+  },
+  "claim": "D9 failed; original cleanup and a fresh independent audit passed; no Lakebase acceptance",
+  "cleanup_and_audit": {
+    "acceptance_credit": false,
+    "custody_returned": true,
+    "fresh_independent_audit_status": "passed",
+    "installed_source_unchanged": true,
+    "original_cleanup_status": "passed",
+    "owned_endpoint_restored_enabled_observed": true
+  },
+  "files": {
+    "README.md": {
+      "bytes": 2502,
+      "retention": "authored_summary",
+      "sha256": "98f93e40b559a568bf1ace8b258145a7179a0fbbb98226458fb7cbcc384b3d09"
+    },
+    "actual-campaign-result.safe.json": {
+      "bytes": 6585,
+      "retention": "exact_safe_original",
+      "sha256": "e2911bce7acf2993806ff40b631a1ee5ccd8bfe06355d7a2ee7e7eaf8a3cbc03"
+    },
+    "audited-custody-handback.source-bound.public-summary.safe.json": {
+      "bytes": 670,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "6a7d7cf813a5413be00a21d00bbfc2459a968cb8f444bd80e8f96bf5b4ee2d2d"
+    },
+    "full-diagnostics.safe.json": {
+      "bytes": 1507,
+      "retention": "exact_safe_original",
+      "sha256": "e2ef5649ae4c31a91d4d0bad4880ebabae13d6180466a6e55d677f65d37f5fdb"
+    },
+    "full-managed-terminal.safe.verifier.json": {
+      "bytes": 20270,
+      "retention": "exact_safe_original",
+      "sha256": "992b337617ff9652589177758b6a186876cfe3920b4e4d5be1cb525bd2f08836"
+    },
+    "full-managed-terminal.source-bound.public-summary.safe.json": {
+      "bytes": 1597,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "a714a2fccb70ca212e3031acc3df817d0a80929550ced88fb2e6da500f6d05c8"
+    },
+    "independent-audit.source-bound.public-summary.safe.json": {
+      "bytes": 1874,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "0aa885637292ac6500e8c0881c079d70ff1c5facfe89e150e6386576c6652bf1"
+    },
+    "restart-archive-admission.safe.json": {
+      "bytes": 1057,
+      "retention": "exact_safe_original",
+      "sha256": "c2c11c7d2d281bc557e4a58bd857abe77347666238c6c2516f1a7ae79fdf6b1c"
+    },
+    "terminal-process-custody.source-bound.public-summary.safe.json": {
+      "bytes": 655,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "12de176cd77302c2204e5643040277a8e334b5c84f12c30a128afa2a056fb885"
+    }
+  },
+  "private_sources_not_copied": [
+    "raw stdout/stderr logs",
+    "source receipts containing PID/PGID values copied only as source-hash-bound projections",
+    "private auth/target/provider identity material",
+    "native catalogs"
+  ],
+  "receipts": {
+    "diagnostics_sha256": "e2ef5649ae4c31a91d4d0bad4880ebabae13d6180466a6e55d677f65d37f5fdb",
+    "handback_source_sha256": "3866db5bd4136b69506bb4bcee75e5c0e1e2bfddb4e89f5cc3f3aa73c5e853f3",
+    "independent_audit_source_sha256": "d19a0eda7b74e7ac46925970b2f7d34dbf62951e67205780714116754bdf59a3",
+    "inner_verifier_sha256": "992b337617ff9652589177758b6a186876cfe3920b4e4d5be1cb525bd2f08836",
+    "outer_terminal_source_sha256": "3d3cef959550d7b14730f69fa654d1985df49b68f1af9b7bd407b56c61e9e756",
+    "process_custody_source_sha256": "77660dd5dcbd71cdd8fc14aee1109b50d557ff4998055289b08f81d7cca737af",
+    "restart_archive_admission_sha256": "c2c11c7d2d281bc557e4a58bd857abe77347666238c6c2516f1a7ae79fdf6b1c"
+  },
+  "restart_archive_admission": {
+    "current_guard_would_refuse": true,
+    "historical_cause_claim": "Current source/config refusal is deterministic and compatible with MP-01/MP-04 traces; original exception reason was not retained, so historical causation is qualified.",
+    "observed_directory_mode": "0755",
+    "original_operation_projection_available": false,
+    "side_effects": false
+  },
+  "schema": "arras.public50-D9-failed-recovery-retention/1",
+  "staged_macos_evidence": "Retained separately at QA retention-stage-a937/fresh-macos-a937; not copied into this failed D9 evidence stage."
+}

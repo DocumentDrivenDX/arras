@@ -79,6 +79,28 @@ KNOWN_COHORTS: tuple[SDKCohort, ...] = (
         "49459bb2dbc37ac9b62b269e9664bac1483439c7d4c79f0b07855e9c8546c823",
         supports_single_set=True,
     ),
+    SDKCohort(
+        "umf-core-0.10.5-cp311-abi3-manylinux_2_34_x86_64",
+        "0.10.5",
+        "0.10.0",
+        "linux",
+        "x86_64",
+        "umf_core-0.10.5-cp311-abi3-manylinux_2_34_x86_64.whl",
+        "https://files.pythonhosted.org/packages/e3/92/7624a58d354ec7ceb29e09a05ad3f0250a179ca8a2a742b964441107f553/umf_core-0.10.5-cp311-abi3-manylinux_2_34_x86_64.whl",
+        "cf33b833ff4eaa080f459cf3c93baa7e3b4e436dab5cd7853dd748e3c220dd16",
+        supports_single_set=True,
+    ),
+    SDKCohort(
+        "umf-core-0.10.5-cp311-abi3-macosx_11_0_arm64",
+        "0.10.5",
+        "0.10.0",
+        "darwin",
+        "arm64",
+        "umf_core-0.10.5-cp311-abi3-macosx_11_0_arm64.whl",
+        "https://files.pythonhosted.org/packages/1f/72/d1fa85747d71f156133ec8f9ee4ea88681d963943c09019d50b12461fd02/umf_core-0.10.5-cp311-abi3-macosx_11_0_arm64.whl",
+        "9213ff4b87649f551abcfdff40cdb6b0d75d619260988fa8ea4fe26cac7f6788",
+        supports_single_set=True,
+    ),
 )
 
 
@@ -133,6 +155,17 @@ def _declarations(metadata: email.message.Message) -> tuple[_Declaration, ...]:
             relevant.append(line.strip())
     if not relevant:
         raise ValueError("UMF extra has no SDK declaration")
+    # Registry requirements identify a closed release; pip's actual URL and hash
+    # are checked separately against the selected immutable platform artifact.
+    pin = re.fullmatch(r"umf-core\s*==\s*(0\.10\.(?:0|5))\s*;\s*(.+)", relevant[0], re.IGNORECASE)
+    if pin is not None:
+        if len(relevant) != 1 or _marker_scope(pin.group(2)) != ("any", "any", True):
+            raise ValueError("UMF registry pin must be one exact extra requirement")
+        return tuple(
+            _Declaration(row.url, row.sha256, row.platform, row.machine, row.platform == "any")
+            for row in KNOWN_COHORTS
+            if row.distribution_version == pin.group(1)
+        )
     parsed: list[_Declaration] = []
     for line in relevant:
         match = _DIRECT.fullmatch(line)

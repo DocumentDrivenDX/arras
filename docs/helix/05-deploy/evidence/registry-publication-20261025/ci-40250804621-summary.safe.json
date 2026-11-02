@@ -1,0 +1,24 @@
+{
+  "counts": {
+    "doctor_cases_passed": 20,
+    "native_macos_declared_limits": 8,
+    "native_macos_passed": 64,
+    "native_macos_replica_inapplicable": 7,
+    "postgresql_adapter_passed": 202,
+    "python_passed": 3321,
+    "real_browser_passed": 205,
+    "ui_integration_passed": 205,
+    "ui_unit_passed": 1449
+  },
+  "limits": "CI does not establish actual Lakebase, tag release or registry publication.",
+  "log_sha256": {
+    "python": "dae7765b01dda3d7a6fa83b65c194e4c22584abf54aeed6b667a29a1a22be161",
+    "truss": "e3be1640ab75468044385c2ad4a37e4bfb3857e136dc347b89a3c0cd39ea3123",
+    "ui": "452b18aa313c3afeaec0e1e45a19a73a776f1202b8a6051a834c2f8dfd92d9f7"
+  },
+  "pr_head": "0d306a92d49853c10adbe079b2f4d3708fcf4ede",
+  "run_id": 40250804621,
+  "schema": "arras.ci-release-qualification-summary/1",
+  "source_tree": "493f656fcccdb7fd3455e4ec8574acf2ccf84417",
+  "status": "all_five_jobs_passed"
+}

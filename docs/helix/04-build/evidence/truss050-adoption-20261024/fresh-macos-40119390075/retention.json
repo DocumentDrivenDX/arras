@@ -1,0 +1,101 @@
+{
+  "all_five_required_ci_jobs_succeeded": true,
+  "candidate_build_artifact_id": 12570675112,
+  "candidate_build_artifact_sha256": "932dc78004a508deaf8880d6fb14e0a928304dd289a2e9d95a989c0ce8e6f2e9",
+  "candidate_source_sha": "adc11cf64459929d00ea44df6debdf0c9974815d",
+  "candidate_source_tree_sha": "396f50b8ddc10bc8d3e16a5baf7f81055e17efc4",
+  "candidate_wheel_sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+  "macos": {
+    "all_native_wheel_hashes_verified": true,
+    "ambiguous_processes": 0,
+    "corpus_counts": {
+      "failed": 0,
+      "harness_error": 0,
+      "host_specific": 0,
+      "limit": 8,
+      "passed": 64
+    },
+    "installed_arras_payload_count": 172,
+    "installed_arras_payload_exact_match": true,
+    "limits_count": 8,
+    "native_wheel_count": 7,
+    "process_group_cleanup_complete": null,
+    "remaining_processes": 0,
+    "remaining_roots": 0,
+    "runtime": {
+      "machine": "arm64",
+      "python": "3.11",
+      "sys_platform": "darwin"
+    },
+    "selected_case_count": 72,
+    "skipped_case_count": 7,
+    "status": "passed",
+    "system_dynamic_link_audit": "not performed"
+  },
+  "private_material_not_retained": [
+    "verifier stdout/stderr logs",
+    "temporary artifact ZIP outside the evidence folder",
+    "credentials and provider secrets"
+  ],
+  "pull_request_head_sha": "2d1bc7e34af7499d5f4f582d4ee41e0d772920cc",
+  "retained_files_sha256": {
+    "artifact-build-api.json": {
+      "bytes": 2946,
+      "retention": "api_snapshot",
+      "sha256": "c9c3eecd4c8be72f9bb992a0eed6cee158f845bb6165d2ca993c942eeca9d653"
+    },
+    "candidate-wheel-provenance.json": {
+      "bytes": 547,
+      "retention": "exact_safe_original",
+      "sha256": "a7b4c0f2cb102f28551c91b9ea97ba0b6be601aeb849c48a8d8773dee0ebb931"
+    },
+    "canonical-macos-40119390075-sol-review.safe.json": {
+      "bytes": 2401,
+      "retention": "authored_review",
+      "sha256": "53ae69b50d7a310d3dbaa026f762dd979c8ee129c1705587f55753ce4e3c2213"
+    },
+    "macos-arm64.find-links.html": {
+      "bytes": 1957,
+      "retention": "exact_safe_original",
+      "sha256": "a04f0e579585e30cc8a33830290ff66695bbe8fab264a3367ea0709152b8a40e"
+    },
+    "macos-arm64.json": {
+      "bytes": 4383,
+      "retention": "exact_safe_original",
+      "sha256": "724a5d033e4b34a20340bf35264729068b972428278bf5c51c96f410e99e3841"
+    },
+    "native-macos-cleanup-observation.json": {
+      "bytes": 199158,
+      "retention": "exact_safe_original",
+      "sha256": "fad94823c682e89d884818fe686f83274f741f8ca8a9183301c7d46d63e9c2f6"
+    },
+    "native-macos-cohort-binding.json": {
+      "bytes": 893,
+      "retention": "exact_safe_original",
+      "sha256": "a06b005c5103be3869817c28e71baade552f3cdcb2686b6231ff39f77ccbc02d"
+    },
+    "native-macos-cohort.bound.json": {
+      "bytes": 4506,
+      "retention": "exact_safe_original",
+      "sha256": "6de88e06c7b387f037175c16acd2a995ac6d7b5e6373f7cd716b82041a2cbd9d"
+    },
+    "native-macos-consumer-provenance.json": {
+      "bytes": 2367,
+      "retention": "exact_safe_original",
+      "sha256": "d8b14df3d2ab6aca35481240ce6bdfaf69151fe7383e824b98bc1359a103bd22"
+    },
+    "native-macos-verification.json": {
+      "bytes": 381563,
+      "retention": "exact_safe_original",
+      "sha256": "bddc2b5cf6d3c1a1e5b934f3dfc1c0b3f585e2db9a0a37f264248aede9c9bb9c"
+    }
+  },
+  "schema": "arras.native-macos-retention/1",
+  "source_api_digest": "sha256:427969ce617798bd0f58283ecba023904854732911ecd2146a25c2c062f4c4a5",
+  "source_artifact_id": 12571065556,
+  "source_artifact_zip_bytes": 143797,
+  "source_artifact_zip_sha256": "427969ce617798bd0f58283ecba023904854732911ecd2146a25c2c062f4c4a5",
+  "source_job_id": 120947909817,
+  "source_run_id": 40119390075,
+  "wan_acceptance_claim": false
+}

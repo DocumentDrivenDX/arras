@@ -1,0 +1,89 @@
+{
+  "checks": {
+    "checkout": {
+      "sourceTreeUnchanged": true,
+      "workingTreeClean": true
+    },
+    "excludedSensitiveMaterial": {
+      "fixtureActorIdentitiesPresent": false,
+      "targetAuthDsnTokensKeychainReferencesRawFixtureStdoutStderrPresent": false
+    },
+    "macArtifactsByteMatchCanonicalHostedArtifact": true,
+    "macStatusClaims": {
+      "applicable": 72,
+      "noWanOrPublicCredit": true,
+      "passed": 64,
+      "status": "MAC_INSTALLED_GATE_PASSED_NO_WAN_OR_PUBLIC_CREDIT",
+      "unchangedDeclaredLimits": 8
+    },
+    "mp02DiagnosticAndProcessCustodyByteMatchOriginal": true,
+    "mp02StatusClaims": {
+      "acceptanceCredit": false,
+      "driverPidDiffersFromServerPid": true,
+      "readerFailureCauseLocalized": false,
+      "replayAllowed": false,
+      "sourceOrderIsInferenceOnly": true,
+      "status": "DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT"
+    },
+    "retentionManifestHashesMatchStagedFiles": true
+  },
+  "findings": [],
+  "notes": [
+    "The MP02 stage retains the diagnostic output, pre-exec launch receipt, and terminal custody receipt; it does not include the separate human-readable actual-diagnostic-summary.safe.json from the original qualification folder. Its stated conclusions are nevertheless consistent with the retained diagnostic and custody bytes.",
+    "The separate operator raw-identity scan is not staged or claimed by this review."
+  ],
+  "schema": "arras.acceptance-evidence-retention-independent-review/1",
+  "scope": "Read-only review of staged retention files and source-byte correspondence; no repository edits, services, native tests, fixture calls, authentication, SQL, or provider operations.",
+  "stageRoot": "/private/tmp/arras-public50-qualification-20261024/retention-stage-291",
+  "stagedFiles": {
+    "fresh-macos-291/canonical-macos-291-sol-review-supplement.safe.json": {
+      "bytes": 757,
+      "sha256": "9ec1e2ac8bab6de37e5314cc92c1a28c043459ed0058e11e876cc07973560940"
+    },
+    "fresh-macos-291/canonical-macos-291-sol-review.safe.json": {
+      "bytes": 3433,
+      "sha256": "9a632f5e6993b430f3fd467a1a97a0255f7d4ca83e537e59b6e3eb2d958b25a2"
+    },
+    "fresh-macos-291/native-macos-cleanup-observation.json": {
+      "bytes": 199563,
+      "sha256": "39e050cfe62877dfc1cb39b7275a99d46cc2d6dce7f98a828512cca3ddf11964"
+    },
+    "fresh-macos-291/native-macos-cohort-binding.json": {
+      "bytes": 893,
+      "sha256": "a06b005c5103be3869817c28e71baade552f3cdcb2686b6231ff39f77ccbc02d"
+    },
+    "fresh-macos-291/native-macos-cohort.bound.json": {
+      "bytes": 4506,
+      "sha256": "6de88e06c7b387f037175c16acd2a995ac6d7b5e6373f7cd716b82041a2cbd9d"
+    },
+    "fresh-macos-291/native-macos-consumer-provenance.json": {
+      "bytes": 2367,
+      "sha256": "ad5f1ec1cf2bda5a73345b0ed570aa026fa5e443f51e4fdccece3adebbf29c59"
+    },
+    "fresh-macos-291/native-macos-verification.json": {
+      "bytes": 381563,
+      "sha256": "d011f0c275e277841eca3dee9d80836a0ac509f426b573350942c8f447d7e5e4"
+    },
+    "fresh-macos-291/retention.json": {
+      "bytes": 1579,
+      "sha256": "49de456d8aca78655a9f0f6a6e966b47a3e013e8c36da5326ee08b4f008962b5"
+    },
+    "mp02-readonly-diagnostic/diagnostic.safe.json": {
+      "bytes": 2560,
+      "sha256": "3e7587ef91f170091568f4bb886760a479084a6c410b1ad8e89680b1c5c5b1a6"
+    },
+    "mp02-readonly-diagnostic/launch-process.safe.json": {
+      "bytes": 160,
+      "sha256": "fd9660cca603a2d9ab034f0e24ac83e0cf9624fba0e81c1098233112966a5ad6"
+    },
+    "mp02-readonly-diagnostic/retention.json": {
+      "bytes": 1601,
+      "sha256": "199069757f2c1273e5471f9426dae5c1507d42998114f119ffac6276c56e7e23"
+    },
+    "mp02-readonly-diagnostic/terminal-process-custody.safe.json": {
+      "bytes": 867,
+      "sha256": "a43a4b9e72d72da39bb597e994d3e68f0e25fc3c4d622bcb3de669da823627c3"
+    }
+  },
+  "status": "clear"
+}

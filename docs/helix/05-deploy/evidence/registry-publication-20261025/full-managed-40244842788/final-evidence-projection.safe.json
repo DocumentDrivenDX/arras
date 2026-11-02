@@ -1,0 +1,204 @@
+{
+  "artifact_sha256": {
+    "archive_after": "db1fe9e8ebb4661ec5a270c818b354480c8c2e5b73378e68aced5478d8e49874",
+    "archive_before": "4cd303fbf5329a741bc09f85ae59bfd885c86645332b017f2407cefb2a042bea",
+    "archive_collector": "f612e9f1555a36e26d4007b32ee79cfa28713909091c24b29567ee0de755740a",
+    "audit_launch_script": "6bd632bcf1dda535aa82356ea2beab29ba8b06b7288f4c11f0c325df77b91232",
+    "audit_supervisor": "70916815196bf9b81ff3b8fe1d630de2b7139bce950f718ab8d102b142980193",
+    "audit_supervisor_consumed": "da390029b75e6b2230d3c9a22e7ab1712e1bfd9ec47976add744426f02757943",
+    "audit_supervisor_launch": "c551cc02fcb028fa78cb5ea0b0a14a7bf0840094a70221b7c084a3898cfa893d",
+    "audit_worker": "0e9f51ae2430a2d3f0d8a3a6f0e246bd6ebeacc6b84e325a8c5184095bca9f76",
+    "candidate_wheel_provenance": "632b93e26d7c2076d17ffd57eb74901236874bc4971b0cfdaf8245bfd74ff9fb",
+    "custody_handback": "f237e49ce76013400c9cff077bbc3ae2a7200947f68de3c9882320914fb9cdbd",
+    "diagnostics": "2c93fd570514d60224979cb10c8ad392e37969c022c649f75fa17b1bca308dde",
+    "dispatch": "88e687886cf3048d3ee863b180a7b4c54182210b70ef2230a031959708f2d603",
+    "independent_audit": "7ae7f40230fd07be768031661844decd043f423fa770b384935324c157fdca05",
+    "installed_artifact_observation": "eb26151d7dc1ea1c5967a4529f5983da37e895c4ad4522a6bdaf98929f0b4099",
+    "launch_script": "971b7d5b5a5a35b8a435b44bfa04cfabcdeecb2a24f52ca05679a60606a10633",
+    "manifest": "3e918531df0bdf89959a3744c59bd04cd0458ea691b0bc60c1d3057a5b97a37c",
+    "native_cohort": "5304246deed0ea87bb0e9a9ea067ff96ce5dfa8b59f9bbd438827a2e5f179150",
+    "observer": "d9a58c6d8fdf1b523d666f607e679a227fb9846ace764e350302be43ef176cc6",
+    "original_admission": "c51e9d30f06c5599e82039916d933532139c29ece0eea94ac28f3735b135f233",
+    "original_verifier_receipt": "bf2e42b005432ab454345ca99885a3751641fb7da161200b74a0e23f51877d4e",
+    "packet": "c6e696eb4ac4f78013fb6020d7311f8bdce01e11de80688b276d7728c072fdea",
+    "parent_entry": "48c7942b17db4bffbb49d1794f76eedde1c9b50da0a97daf0dc6d75da915070b",
+    "parent_launch": "d55296d4ac3250b9a1efe84a3f72599ac27f1be9c4de53984d97e5492c288c53",
+    "process_census": "72e72a17c6b7050b3dfed8b1a16697c7822df8683503c1edd27343844b838cf8",
+    "root_operational_go": "7f2e3f31cf3660bef975d9ba06208e1f794772d614c7a88fe340ba8682b6a271",
+    "source_freeze": "16cfb0ac2757a38891a222e82247e0c88c7dda6f1438bc48aecf34f5819766d6",
+    "terminal": "0904de12808fd9d4311d41a5a5e78deb79ec8973dc6abfd93db46e41cf81ab43",
+    "window": "373897782f6f2a9629753ed748e0069e5de05d2f20a9ea59f7ae64d2aedb0519"
+  },
+  "artifacts": {
+    "arras_wheel_sha256": "82cd5ef7e7284ded7bb7af98934fe0c3f6840450948205e3430d99ff0478f176",
+    "candidate_wheel_provenance_sha256": "632b93e26d7c2076d17ffd57eb74901236874bc4971b0cfdaf8245bfd74ff9fb",
+    "ci_run_id": 40244842788,
+    "installed_observation_after_sha256": "41404a680bb8eb944bcda98f38e53eda8753a36b1d07cf312beddf4baf4b4f7f",
+    "installed_observation_before_sha256": "41404a680bb8eb944bcda98f38e53eda8753a36b1d07cf312beddf4baf4b4f7f",
+    "installed_observation_unchanged": true,
+    "required_ci_jobs": "all five passed"
+  },
+  "campaign": {
+    "cleanup_deadline": "2026-10-26T03:48:00Z",
+    "expires_at": "2026-10-26T03:45:00Z",
+    "invocation_id": "d6081bc5-c782-40b4-ad6b-c4badb97e80b",
+    "not_before": "2026-10-25T23:45:00Z",
+    "scope": "one original full12 managed invocation",
+    "version": "0.6.2",
+    "window_id": "arras062-full12-95962188-8ad0-4dec-b553-9a0ee8a98bc1"
+  },
+  "cohort_binding_metadata_annotation": {
+    "actual_mac_cohort_binding_receipt_sha256": "04509a8f29aa0baedd1678cf684dab4f75d7f558c0bb080d518f7b17ab5c3276",
+    "bound_native_cohort_sha256": "5304246deed0ea87bb0e9a9ea067ff96ce5dfa8b59f9bbd438827a2e5f179150",
+    "freeze_sha256": "16cfb0ac2757a38891a222e82247e0c88c7dda6f1438bc48aecf34f5819766d6",
+    "fresh_mac_ci": "run 40244842788 passed",
+    "frozen_field": "bound_native_cohort.binding_receipt_sha256",
+    "frozen_value_actual_label": "candidate-wheel provenance SHA, not a native cohort-binding receipt",
+    "frozen_value_sha256": "632b93e26d7c2076d17ffd57eb74901236874bc4971b0cfdaf8245bfd74ff9fb",
+    "interpretation": "The field label was inaccurate; the frozen cohort and checked payloads remain the same. This note corrects only the evidence label.",
+    "offline_actual_payload_checks": "already passed and bound unchanged",
+    "scope": "projection-only clarification; immutable source freeze was not edited"
+  },
+  "final_acceptance": "not_claimed; Root owns release decision",
+  "historical_failed_attempts": [
+    {
+      "acceptance_claim": false,
+      "collector_after_status": "diagnostic_incomplete; ValueError; no target operations",
+      "custody_handback_sha256": "f4f5cacff9231d022baeed6d4c76426dd4769e27e03369f9dbfc5419081d64e8",
+      "exception_type": "AdmissionError",
+      "invocation_id": "e46f6d2d-9eea-4a8b-aba1-122e847906ed",
+      "label": "prior bounded-reference preflight failure; separate from this pass",
+      "root_go_sha256": "9c24c62745772b7c3f4d706de02044eee614f665393c684bb8e766b6552e01f7",
+      "safe_reason": "bounded authorization request-reference validation failed before fixture import or target operations",
+      "terminal_sha256": "158d841e1cc8cbb5eb4e954e8d6ddf1b01783991336c5b609be709ceab2155ba"
+    }
+  ],
+  "independent_audit": {
+    "elapsed_seconds": 11.846307958941907,
+    "installed_source_before_after_equal": true,
+    "native_checks": {
+      "all_four_ordinary_roles_present": true,
+      "all_native_memberships_match_bootstrap": true,
+      "all_native_role_attributes_match_bootstrap": true,
+      "exact_selected4_oid_binding": true,
+      "installer_identity_matches_bootstrap": true,
+      "ordinary_selected4_closures_false": true,
+      "owned_module_roles_absent": true,
+      "transaction_is_read_only": true,
+      "truss_schema_absent": true
+    },
+    "native_membership_count": 18,
+    "native_role_count": 33,
+    "new_native_role_count": 0,
+    "ordinary_selected4_closure_count": 16,
+    "provider_checks": {
+      "exact_project_endpoint_database_provider_identity": true,
+      "owned_compute_bounds_unchanged": true,
+      "owned_endpoint_restored_enabled": true
+    },
+    "read_only_native_transaction": true,
+    "restoration_mutations_performed": false,
+    "status": "passed"
+  },
+  "original_cleanup": {
+    "generated_roles_absent": true,
+    "resource_count": 5,
+    "status": "passed",
+    "truss_schema_absent": true
+  },
+  "original_full12": {
+    "artifact_bindings_unchanged_after": true,
+    "case_counts": {
+      "blocked": 0,
+      "failed": 0,
+      "passed": 12
+    },
+    "exit_code": 0,
+    "inner_gate": "passed",
+    "managed_operation_exceptions": 0,
+    "ordered_cases": [
+      {
+        "case": "LB-ADMISSION",
+        "status": "passed"
+      },
+      {
+        "case": "LB-INSTALL",
+        "status": "passed"
+      },
+      {
+        "case": "LB-PERSON",
+        "status": "passed"
+      },
+      {
+        "case": "LB-CUSTODY",
+        "status": "passed"
+      },
+      {
+        "case": "LB-SETTLEMENT",
+        "status": "passed"
+      },
+      {
+        "case": "LB-ACL",
+        "status": "passed"
+      },
+      {
+        "case": "MP-01",
+        "status": "passed"
+      },
+      {
+        "case": "MP-02",
+        "status": "passed"
+      },
+      {
+        "case": "MP-03",
+        "status": "passed"
+      },
+      {
+        "case": "MP-04",
+        "status": "passed"
+      },
+      {
+        "case": "MP-05",
+        "status": "passed"
+      },
+      {
+        "case": "MP-06",
+        "status": "passed"
+      }
+    ],
+    "receipt_valid": true,
+    "runtime_seconds": 1025.100028875,
+    "started_utc": "2026-10-25T23:49:34Z",
+    "status": "passed",
+    "terminal_utc": "2026-10-26T00:06:39Z"
+  },
+  "owned_fault_archive_collection": {
+    "issues": 0,
+    "new_owned_directory_count": 6,
+    "other_pid_archive_count": 0,
+    "raw_archives_remain_private": true,
+    "retained_archive_count": 6,
+    "status": "complete",
+    "target_operations_performed": false
+  },
+  "privacy_note": "No private paths, target identities, credentials, raw logs, PIDs, or archive contents are included; source logs and raw archives remain in private retention.",
+  "process_custody": {
+    "all_observed_processes_absent": true,
+    "all_process_groups_absent": true,
+    "custody_handback_sha256": "f237e49ce76013400c9cff077bbc3ae2a7200947f68de3c9882320914fb9cdbd",
+    "custody_returned": true,
+    "observed_roles": [
+      "parent",
+      "audit_supervisor",
+      "audit_worker"
+    ]
+  },
+  "schema": "arras.public50.full-managed-safe-evidence-projection/1",
+  "source": {
+    "clean": true,
+    "commit": "66f2e0f624d046489fd0c2d5177063240853054d",
+    "freeze_sha256": "16cfb0ac2757a38891a222e82247e0c88c7dda6f1438bc48aecf34f5819766d6",
+    "tree": "1ffa5d07610574c28794897ba9bba3176001d472"
+  },
+  "status": "full_managed_pass_audit_pass_custody_returned"
+}

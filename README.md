@@ -12,33 +12,51 @@ Arras is embedded by host apps that supply their own identity and configuration.
 
 ## Status
 
-Beta (`0.x`). The in-memory and Truss adapters are implemented. Arras 0.6.0 is the current published release; its [release notes](docs/helix/05-deploy/release-notes.md) identify the qualified subsets and exact artifact/platform evidence. The in-memory and Truss support claims remain bounded to those named cohorts. The Ashlar adapter and the feed from Truss to it are not built; the backend contract and packaged conformance corpus (`arras.conformance.run_corpus`) are what a new adapter is held to.
+Beta (`0.x`). The in-memory and Truss adapters are implemented. The [release notes](docs/helix/05-deploy/release-notes.md) identify published versions, qualified subsets and exact artifact/platform evidence. The in-memory and Truss support claims remain bounded to those named cohorts. The Ashlar adapter and the feed from Truss to it are not built; the backend contract and packaged conformance corpus (`arras.conformance.run_corpus`) are what a new adapter is held to.
+
+## Bounded UMF memory actions
+
+Arras 0.7.0 adds opt-in `arras-umf-set/1`: the official generated synchronous
+client calls `Ontology.execute` for one source-bound STRING SET action in memory.
+Install `arras[umf]` with public `umf-core==0.10.5` on qualified Linux x86_64 or
+macOS ARM64, using Python 3.11. SDK distribution 0.10.5 is coupled to UMF SDK
+0.10.1; document/core semantics stay 0.10.0. Other platforms receive no fallback.
+This profile does not qualify Truss/Ashlar execution or durable replay. Release
+notes record the actual artifact qualification; source implementation alone is
+not a published-support claim.
 
 ## Install
 
-Arras 0.6.0 is available from the [GitHub Release](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.0).
-Install its wheel after checking the attached `SHA256SUMS`:
+Choose a qualified version from the [GitHub releases](https://github.com/DocumentDrivenDX/arras/releases) and check its attached `SHA256SUMS`.
+For versions whose PyPI publication and registry-install checks have completed, install the base package with:
 
 ```bash
-pip install ./arras-0.6.0-py3-none-any.whl
+pip install arras
 ```
 
 [Release notes](docs/helix/05-deploy/release-notes.md) record publication status and
-registry availability. PyPI/npm uploads are separate from GitHub asset delivery;
-do not assume a registry package is available. A source/git install omits the
+registry availability. GitHub-only versions can be installed from their verified
+downloaded wheel. A source/git install omits the
 built UI; use the release wheel for the mountable page and carried npm tarball.
 
-The base install needs only `graphql-core`. Extras: `arras[otel]` (OpenTelemetry spans), `arras[devhost]` (the development host), `arras[truss]` (the Truss adapter; the Truss and Weft wheels are not on a package index, so resolve them from `tools/find-links/index.html`, as `pyproject.toml` does).
+The base install needs only `graphql-core`. Extras: `arras[otel]` (OpenTelemetry spans), `arras[devhost]` (the development host), `arras[truss]` (the Truss adapter) and `arras[umf]` (the official UMF reader). The original 0.6.3 PyPI publication receipt covers the base package only. A separate public-index extras qualification has since passed for `arras[truss,umf]==0.6.3` on hosted Linux x86_64 / CPython 3.11.17 and macOS arm64 / CPython 3.11.9. Install that qualified cohort with `pip install 'arras[truss,umf]==0.6.3'` on the named platforms. The gate verifies public origins, exact UMF/Truss/Weft release digests, direct-URL absence, `pip check`, installed imports, Arras doctor and UMF document admission; see the [public-extras evidence](docs/helix/05-deploy/evidence/public-pypi-extras-20261026/README.md). This evidence covers the named cohort and platforms only. The existing `tools/find-links/index.html` retains upstream digests as provenance pins, not as an installation fallback. The `otel` and `devhost` extras retain their separate optional roles.
 
 ## Quick start
 
-From a source checkout (Python 3.11 or later, with [`uv`](https://docs.astral.sh/uv/)):
+Python 3.11 is the supported and required release-qualification profile. The
+`>=3.11` installer minimum permits later interpreters, whose support is unqualified.
+
+From a source checkout (Python 3.11, with [`uv`](https://docs.astral.sh/uv/)):
 
 ```bash
 uv sync --extra truss
 uv run pytest -q
 uv run --extra devhost python -m arras.devhost      # the console over fake data, on loopback only
 ```
+
+An installed wheel also provides one `arras` command that runs the same module entry points:
+`arras doctor`, `arras devhost`, `arras mcp` (each takes the options of its module) and
+`arras --version`. The `python -m` forms keep working.
 
 Serve one of the examples with its seed:
 
@@ -135,6 +153,62 @@ Its evidence is limited to the actual Python/platform and dependency cohort repo
 
 ## Mounting the interface in a host
 
+### Serve only the API and bundle the components
+
+The host can embed the core without the prebuilt UI. Mount the independent ASGI
+bindings using the same `Arras` instance and the host's principal mapping:
+
+```python
+from arras import console, operate
+
+app.mount(
+    "/ontology/console",
+    console.create_app(
+        arras,
+        base_path="/ontology/console",
+        principal_for_request=principal_for_request,
+    ),
+)
+app.mount(
+    "/ontology/operate",
+    operate.create_app(
+        arras,
+        base_path="/ontology/operate",
+        principal_for_request=principal_for_request,
+        authorize_operator=operate.operators_in_groups("operators"),
+    ),
+)
+# Optional: only mount where schema administration is offered.
+app.mount(
+    "/ontology/schema",
+    operate.create_schema_app(
+        arras,
+        base_path="/ontology/schema",
+        principal_for_request=principal_for_request,
+        authorize_operator=operate.operators_in_groups("schema-authors"),
+        authorize_schema=authorize_schema,
+    ),
+)
+```
+
+A host owns `Arras.start`/`close`, authentication, connections, grants, API prefixes
+and proxy/origin policy. Add `authorize_action` for per-action approval. The core
+imports no HTTP handler or UI; its registration checks still require GraphQL
+servable types. No Node runtime is needed by these bindings. They can run without
+loading `arras.ui` or its static assets.
+
+In the host UI, install the matching `@documentdrivendx/arras-ui` release and import
+its compiled components and `styles.css`. `/browser` exports `GraphBrowser` and
+`/shell` exports `ArrasApp`; the root exports the console, individual areas,
+`ArrasProvider` and the replaceable design-system provider. Supply the API bases,
+a person/tenant/session `identity`, host-controlled routes and `pageEffects={false}`.
+See the [component integration guide](ui/README.md#embed-in-a-host) for cache,
+CSS, routing, visibility and UMF runtime-asset ownership. Public exports are the
+supported extension points; internal imports remain private. Python and npm are
+separate installable artifacts with one release version, not separate core/API
+Python distributions.
+
+
 The wheel carries the UI two ways (ADR-027), built from `ui/` at release, so the UI's version is the
 library's. A host that pins the wheel pins both.
 
@@ -162,6 +236,9 @@ surfaces the page calls: `/api/console` (CONTRACT-006), `/api/operate` (CONTRACT
 Content-Security-Policy (`ui.PAGE_CSP`); every read and write is answered by a surface, which refuses a
 viewer with no principal. `/ontology` redirects to `/ontology/`, because the page's URLs are relative so
 that any prefix works. Behind a proxy that rewrites `Host`, pass `public_origin`.
+Starlette and FastAPI keep the mount prefix in the request path and name it in `root_path`; `base_path="/ontology"`
+and `base_path=""` both serve the same URLs under `Mount("/ontology", ...)`. The `console`, `operate` and schema
+apps resolve their paths the same way.
 
 `authorize_schema(principal, module) -> bool` optionally narrows schema validation and registration
 through this same mount. Pass it as `ui.create_app(..., authorize_schema=...)`; it receives the
@@ -214,19 +291,24 @@ role (viewer, editor, schema author, auditor, maintainer) and any name, take a b
 replica, run one Weft statement at a time against a chosen module at either consistency level (paging
 is written in the statement), invoke actions, and import and export UMF schemas. `ARRAS_DEV_SANDBOX=1 python -m arras.mcp` serves the same sandbox over MCP.
 
-The sandbox has a `catalog` module and five people, named in the `x-arras-user` header and the toolbar: `alice` (read, write, journal and schema on `catalog`; group `builders`), `bob` (read, write and journal; group `builders`), `carol` (read only), `dave` (no access to `catalog`) and `root` (the administrator, group `admins`, who registers modules and is refused every user operation). The operator surface is offered to the groups `admins` and `builders`, so `alice`, `bob` and `root` are operators and `carol` and `dave` are not. By default the dev host also seeds a demonstration catalog of 12 use cases across the work areas `data`, `operations` and `finance`, and 10 solutions (`--no-demo` leaves it out). `--module` and `--seed` replace it with a module of your own, such as `examples/catalog` (see its README) or `examples/pizza`.
+The dev host serves the page from `ui/dist` in a source checkout that has built it (`npm run build` in
+`ui/`). Without that build, as in an installed wheel, it serves the page the wheel carries
+(`arras.ui.STATIC`); `--ui <dir>` serves the named directory as given.
+
+The sandbox has a `catalog` module and five people, named in the `x-arras-user` header and the toolbar: `alice` (read, write, journal and schema on `catalog`; group `builders`), `bob` (read, write and journal; group `builders`), `carol` (read only), `dave` (no access to `catalog`) and `root` (the administrator, group `admins`, who registers modules and is refused every user operation). The operator surface is offered to the groups `admins` and `builders`, so `alice`, `bob` and `root` are operators and `carol` and `dave` are not. `--operator-group NAME` (repeatable) replaces those groups, and a distribution can pass `operator_groups=` to `arras.devhost.main` as its default; the sandbox's operators (and made-up people) then belong to each named group as well, and `carol` and `dave` stay outside. By default the dev host also seeds a demonstration catalog of 12 use cases across the work areas `data`, `operations` and `finance`, and 10 solutions (`--no-demo` leaves it out). `--module` and `--seed` replace it with a module of your own, such as `examples/catalog` (see its README) or `examples/pizza`.
 
 With `--truss` the dev host serves a real Truss instead of the fakes: the same people, but their roles and grants are database roles, `expire` is `VALID UNTIL`, `grant` and `revoke` are role membership and `outage` is a real unreachable (or, on a throwaway, refused) connection. A control with no meaning on Truss (`feed`, `search`) answers 400. It needs the `truss` extra.
 
-When a connection URL is configured, Truss mode attaches to a persistent PostgreSQL 18.6 server and keeps its state across restarts. The URL is `--truss-url`, else `ARRAS_TRUSS_DEV_URL` in the environment, else the same variable in `~/.arras/truss-dev.env` (keep it there, mode 600, so the password is not on a command line). It names a role that owns the database, has `CREATEROLE` and is not a superuser (an initial Truss installation requires an empty database), and whose password `pg_hba` asks for (a connection that skips the password is refused):
+When a connection URL is configured, Truss mode attaches to a persistent PostgreSQL 18.6 server and keeps its state across restarts. The URL is `--truss-url`, else `ARRAS_TRUSS_DEV_URL` in the environment, else the same variable in `~/.arras/truss-dev.env` (keep it there, mode 600, so the password is not on a command line). A distribution whose `env_prefix` is not `ARRAS` (for example `EXAMPLE`) has its dev host read `EXAMPLE_TRUSS_DEV_URL` and `~/.example/truss-dev.env` first, then the `ARRAS_` variable and `~/.arras/truss-dev.env` as fallbacks, and print those names in `--help`; the directory is the lower-cased prefix with `_` as `-` (`EXAMPLE_APP` gives `~/.example-app`). It names a role that owns the database, has `CREATEROLE` and is not a superuser (an initial Truss installation requires an empty database), and whose password `pg_hba` asks for (a connection that skips the password is refused):
 
 ```bash
 uv run --extra devhost --extra truss python -m arras.devhost --truss
 ```
 
 The CLI shares stable person credentials through a private versioned JSON file. Choose it with
-`--truss-credentials PATH`, else `ARRAS_TRUSS_DEV_CREDENTIALS`; the default is
-`~/.arras/truss-dev-credentials/<scope>.json`, scoped by credential-free server host/port and
+`--truss-credentials PATH`, else `ARRAS_TRUSS_DEV_CREDENTIALS` (`EXAMPLE_TRUSS_DEV_CREDENTIALS`
+first for a distribution with prefix `EXAMPLE`); the default is
+`~/.arras/truss-dev-credentials/<scope>.json` (`~/.example/` for that distribution), scoped by credential-free server host/port and
 installer role. The database is excluded because PostgreSQL roles are cluster-wide. Hosts sharing
 the same identities must share this file, including when using different aliases for the server.
 The source creates random credentials only for absent database roles. Existing roles require a
@@ -301,14 +383,14 @@ Checks beyond the unit tests: `tests/test_modules.py` holds the library's module
 
 ## The Truss adapter
 
-`arras.adapters.truss.create_backend(name, source, installing=None, *, module_access=None)` builds the Truss backend (reader and provider). It is built, with its install-or-verify `migrate()`, `configure_access()` (a module's reader, writer and, optionally, auditor roles) and `install_roles()`, and a credential-free endpoint handle for the MCP process. The optional `truss` extra pins the public source tuple `truss-toolkit[native,query]==0.0.48` and `weft-sql==0.4.51`. Arras 0.6.0 adds optional official UMF admission and an opt-in, read-only memory metadata profile; its public Linux release gates passed on the named release wheel. The earlier 0.5.1 native cohort remains historical evidence and does not transfer to this release. See the [0.6.0 release notes](docs/helix/05-deploy/release-notes.md) for exact cohort results, limits and the completed independent public review. The published and qualified UMF 0.10.1 cohorts have installed-runtime evidence for CPython 3.11.17 on Ubuntu 24.04 / glibc 2.39 x86_64 and CPython 3.11.9 on macOS 15 arm64. The optional `umf` extra selects wheels only for Linux x86_64 and macOS arm64; this evidence does not qualify other Linux distributions, macOS releases, or Python runtimes. The adapter is the only place that imports Truss.
+`arras.adapters.truss.create_backend(name, source, installing=None, *, module_access=None, tolerated_grantees=())` builds the Truss backend (reader and provider). It is built, with its install-or-verify `migrate()`, `configure_access()` (a module's reader, writer and, optionally, auditor roles) and `install_roles()`, and a credential-free endpoint handle for the MCP process. Arras 0.6.1 pins public `truss-toolkit[native,query]==0.0.50` and `weft-sql==0.4.51`; published 0.6.0 used Truss 0.0.48. A host may explicitly supply an immutable `tolerated_grantees` tuple for fresh installation; reconnect preserves the stored policy. Each release is qualified against exact wheel bytes through fresh-installed native and actual managed-service campaigns. See the [release notes](docs/helix/05-deploy/release-notes.md) for the 0.6.1 artifact identities, phase-specific results and bounded evidence. Arras 0.6.0 adds optional official UMF admission and an opt-in, read-only memory metadata profile; its public Linux release gates passed on the named release wheel. The earlier 0.5.1 native cohort remains historical evidence and does not transfer to this release. The adapter is the only place that imports Truss.
 
 What the host provides:
 
 - A per-person `ConnectionSource` (each call runs as the person, never a service identity) and, for `migrate` and `configure_access`, a separate trusted installing connection and the module roles.
-- Prior Arras evidence qualified Truss 0.0.45 with PostgreSQL 18.6 and psycopg 3.3.6 (binary, libpq 18.6) on Linux x86_64 and macOS arm64; it declared Python 3.11 or later. Its runtime set (Truss, psycopg-binary 3.3.6 with cp311 to cp315 wheels, Weft as cp39-abi3) covered Python 3.11 and later; the local test PostgreSQL (`pgserver-pg18`, test group only) had wheels for 3.11 to 3.13. Installation needed `CREATEROLE`, database `CREATE` with grant option (or ownership), and a `statement_timeout` of 1 to 60,000 ms. These are prior-version results, not claims about the pinned 0.0.48/0.4.51 tuple.
+- Prior Arras evidence qualified Truss 0.0.45 with PostgreSQL 18.6 and psycopg 3.3.6 (binary, libpq 18.6) on Linux x86_64 and macOS arm64; it declared Python 3.11 or later. Its runtime set (Truss, psycopg-binary 3.3.6 with cp311 to cp315 wheels, Weft as cp39-abi3) covered Python 3.11 and later; the local test PostgreSQL (`pgserver-pg18`, test group only) had wheels for 3.11 to 3.13. Installation needed `CREATEROLE`, database `CREATE` with grant option (or ownership), and a `statement_timeout` of 1 to 60,000 ms. These are prior-version results, not claims about the selected 0.0.50/0.4.51 tuple.
 - Prior Arras evidence also showed that Truss 0.0.45 prepared a module in embedded V8 (about 0.4 s per registration, `register`, and the `validate_register` dry run of a changed document) and derived a key in PostgreSQL, without a Bun or Node process. A host could register as a deploy-time job and keep the registrar's connection out of the serving process; the 0.5.1 release qualifies the selected 0.0.48/0.4.51 tuple for its named cohort.
-- The pinned Truss and Weft wheels. They are on no package index, and a release carries only the base dependencies, so the host vendors them from `tools/find-links/index.html` (digests from each release's `SHA256SUMS`).
+- The pinned Truss and Weft wheels. The exact `arras[truss,umf]==0.6.3` public-index install is qualified on hosted Linux x86_64 and macOS arm64; the [evidence](docs/helix/05-deploy/evidence/public-pypi-extras-20261026/README.md) records the selected cohort and platform-specific Weft digest comparisons. The host must retain the exact upstream digests from `tools/find-links/index.html`; this page is provenance, not an installation fallback. The local `pgserver-pg18` test dependency remains scoped to the `truss-test` group and is not part of the runtime extra.
 
 Declared limits, all Truss's and answered as `Unsupported` or a documented limit by the adapter: text search is `Unsupported`; the audit reads (`changes`, `loads`) are served from Truss's audit pages under its own audit grant, and state their limits (observed time, no key or version in an op, load discovery: CONTRACT-004, ask R20); a type over 10,000 rows is not queryable; an import is sent in calls of 128 records, each its own transaction, and is not atomic; and nine corpus cases end at a documented limit (R16.5, R17.2 and R18.3 in `docs/helix/02-design/truss-requirements.md`); an export of a type over 10,000 rows, or of an entity with over 100 related keys on a relationship, is `Unsupported` (R17.2, R17.5).
 

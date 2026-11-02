@@ -1,0 +1,19 @@
+{
+  "checks": {
+    "compute_bounds_preserved": true,
+    "endpoint_enabled": true,
+    "no_campaign_sessions": true,
+    "ordinary_actors_remain_ordinary": true,
+    "provider_identity_matches": true,
+    "read_only": true,
+    "removed_roles_absent": true,
+    "schema_absent": true
+  },
+  "native_role_count": 33,
+  "receipt_sha256": "13d5c55f63d014e148e830c0f4d0df5d8b8f0d7c702f166b6a7f2176295e3405",
+  "removed_resource_count": 5,
+  "restoration_mutations": 0,
+  "schema": "arras.managed-independent-cleanup/1",
+  "status": "passed",
+  "wheel_sha256": "29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2"
+}

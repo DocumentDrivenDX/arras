@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "status": "npm061_registry_delivery_verified",
+  "package": "@documentdrivendx/arras-ui",
+  "version": "0.6.1",
+  "publication": "manual scope-owner bootstrap; not an OIDC upload",
+  "release_source": "243f1ebaf8b32beb0abc30d0d4fdcd9dd7b5ea92",
+  "release_tag": "v0.6.1",
+  "github_assets_changed": false,
+  "tarball_sha256": "9c741538b1a32f21b37afcd39f10c24285a1728194a7073cbac9cda2d93e2285",
+  "files": {
+    "npm061-registry-byte-verification.json": "227f773ce0a11bc9238d1734c57aa77e4bb68992b0fec20e9550f8db817b9d58",
+    "npm061-clean-consumer-verification.json": "8c291cdd3ecae95d064774681e5bb3578ba76137721b778cd7726ab0a2d9692b",
+    "trusted-publishers.safe.json": "b1dadf513766164745d93653f6fa1f48f6010ec077a05dd4ccd747e5a5cb2b47"
+  },
+  "limits": [
+    "The byte-verification receipt precedes the separate passing clean-install receipt.",
+    "This proves exact registry bytes and the recorded Node consumer only, not a new native or browser campaign.",
+    "Python 0.6.2 and automatic trusted-publisher execution are not established by these npm bootstrap receipts."
+  ]
+}

@@ -33,7 +33,7 @@ export function useNewEntity(
 ): NewEntityState {
   const client = useClient();
   const qc = useQueryClient();
-  const { go } = useBrowser();
+  const { go, focus } = useBrowser();
   const moduleName = entry.module.name;
   const form = useActionForm({
     module: entry.module,
@@ -53,9 +53,9 @@ export function useNewEntity(
   useEffect(() => {
     if (created === undefined || opened.current) return;
     opened.current = true;
-    requestEntityFocus();
+    requestEntityFocus(focus);
     onLeave();
     go({ module: moduleName, type: shortName(plan.type), key: created });
-  }, [created, go, moduleName, plan.type, onLeave]);
+  }, [created, go, moduleName, plan.type, onLeave, focus]);
   return { form, created };
 }

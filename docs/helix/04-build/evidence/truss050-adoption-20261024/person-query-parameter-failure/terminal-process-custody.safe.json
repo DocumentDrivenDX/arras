@@ -1,0 +1,37 @@
+{
+  "acceptance_passed": false,
+  "actual_processes": [
+    {
+      "observed_wall_unix": 1792842322.519254,
+      "pgid": 83098,
+      "phase": "full_managed_launch_shell_before_exec",
+      "pid": 83098,
+      "start_time_unix": 1792842322.441869
+    },
+    {
+      "observed_wall_unix": 1792842759.810517,
+      "pgid": 87679,
+      "phase": "audit_launch_shell_before_exec",
+      "pid": 87679,
+      "start_time_unix": 1792842759.728153
+    }
+  ],
+  "all_recorded_pids_absent": true,
+  "audit_exit_code": 0,
+  "audit_sha256": "2810f346431ac56f8ce65e0df6d610dc9cf8913e321cee6ebcb4a8e323e11837",
+  "audit_tool_session": 62910,
+  "numeric_group_permission_denials": [],
+  "numeric_groups_scanned": 1571,
+  "parent_exit_code": 1,
+  "parent_terminal_sha256": "31103140ab778763d9ae124b48a1719429226f63931481da6bbdc86ae7bd35dc",
+  "parent_tool_session": 91135,
+  "receipt_pid_and_start_match_preexec": true,
+  "recorded_at": "2026-10-24T11:53:33.021883+00:00",
+  "recorded_group_members": {
+    "83098": [],
+    "87679": []
+  },
+  "schema": "arras.public50-fresh-window-terminal-process-custody/1",
+  "status": "CLEAR",
+  "trace_sha256": "a7f041bd7e261bff9d0a2fd4dfd0f27b8b86a5dc1d1a7203eab5ba5ba647fa59"
+}

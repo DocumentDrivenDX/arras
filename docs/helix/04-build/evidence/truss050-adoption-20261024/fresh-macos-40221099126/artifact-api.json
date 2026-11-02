@@ -1,0 +1,9 @@
+{
+  "artifact_id": 12609499362,
+  "name": "installed-native-macos-arm64-qualification",
+  "size_in_bytes": 143240,
+  "digest": "sha256:1764287f92cefb264b9cc9bdb877e12f39ac3856e2a500bc2b9f9d00b41cad68",
+  "run_id": 40221099126,
+  "run_head_sha": "20db67822b20c822ee91c6823a3fe73ebc3ae932",
+  "expires_at": "2027-01-23T18:24:31Z"
+}

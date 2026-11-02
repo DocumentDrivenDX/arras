@@ -19,6 +19,7 @@
     "build:lib": "vite build --config vite.lib.config.ts && tsc -p tsconfig.build.json",
     "pack:wheel": "node scripts/pack-wheel.ts",
     "test:packed-consumer": "node scripts/packed-consumer.mjs",
+    "test:packed-browser": "node scripts/packed-browser.mjs",
     "qualify:downstream-theme": "node scripts/qualify-downstream-theme.mjs",
     "qualify:downstream": "node scripts/run-downstream-qualification.mjs",
     "build:wheel": "npm run build:embed && npm run build:lib && npm run check:public-manifest && npm run check:css -- dist-lib/styles.css && npm run pack:wheel",

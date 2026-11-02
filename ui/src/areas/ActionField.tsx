@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
+import { useId } from "react";
 import { shortName } from "../api/gql";
 import type { InputSpec } from "../api/types";
 import { Chip } from "../components/ui";
@@ -128,9 +129,10 @@ export function Field({
   onChange: (v: string) => void;
   onBlur: () => void;
 }) {
-  const id = `f-${spec.name}`;
+  const id = useId();
   const common = {
     id,
+    "data-action-input": spec.name,
     disabled,
     value: Array.isArray(value) ? value.join("\n") : (value ?? ""),
     "aria-invalid": !!error || serverErrors.length > 0,

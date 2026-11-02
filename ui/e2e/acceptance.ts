@@ -13,6 +13,7 @@ type Runtime = {
   };
   expectedSurface: { light: string; dark: string };
   baselineDir?: string;
+  hostAppearanceProvider?: boolean;
 };
 
 const serialized = process.env.ARRAS_ACCEPTANCE_RUNTIME;
@@ -23,6 +24,8 @@ export const ORIGIN = acceptance.baseURL;
 export const SCHEMA_ORIGIN = acceptance.schemaBaseURL;
 export const EXPECTED_BRAND = acceptance.expectedBrand;
 export const EXPECTED_SURFACE = acceptance.expectedSurface;
+/** The host installs its own appearance provider (`hostAppearanceProvider` in createAcceptanceConfig). */
+export const HOST_APPEARANCE_PROVIDER = acceptance.hostAppearanceProvider === true;
 
 /** Whether a banner contains an exact, visible text node outside its brand glyph. */
 export function hasExactVisibleBrandText(root: Element, expectedName: string): boolean {

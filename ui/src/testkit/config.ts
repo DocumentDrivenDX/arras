@@ -16,6 +16,13 @@ export interface AcceptanceConfigOptions {
   expectedBrand?: Brand;
   expectedSurface?: { light: string; dark: string };
   baselineDir?: string;
+  /**
+   * The host installs its own appearance provider (it sets `data-appearance` or an inline `color-scheme`
+   * above the Arras root, or wraps a design-system provider that does). The `host-isolation` spec then checks
+   * only that Arras installs none of its own and leaves the appearance specs that assume a bare host to the
+   * host's own checks. Default `false`: the host sets nothing and the spec drives the appearance itself.
+   */
+  hostAppearanceProvider?: boolean;
 }
 
 export interface AcceptanceRuntimeOptions {
@@ -26,6 +33,7 @@ export interface AcceptanceRuntimeOptions {
   expectedBrand: Brand;
   expectedSurface: { light: string; dark: string };
   baselineDir?: string;
+  hostAppearanceProvider?: true;
 }
 
 const DEFAULT_SURFACES = { light: "rgb(246, 247, 249)", dark: "rgb(15, 19, 26)" };
@@ -37,6 +45,7 @@ const OPTION_KEYS = new Set([
   "expectedBrand",
   "expectedSurface",
   "baselineDir",
+  "hostAppearanceProvider",
 ]);
 
 function origin(value: unknown, name: string): string {
@@ -129,6 +138,9 @@ export function normalizeAcceptanceOptions(input: unknown): AcceptanceRuntimeOpt
     throw new TypeError("themeId must be a bounded non-secret label");
   const baselineDir =
     options.baselineDir === undefined ? undefined : directory(options.baselineDir, "baselineDir");
+  const provider = options.hostAppearanceProvider;
+  if (provider !== undefined && typeof provider !== "boolean")
+    throw new TypeError("hostAppearanceProvider must be a boolean");
   return {
     baseURL,
     schemaBaseURL,
@@ -138,6 +150,7 @@ export function normalizeAcceptanceOptions(input: unknown): AcceptanceRuntimeOpt
       options.expectedBrand === undefined ? { ...DEFAULT_BRAND } : brand(options.expectedBrand),
     expectedSurface: surfaces(options.expectedSurface),
     ...(baselineDir ? { baselineDir } : {}),
+    ...(provider ? { hostAppearanceProvider: true as const } : {}),
   };
 }
 
@@ -165,8 +178,6 @@ export function createAcceptanceConfig(options: AcceptanceConfigOptions): Playwr
   const normalized = normalizeAcceptanceOptions(options);
   process.env.ARRAS_ACCEPTANCE_RUNTIME = JSON.stringify(normalized);
   const darwin = process.platform === "darwin";
-  if (darwin && !normalized.baselineDir)
-    throw new TypeError("Darwin acceptance requires baselineDir");
   const acceptanceFiles = canonicalTestFiles(JSON.stringify(normalized));
   const projects: NonNullable<PlaywrightTestConfig["projects"]> = [
     {
@@ -219,7 +230,11 @@ export function createAcceptanceConfig(options: AcceptanceConfigOptions): Playwr
     metadata: {
       arrasAcceptance: {
         themeId: normalized.themeId,
-        visualComparison: darwin ? "enabled-with-reviewed-baselines" : "skipped-non-Darwin",
+        visualComparison: !darwin
+          ? "skipped-non-Darwin"
+          : normalized.baselineDir
+            ? "enabled-with-reviewed-baselines"
+            : "enabled-requires-baselineDir",
       },
     },
   };

@@ -1,0 +1,20 @@
+{
+  "candidate": {
+    "checkout_head": "11be778eae8050fd5b2e8b446479e8bea081778a",
+    "event": "workflow_dispatch",
+    "pull_request_head_sha": null,
+    "run_attempt": "1",
+    "run_id": "40977136028",
+    "schema": "arras.ci-candidate-wheel/1",
+    "source_sha": "11be778eae8050fd5b2e8b446479e8bea081778a",
+    "source_tree_sha": "058b73591965af7f5066d5480872bd90bec80bdf",
+    "wheel": {
+      "name": "arras-0.6.4-py3-none-any.whl",
+      "sha256": "29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2",
+      "version": "0.6.4"
+    }
+  },
+  "native_managed_qualified_wheel_sha256": "29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2",
+  "runtime_source_diff_from_qualified_commit": [],
+  "status": "passed"
+}

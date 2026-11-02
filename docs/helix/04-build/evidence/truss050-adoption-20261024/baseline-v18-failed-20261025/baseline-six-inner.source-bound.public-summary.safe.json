@@ -1,0 +1,48 @@
+{
+  "acceptance_claim": false,
+  "cases": [
+    {
+      "case": "LB-ADMISSION",
+      "code": "identity_tls_server_match",
+      "status": "passed"
+    },
+    {
+      "case": "LB-INSTALL",
+      "code": "typed_strict_refusal_then_selected_install",
+      "status": "passed"
+    },
+    {
+      "case": "LB-PERSON",
+      "code": "human_identity_lifecycle_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-CUSTODY",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    },
+    {
+      "case": "LB-SETTLEMENT",
+      "code": "original_request_journal_binding_missing",
+      "status": "failed"
+    },
+    {
+      "case": "LB-ACL",
+      "code": "managed_postconditions_verified",
+      "status": "passed"
+    }
+  ],
+  "cleanup_absence": {
+    "generated_roles_absent": true,
+    "truss_schema_absent": true
+  },
+  "cleanup_status": "passed",
+  "expected_versions": {
+    "truss": "0.0.50",
+    "weft": "0.4.51"
+  },
+  "managed_gate": "not_run",
+  "schema": "arras.public50-baseline-inner-public-summary/1",
+  "scope": "baseline",
+  "source_receipt_sha256": "2c0cdcb8a0f2f935ea895ea79d4348fe73bb3ee145e7aaea81f7561300c813e1"
+}

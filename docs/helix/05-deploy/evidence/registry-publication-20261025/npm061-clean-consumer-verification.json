@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "package": "@documentdrivendx/arras-ui",
+  "version": "0.6.1",
+  "installed_files_exact": 321,
+  "public_ui_exports": 33,
+  "testkit_exports": 1,
+  "additional_exports_resolved": [
+    "browser",
+    "shell",
+    "styles.css"
+  ],
+  "install_source": "https://registry.npmjs.org",
+  "source_checkout_used": false,
+  "credentials_used": false,
+  "install_scripts_run": false,
+  "node": "v26.12.1",
+  "npm": "11.20.0",
+  "package_lock_sha256": "a3ffafa7bbc898efa3075051a3436c93f57122d2e8fb150839ccaa5f1ef87485",
+  "tarball_sha256": "9c741538b1a32f21b37afcd39f10c24285a1728194a7073cbac9cda2d93e2285",
+  "scope": "Node import/consumer and installed-payload proof; no new browser or native campaign"
+}

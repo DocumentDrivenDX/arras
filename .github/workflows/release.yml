@@ -1,8 +1,8 @@
 name: Release
 
 # On a matching vX.Y.Z tag, keep the Truss and build checks mandatory, then attach the exact
-# verified Python and UI artifacts to GitHub. Registry publishing is opt-in per repository variable:
-# ARRAS_PUBLISH_PYPI=true and/or ARRAS_PUBLISH_NPM=true.
+# verified Python and UI artifacts to GitHub. Registry publication runs separately only after all
+# release gates and anonymous public-download qualification have succeeded.
 #
 # The wheel and npm tarball carry the UI build. A git install builds the Python package from the tag
 # without it, because main never carries build output: use the wheel for the console.
@@ -140,10 +140,12 @@ jobs:
         run: uv run --no-sync pytest -q tests/test_umf_admission.py::test_official_current_conformance_vectors_and_empty_registry_admission
         env:
           ARRAS_REQUIRE_UMF: "1"
+          ARRAS_REQUIRE_UMF_ACTIONS: "1"
       - run: uv run --no-sync pytest -q
         env:
           ARRAS_REQUIRE_WEFT: "1"
           ARRAS_REQUIRE_UMF: "1"
+          ARRAS_REQUIRE_UMF_ACTIONS: "1"
       # The wheel carries the UI: the page and the npm tarball built from ui/ (ADR-027).
       - uses: actions/setup-node@v4
         with:
@@ -153,6 +155,22 @@ jobs:
       - run: npm ci && npm run build:wheel
         working-directory: ui
       - run: uv build --wheel && uv build --sdist
+      - name: Require PyPI-compatible wheel and sdist metadata before publishing a release
+        run: |
+          python .github/scripts/verify_registry_publication.py pypi-metadata \
+            --wheel dist/arras-*.whl \
+            --sdist dist/arras-*.tar.gz
+      - name: Require the exact wheel selected for installed and managed qualification
+        run: |
+          case '${{ needs.check.outputs.version }}' in
+            0.6.5)
+              echo 'beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b  dist/arras-0.6.5-py3-none-any.whl' | sha256sum --check --strict -
+              ;;
+            0.7.0)
+              echo '351dfd3a176493212468d6bc0606b6bd00125ac9833fe0114b79f7f0dfd24968  dist/arras-0.7.0-py3-none-any.whl' | sha256sum --check --strict -
+              ;;
+            *) echo 'No exact qualification wheel is selected for this version' >&2; exit 1 ;;
+          esac
       - name: Verify exact source and sdist-rebuilt artifacts
         run: python tools/verify_distribution.py --output artifacts/distribution-verification.json dist/*.whl dist/*.tar.gz
       - name: Qualify the offline doctor from the installed release wheel
@@ -530,11 +548,25 @@ jobs:
         env:
           ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
         run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: release-driver
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
           cache-dependency-path: ui/package-lock.json
+      - name: Assert recovery driver and self-test the wheel-cohort theme binder
+        env:
+          EXPECTED_DRIVER_SHA: ${{ github.workflow_sha }}
+          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
+        run: >-
+          node release-driver/ui/scripts/bind-downstream-theme.mjs --self-test
+          --driver-dir release-driver --expected-driver-sha "$EXPECTED_DRIVER_SHA"
+          --payload-source-sha "$ARRAS_SOURCE_SHA"
+          --receipt artifacts/ui-qualification-driver-provenance.json
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
@@ -613,6 +645,11 @@ jobs:
         with:
           name: release-build-inputs
           path: release-assets
+      - name: Qualify embedding through the exact release npm tarball
+        working-directory: ui
+        run: |
+          (cd ../release-assets && sha256sum --check SHA256SUMS)
+          npm run test:packed-browser -- ../release-assets/documentdrivendx-arras-ui-${{ needs.check.outputs.version }}.tgz
       - name: Verify exact wheel identity and installed extension host
         env:
           WHEEL_NAME: ${{ needs.build.outputs.wheel_name }}
@@ -631,7 +668,15 @@ jobs:
             --wheel "release-assets/${WHEEL_NAME}" \
             --output-json artifacts/extension-host-fresh-dependencies.json --fresh-dependencies
       - name: Qualify downstream host and packed theme from the exact release wheel
-        run: npm run qualify:downstream -- ../release-assets/${{ needs.build.outputs.wheel_name }}
+        env:
+          ARRAS_DOWNSTREAM_UI_DIR: ${{ github.workspace }}/ui
+        run: |
+          set -euo pipefail
+          mkdir -p scripts/release-driver
+          cp ../release-driver/ui/scripts/run-downstream-qualification.mjs scripts/release-driver/
+          cp ../release-driver/ui/scripts/bind-downstream-theme.mjs scripts/release-driver/
+          node scripts/release-driver/run-downstream-qualification.mjs \
+            ../release-assets/${{ needs.build.outputs.wheel_name }}
         working-directory: ui
       - uses: actions/upload-artifact@v4
         if: always()
@@ -642,6 +687,7 @@ jobs:
             ui/playwright-report
             tests/downstream/evidence/linux
             artifacts/extension-host-fresh-dependencies.json
+            artifacts/ui-qualification-driver-provenance.json
             release-assets/distribution-verification.json
           if-no-files-found: ignore
 
@@ -673,11 +719,25 @@ jobs:
         env:
           ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
         run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: release-driver
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
           cache-dependency-path: ui/package-lock.json
+      - name: Assert public qualification driver and self-test theme binder
+        env:
+          EXPECTED_DRIVER_SHA: ${{ github.workflow_sha }}
+          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
+        run: >-
+          node release-driver/ui/scripts/bind-downstream-theme.mjs --self-test
+          --driver-dir release-driver --expected-driver-sha "$EXPECTED_DRIVER_SHA"
+          --payload-source-sha "$ARRAS_SOURCE_SHA"
+          --receipt artifacts/public-ui-qualification-driver-provenance.json
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
@@ -823,8 +883,15 @@ jobs:
           JS
       - name: Qualify the packed public wheel and complete themed suite
         working-directory: ui
+        env:
+          ARRAS_DOWNSTREAM_UI_DIR: ${{ github.workspace }}/ui
         run: |
-          npm run qualify:downstream -- ../public-release-assets/${{ needs.build.outputs.wheel_name }} \
+          set -euo pipefail
+          mkdir -p scripts/release-driver
+          cp ../release-driver/ui/scripts/run-downstream-qualification.mjs scripts/release-driver/
+          cp ../release-driver/ui/scripts/bind-downstream-theme.mjs scripts/release-driver/
+          node scripts/release-driver/run-downstream-qualification.mjs \
+            ../public-release-assets/${{ needs.build.outputs.wheel_name }} \
             > ../artifacts/public-theme.stdout.log \
             2> ../artifacts/public-theme.stderr.log
       - name: Record completed public-download qualification
@@ -881,50 +948,3 @@ jobs:
             ui/test-results
             ui/playwright-report
           if-no-files-found: ignore
-
-  # PyPI consumes the exact verified wheel and sdist; enabling requires repository variable
-  # ARRAS_PUBLISH_PYPI=true and a configured pypi trusted publisher.
-  publish-pypi:
-    if: vars.ARRAS_PUBLISH_PYPI == 'true'
-    needs: [github-release, installed-downstream, downloaded-release]
-    runs-on: ubuntu-latest
-    environment: pypi
-    permissions:
-      id-token: write
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: release-assets
-          path: release-assets
-      - name: Verify and stage only Python distributions
-        run: |
-          (cd release-assets && sha256sum -c SHA256SUMS)
-          mkdir -p dist
-          cp release-assets/*.whl release-assets/*.tar.gz dist/
-      - uses: pypa/gh-action-pypi-publish@release/v1
-
-  # npm consumes the exact tarball extracted from the verified wheel; enabling requires repository
-  # variable ARRAS_PUBLISH_NPM=true and a configured npm environment token.
-  publish-npm:
-    if: vars.ARRAS_PUBLISH_NPM == 'true'
-    needs: [github-release, installed-downstream, downloaded-release]
-    runs-on: ubuntu-latest
-    environment: npm
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: release-assets
-          path: release-assets
-      - name: Verify release bundle checksums
-        run: cd release-assets && sha256sum -c SHA256SUMS
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          registry-url: https://registry.npmjs.org/
-      - name: Publish the verified package carried by the wheel
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish ./release-assets/*.tgz --access public --provenance

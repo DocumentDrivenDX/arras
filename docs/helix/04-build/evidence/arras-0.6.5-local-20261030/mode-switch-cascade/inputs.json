@@ -1,0 +1,14 @@
+[
+  {
+    "label": "published064",
+    "wheelSha256": "29139ac729e00639a8b07366ed8c64d69936bceb525d9b85bb562946f115a9b2",
+    "member": "arras/ui/static/assets/index-DO2QCGiC.css",
+    "cssSha256": "932b027e080ef349f32331ff691d28126afe49d3baecb75413a59d9839f620d3"
+  },
+  {
+    "label": "candidate065",
+    "wheelSha256": "05a3f5e6c662b60964698b800b1931791f2644857884c9f4bc60971fa12ad043",
+    "member": "arras/ui/static/assets/index-BQkWlwlt.css",
+    "cssSha256": "9a3a0771e402caa1068ed2d1198741a1bf8f681a13ed149741290e232e49add3"
+  }
+]

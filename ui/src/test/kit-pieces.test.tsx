@@ -16,7 +16,7 @@ import {
   type RefInputProps,
   summarizeEffects,
 } from "../kit";
-import { requestInputFocus } from "../lib/formFocus";
+import { createFormFocus, FormFocusContext, requestInputFocus } from "../lib/formFocus";
 import { receipt } from "./fake";
 
 const spec = (
@@ -35,17 +35,19 @@ const SPECS = [
   spec("meta", "Meta", "record", "optional"),
 ];
 
-function fields(over: Partial<Parameters<typeof ActionFields>[0]> = {}) {
+function fields(over: Partial<Parameters<typeof ActionFields>[0]> = {}, focus = createFormFocus()) {
   const onChange = vi.fn();
   render(
-    <ActionFields
-      action="catalog.Do"
-      module="catalog"
-      specs={SPECS}
-      values={{}}
-      onChange={onChange}
-      {...over}
-    />,
+    <FormFocusContext.Provider value={focus}>
+      <ActionFields
+        action="catalog.Do"
+        module="catalog"
+        specs={SPECS}
+        values={{}}
+        onChange={onChange}
+        {...over}
+      />
+    </FormFocusContext.Provider>,
   );
   return onChange;
 }
@@ -174,8 +176,9 @@ describe("ActionFields", () => {
   });
 
   it("focuses the input a pending request names, once", () => {
-    requestInputFocus("catalog.Do", "count");
-    fields();
+    const scope = createFormFocus();
+    requestInputFocus(scope, "catalog.Do", "count");
+    fields({}, scope);
     expect(document.activeElement).toBe(screen.getByLabelText(/count/));
   });
 });

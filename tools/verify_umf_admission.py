@@ -67,6 +67,11 @@ _COHORTS = _load_cohort_selector()
 _PROCESS = _load_process_helpers()
 KNOWN_COHORTS = _COHORTS.KNOWN_COHORTS
 SDKCohort = _COHORTS.SDKCohort
+# Historical fixture names remain available; runtime selection uses the registry.
+UMF_URL = KNOWN_COHORTS[0].url
+UMF_SHA256 = KNOWN_COHORTS[0].sha256
+UMF_FILENAME = KNOWN_COHORTS[0].filename
+UMF_REQUIREMENT = f"umf-core @ {UMF_URL}#sha256={UMF_SHA256}"
 select_sdk_cohort = _COHORTS.select_sdk_cohort
 CORPUS_SHA256 = "bb008a98b8448050748e65f867e7863475ccad9501a5b9229ae9e6d336691544"
 METADATA_SHA256 = "da883657baefe7b7a4ab8654f78e7d84ef1e281eea7bc7cee48f8662007cd687"

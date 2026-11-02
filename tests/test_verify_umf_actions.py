@@ -379,8 +379,8 @@ def test_selector_keeps_historical_pure_record_closed() -> None:
     assert selected.distribution_version == selected.document_version == "0.10.0"
 
 
-def test_production_registry_selects_only_the_qualified_0101_cohorts() -> None:
-    assert len(_COHORTS.KNOWN_COHORTS) == 3
+def test_production_registry_retains_the_qualified_0101_cohorts() -> None:
+    assert len(_COHORTS.KNOWN_COHORTS) == 5
     assert _COHORTS.KNOWN_COHORTS[0].supports_single_set is False
     expected = (
         ("linux", "x86_64", "umf-core-0.10.1-cp311-abi3-linux_x86_64"),
@@ -398,7 +398,7 @@ def test_production_registry_selects_only_the_qualified_0101_cohorts() -> None:
 
 
 def test_production_registry_does_not_fall_back_on_unsupported_host() -> None:
-    metadata = _cohort_metadata(*_COHORTS.KNOWN_COHORTS[1:])
+    metadata = _cohort_metadata(*_COHORTS.KNOWN_COHORTS[1:3])
     with pytest.raises(ValueError, match="host platform is unsupported"):
         _COHORTS.select_sdk_cohort(metadata, platform="win32", machine="amd64")
 
@@ -660,3 +660,37 @@ def test_requirement_check_reports_historical_sdk_as_not_action_required(
     )
     assert _MODULE.main(["--wheel", str(wheel), "--check-requirement"]) == 0
     assert capsys.readouterr().out.strip() == "false"
+
+
+@pytest.mark.parametrize("platform,machine", [("linux", "x86_64"), ("darwin", "arm64")])
+def test_registry_0105_selects_exact_public_platform_artifact(platform: str, machine: str) -> None:
+    metadata = Message()
+    metadata["Requires-Dist"] = "umf-core==0.10.5; extra == 'umf'"
+    selected = _COHORTS.select_sdk_cohort(metadata, platform=platform, machine=machine)
+    assert selected.distribution_version == "0.10.5"
+    assert selected.document_version == "0.10.0"
+    assert selected.url.startswith("https://files.pythonhosted.org/")
+    assert selected.supports_single_set is True
+    assert _COHORTS.single_set_capability(metadata) is True
+
+
+def test_registry_historical_0100_remains_metadata_only() -> None:
+    metadata = Message()
+    metadata["Requires-Dist"] = "umf-core==0.10.0; extra == 'umf'"
+    assert _COHORTS.single_set_capability(metadata) is False
+
+
+@pytest.mark.parametrize(
+    "requirement",
+    [
+        "umf-core>=0.10.5; extra == 'umf'",
+        "umf-core==0.10.6; extra == 'umf'",
+        "umf-core==0.10.5; extra == 'other'",
+        "umf-core==0.10.5; extra == 'umf' or sys_platform == 'linux'",
+    ],
+)
+def test_registry_selection_refuses_unqualified_or_widened_requirements(requirement: str) -> None:
+    metadata = Message()
+    metadata["Requires-Dist"] = requirement
+    with pytest.raises(ValueError):
+        _COHORTS.single_set_capability(metadata)

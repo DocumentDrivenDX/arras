@@ -1,0 +1,15 @@
+{
+  "versionInfo": [
+    3,
+    11,
+    17
+  ],
+  "executable": "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/bin/python3.11",
+  "baseExecutable": "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/bin/python3.11",
+  "prefix": "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none",
+  "basePrefix": "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none",
+  "execPrefix": "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none",
+  "baseExecPrefix": "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none",
+  "launcherInputPresent": false,
+  "pythonExecutableInputPresent": false
+}

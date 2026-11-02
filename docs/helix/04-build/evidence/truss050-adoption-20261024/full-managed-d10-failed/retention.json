@@ -1,0 +1,116 @@
+{
+  "campaign": {
+    "acceptance_passed": false,
+    "counts": {
+      "blocked": 0,
+      "failed": 9,
+      "passed": 3,
+      "total": 12
+    },
+    "elapsed_seconds": 983.617550166,
+    "failed_case_code": "managed_schedule_result_unavailable",
+    "failed_cases": [
+      "LB-CUSTODY",
+      "LB-SETTLEMENT",
+      "LB-ACL",
+      "MP-01",
+      "MP-02",
+      "MP-03",
+      "MP-04",
+      "MP-05",
+      "MP-06"
+    ],
+    "result_source_sha256": "bf379ae2c54a95f636337311c03c0395b214be519fb1f4cd1ca9f9e892fabee5",
+    "source_commit": "a937d74a516f8108af8e4a9c5bb1a2b5c4981434",
+    "source_tree": "4aeaa446a2579cce8315be627cd7bd18d32e736a",
+    "version": "0.0.50",
+    "wall_start": "2026-10-24T17:44:30Z",
+    "wall_terminal": "2026-10-24T18:00:53Z"
+  },
+  "claim": "D10 failed; original cleanup and fresh independent audit passed; no Lakebase acceptance",
+  "cleanup_and_audit": {
+    "acceptance_credit": false,
+    "custody_returned": true,
+    "fresh_independent_audit_status": "passed",
+    "installed_source_unchanged": true,
+    "native_membership_count": 18,
+    "native_role_count": 33,
+    "new_native_role_count": 0,
+    "ordinary_selected4_closure_count": 16,
+    "ordinary_selected4_closures_false": true,
+    "original_cleanup_status": "passed",
+    "provider_endpoint_restored_enabled_observed": true
+  },
+  "diagnostic_scope": {
+    "compatible_hypothesis": "feed-payload producer/projector mismatch; unproven",
+    "diagnostics_source_sha256": "a834f0a30c0056d33c67fd6b28f29cec512012a12c978c44b320f1b1ae7e7e83",
+    "no_generic_person_exception_observed": true,
+    "raw_event_stream_empty_claim": false,
+    "root_cause": "unknown",
+    "settlement_fault_group_status": "no_matching_validated_event_group"
+  },
+  "files": {
+    "README.md": {
+      "bytes": 2113,
+      "retention": "authored_summary",
+      "sha256": "df4433afd20c39f66107e5916d48b6e4f62b533e0786c841cee4b6b566292fb4"
+    },
+    "actual-campaign-result.source-bound.public-summary.safe.json": {
+      "bytes": 2907,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "4733d43c350daa4c432a45a4eb89eeb8b22180276e17b3851b94e7a3fe0e316e"
+    },
+    "audited-custody-handback.source-bound.public-summary.safe.json": {
+      "bytes": 535,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "6b330521f8c4b0f9bfb4affc22086edb8379f3aec15dc3ec410bea3abbeec40a"
+    },
+    "full-diagnostics.safe.json": {
+      "bytes": 1049,
+      "retention": "exact_safe_original",
+      "sha256": "a834f0a30c0056d33c67fd6b28f29cec512012a12c978c44b320f1b1ae7e7e83"
+    },
+    "full-managed-terminal.safe.verifier.json": {
+      "bytes": 17098,
+      "retention": "exact_safe_original",
+      "sha256": "39a6fe041c221c44920e85d301a746f184d9e59345a232328b1f0ea0387db133"
+    },
+    "full-managed-terminal.source-bound.public-summary.safe.json": {
+      "bytes": 1434,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "297043ecdc88d5e2347cf046acc3bbf63d4753a71dd8b49e311f51f0fc0c1d1e"
+    },
+    "independent-audit.source-bound.public-summary.safe.json": {
+      "bytes": 1496,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "b126d246f3179521c022af803f1f991bbbd50ad9bc226641c0a697ab80665807"
+    },
+    "restart-archive-admission.safe.json": {
+      "bytes": 1057,
+      "retention": "exact_safe_original",
+      "sha256": "c2c11c7d2d281bc557e4a58bd857abe77347666238c6c2516f1a7ae79fdf6b1c"
+    },
+    "terminal-process-custody.source-bound.public-summary.safe.json": {
+      "bytes": 680,
+      "retention": "closed_source_hash_bound_projection",
+      "sha256": "4e86d2c4bcda1e09cf6c814eeec033cd033b12531a355329d442f741a75ecac5"
+    }
+  },
+  "private_sources_not_copied": [
+    "raw stdout/stderr logs",
+    "credentials/auth/target/provider identity material",
+    "native catalogs",
+    "source receipts containing PIDs/PGIDs or private receipt paths except as closed projections",
+    "opaque generated resource identifiers"
+  ],
+  "receipts": {
+    "diagnostics_sha256": "a834f0a30c0056d33c67fd6b28f29cec512012a12c978c44b320f1b1ae7e7e83",
+    "handback_sha256": "afef5898628b28a6fe39915eb00aee50898725dd0d75fc7c1e927724bc7305ea",
+    "independent_audit_sha256": "2d1b87d65da540ea0803caaaaa2bbec5cdcd71c4847f2f737272caa2b36d67c2",
+    "inner_verifier_sha256": "39a6fe041c221c44920e85d301a746f184d9e59345a232328b1f0ea0387db133",
+    "outer_terminal_sha256": "67ee367a2f04d48d8b7a630e37f8436dbccad1f229f2e4f0b4580f01b0fde4d9",
+    "process_custody_sha256": "4dfb3d2b99cb56ab61d599ecc3fdc6b6d80ff9ecca5d99e13e6689768875bdef",
+    "restart_archive_admission_sha256": "c2c11c7d2d281bc557e4a58bd857abe77347666238c6c2516f1a7ae79fdf6b1c"
+  },
+  "schema": "arras.public50-D10-failed-campaign-retention/1"
+}

@@ -1,0 +1,112 @@
+{
+  "observedAt": "2026-10-30T06:13:45.065268+00:00",
+  "sourceCommit": "ff8c22a6e74bba64e51abb9c0f4af061af48dad1",
+  "wholeContinuationStatus": "deadline-exceeded, NOT qualified as a whole",
+  "sharedRun": {
+    "command": [
+      "/private/tmp/arras-pypi-extras-20261026/public-extras-macos/bin/python",
+      "/private/tmp/arras-065-release-20261029/qualify-local.py"
+    ],
+    "elapsedSeconds": 2142.7205765,
+    "exitCode": 124
+  },
+  "controllerFailure": "run_owned reached1714sLinux timeout; its process-group SIGKILL raisedPermissionError; outerrunner exited124. Originalterminaltrace retained in chat/tool history. No Linux-gate pass inferred.",
+  "matrix": [
+    {
+      "file": "python-3.11.xml",
+      "sha256": "2a6c4087a746ad08a51ab683587c26d17f46e8e329e20619a77d8ba2629f354d",
+      "suites": [
+        {
+          "tests": "3452",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        }
+      ]
+    },
+    {
+      "file": "python-3.12.xml",
+      "sha256": "39bbadfd880f63755eca4be6333d24fc1757c8a62cc72f5afa5f3798d241f719",
+      "suites": [
+        {
+          "tests": "3452",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        }
+      ]
+    },
+    {
+      "file": "python-installed-3.11.xml",
+      "sha256": "0881f36d7ae2b8b5c77a19ce41fbba34088f34ac910e3adc40546b8d7e6d1967",
+      "suites": [
+        {
+          "tests": "2",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        }
+      ]
+    },
+    {
+      "file": "python-installed-3.12.xml",
+      "sha256": "0b97903e9ae665949d2597f5cac3dbd59c9d423ef9e6748d7d392b8c9c518bf0",
+      "suites": [
+        {
+          "tests": "2",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        }
+      ]
+    },
+    {
+      "file": "truss-source.xml",
+      "sha256": "1d308e2710f87b712458079ca35dcadd0e2510560620cda4bf9b4d93672d03dd",
+      "suites": [
+        {
+          "tests": "202",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        }
+      ]
+    }
+  ],
+  "native": {
+    "status": "passed",
+    "receiptSha256": "e2be13b4beda1ef5c26c98a45ea422b525474b85e6561946cebdec6ab3a5f223",
+    "counts": {
+      "failed": 0,
+      "harness_error": 0,
+      "host_specific": 0,
+      "limit": 8,
+      "passed": 64
+    },
+    "inputs": {
+      "arras_wheel": {
+        "path": "/tmp/arras065/dist/arras-0.6.5-py3-none-any.whl",
+        "sha256": "ebeb45b0b3e6a2fff5fc18094f355fd451a996171d76e2c48286c5b579170c1f"
+      },
+      "cohort": {
+        "path": "/out/linux/native-cohort.bound.json",
+        "sha256": "22f478139b4258c2b7d39eede1051b7e4be583bec1f157bfe87236a4eae011b6"
+      },
+      "find_links": {
+        "path": "/tmp/arras065/tests/downstream/native-cohorts/linux-x86_64.find-links.html",
+        "sha256": "9186cb548ede57f45902096eacc3f10a4dbbae7dbc4066a890829e7d86c1d9d7"
+      }
+    }
+  },
+  "ownedCleanup": [
+    {
+      "name": "arras065-local-linux",
+      "removeExit": 0,
+      "absent": true
+    }
+  ],
+  "independentDockerPsCheck": "exactownedcontainername absent after completion",
+  "remainingRequiredGate": "LinuxCPython3.13 source suite and its2installed-wheel cases only; no3.13JUnit exists, no pass inferred",
+  "publicVerification900Seconds": "untouched",
+  "newActionsOrUploads": 0
+}

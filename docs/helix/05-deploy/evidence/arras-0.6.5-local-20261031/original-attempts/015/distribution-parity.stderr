@@ -1,0 +1,61 @@
+Building wheel...
+Successfully built /private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-015/temporary/arras-dist-verify-9h06rua4/rebuilt/arras-0.6.5-py3-none-any.whl
+
+Captured CalledProcessError stdout:
+Could not find platform independent libraries <prefix>
+Could not find platform dependent libraries <exec_prefix>
+Python path configuration:
+  PYTHONHOME = (not set)
+  PYTHONPATH = (not set)
+  program name = '/private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-015/temporary/arras-dist-verify-9h06rua4/consumer-source-wheel/bin/python'
+  isolated = 0
+  environment = 1
+  user site = 1
+  safe_path = 0
+  import site = 1
+  is in build tree = 0
+  stdlib dir = '/install/lib/python3.11'
+  sys._base_executable = '/private/tmp/arras-pypi-extras-20261026/public-extras-macos/bin/python'
+  sys.base_prefix = '/install'
+  sys.base_exec_prefix = '/install'
+  sys.platlibdir = 'lib'
+  sys.executable = '/private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-015/temporary/arras-dist-verify-9h06rua4/consumer-source-wheel/bin/python'
+  sys.prefix = '/install'
+  sys.exec_prefix = '/install'
+  sys.path = [
+    '/install/lib/python311.zip',
+    '/install/lib/python3.11',
+    '/install/lib/python3.11/lib-dynload',
+  ]
+Fatal Python error: init_fs_encoding: failed to get the Python codec of the filesystem encoding
+Python runtime state: core initialized
+ModuleNotFoundError: No module named 'encodings'
+
+Current thread 0x00000001ebb33f80 (most recent call first):
+  <no Python frame>
+
+Traceback (most recent call last):
+  File "/private/tmp/arras-065-release-20261029/python311-support-correction/capture-distribution-error.py", line 7, in <module>
+    runpy.run_path(str(script),run_name='__main__')
+  File "<frozen runpy>", line 291, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "/private/tmp/arras-ashlar-integration-20261029/tools/verify_distribution.py", line 557, in <module>
+    main()
+  File "/private/tmp/arras-ashlar-integration-20261029/tools/verify_distribution.py", line 527, in main
+    source_consumer = install_consumer(args.wheel, temp, "source-wheel", npm_script)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/arras-ashlar-integration-20261029/tools/verify_distribution.py", line 358, in install_consumer
+    venv.EnvBuilder(with_pip=True).create(envdir)
+  File "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11/venv/__init__.py", line 77, in create
+    self._setup_pip(context)
+  File "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11/venv/__init__.py", line 359, in _setup_pip
+    self._call_new_python(context, '-m', 'ensurepip', '--upgrade',
+  File "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11/venv/__init__.py", line 355, in _call_new_python
+    subprocess.check_output(args, **kwargs)
+  File "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11/subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/erik/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/private/tmp/arras-065-release-20261029/python311-metadata-results-continuation-015/temporary/arras-dist-verify-9h06rua4/consumer-source-wheel/bin/python', '-m', 'ensurepip', '--upgrade', '--default-pip']' returned non-zero exit status 1.

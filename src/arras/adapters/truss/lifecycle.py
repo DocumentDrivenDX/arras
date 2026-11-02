@@ -24,11 +24,12 @@ is `migration_failed`, detail `outcome unknown`.
 from __future__ import annotations
 
 import hashlib
+import json
 import threading
 from collections.abc import Mapping
 from contextlib import AbstractContextManager
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 from arras import telemetry
 from arras.adapters.truss.connection import Call, CommitUnknown, Connections
@@ -41,6 +42,62 @@ INSTALL_LOCK = int.from_bytes(
     hashlib.sha256(b"arras.truss.lifecycle").digest()[:8], "big", signed=True
 )
 _ROLE_BYTES = 63
+_TOLERATED_OBJECT_CLASSES = frozenset(
+    {"schema", "relation", "sequence", "routine", "type", "column"}
+)
+_TOLERATED_PHASES = frozenset({"pre_ownership", "post_installation"})
+
+
+def validate_tolerated_grantees(value: object) -> tuple[str, ...]:
+    """Validate only the safe immutable carrier and context-free bounds."""
+    if type(value) is not tuple:
+        raise ValueError("tolerated_grantees must be a tuple of at most 32 role names")
+    selected = cast(tuple[object, ...], value)
+    if len(selected) > 32:
+        raise ValueError("tolerated_grantees must be a tuple of at most 32 role names")
+    for role in selected:
+        if type(role) is not str or not role or "\x00" in role:
+            raise ValueError("tolerated_grantees contains an invalid role name")
+        try:
+            size = len(role.encode("utf-8", errors="strict"))
+        except UnicodeEncodeError as error:
+            raise ValueError("tolerated_grantees contains an invalid role name") from error
+        if size > _ROLE_BYTES:
+            raise ValueError("tolerated_grantees role name exceeds the UTF-8 byte bound")
+    return cast(tuple[str, ...], selected)
+
+
+def _third_party_grant_refusal(backend: str, refusal: Any) -> Unavailable:
+    try:
+        role = getattr(refusal, "role_name", None)
+        object_class = getattr(refusal, "object_class", None)
+        phase = getattr(refusal, "phase", None)
+    except Exception:
+        return Unavailable(
+            backend, "migration_failed", "truss third_party_grant context unavailable"
+        )
+    if (
+        type(role) is not str
+        or not role
+        or "\x00" in role
+        or type(object_class) is not str
+        or object_class not in _TOLERATED_OBJECT_CLASSES
+        or type(phase) is not str
+        or phase not in _TOLERATED_PHASES
+    ):
+        return Unavailable(
+            backend, "migration_failed", "truss third_party_grant context unavailable"
+        )
+    try:
+        if len(role.encode("utf-8", errors="strict")) > _ROLE_BYTES:
+            raise ValueError
+    except (UnicodeEncodeError, ValueError):
+        return Unavailable(
+            backend, "migration_failed", "truss third_party_grant context unavailable"
+        )
+    quoted_role = json.dumps(role, ensure_ascii=True, separators=(",", ":"))
+    detail = f"truss third_party_grant role={quoted_role} object_class={object_class} phase={phase}"
+    return Unavailable(backend, "migration_failed", detail)
 
 
 @dataclass(frozen=True)
@@ -118,9 +175,12 @@ class Lifecycle:
         name: str,
         connections: Connections | None,
         access: Mapping[str, ModuleAccess] | None = None,
+        *,
+        tolerated_grantees: tuple[str, ...] = (),
     ) -> None:
         self.name = name
         self._connections = connections
+        self._tolerated_grantees = validate_tolerated_grantees(tolerated_grantees)
         self._access = dict(access or {})
         self._lock = threading.Lock()
         self._failure: str | None = None
@@ -197,12 +257,12 @@ class Lifecycle:
 
     def _install(self, call: Call) -> Any:
         try:
-            out = call.unwrap(call.assembly.install_in_transaction(call.tx), _error)
-            if type(out).__name__ == "InstallRefused":
-                raise _install_refused(self.name, out.code)
-            return out
-        except _AlreadyInstalled:
-            raise
+            out = call.unwrap(
+                call.assembly.install_in_transaction(
+                    call.tx, tolerated_grantees=self._tolerated_grantees
+                ),
+                _error,
+            )
         except Unavailable as exc:
             if exc.reason == "migration_failed" and call.facts.get("creates_roles") is False:
                 # Truss's refusal for a role without CREATEROLE is its one opaque code
@@ -210,6 +270,20 @@ class Lifecycle:
                     self.name, "access_denied", "the installing role cannot create roles"
                 ) from None
             raise
+        if type(out).__name__ == "InstallRefused":
+            if getattr(out, "code", None) == "third_party_grant":
+                raise _third_party_grant_refusal(self.name, out)
+            try:
+                raise _install_refused(self.name, out.code)
+            except Unavailable as exc:
+                if exc.reason == "migration_failed" and call.facts.get("creates_roles") is False:
+                    raise Unavailable(
+                        self.name,
+                        "access_denied",
+                        "the installing role cannot create roles",
+                    ) from None
+                raise
+        return out
 
     def _installed(self) -> tuple[str | None, str] | None:
         """After a COMMIT of unknown outcome: the installed Truss's installation id and release id

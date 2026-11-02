@@ -1,17 +1,20 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import { useEffect } from "react";
+import { usePageEffects } from "./pageEffects";
 
 /** Keeps `document.title` in step with `title`, and puts the page's own title back on unmount. */
 export function useDocumentTitle(title: string) {
+  const enabled = usePageEffects();
   useEffect(() => {
+    if (!enabled) return;
     const before = document.title;
     return () => {
       document.title = before;
     };
-  }, []);
+  }, [enabled]);
   useEffect(() => {
-    document.title = title;
-  }, [title]);
+    if (enabled) document.title = title;
+  }, [title, enabled]);
 }
 
 /** A module as a title names it: its view's title, else its name. */

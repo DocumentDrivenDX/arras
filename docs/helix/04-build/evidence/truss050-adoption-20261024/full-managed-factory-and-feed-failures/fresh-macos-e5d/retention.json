@@ -1,0 +1,37 @@
+{
+  "canonical_wheel_sha256": "259e16c7d4c8f6c56d9930ee5f16e74c4ab6b2c8a3ecffdb7d8b306c77b60f18",
+  "canonical_wheel_version": "0.6.1",
+  "cleanup": {
+    "ambiguous_owned_processes": 0,
+    "group_cleanup_complete": null,
+    "remaining_owned_processes": 0,
+    "remaining_roots": 0,
+    "status": "passed"
+  },
+  "files_sha256": {
+    "canonical-macos-e5d-sol-review.safe.json": "f5b12bfbe04d9f7212ff1ace8523173e9ccbcf761428dbbc8b2783c66a5788a5",
+    "native-macos-cleanup-observation.json": "6987da419f039ab3a6cf3e946504c89bdce00846cf1c5d8a460cff352a3a7794",
+    "native-macos-cohort-binding.json": "a06b005c5103be3869817c28e71baade552f3cdcb2686b6231ff39f77ccbc02d",
+    "native-macos-cohort.bound.json": "6de88e06c7b387f037175c16acd2a995ac6d7b5e6373f7cd716b82041a2cbd9d",
+    "native-macos-consumer-provenance.json": "d9ed2d0a0c8a59796fb2d467b4d37aa0110f6c6cfde04a08fecfe31f8dba1417",
+    "native-macos-verification.json": "c32e97c3068b0ee0f40fb89fb471283c881ef801781f01c1577fc7cd0127491b"
+  },
+  "macos_corpus_counts": {
+    "failed": 0,
+    "harness_error": 0,
+    "host_specific": 0,
+    "limit": 8,
+    "passed": 64
+  },
+  "pull_request_head_sha": "e5d8100fc544837b4cf14cc89e4465f468cc9f98",
+  "schema": "arras.native-macos-retention/1",
+  "scope": "Fresh hosted macOS artifact evidence only; no WAN acceptance claim.",
+  "source_archive": "canonical-macos-e5d-12562651292.zip",
+  "source_archive_sha256": "d71dde12e0026d33b52cff576e1785f1291c773eba767ca40153981ffaa4d3db",
+  "source_artifact_id": "12562651292",
+  "source_artifact_sha256": "144795c8563d775fd2a5fc4d7f1230286b1e06717943b70fda7b488a1c9e6097",
+  "source_job_id": "120885756976",
+  "source_run_id": "40098437810",
+  "source_sha": "7a2a2a68af8fa612d069aebab7a33bc74e8da325",
+  "source_tree_sha": "ee431af6283ba14035a1c83a83bd4f5b5a2784b2"
+}

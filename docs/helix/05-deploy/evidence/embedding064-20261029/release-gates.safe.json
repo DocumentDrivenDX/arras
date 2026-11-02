@@ -1,0 +1,79 @@
+{
+  "jobs": [
+    {
+      "completed_at": "2026-10-30T00:11:26Z",
+      "conclusion": "success",
+      "id": 123810965615,
+      "name": "check",
+      "started_at": "2026-10-30T00:11:19Z"
+    },
+    {
+      "completed_at": "2026-10-30T00:20:23Z",
+      "conclusion": "success",
+      "id": 123811020226,
+      "name": "Truss adapter on PostgreSQL 18.6",
+      "started_at": "2026-10-30T00:11:29Z"
+    },
+    {
+      "completed_at": "2026-10-30T00:22:55Z",
+      "conclusion": "success",
+      "id": 123814220165,
+      "name": "build",
+      "started_at": "2026-10-30T00:20:25Z"
+    },
+    {
+      "completed_at": "2026-10-30T00:33:05Z",
+      "conclusion": "success",
+      "id": 123815117330,
+      "name": "UI and packed-theme release qualification",
+      "started_at": "2026-10-30T00:22:57Z"
+    },
+    {
+      "completed_at": "2026-10-30T00:27:00Z",
+      "conclusion": "success",
+      "id": 123815117355,
+      "name": "Installed native adapter on Linux x86_64",
+      "started_at": "2026-10-30T00:22:58Z"
+    },
+    {
+      "completed_at": "2026-10-30T00:23:27Z",
+      "conclusion": "success",
+      "id": 123815117406,
+      "name": "Fresh installed UMF admission proof on exact wheel",
+      "started_at": "2026-10-30T00:22:57Z"
+    },
+    {
+      "completed_at": "2026-10-30T00:33:16Z",
+      "conclusion": "success",
+      "id": 123818684667,
+      "name": "assemble-evidence",
+      "started_at": "2026-10-30T00:33:06Z"
+    },
+    {
+      "completed_at": "2026-10-30T00:33:30Z",
+      "conclusion": "success",
+      "id": 123818748623,
+      "name": "github-release",
+      "started_at": "2026-10-30T00:33:18Z"
+    },
+    {
+      "completed_at": "2026-10-30T00:33:51Z",
+      "conclusion": "success",
+      "id": 123818838280,
+      "name": "installed-downstream / Install verified wheel and run explicit qualification stages",
+      "started_at": "2026-10-30T00:33:33Z"
+    },
+    {
+      "completed_at": "2026-10-30T00:38:31Z",
+      "conclusion": "success",
+      "id": 123818955996,
+      "name": "Verify anonymous public release bundle",
+      "started_at": "2026-10-30T00:33:53Z"
+    }
+  ],
+  "run_id": 40978080176,
+  "schema": "arras.release-gates/1",
+  "source_sha": "11be778eae8050fd5b2e8b446479e8bea081778a",
+  "status": "passed",
+  "tag": "v0.6.4"
+}

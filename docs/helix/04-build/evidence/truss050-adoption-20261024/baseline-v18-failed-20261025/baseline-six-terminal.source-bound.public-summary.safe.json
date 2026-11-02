@@ -1,0 +1,26 @@
+{
+  "baseline_diagnostic_exit_code": 1,
+  "baseline_inner_managed_gate": "not_run",
+  "baseline_inner_status": "failed",
+  "elapsed_seconds": 647.417029791,
+  "entry_sha256": "61d634df8e043835195fa6e15868e68960e3e8c5dd281c4a10519f96fcd04408",
+  "final_acceptance": "not claimed; baseline-only diagnostic",
+  "inner_receipt_sha256": "2c0cdcb8a0f2f935ea895ea79d4348fe73bb3ee145e7aaea81f7561300c813e1",
+  "installed_observation_unchanged": true,
+  "late_completion": false,
+  "limits": {
+    "cleanup_grace_seconds": 180,
+    "installer_operation_timeout_ms": 60000,
+    "installer_statement_timeout_ms": 60000,
+    "maximum_window_seconds": 14400,
+    "no_vm": true,
+    "provider_operation_timeout_seconds": 180
+  },
+  "schema": "arras.public50-baseline-terminal-public-summary/1",
+  "scope": "baseline",
+  "source_freeze_sha256": "fd3f366e97264c2e7034566b6da619ec09e580b64704b87593fa71b12163ff4e",
+  "source_receipt_sha256": "5ec5c1d5c77655f0e4abbc3fddd384affeda083bdc9d01a25230e020cf2cf04a",
+  "stage": "baseline_six_diagnostic",
+  "stage_wall_start_utc": "2026-10-25T18:05:36Z",
+  "stage_wall_terminal_utc": "2026-10-25T18:16:23Z"
+}

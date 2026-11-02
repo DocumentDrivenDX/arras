@@ -1,0 +1,21 @@
+{
+  "actual_successful_job_name": "installed-downstream / Install verified wheel and run explicit qualification stages",
+  "correction": "Require that exact actual name; keep all ten success checks and reject missing, wrong-suffix, failed, skipped and duplicate jobs. No alias wildcard or gate bypass.",
+  "failed_job_id": 121371838603,
+  "github_release_id": 423807244,
+  "github_release_published_at": "2026-10-26T02:37:05Z",
+  "immutable_tag": "v0.6.3",
+  "npm_upload_performed": false,
+  "publication_run_id": 40260560271,
+  "pypi_upload_performed": false,
+  "qualified_release_run_id": 40257854519,
+  "raw_job_log_sha256": "ecdd9bf6d5dc90667f7e606f2b47a48d378c9d1ed7b07095f5c672253dddf207",
+  "reason": "Validator expected a synthetic shorthand job name instead of the actual reusable-workflow API display name.",
+  "recovery": "Reviewed publisher driver, then exact-pin registry backfill of the successful release; no runtime, artifact, tag or release-gate rerun.",
+  "release_gates": "all_ten_passed",
+  "schema": "arras.registry-063-job-label-refusal/1",
+  "source_sha": "81d560310f46f1d2c105e6635d70b0eeb97d4684",
+  "status": "refused_before_registry_upload",
+  "tag_object_sha": "04af6523b7cba0388bb4848215078f9f30cc8575",
+  "wheel_sha256": "ef8dec70d8e0089e776166303bc622b573825f2a4e071791a316b58e22a40d0d"
+}

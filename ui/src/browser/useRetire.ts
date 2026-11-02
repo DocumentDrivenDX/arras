@@ -24,7 +24,7 @@ export interface RetireState {
 export function useRetire(entry: TypeEntry, keyText: string, plan: RetirePlan): RetireState {
   const client = useClient();
   const qc = useQueryClient();
-  const { go } = useBrowser();
+  const { go, focus } = useBrowser();
   const moduleName = entry.module.name;
   const form = useActionForm({
     module: entry.module,
@@ -37,7 +37,7 @@ export function useRetire(entry: TypeEntry, keyText: string, plan: RetirePlan): 
     },
     onApplied: () => {
       // The entity's page is gone: the list replaces its history entry, so Back does not return to it.
-      requestListFocus();
+      requestListFocus(focus);
       go({ module: moduleName, type: shortName(entry.type.name) }, { replace: true });
       void invalidateAfterApply(qc);
     },
