@@ -191,9 +191,10 @@ def validate_evidence(evidence: Path, identity: dict) -> None:
     if (
         acceptance.get("status") != "passed"
         or acceptance.get("visual", {}).get("status") != "skipped-non-Darwin"
-        or len(ui.get("routes", [])) != 2
+        or len(ui.get("routes", [])) != 4
     ):
         raise ValueError("UI qualification scope differs")
+    validate_ui_routes(ui["routes"])
     projects = acceptance.get("projects", [])
     if {project.get("name") for project in projects} != {"chromium", "schema-admin", "browser"}:
         raise ValueError("UI mandatory project set differs")
@@ -214,6 +215,23 @@ def validate_evidence(evidence: Path, identity: dict) -> None:
             or any(int(suite.get(key, "0")) for suite in suites for key in ["failures", "errors"])
         ):
             raise ValueError(f"test qualification did not pass: {name}")
+
+
+def validate_ui_routes(routes: list[dict]) -> None:
+    if {(route.get("route"), route.get("surface")) for route in routes} != {
+        (route, surface)
+        for route in ["prebuilt-page", "compiled-host"]
+        for surface in ["browser", "console"]
+    }:
+        raise ValueError("UI route and surface coverage differs")
+    for route in routes:
+        if route.get("schema") != "arras.ui.qualification-receipt.v1" or not {
+            "axe-wcag21aa",
+            "theme-tokens",
+            "contrast",
+            "keyboard-focus",
+        }.issubset(route.get("checks", [])):
+            raise ValueError("UI route checks differ")
 
 
 def main() -> None:
