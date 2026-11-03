@@ -213,7 +213,7 @@ def test_release_rebuild_must_match_the_selected_qualification_wheel_before_uplo
 
 
 @pytest.mark.parametrize("state", ["matching", "changed", "missing"])
-@pytest.mark.parametrize("version", ["0.6.5", "0.7.0", "0.7.1"])
+@pytest.mark.parametrize("version", ["0.6.5", "0.7.0", "0.7.1", "0.7.2"])
 def test_release_wheel_hash_command_refuses_changed_or_missing_bytes(
     tmp_path: Path, state: str, version: str
 ) -> None:

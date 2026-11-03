@@ -312,3 +312,15 @@ def test_verify_reports_the_selected_historical_or_native_pin_shape(
         }
     else:
         assert sdk_pin == extras.HISTORICAL_UMF_PIN["sha256"]
+
+
+@pytest.mark.parametrize("platform", ["linux-x86_64", "macos-arm64"])
+def test_successor_report_rejects_changed_qualified_sdk_bytes(
+    platform: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(extras, "_current_weft_platform", lambda: platform)
+    report = _report("0.7.2")
+    sdk = next(row for row in report["install"] if row["metadata"]["name"] == "umf-core")
+    sdk["download_info"]["archive_info"]["hashes"]["sha256"] = "f" * 64
+    with pytest.raises(extras.ExtrasVerificationError, match="qualified GitHub pin"):
+        extras.validate_pip_report(report, version="0.7.2", wheel_sha256=ARRAS_SHA256)

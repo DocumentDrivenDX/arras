@@ -5,9 +5,23 @@ on:
     paths:
       - pyproject.toml
       - uv.lock
-      - examples/extension_host/pyproject.toml
-      - examples/extension_host/doctor-request.json
+      - src/arras/**
+      - examples/extension_host/**
+      - ui/package*.json
+      - ui/scripts/**
+      - ui/src/**
+      - ui/vite*.ts
+      - tools/check_release_versions.py
+      - tools/verify*.py
+      - tools/_umf*.py
+      - tools/public-content-policy.json
+      - .github/scripts/**
+      - .github/workflows/release.yml
+      - .github/workflows/downstream.yml
+      - .github/workflows/verify-published-release.yml
+      - .github/workflows/publish-registries.yml
       - .github/workflows/candidate-package.yml
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -19,18 +33,79 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.11"
+          version: "0.13.6"
+          python-version: "3.11.18"
       - run: uv sync --locked --extra truss --extra umf
       - run: uv run --no-sync python tools/check_release_versions.py
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: "24.22.1"
+      - name: Require the qualified npm producer
+        run: test "$(npm --version)" = "11.19.1"
       - run: npm ci && npm run build:wheel
         working-directory: ui
+      - run: uv run --no-sync python tools/check_release_versions.py --built-assets
       - run: uv build --wheel --sdist
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          path: rebuild-source
+      - run: npm ci && npm run build:wheel
+        working-directory: rebuild-source/ui
+      - name: Rebuild from a second clean checkout with the same producer
+        working-directory: rebuild-source
+        run: |
+          uv build --wheel --sdist --out-dir "$GITHUB_WORKSPACE/rebuild-artifacts"
+          cp src/arras/ui/npm/*.tgz "$GITHUB_WORKSPACE/rebuild-artifacts/"
+      - name: Require byte-identical clean builds and retain full metadata maps
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, platform, subprocess, sys, tarfile, zipfile, zlib
+          from pathlib import Path
+
+          sha = lambda data: hashlib.sha256(data).hexdigest()
+          source = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          rebuilt_source = subprocess.check_output(['git', '-C', 'rebuild-source', 'rev-parse', 'HEAD'], text=True).strip()
+          assert source == rebuilt_source
+          first = [*Path('dist').glob('*.whl'), *Path('dist').glob('*.tar.gz'), *Path('src/arras/ui/npm').glob('*.tgz')]
+          second = [*Path('rebuild-artifacts').glob('*.whl'), *Path('rebuild-artifacts').glob('*.tar.gz'), *Path('rebuild-source/src/arras/ui/npm').glob('*.tgz')]
+          a, b = {path.name: path for path in first}, {path.name: path for path in second}
+          assert len(a) == len(b) == 3 and set(a) == set(b)
+          records = {}
+          for name in sorted(a):
+              left, right = a[name].read_bytes(), b[name].read_bytes()
+              assert left == right, f'clean producer builds differ: {name}'
+              if name.endswith('.whl'):
+                  with zipfile.ZipFile(a[name]) as archive:
+                      members = {info.filename: {
+                          'sha256': sha(archive.read(info)), 'crc32': info.CRC,
+                          'size': info.file_size, 'compressed_size': info.compress_size,
+                          'compression': info.compress_type, 'timestamp': info.date_time,
+                          'external_attr': info.external_attr, 'internal_attr': info.internal_attr,
+                          'create_system': info.create_system, 'create_version': info.create_version,
+                          'extract_version': info.extract_version, 'flags': info.flag_bits,
+                          'extra': info.extra.hex(), 'comment': info.comment.hex(),
+                      } for info in archive.infolist()}
+              else:
+                  with tarfile.open(a[name], 'r:gz') as archive:
+                      members = [{**info.get_info(), 'sha256': sha(archive.extractfile(info).read()) if info.isfile() else None} for info in archive.getmembers()]
+              records[name] = {'sha256': sha(left), 'size': len(left), 'complete_bytes_equal': True, 'members': members}
+          inputs = ['pyproject.toml', 'uv.lock', 'src/arras/public-api.json', 'ui/package.json', 'ui/package-lock.json', 'ui/scripts/pack-wheel.ts', 'ui/scripts/pack-runtime-assets.ts', 'ui/scripts/pack-manifest.ts', 'ui/vite.embed.config.ts', 'ui/vite.lib.config.ts', 'examples/extension_host/pyproject.toml', 'examples/extension_host/doctor-request.json']
+          report = {
+              'schema': 'arras.clean-producer-reproducibility/1', 'status': 'passed',
+              'source_sha': source, 'second_clean_source_sha': rebuilt_source,
+              'source_tree_sha': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+              'producer': {'platform': platform.platform(), 'machine': platform.machine(), 'python': sys.version, 'python_zlib': zlib.ZLIB_RUNTIME_VERSION, 'uv': subprocess.check_output(['uv', '--version'], text=True).strip(), 'node': json.loads(subprocess.check_output(['node', '-p', 'JSON.stringify({platform:process.platform,arch:process.arch,versions:process.versions,sharedZlib:process.config.variables.node_shared_zlib})'], text=True)), 'npm': subprocess.check_output(['npm', '--version'], text=True).strip()},
+              'build_input_sha256': {name: sha(Path(name).read_bytes()) for name in inputs},
+              'artifacts': records,
+          }
+          Path('artifacts').mkdir(exist_ok=True)
+          Path('artifacts/clean-producer-reproducibility.json').write_text(json.dumps(report, indent=2, sort_keys=True, default=lambda value: value.decode() if isinstance(value, bytes) else str(value)) + '\n')
+          print(json.dumps({'status': 'passed', 'source_sha': source, 'artifacts': {name: record['sha256'] for name, record in records.items()}}, indent=2))
+          PY
       - name: Check versioned catalog and public release controls
         run: |
           uv run --no-sync python tools/check_public_content.py
@@ -44,6 +119,8 @@ jobs:
           python tools/verify_extension_host.py --wheel dist/arras-*.whl --output-json artifacts/extension-host-fresh-dependencies.json --fresh-dependencies
           uv run --no-sync python tools/verify_umf_admission.py --wheel dist/arras-*.whl --output-json artifacts/umf-admission-installed.json
           ARRAS_WHEEL="$(find dist -maxdepth 1 -name '*.whl' -print)" uv run --no-sync pytest -q tests/test_cli.py::test_the_installed_wheel_provides_the_command tests/test_devhost_installed.py::test_the_installed_wheel_serves_its_own_page
+      - name: Require actual candidate bytes to match the selected release pin
+        run: uv run --no-sync python tools/check_release_versions.py --require-release-pin --built-assets --artifacts-dir dist
       - name: Record candidate source, producer, and exact digests
         if: always()
         run: |
@@ -52,7 +129,7 @@ jobs:
           from pathlib import Path
           artifacts = Path('artifacts')
           artifacts.mkdir(exist_ok=True)
-          inputs = [*Path('dist').glob('*'), *Path('src/arras/ui/npm').glob('*.tgz')]
+          inputs = [*Path('dist').glob('*.whl'), *Path('dist').glob('*.tar.gz'), *Path('src/arras/ui/npm').glob('*.tgz')]
           report = {
               'schema': 'arras.versioned-candidate-package/1',
               'source_sha': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
@@ -70,6 +147,7 @@ jobs:
           name: versioned-candidate-package
           path: |
             dist/
+            rebuild-artifacts/
             src/arras/ui/npm/*.tgz
             artifacts/
           if-no-files-found: error

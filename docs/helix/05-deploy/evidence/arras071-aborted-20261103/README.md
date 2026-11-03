@@ -20,6 +20,17 @@ archive and its `RECORD` entry differ. The entire decompressed npm tar archive
 is byte-identical, including all 323 members, order and metadata. The safe
 [correspondence receipt](producer-correspondence.json) binds the exact hashes.
 
+[Same-input reproduction 41567382608](https://github.com/DocumentDrivenDX/arras/actions/runs/41567382608)
+recompresses the retained tar with level 9 and npm's portable gzip header. The
+observed Mac Node zlib 1.2.12 recreates the original Mac archive exactly; the
+official Linux Node 24/26 bundled 1.3.2.1-motley builds recreate the Linux
+archive exactly. The [root-cause summary](archive-root-cause.json), complete
+[wheel ZIP map](wheel-member-map.json), [npm tar map](npm-member-map.json), and
+three gzip reproduction receipts retain both encoding outputs and toolchains.
+ZIP timestamps, permissions, flags and extra fields match; the remaining ZIP
+differences are npm/RECORD sizes and CRCs plus following member offsets. No
+unexpected source, JavaScript, CSS, export or asset content was normalized away.
+
 [Captured-artifact verification 41563653335](https://github.com/DocumentDrivenDX/arras/actions/runs/41563653335)
 passed source-wheel/sdist-rebuild equality and fresh installed consumers for the
 actual Linux wheel. Independent Mac verification also rebuilt that Linux sdist

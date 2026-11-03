@@ -104,7 +104,7 @@ jobs:
 
   build:
     needs: [check, truss]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       wheel_name: ${{ steps.release-bundle.outputs.wheel_name }}
       wheel_sha256: ${{ steps.release-bundle.outputs.wheel_sha256 }}
@@ -120,7 +120,8 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-          python-version: "3.11"
+          version: "0.13.6"
+          python-version: "3.11.18"
       - run: uv sync --locked --extra truss --extra umf
       - name: Install Weft parser (weft-sql 0.4.51)
         env:
@@ -151,11 +152,15 @@ jobs:
       # The wheel carries the UI: the page and the npm tarball built from ui/ (ADR-027).
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: "24.22.1"
           cache: npm
           cache-dependency-path: ui/package-lock.json
+      - name: Require the qualified npm producer
+        run: test "$(npm --version)" = "11.19.1"
       - run: npm ci && npm run build:wheel
         working-directory: ui
+      - name: Verify emitted page and scoped npm version coupling
+        run: uv run --no-sync python tools/check_release_versions.py --require-release-pin --built-assets
       - run: uv build --wheel && uv build --sdist
       - name: Require PyPI-compatible wheel and sdist metadata before publishing a release
         run: |
@@ -173,6 +178,9 @@ jobs:
               ;;
             0.7.1)
               echo '1ef8396a487cf737b81918df6f792d57474dadaa397ae9c7729a847defa5100f  dist/arras-0.7.1-py3-none-any.whl' | sha256sum --check --strict -
+              ;;
+            0.7.2)
+              echo '5cc8bd18799590406501c58c34be5cd17e32bb0813daaf512fa7b0f493cc2db1  dist/arras-0.7.2-py3-none-any.whl' | sha256sum --check --strict -
               ;;
             *) echo 'No exact qualification wheel is selected for this version' >&2; exit 1 ;;
           esac
