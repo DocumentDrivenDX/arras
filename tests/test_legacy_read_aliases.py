@@ -185,6 +185,10 @@ def test_native_truss_registration_and_view_round_trip_preserve_alias_source(
 
     _require()
     doc = _view_document()
+    # Native registration requires authored names for records and fields; the
+    # shared parser example intentionally leaves these optional labels out.
+    for element in doc["modules"][0]["elements"]:
+        element["name"] = element["id"].rsplit(".", 1)[-1].replace("_", " ").title()
     doc["vocabularies"]["legacy.view"] = {"version": "0.1.0"}
     doc["modules"][0]["extensions"]["legacy.view"] = {"title": "Legacy catalog"}
     raw = json.dumps(doc, ensure_ascii=False)
