@@ -1966,7 +1966,7 @@
     ],
     "ui_acceptance": {
       "manifest_path": "support/acceptance/resources.json",
-      "manifest_sha256": "ac5dd4b46986437df5af2d8c3eb8460f1a9d7be67c8cc25f9816a3362db4044d",
+      "manifest_sha256": "a8fa0c154c12cbaec411f8745875c46dab50a07d82dbcfbda47316481e04b480",
       "version": 1,
       "specs": [
         "a11y.spec.ts",
@@ -1988,7 +1988,7 @@
         "visual.spec.ts"
       ],
       "expected_counts": {
-        "chromium": 132,
+        "chromium": 145,
         "schema-admin": 3,
         "browser": 70,
         "visual": 67

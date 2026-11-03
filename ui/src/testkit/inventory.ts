@@ -21,7 +21,7 @@ export const CANONICAL_SPECS = [
 
 // Source discovery on macOS: Linux omits only the visual project by contract.
 export const CANONICAL_TEST_COUNTS = {
-  chromium: 132,
+  chromium: 145,
   "schema-admin": 3,
   browser: 70,
   visual: 67,
