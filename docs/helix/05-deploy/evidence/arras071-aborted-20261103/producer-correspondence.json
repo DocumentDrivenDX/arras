@@ -1,0 +1,24 @@
+{
+  "all_npm_member_bytes_order_and_metadata_equal": true,
+  "all_other_wheel_members_equal": true,
+  "decompressed_npm_tar_bytes": 20444160,
+  "decompressed_npm_tar_equal": true,
+  "decompressed_npm_tar_sha256": "c822197cac7447f6342ec076864ec4794f6974d34f0eab829a421c7373c95c46",
+  "diagnostic_artifact_id": 13197137663,
+  "diagnostic_artifact_sha256": "e6007327567e4e46811cc1de2762b5a2bb75980fd6e7368f5d9fa8228d5ebe93",
+  "diagnostic_run_url": "https://github.com/DocumentDrivenDX/arras/actions/runs/41563181620",
+  "linux_npm_sha256": "984599a5227dc24edf7097c0011ba09a4dfd1a2c168e057dd9a96df1c5db0a5f",
+  "linux_wheel_sha256": "c999729cd1ae96df5e5fd40b608faeefeb89d58f4f8f3eb4ac55e7120586ce09",
+  "mac_npm_sha256": "eccd59e1bb1c227259b1d9d97175a009230dfff73b6fc201215e96726259841e",
+  "mac_wheel_sha256": "1ef8396a487cf737b81918df6f792d57474dadaa397ae9c7729a847defa5100f",
+  "npm_members": 323,
+  "schema": "arras.cross-producer-byte-correspondence/1",
+  "scope": "Correspondence only; fresh installed qualification of actual Linux wheel remains separately required.",
+  "source_sha": "0f7817eb15ee73d1d62eb75c7fe87caa3aa1aa65",
+  "status": "passed",
+  "wheel_differing_uncompressed_members": [
+    "arras-0.7.1.dist-info/RECORD",
+    "arras/ui/npm/documentdrivendx-arras-ui-0.7.1.tgz"
+  ],
+  "wheel_member_count": 188
+}
