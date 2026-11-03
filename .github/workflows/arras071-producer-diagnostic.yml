@@ -6,113 +6,55 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   compare:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
-          ref: 0f7817eb15ee73d1d62eb75c7fe87caa3aa1aa65
-      - uses: astral-sh/setup-uv@v5
-        with:
-          python-version: "3.11"
+          name: arras071-producer-byte-comparison
+          run-id: 41563181620
+          github-token: ${{ github.token }}
+          path: captured
+      - name: Prepare the same-input gzip reproduction
+        run: |
+          mkdir -p artifacts
+          cat > "$RUNNER_TEMP/gzip-probe.mjs" <<'JS'
+          import {readFileSync, writeFileSync} from 'node:fs';
+          import {createHash} from 'node:crypto';
+          import {gzipSync, gunzipSync} from 'node:zlib';
+          const sha = data => createHash('sha256').update(data).digest('hex');
+          const archive = readFileSync('captured/node24/documentdrivendx-arras-ui-0.7.1.tgz');
+          if (sha(archive) !== '984599a5227dc24edf7097c0011ba09a4dfd1a2c168e057dd9a96df1c5db0a5f') throw new Error('captured archive changed');
+          const raw = gunzipSync(archive);
+          if (sha(raw) !== 'c822197cac7447f6342ec076864ec4794f6974d34f0eab829a421c7373c95c46') throw new Error('captured tar input changed');
+          const encoded = gzipSync(raw, {level: 9});
+          encoded[9] = 255; // npm's observed portable gzip OS byte; raw tar is unchanged.
+          const report = {
+            schema: 'arras.same-input-gzip-reproduction/1',
+            source_sha: '0f7817eb15ee73d1d62eb75c7fe87caa3aa1aa65',
+            input_archive_sha256: sha(archive), input_tar_sha256: sha(raw),
+            input_bytes: raw.length, gzip_level: 9, portable_os_byte: 255,
+            recompressed_sha256: sha(encoded), reproduces_captured_archive: encoded.equals(archive),
+            producer: {platform:process.platform, arch:process.arch, versions:process.versions, sharedZlib:process.config.variables.node_shared_zlib},
+          };
+          writeFileSync(`artifacts/${process.argv[2]}-gzip-reproduction.json`, JSON.stringify(report, null, 2) + '\n');
+          console.log(JSON.stringify(report, null, 2));
+          JS
       - uses: actions/setup-node@v4
         with:
           node-version: "24.22.1"
-      - name: Capture the failed release producer's exact artifacts
-        run: |
-          set -euo pipefail
-          mkdir -p artifacts/node24
-          node --version > artifacts/node24/node-version.txt
-          npm --version > artifacts/node24/npm-version.txt
-          (cd ui && npm ci && npm run build:wheel)
-          uv build --wheel --sdist --out-dir artifacts/node24
-          cp src/arras/ui/npm/*.tgz artifacts/node24/
+      - run: node "$RUNNER_TEMP/gzip-probe.mjs" node24
       - uses: actions/setup-node@v4
         with:
           node-version: "26.12.1"
-      - name: Capture the originally qualified producer's exact artifacts
-        run: |
-          set -euo pipefail
-          mkdir -p artifacts/node26
-          node --version > artifacts/node26/node-version.txt
-          npm --version > artifacts/node26/npm-version.txt
-          (cd ui && npm ci && npm run build:wheel)
-          uv build --wheel --out-dir artifacts/node26
-          cp src/arras/ui/npm/*.tgz artifacts/node26/
-      - name: Compare complete wheel and npm archive payloads and metadata
-        run: |
-          python3 - <<'PY'
-          import hashlib
-          import json
-          import tarfile
-          import zipfile
-          from pathlib import Path
-
-          def digest(data):
-              return hashlib.sha256(data).hexdigest()
-
-          def wheel(path):
-              with zipfile.ZipFile(path) as archive:
-                  return {name: digest(archive.read(name)) for name in archive.namelist()}
-
-          def npm(path):
-              with tarfile.open(path, 'r:gz') as archive:
-                  return {
-                      member.name: {
-                          'sha256': digest(archive.extractfile(member).read()),
-                          'mode': member.mode, 'uid': member.uid, 'gid': member.gid,
-                          'mtime': member.mtime, 'uname': member.uname, 'gname': member.gname,
-                          'pax_headers': member.pax_headers,
-                      }
-                      for member in archive.getmembers() if member.isfile()
-                  }
-
-          data = {}
-          for producer in ('node24', 'node26'):
-              root = Path('artifacts') / producer
-              wheel_path = next(root.glob('*.whl'))
-              npm_path = next(root.glob('*.tgz'))
-              data[producer] = {
-                  'node': (root / 'node-version.txt').read_text().strip(),
-                  'npm': (root / 'npm-version.txt').read_text().strip(),
-                  'wheel_sha256': digest(wheel_path.read_bytes()),
-                  'npm_sha256': digest(npm_path.read_bytes()),
-                  'npm_sha1': hashlib.sha1(npm_path.read_bytes()).hexdigest(),
-                  'wheel_members': wheel(wheel_path),
-                  'npm_members': npm(npm_path),
-              }
-          left, right = data['node24'], data['node26']
-          report = {
-              'schema': 'arras.producer-byte-diagnostic/1',
-              'source_sha': '0f7817eb15ee73d1d62eb75c7fe87caa3aa1aa65',
-              'producers': data,
-              'wheel_differences': [name for name in sorted(set(left['wheel_members']) | set(right['wheel_members'])) if left['wheel_members'].get(name) != right['wheel_members'].get(name)],
-              'npm_member_differences': [name for name in sorted(set(left['npm_members']) | set(right['npm_members'])) if left['npm_members'].get(name) != right['npm_members'].get(name)],
-              'node24_reproduces_original_npm_sha1': left['npm_sha1'] == '49485616b43956c3eef05c559441416275ddfd5d',
-              'node26_matches_qualified_wheel': right['wheel_sha256'] == '1ef8396a487cf737b81918df6f792d57474dadaa397ae9c7729a847defa5100f',
-          }
-          Path('artifacts/comparison.json').write_text(json.dumps(report, indent=2, sort_keys=True) + '\n')
-          print(json.dumps({key: value for key, value in report.items() if key != 'producers'}, indent=2))
-          print(json.dumps({producer: {key: value for key, value in values.items() if key not in ('wheel_members', 'npm_members')} for producer, values in data.items()}, indent=2))
-          PY
-      - name: Qualify the actual Linux wheel and exact sdist from fresh environments
-        run: |
-          set -euo pipefail
-          uv run --no-project --python 3.11 python tools/verify_distribution.py \
-            --output artifacts/node24/distribution-verification.json \
-            artifacts/node24/arras-0.7.1-py3-none-any.whl artifacts/node24/arras-0.7.1.tar.gz
-          uv run --no-project --python 3.11 python tools/verify_doctor.py \
-            --wheel artifacts/node24/arras-0.7.1-py3-none-any.whl \
-            --output-json artifacts/node24/doctor-installed.json
-          uv run --no-project --python 3.11 python tools/verify_umf_admission.py \
-            --wheel artifacts/node24/arras-0.7.1-py3-none-any.whl \
-            --output-json artifacts/node24/umf-admission-installed.json
+      - run: node "$RUNNER_TEMP/gzip-probe.mjs" node26
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: arras071-producer-byte-comparison
+          name: arras071-gzip-forensics
           path: artifacts/
           if-no-files-found: error
