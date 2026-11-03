@@ -389,3 +389,21 @@ def test_release_requires_exact_installed_native_qualification_and_evidence() ->
         "artifacts/native-verifier.stderr.log",
     ):
         assert required in native
+
+
+def test_pretag_qualification_runs_the_full_required_source_suite() -> None:
+    candidate = release_job(
+        (ROOT / ".github/workflows/candidate-package.yml").read_text(), "package"
+    )
+    command = "uv run --no-sync pytest -q --junitxml=artifacts/pretag-source.xml"
+    assert command in candidate
+    assert candidate.index(command) < candidate.index("npm ci && npm run build:wheel")
+    for required in (
+        'ARRAS_REQUIRE_WEFT: "1"',
+        'ARRAS_REQUIRE_UMF: "1"',
+        'ARRAS_REQUIRE_UMF_ACTIONS: "1"',
+        "uv run --no-sync ruff check .",
+        "uv run --no-sync pyright",
+        "test_official_current_conformance_vectors_and_empty_registry_admission",
+    ):
+        assert required in candidate
