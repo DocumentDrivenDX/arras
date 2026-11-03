@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.7.1 — embedded host, themes, and aliases
+## 0.7.2 — embedded host, themes, and aliases
 
 - Fixes #49: development-host help now shows the effective configured operator
   groups; explicit command-line groups still take precedence.
@@ -17,6 +17,15 @@
 - Fixes #36: legacy view-vocabulary and graph-format aliases are explicit,
   bounded read policies on a distribution; reads canonicalize aliases while
   writes remain canonical, and browser graph parsing receives aliases per call.
+- Aligns the neutral extension-host dependency and doctor expectations with the
+  exact release version used by fresh installed-consumer qualification.
+
+## 0.7.1 — unpublished tag
+
+The immutable tag was not published to GitHub Releases, PyPI, or npm. Its release
+build stopped at exact-artifact verification. The successor corrects the
+extension-host example dependency pin and qualifies the Linux-produced archive
+bytes before selecting the release digest.
 
 ## 0.7.0 — bounded UMF memory actions
 

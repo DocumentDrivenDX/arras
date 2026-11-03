@@ -71,6 +71,8 @@ jobs:
         env:
           ARRAS_SOURCE_SHA: ${{ steps.version.outputs.source_sha }}
         run: test "$(git -C payload rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
+      - name: Refuse stale active release and consumer pins before qualification
+        run: python3 payload/tools/check_release_versions.py --require-release-pin
       - uses: actions/upload-artifact@v4
         with:
           name: release-driver-provenance

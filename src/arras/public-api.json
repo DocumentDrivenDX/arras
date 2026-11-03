@@ -2,7 +2,7 @@
   "schema_version": 1,
   "distribution": {
     "name": "arras",
-    "version": "0.7.1",
+    "version": "0.7.2",
     "version_source": "pyproject.toml",
     "python_requires": ">=3.11",
     "declared_python": [
@@ -10,7 +10,7 @@
     ],
     "npm": {
       "name": "@documentdrivendx/arras-ui",
-      "version": "0.7.1",
+      "version": "0.7.2",
       "version_source": "pyproject.toml",
       "exports": {
         ".": {

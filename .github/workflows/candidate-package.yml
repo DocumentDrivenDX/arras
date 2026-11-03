@@ -1,0 +1,75 @@
+name: Versioned candidate package qualification
+
+on:
+  pull_request:
+    paths:
+      - pyproject.toml
+      - uv.lock
+      - examples/extension_host/pyproject.toml
+      - examples/extension_host/doctor-request.json
+      - .github/workflows/candidate-package.yml
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+      - run: uv sync --locked --extra truss --extra umf
+      - run: uv run --no-sync python tools/check_release_versions.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci && npm run build:wheel
+        working-directory: ui
+      - run: uv build --wheel --sdist
+      - name: Check versioned catalog and public release controls
+        run: |
+          uv run --no-sync python tools/check_public_content.py
+          uv run --no-sync pytest -q tests/test_public_api_manifest.py tests/test_public_content.py tests/test_pypi_extras.py tests/test_release_versions.py tests/test_release_workflow_binding.py
+      - name: Qualify exact candidate artifacts and installed consumers
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          python tools/verify_distribution.py --output artifacts/distribution-verification.json dist/*.whl dist/*.tar.gz
+          uv run --no-sync python tools/verify_doctor.py --wheel dist/arras-*.whl --output-json artifacts/doctor-installed.json
+          python tools/verify_extension_host.py --wheel dist/arras-*.whl --output-json artifacts/extension-host-fresh-dependencies.json --fresh-dependencies
+          uv run --no-sync python tools/verify_umf_admission.py --wheel dist/arras-*.whl --output-json artifacts/umf-admission-installed.json
+          ARRAS_WHEEL="$(find dist -maxdepth 1 -name '*.whl' -print)" uv run --no-sync pytest -q tests/test_cli.py::test_the_installed_wheel_provides_the_command tests/test_devhost_installed.py::test_the_installed_wheel_serves_its_own_page
+      - name: Record candidate source, producer, and exact digests
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, subprocess
+          from pathlib import Path
+          artifacts = Path('artifacts')
+          artifacts.mkdir(exist_ok=True)
+          inputs = [*Path('dist').glob('*'), *Path('src/arras/ui/npm').glob('*.tgz')]
+          report = {
+              'schema': 'arras.versioned-candidate-package/1',
+              'source_sha': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+              'source_tree_sha': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+              'node': subprocess.check_output(['node', '--version'], text=True).strip(),
+              'npm': subprocess.check_output(['npm', '--version'], text=True).strip(),
+              'artifacts': {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in inputs if path.is_file()},
+          }
+          (artifacts / 'candidate-provenance.json').write_text(json.dumps(report, indent=2, sort_keys=True) + '\n')
+          print(json.dumps(report, indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: versioned-candidate-package
+          path: |
+            dist/
+            src/arras/ui/npm/*.tgz
+            artifacts/
+          if-no-files-found: error
