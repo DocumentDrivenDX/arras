@@ -1,0 +1,39 @@
+{
+  "receipts": [
+    {
+      "filename": "public-input-verification.json",
+      "sha256": "4f80d6933348b8ed9943c8299ccee1a8c9b7f05ce385f03c70c550d5b3aefcd5"
+    },
+    {
+      "filename": "public-distribution-verification.json",
+      "sha256": "e4a67a67985eba3ba58e504c62c333f325692f1dd557423bc400e85ecad03053"
+    },
+    {
+      "filename": "public-doctor-installed.json",
+      "sha256": "c8a51252f47118f1fd68f45672128e0784367023aea9c4d4e253b845a58cf9bb"
+    },
+    {
+      "filename": "public-extension-host-fresh-dependencies.json",
+      "sha256": "f741214312bafa27d15b5160d966e73c0e3ced32961a82e9e7bb7f98f11f1087"
+    },
+    {
+      "filename": "tests/downstream/evidence/linux/qualification-linux.json",
+      "sha256": "5150d789f0f67a2305d1991733dcd6ea63bca172f994a642205f8c5ee17b9ca2"
+    },
+    {
+      "filename": "public-umf-admission-installed.json",
+      "sha256": "b6bf2832a309513debcf4e9d993368b335cda65d8f69d5abc3e10d76c5a23dd2"
+    },
+    {
+      "filename": "public-umf-actions-installed.json",
+      "sha256": "4bab43da45e7b174f4758aeb7b7c8b5c616ea59e8c2cd92d07d8c67768c0ca3f"
+    }
+  ],
+  "schema_version": 1,
+  "status": "passed",
+  "version": "0.7.3",
+  "wheel": {
+    "filename": "arras-0.7.3-py3-none-any.whl",
+    "sha256": "2d48d87f872ec9145a9f6d2f2b7adcae9ebe3154f9b47f7aa8aa2b411200c0dd"
+  }
+}

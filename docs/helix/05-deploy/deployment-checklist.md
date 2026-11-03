@@ -500,3 +500,19 @@ accepted OIDC upload briefly exposed metadata before its tarball (HTTP 404);
 attempt two skipped upload, verified the existing exact bytes and passed install.
 The original refusal and successful receipts are retained in the publication record.
 See the [publication record](evidence/embedding064-20261029/registry-publication.safe.json).
+
+## 0.7.3 embedder and explicit-alias release complete — 2026-11-03 UTC
+
+[Public closure](evidence/arras073-release-20261103/README.md) binds issues
+#49–53 and #36 to immutable v0.7.3 source
+`dc2dc6f9b9d823e3ce5ffbc4e86f49fd92646f2b`, all 18 GitHub assets and matching
+actual PyPI/npm bytes. Sol-approved repair PR60 passed full pre-tag source and
+fresh-consumer gates on both the reviewed and final merged trees before tagging;
+all mandatory exact-tag and anonymous-public gates passed. Verification-only
+publisher recovery reused matching uploads after initial index visibility lag.
+Fresh public Python 3.11 consumers passed on Linux x86_64 and macOS arm64;
+independent public embedder/alias, npm inventory and stock-theme browser controls
+and owned cleanup passed. Native scope remains the selected Linux PostgreSQL
+18.6 cohort with its declared limits. No new managed/macOS database campaign or
+independent temporal qualification is claimed. Failed unpublished v0.7.1/v0.7.2
+tags, hashes and receipts remain unchanged.
