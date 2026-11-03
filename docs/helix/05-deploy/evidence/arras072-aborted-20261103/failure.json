@@ -1,0 +1,18 @@
+{
+  "schema": "arras.unpublished-tag-failure/1",
+  "version": "0.7.2",
+  "source_sha": "6f3ced65e43bb80ee86221a0b3b5ea7e944f0a21",
+  "tag_object_sha": "470a2bfbbcb7cbeb9526a5924bcc0e5c68b9a345",
+  "run_url": "https://github.com/DocumentDrivenDX/arras/actions/runs/41570362942",
+  "build_job_id": 125704328456,
+  "failed_node": "tests/test_truss_docs.py::test_release_assets_are_gated_and_registry_publishing_follows_publication_gates",
+  "assertion": "assert 'python-version: \"3.11\"' in build",
+  "actual_qualified_selector": "python-version: \"3.11.18\"",
+  "source_counts": {"passed": 3875, "failed": 1, "skipped": 2, "deselected_native": 203},
+  "native_job_id": 125701621687,
+  "native_counts": {"passed": 203, "failed": 0, "skipped": 0},
+  "native_seconds": 480.38,
+  "github_release_exists": false,
+  "published_assets": 0,
+  "immutable_tag_preserved": true
+}

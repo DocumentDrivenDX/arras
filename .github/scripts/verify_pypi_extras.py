@@ -74,6 +74,7 @@ RELEASE_UMF_PINS = {
     "0.7.0": QUALIFIED_GITHUB_PINS["umf-core"],
     "0.7.1": QUALIFIED_GITHUB_PINS["umf-core"],
     "0.7.2": QUALIFIED_GITHUB_PINS["umf-core"],
+    "0.7.3": QUALIFIED_GITHUB_PINS["umf-core"],
 }
 
 
