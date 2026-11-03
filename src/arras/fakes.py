@@ -357,6 +357,10 @@ class MemoryStore(
 
     roles: tuple[Role, ...] = ("reader", "provider")
 
+    @property
+    def view_vocabulary_aliases(self) -> tuple[str, ...]:
+        return self._view_vocabulary_aliases
+
     def __init__(
         self,
         access: FakeAccess,
@@ -367,7 +371,7 @@ class MemoryStore(
         view_vocabulary_aliases: tuple[str, ...] = (),
     ) -> None:
         super().__init__(name, access, clock)
-        self.view_vocabulary_aliases = validate_alias_tuple(
+        self._view_vocabulary_aliases = validate_alias_tuple(
             view_vocabulary_aliases, "view_vocabulary_aliases", "arras.view"
         )
         if action_profile is not None and (
@@ -850,6 +854,10 @@ class MemoryReplica(_Store):
 
     roles: tuple[Role, ...] = ("reader",)
 
+    @property
+    def view_vocabulary_aliases(self) -> tuple[str, ...]:
+        return self._view_vocabulary_aliases
+
     def __init__(
         self,
         source: MemoryStore,
@@ -860,7 +868,7 @@ class MemoryReplica(_Store):
         view_vocabulary_aliases: tuple[str, ...] = (),
     ) -> None:
         super().__init__(name, access, clock)
-        self.view_vocabulary_aliases = validate_alias_tuple(
+        self._view_vocabulary_aliases = validate_alias_tuple(
             view_vocabulary_aliases, "view_vocabulary_aliases", "arras.view"
         )
         self.source = source

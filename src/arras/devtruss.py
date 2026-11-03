@@ -58,6 +58,10 @@ PEOPLE: dict[str, tuple[tuple[str, ...], tuple[str, ...]]] = {
 class TrussBox:
     """A `Arras` over one local Truss and the people the dev host names."""
 
+    @property
+    def distribution(self) -> DistributionConfig:
+        return self._distribution
+
     def __init__(
         self,
         name: str = "primary",
@@ -68,7 +72,7 @@ class TrussBox:
         reset: bool = False,
         distribution: DistributionConfig | None = None,
     ) -> None:
-        self.distribution = distribution or DistributionConfig()
+        self._distribution = distribution or DistributionConfig()
         self.truss = LocalTruss(
             name,
             directory=directory,

@@ -143,7 +143,10 @@ export function parseGraphFile(text: string, options: GraphFileOptions = {}): Gr
   }
   assertIntegers(text);
   if (!isObject(raw)) throw new Error("a graph file is a JSON object");
-  if (raw.format !== GRAPH_FORMAT && !aliases.includes(String(raw.format)))
+  if (
+    typeof raw.format !== "string" ||
+    (raw.format !== GRAPH_FORMAT && !aliases.includes(raw.format))
+  )
     throw new Error(`not a graph file: "format" is "${GRAPH_FORMAT}"`);
   if (raw.version !== GRAPH_VERSION)
     throw new Error(`this release reads graph file version ${GRAPH_VERSION}`);

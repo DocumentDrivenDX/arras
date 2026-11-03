@@ -129,6 +129,10 @@ class _Plan:
 
 
 class Registry:
+    @property
+    def view_vocabulary_aliases(self) -> tuple[str, ...]:
+        return self._view_vocabulary_aliases
+
     def __init__(
         self,
         backend: str,
@@ -140,7 +144,7 @@ class Registry:
         self.name = backend
         self.connections = connections
         self.cache = cache
-        self.view_vocabulary_aliases = validate_alias_tuple(
+        self._view_vocabulary_aliases = validate_alias_tuple(
             view_vocabulary_aliases, "view_vocabulary_aliases", "arras.view"
         )
 

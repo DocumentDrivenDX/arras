@@ -121,11 +121,14 @@ class Arras:
         ):
             raise ValueError(f"unknown metadata profile: {metadata_profile!r}")
         self.backends = dict(backends)
-        self.distribution = distribution or DistributionConfig()
-        self.view_vocabulary_aliases = self.distribution.view_vocabulary_aliases
+        self._distribution = distribution or DistributionConfig()
+        absent_policy = object()
         for name, backend in self.backends.items():
-            backend_aliases = getattr(backend, "view_vocabulary_aliases", ())
-            if backend_aliases != self.view_vocabulary_aliases:
+            backend_aliases = getattr(backend, "view_vocabulary_aliases", absent_policy)
+            if (
+                backend_aliases is not absent_policy
+                and backend_aliases != self.view_vocabulary_aliases
+            ):
                 raise ValueError(f"backend {name}: view_vocabulary_aliases mismatch")
         self.metadata_profile = metadata_profile
         self.placements = dict(placement or {})  # the host's, by module name (CONTRACT-002)
@@ -141,6 +144,14 @@ class Arras:
         self._announced: dict[
             str, tuple[bool, str | None]
         ] = {}  # the last state each was reported in
+
+    @property
+    def distribution(self) -> DistributionConfig:
+        return self._distribution
+
+    @property
+    def view_vocabulary_aliases(self) -> tuple[str, ...]:
+        return self._distribution.view_vocabulary_aliases
 
     @classmethod
     def start(

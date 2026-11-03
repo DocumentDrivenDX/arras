@@ -101,7 +101,8 @@ def loads(text: str, *, graph_format_aliases: tuple[str, ...] = ()) -> GraphFile
     if not isinstance(raw, dict):
         raise ValueError("a graph file is a JSON object")
     body = cast(dict[str, Any], raw)
-    if body.get("format") != FORMAT and body.get("format") not in aliases:
+    format_name = body.get("format")
+    if not isinstance(format_name, str) or (format_name != FORMAT and format_name not in aliases):
         raise ValueError(f'not a graph file: "format" is {FORMAT!r}')
     if body.get("version") != VERSION:
         raise ValueError(f"this release reads graph file version {VERSION}")

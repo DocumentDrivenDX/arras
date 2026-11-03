@@ -4,14 +4,14 @@
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pytest
 
-from arras import Invalid, graphfile
+from arras import Invalid, Refused, graphfile
 from arras._doctor_types import DoctorRequest
+from arras.adapters.truss import TrussBackend
 from arras.core import Arras
 from arras.devhost import build
 from arras.devtruss import TrussBox
@@ -157,7 +157,7 @@ def test_doctor_parses_module_documents_with_selected_aliases(tmp_path: Path) ->
             distribution=DistributionConfig(view_vocabulary_aliases=("legacy.view",)),
         )
     )
-    assert report.observed["module_documents"][0]["module"] == "catalog"
+    assert cast(Any, report.observed["module_documents"])[0]["module"] == "catalog"
     assert not any(row.code == "module_invalid" for row in report.diagnostics)
 
 
@@ -181,30 +181,45 @@ def test_registered_alias_document_round_trips_without_rewrite_and_cache_isolate
 def test_native_truss_registration_and_view_round_trip_preserve_alias_source(
     tmp_path: Path,
 ) -> None:
+    from test_truss_harness import _require  # pyright: ignore[reportPrivateUsage]
+
+    _require()
     doc = _view_document()
     doc["vocabularies"]["legacy.view"] = {"version": "0.1.0"}
     doc["modules"][0]["extensions"]["legacy.view"] = {"title": "Legacy catalog"}
     raw = json.dumps(doc, ensure_ascii=False)
-    url = os.environ.get("ARRAS_NATIVE_TEST_URL")
-    if not url:
-        pytest.importorskip("pgserver")
-
-    def credentials(role: str, *, create: bool) -> str:
-        del create
-        return f"arras-test-{role}"
-
     box = TrussBox(
         directory=tmp_path / "native",
-        url=url,
-        credential_source=credentials if url else None,
-        reset=bool(url),
         distribution=DistributionConfig(view_vocabulary_aliases=("legacy.view",)),
     )
     try:
         box.load(raw)
         session = box.arras.session(box.people["alice"])
         module = next(item for item in session.modules() if item.name == "catalog")
-        assert session.document("catalog").text == raw
+        original = session.document("catalog")
+        assert original.text.encode() == raw.encode()
         assert session.view_of(module).module.title == "Legacy catalog"
+
+        # The native fixture is already registered. Fresh readers select policy without a write.
+        backend = box.truss.backend
+        assert backend is not None and backend.connections is not None
+        canonical = TrussBackend(box.name, backend.connections)
+        assert "catalog" not in canonical.catalog(box.people["alice"])
+        with pytest.raises(Refused):
+            canonical.document(box.people["alice"], "catalog")
+
+        enabled = TrussBackend(
+            box.name, backend.connections, view_vocabulary_aliases=("legacy.view",)
+        )
+        host = Arras.start(
+            {box.name: enabled},
+            distribution=box.arras.distribution,
+            default_placement=box.arras.default_placement,
+        )
+        reader = host.session(box.people["alice"])
+        reread = reader.document("catalog")
+        assert reread.text.encode() == original.text.encode()
+        assert reread.revision == original.revision
+        assert reader.view_of(reader.modules()[0]).module.title == "Legacy catalog"
     finally:
         box.close()

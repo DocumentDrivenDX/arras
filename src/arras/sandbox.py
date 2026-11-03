@@ -106,6 +106,16 @@ class Sandbox:
     warnings: list[str] = field(default_factory=list[str])  # what a load noticed and went on past
     distribution: DistributionConfig = field(default_factory=DistributionConfig)
 
+    def __setattr__(self, name: str, value: object) -> None:
+        if name == "distribution" and name in self.__dict__:
+            raise AttributeError("distribution is read-only")
+        object.__setattr__(self, name, value)
+
+    def __delattr__(self, name: str) -> None:
+        if name == "distribution":
+            raise AttributeError("distribution is read-only")
+        object.__delattr__(self, name)
+
     def __post_init__(self) -> None:
         self.store = MemoryStore(
             self.access, view_vocabulary_aliases=self.distribution.view_vocabulary_aliases

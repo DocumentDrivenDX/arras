@@ -106,6 +106,10 @@ class TrussBackend:
     connection for `status`). `changes` and `loads` read Truss's audit pages as the person, who needs
     Truss's own audit grant for the module (`ModuleAccess.auditor_role`)."""
 
+    @property
+    def view_vocabulary_aliases(self) -> tuple[str, ...]:
+        return self._view_vocabulary_aliases
+
     def __init__(
         self,
         name: str,
@@ -117,7 +121,7 @@ class TrussBackend:
         view_vocabulary_aliases: tuple[str, ...] = (),
     ) -> None:
         selected_grantees = validate_tolerated_grantees(tolerated_grantees)
-        self.view_vocabulary_aliases = validate_alias_tuple(
+        self._view_vocabulary_aliases = validate_alias_tuple(
             view_vocabulary_aliases, "view_vocabulary_aliases", "arras.view"
         )
         self.name = name

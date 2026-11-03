@@ -186,6 +186,10 @@ def checked_operator_groups(groups: Sequence[str]) -> tuple[str, ...]:
 
 
 class DevHost:
+    @property
+    def distribution(self) -> DistributionConfig:
+        return self._distribution
+
     def __init__(
         self,
         sandbox: Box,
@@ -198,7 +202,7 @@ class DevHost:
         theme_manifest: Path | None = None,
     ) -> None:
         self.operator_groups = checked_operator_groups(operator_groups)
-        self.distribution = distribution or DistributionConfig()
+        self._distribution = distribution or DistributionConfig()
         self.theme_manifest = (
             theme_manifest
             if theme_manifest is not None
@@ -250,7 +254,6 @@ class DevHost:
                 static_dir=self.ui,
                 theme_manifest=self.theme_manifest,
                 brand=self.distribution.brand,
-                distribution=self.distribution,
                 telemetry_context=self.telemetry_context,
             )
 
@@ -402,15 +405,7 @@ class DevHost:
             return 200, ctype or "application/octet-stream", target.read_bytes()
         if not fallback or "." in path.rsplit("/", 1)[-1]:
             return 404, "text/plain", b"not found"
-        return (
-            200,
-            "text/html; charset=utf-8",
-            branded(
-                index.read_bytes(),
-                self.distribution.brand,
-                graph_format_aliases=self.distribution.graph_format_aliases,
-            ),
-        )
+        return 200, "text/html; charset=utf-8", branded(index.read_bytes(), self.distribution.brand)
 
 
 _TYPES = {  # not left to the platform's table, which differs (a .js as text/plain breaks nosniff)

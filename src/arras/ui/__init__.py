@@ -154,9 +154,7 @@ class UI:
         telemetry_context: telemetry.TelemetryContext | None = None,
     ) -> None:
         self.telemetry_context = telemetry._context_for(telemetry_context, distribution)
-        selected_distribution = distribution or DistributionConfig()
-        self.graph_format_aliases = selected_distribution.graph_format_aliases
-        self.brand = brand if brand is not None else selected_distribution.brand
+        self.brand = brand if brand is not None else (distribution or DistributionConfig()).brand
         title = self.brand.name
         self.base = base_path.rstrip("/")
         self.static_dir = static_dir
@@ -370,21 +368,9 @@ class UI:
 
     def _branded_page(self, page: Path, content: bytes) -> bytes:
         """Brand already-verified bytes, caching by their digest and selected Brand."""
-        key = (
-            page,
-            hashlib.sha256(content).hexdigest(),
-            self.brand,
-            self.graph_format_aliases,
-        )
+        key = (page, hashlib.sha256(content).hexdigest(), self.brand)
         if self._page is None or self._page[0] != key:
-            self._page = (
-                key,
-                branded(
-                    content,
-                    self.brand,
-                    graph_format_aliases=self.graph_format_aliases,
-                ),
-            )
+            self._page = (key, branded(content, self.brand))
         return self._page[1]
 
     def _check_page_cohort(self, manifest: AssetManifest) -> None:

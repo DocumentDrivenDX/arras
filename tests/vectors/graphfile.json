@@ -457,5 +457,45 @@
       "path": "records[1].properties.a.b[0].c",
       "token": "2.5"
     }
+  ],
+  "invalid_formats": [
+    {
+      "name": "alias array",
+      "format": [
+        "legacy.graph"
+      ]
+    },
+    {
+      "name": "canonical array",
+      "format": [
+        "arras.graph"
+      ]
+    },
+    {
+      "name": "object",
+      "format": {
+        "format": "legacy.graph"
+      }
+    },
+    {
+      "name": "null",
+      "format": null
+    },
+    {
+      "name": "true",
+      "format": true
+    },
+    {
+      "name": "false",
+      "format": false
+    },
+    {
+      "name": "integer",
+      "format": 1
+    },
+    {
+      "name": "empty array",
+      "format": []
+    }
   ]
 }

@@ -74,6 +74,10 @@ def _usable_credential(token: Any, role: str) -> str:
 class LocalTruss:
     """One local database with Truss installed and the roles a host needs around it."""
 
+    @property
+    def view_vocabulary_aliases(self) -> tuple[str, ...]:
+        return self._view_vocabulary_aliases
+
     def __init__(
         self,
         name: str = "primary",
@@ -87,7 +91,7 @@ class LocalTruss:
         if reset and url is None:
             raise ValueError("reset needs a persistent server to attach to")
         self.name = name
-        self.view_vocabulary_aliases = validate_alias_tuple(
+        self._view_vocabulary_aliases = validate_alias_tuple(
             view_vocabulary_aliases, "view_vocabulary_aliases", "arras.view"
         )
         self.persistent = url is not None
