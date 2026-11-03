@@ -9,14 +9,11 @@ import { EXPECTED_SURFACE, HOST_APPEARANCE_PROVIDER } from "./acceptance";
 // A host's own `:root` tokens use the same names as ours (`--accent`, `--bg`), and its element rules are
 // the kind a design system writes.
 //
-// Assumption: the host installs no appearance provider. The specs that drive the appearance (`data-appearance`
-// on the page, nested providers, inline `color-scheme`, the OS preference) put their own provider around the
-// root, which only means something where nothing above it already says one. A host that sets `data-appearance`
-// or `color-scheme` above the root, or wraps a design-system provider that does, sets
-// `hostAppearanceProvider: true` in `createAcceptanceConfig`: those specs are then skipped, and the one that
-// asserts "the library sets none" checks the Arras subtree alone (the appearance test below).
+// Tests that synthesize page-level appearance choices require the explicitly declared bare-host profile.
+// Host-owned profiles are exercised separately at both the Arras root and an ancestor; no failure changes
+// which profile applies.
 const SKIP_BARE_HOST =
-  "the host installs its own appearance provider (hostAppearanceProvider): this spec drives the appearance on a bare host";
+  "hostAppearanceProvider is true: this spec drives page appearance on a declared bare host";
 
 const TOKENS = { lightBg: EXPECTED_SURFACE.light, darkBg: EXPECTED_SURFACE.dark };
 // The page the dev host serves loads no theme (ADR-029), so the library's own tokens are what most specs
@@ -52,6 +49,167 @@ const style = (page: Page, selector: string, prop: string) =>
     [selector, prop],
   );
 
+// Snapshot contents, not storage counts: a write can replace a value or key without changing length.
+async function hostState(page: Page) {
+  return page.evaluate(() => {
+    const attributes = (element: Element) =>
+      [...element.attributes]
+        .map(({ name, value }) => [name, value] as const)
+        .sort(([a], [b]) => a.localeCompare(b));
+    const storageEntries = (storage: Storage) =>
+      Array.from({ length: storage.length }, (_, index) => storage.key(index))
+        .filter((key): key is string => key !== null)
+        .sort()
+        .map((key) => [key, storage.getItem(key)]);
+    const element = (selector: string) => {
+      const found = document.querySelector(selector);
+      if (!found) throw new Error(`Missing host fixture element: ${selector}`);
+      return found;
+    };
+    const root = element(".arras-root");
+    const ancestors = [];
+    for (let element = root.parentElement; element; element = element.parentElement) {
+      ancestors.push({ tag: element.tagName, attributes: attributes(element) });
+    }
+    const subtreeAppearance = [root, ...root.querySelectorAll("*")].flatMap((element, index) => {
+      const appearance = {
+        appearance: element.getAttribute("data-appearance"),
+        theme: element.getAttribute("data-theme"),
+        scheme: (element as HTMLElement).style?.getPropertyValue("color-scheme") ?? "",
+      };
+      return appearance.appearance !== null || appearance.theme !== null || appearance.scheme !== ""
+        ? [{ index, ...appearance }]
+        : [];
+    });
+    return {
+      ancestors,
+      rootAttributes: attributes(root),
+      subtreeAppearance,
+      localStorage: storageEntries(localStorage),
+      sessionStorage: storageEntries(sessionStorage),
+      outside: [
+        getComputedStyle(element("#host-probe h1")).fontSize,
+        getComputedStyle(element("#host-probe a")).textDecorationLine,
+        getComputedStyle(element("#host-probe table")).borderCollapse,
+        getComputedStyle(element("#host-probe p")).marginTop,
+        getComputedStyle(document.body).backgroundColor,
+      ],
+    };
+  });
+}
+
+function assertHostPreserved(
+  before: Awaited<ReturnType<typeof hostState>>,
+  after: Awaited<ReturnType<typeof hostState>>,
+) {
+  expect(after).toEqual(before);
+}
+
+async function assertNoArrasAppearance(page: Page, hostOwnsRoot = HOST_APPEARANCE_PROVIDER) {
+  const declarations = await page.evaluate(
+    (hostOwnsRoot) =>
+      [...document.querySelectorAll(hostOwnsRoot ? ".arras-root *" : ".arras-root, .arras-root *")]
+        .filter(
+          (element) =>
+            element.hasAttribute("data-appearance") ||
+            element.hasAttribute("data-theme") ||
+            ((element as HTMLElement).style?.getPropertyValue("color-scheme") ?? "") !== "",
+        )
+        .map((element) => element.outerHTML.slice(0, 200)),
+    hostOwnsRoot,
+  );
+  expect(declarations, "Arras must not install appearance declarations in its subtree").toEqual([]);
+}
+
+// Keep media fixed while checking library-owned interactions. A host may legitimately rewrite its
+// own attributes, styles and preference storage in response to an OS media event.
+async function exerciseArrasInteraction(page: Page, inspect?: () => Promise<void>) {
+  await page.keyboard.press("ControlOrMeta+k");
+  await expect(page.getByRole("dialog", { name: "Command palette" })).toBeVisible();
+  if (inspect) await inspect();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: "Command palette" })).toHaveCount(0);
+}
+
+async function assertStaticInteractionPreserved(
+  page: Page,
+  hostOwnsRoot = HOST_APPEARANCE_PROVIDER,
+) {
+  await assertNoArrasAppearance(page, hostOwnsRoot);
+  const before = await hostState(page);
+  await exerciseArrasInteraction(page, () => assertNoArrasAppearance(page, hostOwnsRoot));
+  await assertNoArrasAppearance(page, hostOwnsRoot);
+  assertHostPreserved(before, await hostState(page));
+}
+
+async function assertSystemTransitionPreserved(
+  page: Page,
+  before: Awaited<ReturnType<typeof hostState>>,
+  hostOwnsAppearance = HOST_APPEARANCE_PROVIDER,
+) {
+  await assertNoArrasAppearance(page, hostOwnsAppearance);
+  // A bare fixture declares no host writer. A declared host owns the media event itself;
+  // check library interactions at fixed media against the host's settled state instead.
+  if (!hostOwnsAppearance) assertHostPreserved(before, await hostState(page));
+  await assertStaticInteractionPreserved(page, hostOwnsAppearance);
+}
+
+// A controlled host fixture, installed before application scripts. Its media listener deliberately
+// owns document/root attributes, outside-root background and preference storage. No production API.
+async function installMediaAppearanceHost(page: Page, placement: "root" | "ancestor") {
+  await page.addInitScript((placement) => {
+    localStorage.setItem("host-preference", "retained-local");
+    sessionStorage.setItem("host-session", "retained-session");
+    const media = matchMedia("(prefers-color-scheme: dark)");
+    const selector = placement === "root" ? ".arras-root" : "#host-media-provider";
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(
+      `${selector} { --arras-color-ground: rgb(221, 229, 237) } ${selector}[data-appearance=dark] { --arras-color-ground: rgb(31, 39, 47) }`,
+    );
+    document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+    let provider: Element | null = null;
+    const resolveProvider = () => {
+      if (provider) return provider;
+      const mount = document.querySelector(placement === "root" ? ".arras-root" : "#root");
+      if (!mount) return null;
+      provider = mount;
+      if (placement === "ancestor") {
+        provider = document.createElement("div");
+        provider.id = "host-media-provider";
+        mount.parentElement?.replaceChild(provider, mount);
+        provider.append(mount);
+      }
+      return provider;
+    };
+    const applyDocumentAppearance = (scheme: string) => {
+      if (document.documentElement) {
+        document.documentElement.setAttribute("data-appearance", scheme);
+        document.documentElement.setAttribute("data-theme", "host-retained");
+        document.documentElement.style.colorScheme = scheme;
+      }
+      if (document.body)
+        document.body.style.backgroundColor = media.matches ? "rgb(9, 10, 11)" : "transparent";
+    };
+    const apply = () => {
+      const scheme = media.matches ? "dark" : "light";
+      applyDocumentAppearance(scheme);
+      const host = resolveProvider();
+      host?.setAttribute("data-appearance", scheme);
+      host?.setAttribute("data-theme", "host-owned");
+      const root = document.querySelector(".arras-root");
+      root?.setAttribute("data-host-scheme", scheme);
+      root?.classList.toggle("host-media-dark", media.matches);
+      localStorage.setItem("host-observed-scheme", scheme);
+      return root !== null && host !== null;
+    };
+    media.addEventListener("change", apply);
+    const observer = new MutationObserver(() => {
+      if (apply()) observer.disconnect();
+    });
+    if (!apply()) observer.observe(document, { childList: true, subtree: true });
+  }, placement);
+}
+
 test.describe("host isolation", () => {
   test("the library's reset and utilities do not reach the host's elements", async ({ page }) => {
     await openWithHost(page);
@@ -74,13 +232,14 @@ test.describe("host isolation", () => {
     expect(await style(page, "html", "--accent")).toBe("");
     expect(await style(page, "#host-probe", "--bg")).toBe("");
     const ours = await style(page, ".arras-root", "--accent");
+    const surface = await style(page, ".arras-root", "background-color");
     expect(ours.trim()).not.toBe("");
     await hostCss(
       page,
       ":root { --accent: #ff0000; --bg: #000000; --fg: #00ff00; --font-sans: serif }",
     );
     expect(await style(page, ".arras-root", "--accent")).toBe(ours);
-    expect(await style(page, ".arras-root", "background-color")).toBe(TOKENS.lightBg);
+    expect(await style(page, ".arras-root", "background-color")).toBe(surface);
   });
 
   test("a host's layered utilities and element rules do not undo the library's, and its one-class button rule wins over the control reset", async ({
@@ -125,31 +284,12 @@ test.describe("host isolation", () => {
     expect(inherited[0]).toBe(inherited[1]);
   });
 
-  test("appearance follows the host's data-appearance, then the OS, and the library sets none", async ({
+  test("a bare host's data-appearance wins over the OS, and Arras sets no appearance", async ({
     page,
   }) => {
+    test.skip(HOST_APPEARANCE_PROVIDER, SKIP_BARE_HOST);
     await page.emulateMedia({ colorScheme: "light" });
     await openWithHost(page);
-    if (HOST_APPEARANCE_PROVIDER) {
-      // The host's provider owns the appearance, so only what is Arras's own is checked: nothing on or beneath
-      // its root says an appearance, whichever way the OS preference goes.
-      const arrasAppearance = () =>
-        page.evaluate(() =>
-          [
-            document.querySelector(".arras-root")?.hasAttribute("data-appearance"),
-            ...[...document.querySelectorAll(".arras-root, .arras-root *")].map(
-              (e) =>
-                e.hasAttribute("data-appearance") ||
-                e.hasAttribute("data-theme") ||
-                ((e as HTMLElement).style?.colorScheme ?? "") !== "",
-            ),
-          ].some(Boolean),
-        );
-      expect(await arrasAppearance()).toBe(false);
-      await page.emulateMedia({ colorScheme: "dark" });
-      expect(await arrasAppearance()).toBe(false);
-      return;
-    }
     const bg = () => style(page, ".arras-root", "background-color");
     expect(await bg()).toBe(TOKENS.lightBg);
 
@@ -264,6 +404,7 @@ test.describe("host isolation", () => {
   test("a host that sets the role tokens and switches its own appearance re-themes the library, and the library writes nothing to the page", async ({
     page,
   }) => {
+    test.skip(HOST_APPEARANCE_PROVIDER, SKIP_BARE_HOST);
     await page.emulateMedia({ colorScheme: "light" });
     await openWithHost(page);
     // The host's element carries its tokens and its own `data-appearance` switch; the library's root is inside it.
@@ -278,6 +419,7 @@ test.describe("host isolation", () => {
       root.parentElement?.replaceChild(host, root);
       host.append(root);
     });
+    const before = await hostState(page);
     const bg = () => style(page, ".arras-root", "background-color");
     const choose = (appearance: string | null) =>
       page.evaluate((a) => {
@@ -293,20 +435,195 @@ test.describe("host isolation", () => {
     await choose(null);
     await page.emulateMedia({ colorScheme: "dark" });
     await expect.poll(bg).toBe(THEME.lightBg); // no appearance given: the host's token, whatever the OS says
-    // A host with its own appearance provider has written to its page itself; the bare host has not.
-    if (HOST_APPEARANCE_PROVIDER) return;
-    expect(
-      await page.evaluate(() => [
-        document.documentElement.getAttribute("data-appearance"),
-        document.documentElement.style.colorScheme,
-        localStorage.length + sessionStorage.length,
-      ]),
-    ).toEqual([null, "", 0]);
+    // The host's existing document-level appearance and storage remain exactly host-owned.
+    assertHostPreserved(before, await hostState(page));
   });
 
-  test("a host's role token is the library's surface, and a host's own `--bg` still changes nothing", async ({
+  for (const provider of ["root", "ancestor"] as const) {
+    test(`a bare fixture's ${provider} appearance provider and role tokens drive the library`, async ({
+      page,
+    }) => {
+      test.skip(HOST_APPEARANCE_PROVIDER, SKIP_BARE_HOST);
+      await page.emulateMedia({ colorScheme: "light" });
+      await openWithHost(page);
+      const host = provider === "root" ? ".arras-root" : ".host-appearance-provider";
+      if (provider === "ancestor") {
+        await page.evaluate(() => {
+          const root = document.querySelector(".arras-root") as HTMLElement;
+          const host = document.createElement("div");
+          host.className = "host-appearance-provider";
+          root.parentElement?.replaceChild(host, root);
+          host.append(root);
+        });
+      }
+      await hostCss(
+        page,
+        `${host} { --arras-color-ground: rgb(240, 238, 230) } ${host}[data-appearance=dark] { --arras-color-ground: rgb(27, 26, 25) }`,
+      );
+      const choose = (appearance: "light" | "dark") =>
+        page
+          .locator(host)
+          .evaluate((element, value) => element.setAttribute("data-appearance", value), appearance);
+      const bg = () => style(page, ".arras-root", "background-color");
+      await choose("light");
+      const before = await hostState(page);
+      await expect.poll(bg).toBe(THEME.lightBg);
+      await choose("dark");
+      await expect.poll(bg).toBe(THEME.darkBg);
+      await choose("light");
+      await expect.poll(bg).toBe(THEME.lightBg);
+
+      // The declared host provider remains host-owned and does not change unrelated page styles or storage.
+      expect(await style(page, "#host-probe h1", "font-size")).toBe("32px");
+      assertHostPreserved(before, await hostState(page));
+      expect(await page.locator(host).getAttribute("data-appearance")).toBe("light");
+    });
+  }
+
+  test("the actual host retains its full state during Arras interactions at fixed media", async ({
     page,
   }) => {
+    await openWithHost(page);
+    await assertStaticInteractionPreserved(page);
+  });
+
+  test("system changes preserve bare-host state and never install Arras subtree appearance", async ({
+    page,
+  }) => {
+    await openWithHost(page);
+    const before = await hostState(page);
+    for (const colorScheme of ["dark", "light"] as const) {
+      await page.emulateMedia({ colorScheme });
+      await page.evaluate(
+        () =>
+          new Promise<void>((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+          ),
+      );
+      await assertSystemTransitionPreserved(page, before);
+    }
+  });
+
+  for (const placement of ["root", "ancestor"] as const) {
+    test(`a real ${placement} host media listener owns OS changes while Arras interactions preserve its state`, async ({
+      page,
+    }) => {
+      // This controlled fixture owns the page; never replace a consumer's already-declared provider.
+      test.skip(HOST_APPEARANCE_PROVIDER, SKIP_BARE_HOST);
+      await installMediaAppearanceHost(page, placement);
+      await openWithHost(page);
+      expect(
+        await page.evaluate(() => [
+          localStorage.getItem("host-preference"),
+          sessionStorage.getItem("host-session"),
+        ]),
+      ).toEqual(["retained-local", "retained-session"]);
+      const before = await hostState(page);
+      for (const scheme of ["dark", "light"] as const) {
+        await page.emulateMedia({ colorScheme: scheme });
+        await expect
+          .poll(() =>
+            page.evaluate(() => [
+              document.documentElement.getAttribute("data-appearance"),
+              document.querySelector(".arras-root")?.getAttribute("data-host-scheme"),
+              getComputedStyle(document.body).backgroundColor,
+              localStorage.getItem("host-observed-scheme"),
+            ]),
+          )
+          .toEqual([
+            scheme,
+            scheme,
+            scheme === "dark" ? "rgb(9, 10, 11)" : "rgba(0, 0, 0, 0)",
+            scheme,
+          ]);
+        await expect
+          .poll(() => style(page, ".arras-root", "background-color"))
+          .toBe(scheme === "dark" ? "rgb(31, 39, 47)" : "rgb(221, 229, 237)");
+        await assertSystemTransitionPreserved(page, before, true);
+      }
+    });
+  }
+
+  for (const mutation of [
+    "local value",
+    "session key",
+    "host appearance",
+    "root appearance",
+    "outside background",
+    "subtree appearance",
+  ] as const) {
+    test(`the static preservation guard rejects a ${mutation} write during an Arras interaction`, async ({
+      page,
+    }) => {
+      await openWithHost(page);
+      await page.evaluate(() => {
+        localStorage.setItem("preservation-local", "original");
+        sessionStorage.setItem("preservation-session", "original");
+        document.documentElement.setAttribute("data-theme", "original");
+      });
+      await assertStaticInteractionPreserved(page);
+      const before = await hostState(page);
+      await page.evaluate((kind) => {
+        // Simulate a forbidden Arras write during the next real keyboard interaction. The fixed
+        // media setting cannot trigger the host's legitimate media listener during this check.
+        window.addEventListener(
+          "keydown",
+          () => {
+            switch (kind) {
+              case "local value":
+                localStorage.setItem("preservation-local", "changed");
+                break;
+              case "session key":
+                sessionStorage.removeItem("preservation-session");
+                sessionStorage.setItem("replacement-session", "original");
+                break;
+              case "host appearance":
+                document.documentElement.setAttribute("data-theme", "changed");
+                break;
+              case "root appearance":
+                document.querySelector(".arras-root")?.setAttribute("data-theme", "changed");
+                break;
+              case "outside background":
+                document.body.style.backgroundColor = "rgb(5, 6, 7)";
+                break;
+              case "subtree appearance":
+                document
+                  .querySelector(".arras-root button")
+                  ?.setAttribute("data-theme", "unexpected");
+                break;
+            }
+          },
+          { once: true, capture: true },
+        );
+      }, mutation);
+      await exerciseArrasInteraction(page);
+      const after = await hostState(page);
+      expect(after.localStorage.length).toBe(before.localStorage.length);
+      expect(after.sessionStorage.length).toBe(before.sessionStorage.length);
+      expect(() => assertHostPreserved(before, after)).toThrow();
+      if (mutation === "subtree appearance")
+        await expect(assertNoArrasAppearance(page)).rejects.toThrow();
+    });
+  }
+
+  test("the isolation guard rejects a deliberate global host-style leak", async ({ page }) => {
+    await openWithHost(page);
+    await hostCss(page, "#host-probe h1 { font-size: 13px !important }");
+    expect(await style(page, "#host-probe h1", "font-size")).toBe("13px");
+    // This is the same canonical assertion used by the unmutated isolation control above.
+    let isolationAssertionRejected = false;
+    try {
+      expect(await style(page, "#host-probe h1", "font-size")).toBe("32px");
+    } catch {
+      isolationAssertionRejected = true;
+    }
+    expect(isolationAssertionRejected).toBe(true);
+  });
+
+  test("a bare host's root role token is the library's surface, and its own `--bg` changes nothing", async ({
+    page,
+  }) => {
+    test.skip(HOST_APPEARANCE_PROVIDER, SKIP_BARE_HOST);
     await page.emulateMedia({ colorScheme: "light" });
     await openWithHost(page);
     await hostCss(page, ":root { --arras-color-ground: rgb(240, 238, 230) }");

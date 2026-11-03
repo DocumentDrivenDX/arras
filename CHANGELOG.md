@@ -11,6 +11,9 @@
 - Fixes #52: local package attributes and shim modules keep precedence when Arras
   aliases are installed; a closed alias list must explicitly include a package
   `__main__` entrypoint when `python -m` support is intended.
+- Fixes #53: the portable UI acceptance testkit preserves host-owned appearance
+  and storage changes while detecting forbidden Arras writes across interactions
+  and operating-system appearance events.
 
 ## 0.7.0 — bounded UMF memory actions
 

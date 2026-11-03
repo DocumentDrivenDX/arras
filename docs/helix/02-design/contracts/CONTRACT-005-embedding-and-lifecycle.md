@@ -870,10 +870,16 @@ default surfaces when omitted.
 provider above the Arras root (`data-appearance` or an inline `color-scheme`, or a
 design-system provider that sets them). The `host-isolation` specs that plant their own
 appearance providers and read the system's preference then skip, because their
-premise is a bare host, and the appearance spec still asserts that nothing on or
-beneath the Arras root sets an appearance. It is the only assertion the flag relaxes.
-The selected expected Brand and surfaces parameterize the existing exact assertions,
-not exemptions from them. Hosts provide expectations matching their selected theme.
+premise is a bare host. A declared host provider may update its own root attributes,
+page background and preference storage in response to an operating-system media
+event. In that profile, the acceptance suite verifies those host changes, verifies
+that Arras adds no forbidden appearance declarations, and compares host state around
+Arras interactions against the host's settled state. The bare profile still requires
+full host-state preservation across media changes because it declares no host
+appearance writer. Neither profile may skip an observed failure or weaken the
+negative controls for writes by Arras. The selected expected Brand and surfaces
+parameterize the existing exact assertions. Hosts provide expectations matching
+their selected theme.
 
 The returned config points at the **same canonical** specs/helpers/resources used
 by the source suite. It requires all existing nonvisual projects (`chromium`,
