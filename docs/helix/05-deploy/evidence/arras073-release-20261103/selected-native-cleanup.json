@@ -1,0 +1,35 @@
+{
+  "schema": "arras.selected-native-cleanup/1",
+  "status": "passed",
+  "candidate": "3dedd7ad0001321c014180acc41e269f0998b682",
+  "tests": {
+    "tests": 9,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "targets": [
+    "tests/test_truss_registry.py",
+    "tests/test_legacy_read_aliases.py"
+  ],
+  "required_test": "test_native_truss_registration_and_view_round_trip_preserve_alias_source",
+  "cleanup": {
+    "status": "passed",
+    "ownership": "isolated pytest/runtime temporary roots created by this job",
+    "matching_postgres_processes_remaining_before_runner_cleanup": 0,
+    "cluster_entries_after_test_teardown": [
+      "uv-cf07bc4a22c986b8.lock"
+    ],
+    "postgres_data_directories_after_test_teardown": [
+      "test_native_truss_registration0/native/pg"
+    ],
+    "runner_owned_temp_roots_removed": 2,
+    "owned_cluster_roots_remaining": 0,
+    "owned_postgres_data_directories_remaining": 0,
+    "matching_postgres_processes_remaining": 0,
+    "test_cleanup_paths": [
+      "tests/test_truss_harness.py::cluster fixture finally calls Cluster.close()",
+      "tests/test_legacy_read_aliases.py native case finally calls TrussBox.close()"
+    ]
+  }
+}

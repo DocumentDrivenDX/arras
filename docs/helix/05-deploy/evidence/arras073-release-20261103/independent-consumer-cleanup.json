@@ -1,0 +1,9 @@
+{
+  "schema": "arras.public-consumer-cleanup/1",
+  "status": "passed",
+  "owned_host_pid": 50812,
+  "owned_host_reaped": true,
+  "forced_kill": false,
+  "owned_port_closed": true,
+  "native_database_started": false
+}
