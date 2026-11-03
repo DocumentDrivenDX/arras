@@ -28,7 +28,7 @@ jobs:
           node --version > artifacts/node24/node-version.txt
           npm --version > artifacts/node24/npm-version.txt
           (cd ui && npm ci && npm run build:wheel)
-          uv build --wheel --out-dir artifacts/node24
+          uv build --wheel --sdist --out-dir artifacts/node24
           cp src/arras/ui/npm/*.tgz artifacts/node24/
       - uses: actions/setup-node@v4
         with:
@@ -98,6 +98,18 @@ jobs:
           print(json.dumps({key: value for key, value in report.items() if key != 'producers'}, indent=2))
           print(json.dumps({producer: {key: value for key, value in values.items() if key not in ('wheel_members', 'npm_members')} for producer, values in data.items()}, indent=2))
           PY
+      - name: Qualify the actual Linux wheel and exact sdist from fresh environments
+        run: |
+          set -euo pipefail
+          uv run --no-project --python 3.11 python tools/verify_distribution.py \
+            --output artifacts/node24/distribution-verification.json \
+            artifacts/node24/arras-0.7.1-py3-none-any.whl artifacts/node24/arras-0.7.1.tar.gz
+          uv run --no-project --python 3.11 python tools/verify_doctor.py \
+            --wheel artifacts/node24/arras-0.7.1-py3-none-any.whl \
+            --output-json artifacts/node24/doctor-installed.json
+          uv run --no-project --python 3.11 python tools/verify_umf_admission.py \
+            --wheel artifacts/node24/arras-0.7.1-py3-none-any.whl \
+            --output-json artifacts/node24/umf-admission-installed.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
