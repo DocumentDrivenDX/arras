@@ -15,6 +15,12 @@ on:
       - tools/verify*.py
       - tools/_umf*.py
       - tools/public-content-policy.json
+      - tests/test_truss_docs.py
+      - tests/test_public_api_manifest.py
+      - tests/test_public_content.py
+      - tests/test_pypi_extras.py
+      - tests/test_release_versions.py
+      - tests/test_release_workflow_binding.py
       - .github/scripts/**
       - .github/workflows/release.yml
       - .github/workflows/downstream.yml
@@ -109,7 +115,7 @@ jobs:
       - name: Check versioned catalog and public release controls
         run: |
           uv run --no-sync python tools/check_public_content.py
-          uv run --no-sync pytest -q tests/test_public_api_manifest.py tests/test_public_content.py tests/test_pypi_extras.py tests/test_release_versions.py tests/test_release_workflow_binding.py
+          uv run --no-sync pytest -q tests/test_public_api_manifest.py tests/test_public_content.py tests/test_pypi_extras.py tests/test_release_versions.py tests/test_release_workflow_binding.py tests/test_truss_docs.py
       - name: Qualify exact candidate artifacts and installed consumers
         run: |
           set -euo pipefail

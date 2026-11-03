@@ -156,7 +156,7 @@ def test_release_assets_are_gated_and_registry_publishing_follows_publication_ga
     assert "gh release create" in github and "release-assets/*" in github
     assert "pip install arras" not in github
     assert 'ARRAS_REQUIRE_WEFT: "1"' in build
-    assert 'python-version: "3.11"' in build
+    assert 'python-version: "3.11.18"' in build
     assert (
         'WEFT_VERSION: "0.4.51"' in build
         and "WEFT_SUMS_SHA256: 62c9d8082eb2f446446d7b94ff7ef7f48769e3cd836e5641c2951069302a6c75"

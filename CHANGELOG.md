@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.7.2 — embedded host, themes, and aliases
+## 0.7.3 — embedded host, themes, and aliases
 
 - Fixes #49: development-host help now shows the effective configured operator
   groups; explicit command-line groups still take precedence.
@@ -19,6 +19,14 @@
   writes remain canonical, and browser graph parsing receives aliases per call.
 - Aligns the neutral extension-host dependency and doctor expectations with the
   exact release version used by fresh installed-consumer qualification.
+
+## 0.7.2 — unpublished tag
+
+The immutable tag passed all 203 native tests but stopped before artifact
+publication on a workflow-contract assertion that still required the broad
+Python selector `3.11`. The qualified producer uses the stricter `3.11.18`.
+The successor corrects that exact-pin assertion and runs the workflow-contract
+checks before tagging. No GitHub Release, PyPI, or npm artifact was published.
 
 ## 0.7.1 — unpublished tag
 
