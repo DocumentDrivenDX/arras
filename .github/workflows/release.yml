@@ -169,6 +169,9 @@ jobs:
             0.7.0)
               echo 'b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6  dist/arras-0.7.0-py3-none-any.whl' | sha256sum --check --strict -
               ;;
+            0.7.1)
+              echo '1ef8396a487cf737b81918df6f792d57474dadaa397ae9c7729a847defa5100f  dist/arras-0.7.1-py3-none-any.whl' | sha256sum --check --strict -
+              ;;
             *) echo 'No exact qualification wheel is selected for this version' >&2; exit 1 ;;
           esac
       - name: Verify exact source and sdist-rebuilt artifacts
