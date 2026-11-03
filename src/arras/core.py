@@ -18,8 +18,10 @@ from typing import Any, cast
 from arras import callscope, gqlschema, telemetry
 from arras._catalogs import Catalogs as _Catalogs
 from arras._catalogs import collect_catalogs
+from arras._legacy_aliases import validate_backend_view_aliases
 from arras.actions import ActionInfo, Effect, Plan, resolve
 from arras.backend import Backend, Migrates, Provider
+from arras.distribution import DistributionConfig, _DistributionPolicy  # pyright: ignore[reportPrivateUsage]
 from arras.errors import (
     UNAVAILABLE_REASONS,
     ArrasError,
@@ -96,7 +98,7 @@ class Context:
         return self.ontology.query(module, sql, params, consistency="latest")
 
 
-class Arras:
+class Arras(_DistributionPolicy):
     """One instance per process: the configured backends, and sessions for principals."""
 
     def __init__(
@@ -111,6 +113,7 @@ class Arras:
         placement: Mapping[str, Placement] | None = None,
         default_placement: Placement | None = None,
         metadata_profile: MetadataProfile = "legacy-arras/1",
+        distribution: DistributionConfig | None = None,
     ) -> None:
         if type(metadata_profile) is not str or metadata_profile not in (
             "legacy-arras/1",
@@ -119,6 +122,8 @@ class Arras:
         ):
             raise ValueError(f"unknown metadata profile: {metadata_profile!r}")
         self.backends = dict(backends)
+        self._distribution = distribution or DistributionConfig()
+        validate_backend_view_aliases(self.backends, self.view_vocabulary_aliases)
         self.metadata_profile = metadata_profile
         self.placements = dict(placement or {})  # the host's, by module name (CONTRACT-002)
         self.default_placement: Placement | None = default_placement
@@ -128,7 +133,7 @@ class Arras:
         self.sleep = sleep
         self.clock = clock
         self.handlers: dict[str, Handler] = {}
-        self.views = ViewCache()  # resolved views by module and revision (CONTRACT-010)
+        self.views = ViewCache(self.view_vocabulary_aliases)
         self._announce_lock = threading.Lock()
         self._announced: dict[
             str, tuple[bool, str | None]
@@ -147,15 +152,14 @@ class Arras:
         placement: Mapping[str, Placement] | None = None,
         default_placement: Placement | None = None,
         metadata_profile: MetadataProfile = "legacy-arras/1",
+        distribution: DistributionConfig | None = None,
     ) -> Arras:
         """Never raises for an availability failure: `status()` reports each backend.
 
         `backends` are named by the host, any number of each kind. `placement` says, by module
         name, which reader is its record store, which others hold replicas and which provider runs
-        which action; `default_placement` is for a
-        module it does not list, and a module with neither is not served. The connection sources
-        belong to the real adapters, which wrap their connections as `Backend`s; `start` installs
-        nothing and has no budget (`migrate` has one).
+        which action; unlisted modules use `default_placement` or are not served. Real adapters own
+        and wrap their connection sources; `start` never installs or needs a budget (`migrate` does).
         """
         return cls(
             backends,
@@ -167,6 +171,7 @@ class Arras:
             placement=placement,
             default_placement=default_placement,
             metadata_profile=metadata_profile,
+            distribution=distribution,
         )
 
     def placement_of(self, module: str) -> Placement | None:

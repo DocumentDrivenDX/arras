@@ -19,6 +19,7 @@ from dataclasses import replace
 from datetime import datetime
 from typing import Any, Literal, cast
 
+from arras._legacy_aliases import VIEW_ALIAS_PROPERTY, initialize_view_aliases
 from arras.actions import (
     KEY_VALUE,
     Create,
@@ -192,8 +193,7 @@ class _Store:
             raise Unavailable(self.name, self.outage, f"{self.name} cannot serve {op}")
 
     def gate(self, principal: Principal, module: str | None, mode: Mode | None, op: str) -> None:
-        """Token first (a call without one is refused before it is made), then reachability,
-        then the backend's own grants."""
+        """Checks token first, then reachability, then the backend's own grants."""
         if not self.access.authenticated(principal):
             raise Refused(self.name, op, "token_expired")
         self.down(op)
@@ -355,6 +355,7 @@ class MemoryStore(
     """The authoritative backend: applies actions atomically, imports records, takes catalogs."""
 
     roles: tuple[Role, ...] = ("reader", "provider")
+    view_vocabulary_aliases = VIEW_ALIAS_PROPERTY
 
     def __init__(
         self,
@@ -363,8 +364,10 @@ class MemoryStore(
         clock: Clock = _now,
         *,
         action_profile: ActionProfile | None = None,
+        view_vocabulary_aliases: tuple[str, ...] = (),
     ) -> None:
         super().__init__(name, access, clock)
+        initialize_view_aliases(self, view_vocabulary_aliases)
         if action_profile is not None and (
             type(action_profile) is not str or action_profile != "arras-umf-set/1"
         ):
@@ -844,6 +847,7 @@ class MemoryReplica(_Store):
     """A replica: serves `bulk` reads from a copy fed from an authority, and refuses changes."""
 
     roles: tuple[Role, ...] = ("reader",)
+    view_vocabulary_aliases = VIEW_ALIAS_PROPERTY
 
     def __init__(
         self,
@@ -851,8 +855,11 @@ class MemoryReplica(_Store):
         access: FakeAccess,
         name: str = "memory_replica",
         clock: Clock = _now,
+        *,
+        view_vocabulary_aliases: tuple[str, ...] = (),
     ) -> None:
         super().__init__(name, access, clock)
+        initialize_view_aliases(self, view_vocabulary_aliases)
         self.source = source
         self.fed = False  # until its first feed it holds no position the authority issued
         self.state = _State(at=clock())

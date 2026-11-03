@@ -9,6 +9,10 @@ import { assertIntegers, NotIntegerError, notAnInteger, parseLossless } from "..
 
 export const GRAPH_FORMAT = "arras.graph";
 export const GRAPH_VERSION = 1;
+const GRAPH_NAMESPACE_PREFIX = `${GRAPH_FORMAT.slice(0, GRAPH_FORMAT.indexOf("."))}.`;
+export interface GraphFileOptions {
+  graphFormatAliases?: readonly string[];
+}
 const PAGE = 500;
 /** A module's graph is never walked past this many pages: a cursor that does not end is a fault. */
 const MAX_PAGES = 10_000;
@@ -104,7 +108,33 @@ const isObject = (v: unknown): v is Record<string, unknown> =>
  * is a string), and an `Error` says what is wrong with its shape. A file that does not say it is `complete`
  * is not known to be whole.
  */
-export function parseGraphFile(text: string): GraphFile {
+function checkedGraphFormatAliases(aliases: readonly string[] | undefined): readonly string[] {
+  if (aliases === undefined) return [];
+  if (!Array.isArray(aliases) || aliases.length > 16)
+    throw new Error("graphFormatAliases: at most 16 names are allowed");
+  const seen = new Set<string>();
+  const name = /^[a-z][a-z0-9_-]*(?:\.[a-z][a-z0-9_-]*)+$/;
+  for (const alias of aliases) {
+    if (
+      typeof alias !== "string" ||
+      alias.length < 1 ||
+      alias.length > 64 ||
+      !name.test(alias) ||
+      name.exec(alias)?.[0] !== alias ||
+      alias === GRAPH_FORMAT ||
+      alias.startsWith(GRAPH_NAMESPACE_PREFIX) ||
+      alias.startsWith("umf.") ||
+      seen.has(alias)
+    ) {
+      throw new Error("graphFormatAliases: invalid, reserved or duplicate alias");
+    }
+    seen.add(alias);
+  }
+  return aliases;
+}
+
+export function parseGraphFile(text: string, options: GraphFileOptions = {}): GraphFile {
+  const aliases = checkedGraphFormatAliases(options.graphFormatAliases);
   let raw: unknown;
   try {
     raw = parseLossless(text);
@@ -114,7 +144,10 @@ export function parseGraphFile(text: string): GraphFile {
   }
   assertIntegers(text);
   if (!isObject(raw)) throw new Error("a graph file is a JSON object");
-  if (raw.format !== GRAPH_FORMAT)
+  if (
+    typeof raw.format !== "string" ||
+    (raw.format !== GRAPH_FORMAT && !aliases.includes(raw.format))
+  )
     throw new Error(`not a graph file: "format" is "${GRAPH_FORMAT}"`);
   if (raw.version !== GRAPH_VERSION)
     throw new Error(`this release reads graph file version ${GRAPH_VERSION}`);

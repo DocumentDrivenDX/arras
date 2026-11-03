@@ -84,7 +84,8 @@ def test_process_telemetry_factory_runs_after_config_and_before_sandbox_effects(
     monkeypatch.setattr(process.Config, "from_env", lambda **_: order.append("config") or config)
 
     class FakeSandbox:
-        def __init__(self) -> None:
+        def __init__(self, *, distribution: DistributionConfig | None = None) -> None:
+            assert distribution == selected
             order.append("sandbox")
             self.arras = object()
 

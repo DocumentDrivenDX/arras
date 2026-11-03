@@ -14,6 +14,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, cast
 
+from arras._legacy_aliases import validate_alias_tuple
 from arras.core import Ontology
 
 FORMAT = "arras.graph"
@@ -84,13 +85,14 @@ def _refuse_not_integer(value: Any) -> None:
         raise ValueError(f"{bad[0]}: {bad[1]} is not an integer (a decimal is written as a string)")
 
 
-def loads(text: str) -> GraphFile:
+def loads(text: str, *, graph_format_aliases: tuple[str, ...] = ()) -> GraphFile:
     """Read a graph file; a `ValueError` says what is wrong with it.
 
     A number in the file is an integer: a decimal travels as a string, so `1.0`, `1.5`, `1e3` (and
     `NaN`) are refused, naming where they are. The float a language would read from them does not write
     back as the same text in every language.
     """
+    aliases = validate_alias_tuple(graph_format_aliases, "graph_format_aliases", FORMAT)
     try:
         raw: Any = json.loads(text, parse_float=_NotInteger, parse_constant=_NotInteger)
     except json.JSONDecodeError as e:
@@ -99,7 +101,8 @@ def loads(text: str) -> GraphFile:
     if not isinstance(raw, dict):
         raise ValueError("a graph file is a JSON object")
     body = cast(dict[str, Any], raw)
-    if body.get("format") != FORMAT:
+    format_name = body.get("format")
+    if not isinstance(format_name, str) or (format_name != FORMAT and format_name not in aliases):
         raise ValueError(f'not a graph file: "format" is {FORMAT!r}')
     if body.get("version") != VERSION:
         raise ValueError(f"this release reads graph file version {VERSION}")

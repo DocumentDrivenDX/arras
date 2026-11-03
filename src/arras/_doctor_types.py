@@ -32,6 +32,10 @@ def _telemetry_fields(value: object) -> dict[str, Any]:  # pyright: ignore[repor
     return fields
 
 
+def telemetry_fields(value: object) -> dict[str, Any]:
+    return _telemetry_fields(value)
+
+
 def pairs(pairs: list[tuple[str, object]]) -> dict[str, object]:
     result: dict[str, object] = {}
     for key, value in pairs:

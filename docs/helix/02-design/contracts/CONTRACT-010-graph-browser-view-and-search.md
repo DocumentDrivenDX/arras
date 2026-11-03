@@ -57,6 +57,25 @@ Terms. UMF is the metamodel, owned by DocumentDrivenDX, that defines Arras's typ
 
 A document MUST declare it as `vocabularies["arras.view"] = {"version": "0.1.0"}` to use it. Terms appear in `extensions["arras.view"]` of the module, a record, a field or a relationship; a term at any other place MUST be refused. Every term not listed here MUST be refused (the vocabulary is closed). The vocabulary is presentation only: it MUST NOT change the types, properties, relationships, actions, access or what a read returns.
 
+An explicit host `view_vocabulary_aliases` policy (CONTRACT-005) MAY substitute
+one configured legacy name at these declaration and extension locations. Its
+declared version MUST still be exactly `0.1.0`; all term, reference, length and
+placement checks remain the same. For example, configured `example.view` reads
+`vocabularies["example.view"] = {"version":"0.1.0"}` and corresponding extension
+keys with canonical meaning, without rewriting original document bytes.
+
+The document MUST select at most one name from the canonical name and all
+configured aliases. Two declarations, or extension use under another such name,
+MUST produce `view_ambiguous_vocabulary` before registration effects. An aliased
+extension still requires its matching declared vocabulary; alias policy does not
+declare it implicitly. Diagnostic paths MUST use the original source key;
+unsupported versions retain `view_unsupported_version`. View resolution and
+cache keys MUST preserve effective-policy isolation between hosts.
+
+Resolved view semantics and newly generated declarations remain canonical.
+Stored document readback remains exact. Supporting an alias does not admit new
+terms, different versions, markup, executable content or native capabilities.
+
 **Module** (`modules[0].extensions["arras.view"]`)
 
 | Term | Type | Required | Rules |

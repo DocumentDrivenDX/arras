@@ -34,7 +34,7 @@ def placed(h: Arras, document: bytes | str) -> tuple[bytes, ModuleInfo]:
     or the host placed no such module."""
     if h.metadata_profile == "legacy-arras/1":
         raw = document.encode() if isinstance(document, str) else document
-        mod = parse_module(raw)
+        mod = parse_module(raw, view_vocabulary_aliases=h.view_vocabulary_aliases)
     elif h.metadata_profile == "arras-umf-set/1":
         if type(document) is bytes:
             raw = document

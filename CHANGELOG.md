@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased — embedded host, themes, and aliases
+## 0.7.1 — embedded host, themes, and aliases
 
 - Fixes #49: development-host help now shows the effective configured operator
   groups; explicit command-line groups still take precedence.
@@ -14,6 +14,9 @@
 - Fixes #53: the portable UI acceptance testkit preserves host-owned appearance
   and storage changes while detecting forbidden Arras writes across interactions
   and operating-system appearance events.
+- Fixes #36: legacy view-vocabulary and graph-format aliases are explicit,
+  bounded read policies on a distribution; reads canonicalize aliases while
+  writes remain canonical, and browser graph parsing receives aliases per call.
 
 ## 0.7.0 — bounded UMF memory actions
 

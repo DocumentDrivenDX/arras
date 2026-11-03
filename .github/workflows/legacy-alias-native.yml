@@ -1,0 +1,133 @@
+name: Selected legacy-alias native qualification
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/legacy-alias-native.yml
+      - pyproject.toml
+      - uv.lock
+      - src/arras/**
+      - tests/test_truss_registry.py
+      - tests/test_legacy_read_aliases.py
+      - tests/test_truss_harness.py
+      - tests/truss_harness.py
+
+permissions:
+  contents: read
+
+jobs:
+  selected-native:
+    name: Nine selected cases on Linux PostgreSQL 18.6
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Install the locked native test cohort
+        run: uv sync --locked --extra truss --group truss-test
+      - name: Collect and execute all nine selected native cases
+        env:
+          ARRAS_REQUIRE_TRUSS: "1"
+          TMPDIR: ${{ runner.temp }}/arras-focused-native-tmp
+          PYTEST_BENCHMARKS: "0"
+        run: |
+          set -euo pipefail
+          mkdir -p "$TMPDIR" "$RUNNER_TEMP/arras-focused-pytest-temp" artifacts
+          export PYTEST_ADDOPTS="--basetemp=$RUNNER_TEMP/arras-focused-pytest-temp"
+          targets=(tests/test_truss_registry.py tests/test_legacy_read_aliases.py)
+          uv run --no-sync pytest -q -m truss --collect-only "${targets[@]}" > "$RUNNER_TEMP/collection.txt"
+          cat "$RUNNER_TEMP/collection.txt"
+          python - "$RUNNER_TEMP/collection.txt" <<'PY'
+          import sys
+          from pathlib import Path
+
+          nodes = [line for line in Path(sys.argv[1]).read_text().splitlines() if "::" in line]
+          if len(nodes) != 9:
+              raise SystemExit(f"expected exactly 9 selected native cases, collected {len(nodes)}")
+          if not any(
+              "test_native_truss_registration_and_view_round_trip_preserve_alias_source" in node
+              for node in nodes
+          ):
+              raise SystemExit("the new legacy-alias native round-trip case was not collected")
+          PY
+          uv run --no-sync pytest -q -m truss -ra --tb=short \
+            --junitxml=artifacts/selected-native.xml "${targets[@]}"
+          python - <<'PY'
+          import json
+          import os
+          import shutil
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          suites = list(ET.parse("artifacts/selected-native.xml").iter("testsuite"))
+          counts = {key: sum(int(suite.get(key, "0")) for suite in suites)
+                    for key in ("tests", "errors", "failures", "skipped")}
+          if counts != {"tests": 9, "errors": 0, "failures": 0, "skipped": 0}:
+              raise SystemExit(f"native JUnit counts do not qualify: {counts}")
+
+          native_tmp = Path(os.environ["TMPDIR"])
+          pytest_tmp = Path(os.environ["RUNNER_TEMP"]) / "arras-focused-pytest-temp"
+          runner_tmp = Path(os.environ["RUNNER_TEMP"]).resolve()
+          if not native_tmp.resolve().is_relative_to(runner_tmp):
+              raise SystemExit(f"native temporary root is outside runner-owned temp: {native_tmp}")
+          if not pytest_tmp.resolve().is_relative_to(runner_tmp):
+              raise SystemExit(f"pytest temporary root is outside runner-owned temp: {pytest_tmp}")
+          live_postgres = []
+          proc = Path("/proc")
+          for entry in proc.iterdir():
+              if not entry.name.isdecimal():
+                  continue
+              try:
+                  command = (
+                      (entry / "cmdline").read_bytes().replace(b"\0", b" ").decode(errors="replace")
+                  )
+              except (OSError, PermissionError):
+                  continue
+              if "postgres" in command.lower() and any(
+                  str(root) in command for root in (native_tmp, pytest_tmp)
+              ):
+                  live_postgres.append({"pid": int(entry.name), "command": command.strip()})
+          if live_postgres:
+              raise SystemExit(f"test-owned PostgreSQL processes remain after teardown: {live_postgres}")
+          leftover_clusters = list(native_tmp.iterdir())
+          leftover_datadirs = [path for path in pytest_tmp.rglob("pg") if path.is_dir()]
+          shutil.rmtree(native_tmp)
+          shutil.rmtree(pytest_tmp)
+          if native_tmp.exists() or pytest_tmp.exists():
+              raise SystemExit("isolated runner-owned native temporary roots remain after cleanup")
+
+          receipt = {
+              "schema": "arras.selected-native-cleanup/1",
+              "status": "passed",
+              "candidate": os.environ["GITHUB_SHA"],
+              "tests": counts,
+              "targets": ["tests/test_truss_registry.py", "tests/test_legacy_read_aliases.py"],
+              "required_test": "test_native_truss_registration_and_view_round_trip_preserve_alias_source",
+              "cleanup": {
+                  "status": "passed",
+                  "ownership": "isolated pytest/runtime temporary roots created by this job",
+                  "matching_postgres_processes_remaining_before_runner_cleanup": 0,
+                  "cluster_entries_after_test_teardown": [path.name for path in leftover_clusters],
+                  "postgres_data_directories_after_test_teardown": [
+                      str(path.relative_to(pytest_tmp)) for path in leftover_datadirs
+                  ],
+                  "runner_owned_temp_roots_removed": 2,
+                  "owned_cluster_roots_remaining": 0,
+                  "owned_postgres_data_directories_remaining": 0,
+                  "matching_postgres_processes_remaining": 0,
+                  "test_cleanup_paths": [
+                      "tests/test_truss_harness.py::cluster fixture finally calls Cluster.close()",
+                      "tests/test_legacy_read_aliases.py native case finally calls TrussBox.close()",
+                  ],
+              },
+          }
+          Path("artifacts/selected-native-cleanup.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: selected-legacy-alias-native-qualification
+          path: artifacts/
+          if-no-files-found: warn

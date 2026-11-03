@@ -20,7 +20,10 @@ const file = resolve(
   dirname(fileURLToPath(import.meta.url)),
   "../../../tests/vectors/graphfile.json",
 );
-const { vectors, rejected, unwritable } = parseLossless(readFileSync(file, "utf8")) as {
+const { vectors, rejected, unwritable, invalid_formats } = parseLossless(
+  readFileSync(file, "utf8"),
+) as {
+  invalid_formats: { name: string; format: unknown }[];
   rejected: { name: string; text: string; path: string; token: string }[];
   unwritable: { name: string; graph: unknown; path: string; token: string }[];
   vectors: {
@@ -66,6 +69,13 @@ describe("a number that is not an integer is not written (tests/vectors/graphfil
 });
 
 describe("reading a graph file (tests/vectors/graphfile.json)", () => {
+  for (const vector of invalid_formats)
+    it(`refuses format ${vector.name} even with aliases`, () => {
+      const text = JSON.stringify({ format: vector.format, version: 1, module: "m", records: [] });
+      expect(() => parseGraphFile(text, { graphFormatAliases: ["legacy.graph"] })).toThrow(
+        /not a graph file/,
+      );
+    });
   for (const v of vectors)
     it(`reads ${v.name} back as the graph`, () => {
       expect(parseGraphFile(v.text)).toEqual(v.graph);
@@ -100,6 +110,19 @@ describe("reading a graph file (tests/vectors/graphfile.json)", () => {
   it("does not take a file for whole unless it says so", () => {
     const text = '{"format": "arras.graph", "version": 1, "module": "m", "records": []}';
     expect(parseGraphFile(text).complete).toBe(false);
+  });
+
+  it("accepts only explicitly selected format aliases and keeps output canonical", () => {
+    const text = '{"format":"legacy.graph","version":1,"module":"m","records":[]}';
+    expect(() => parseGraphFile(text)).toThrow(/not a graph file/);
+    const graph = parseGraphFile(text, { graphFormatAliases: ["legacy.graph"] });
+    expect(graphText(graph)).toContain('"format": "arras.graph"');
+    expect(() => parseGraphFile(text, { graphFormatAliases: ["arras.future"] })).toThrow(
+      /graphFormatAliases/,
+    );
+    expect(() => parseGraphFile(text, { graphFormatAliases: ["legacy.graph\n"] })).toThrow(
+      /graphFormatAliases/,
+    );
   });
 });
 

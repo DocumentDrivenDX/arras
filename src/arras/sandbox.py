@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any, Protocol, cast
 
 from arras.core import Arras
+from arras.distribution import DistributionConfig
 from arras.fakes import FakeAccess, MemoryReplica, MemoryStore
 from arras.graphfile import GraphFile
 from arras.model import Placement
@@ -103,16 +104,34 @@ class Sandbox:
     )  # name to (role, principal): people a developer made up
     lock: Any = field(default_factory=threading.RLock, repr=False)  # guards grants and the fakes
     warnings: list[str] = field(default_factory=list[str])  # what a load noticed and went on past
+    distribution: DistributionConfig = field(default_factory=DistributionConfig)
+
+    def __setattr__(self, name: str, value: object) -> None:
+        if name == "distribution" and name in self.__dict__:
+            raise AttributeError("distribution is read-only")
+        object.__setattr__(self, name, value)
+
+    def __delattr__(self, name: str) -> None:
+        if name == "distribution":
+            raise AttributeError("distribution is read-only")
+        object.__delattr__(self, name)
 
     def __post_init__(self) -> None:
-        self.store = MemoryStore(self.access)
-        self.replica = MemoryReplica(self.store, self.access)
+        self.store = MemoryStore(
+            self.access, view_vocabulary_aliases=self.distribution.view_vocabulary_aliases
+        )
+        self.replica = MemoryReplica(
+            self.store,
+            self.access,
+            view_vocabulary_aliases=self.distribution.view_vocabulary_aliases,
+        )
         root = self.access.grant("root", "catalog", "read", "write", "schema", admin=True)
         # the host names its administrator, so no one else can claim to be one
         self.arras = Arras.start(
             self.backends,
             admin=root,
             default_placement=Placement(self.store.name, (self.replica.name,)),
+            distribution=self.distribution,
         )
         self.people = {
             "root": replace(root, groups=("admins",)),
@@ -150,7 +169,9 @@ class Sandbox:
 
         A graph file that is not the whole graph (`complete` false, or not stated) loads, and the
         sandbox says so: in `warnings` and on the log."""
-        name = parse_module(document).name
+        name = parse_module(
+            document, view_vocabulary_aliases=self.distribution.view_vocabulary_aliases
+        ).name
         if records is not None and records.module != name:
             raise ValueError(f"the graph file is for {records.module!r}, not {name!r}")
         self.know(name)

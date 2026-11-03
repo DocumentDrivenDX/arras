@@ -12,6 +12,7 @@ from __future__ import annotations
 import threading
 from collections.abc import Callable
 
+from arras._legacy_aliases import validate_alias_tuple
 from arras.errors import Invalid, Unsupported
 from arras.model import ModuleInfo
 from arras.results import RegisteredDocument
@@ -22,9 +23,16 @@ from arras.view import ResolvedModule, declared_from_text, resolve
 class ViewCache:
     """The latest resolution of each module, with the revision it was made at."""
 
-    def __init__(self) -> None:
+    def __init__(self, view_vocabulary_aliases: tuple[str, ...] = ()) -> None:
+        self._view_vocabulary_aliases = validate_alias_tuple(
+            view_vocabulary_aliases, "view_vocabulary_aliases", "arras.view"
+        )
         self._held: dict[str, tuple[Revision, ResolvedModule]] = {}
         self._lock = threading.Lock()
+
+    @property
+    def view_vocabulary_aliases(self) -> tuple[str, ...]:
+        return self._view_vocabulary_aliases
 
     def resolve(self, mod: ModuleInfo, fetch: Callable[[], RegisteredDocument]) -> ResolvedModule:
         """The module's view at its revision. `fetch` reads the registered document as the caller;
@@ -38,7 +46,11 @@ class ViewCache:
             doc: RegisteredDocument | None = fetch()
         except (Unsupported, Invalid):
             doc = None
-        declared = declared_from_text(doc.text, mod) if doc is not None else None
+        declared = (
+            declared_from_text(doc.text, mod, view_vocabulary_aliases=self.view_vocabulary_aliases)
+            if doc is not None
+            else None
+        )
         resolved = resolve(mod, declared)
         if known and (doc is None or doc.revision == mod.revision):
             with self._lock:

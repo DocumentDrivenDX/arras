@@ -15,6 +15,7 @@ from datetime import datetime
 from importlib import metadata
 
 from arras import callscope, telemetry
+from arras._legacy_aliases import validate_alias_tuple
 from arras.actions import Plan
 from arras.adapters.truss.apply import Applier
 from arras.adapters.truss.audit import Auditor
@@ -105,6 +106,10 @@ class TrussBackend:
     connection for `status`). `changes` and `loads` read Truss's audit pages as the person, who needs
     Truss's own audit grant for the module (`ModuleAccess.auditor_role`)."""
 
+    @property
+    def view_vocabulary_aliases(self) -> tuple[str, ...]:
+        return self._view_vocabulary_aliases
+
     def __init__(
         self,
         name: str,
@@ -113,8 +118,12 @@ class TrussBackend:
         module_access: Mapping[str, ModuleAccess] | None = None,
         *,
         tolerated_grantees: tuple[str, ...] = (),
+        view_vocabulary_aliases: tuple[str, ...] = (),
     ) -> None:
         selected_grantees = validate_tolerated_grantees(tolerated_grantees)
+        self._view_vocabulary_aliases = validate_alias_tuple(
+            view_vocabulary_aliases, "view_vocabulary_aliases", "arras.view"
+        )
         self.name = name
         self.connections = connections
         self._lifecycle = Lifecycle(
@@ -124,7 +133,16 @@ class TrussBackend:
             tolerated_grantees=selected_grantees,
         )
         self.cache = CatalogCache()
-        self._registry = Registry(name, connections, self.cache) if connections else None
+        self._registry = (
+            Registry(
+                name,
+                connections,
+                self.cache,
+                view_vocabulary_aliases=self.view_vocabulary_aliases,
+            )
+            if connections
+            else None
+        )
         self._reader = (
             Reader(name, connections, self._registry) if connections and self._registry else None
         )
@@ -395,6 +413,7 @@ def create_backend(
     *,
     module_access: Mapping[str, ModuleAccess] | None = None,
     tolerated_grantees: tuple[str, ...] = (),
+    view_vocabulary_aliases: tuple[str, ...] = (),
     statement_timeout_ms: int = STATEMENT_TIMEOUT_MS,
     operation_timeout_ms: int = OPERATION_TIMEOUT_MS,
 ) -> TrussBackend:
@@ -417,6 +436,7 @@ def create_backend(
             None,
             module_access,
             tolerated_grantees=selected_grantees,
+            view_vocabulary_aliases=view_vocabulary_aliases,
         )
     connections = Connections(
         name,
@@ -431,4 +451,5 @@ def create_backend(
         None,
         module_access,
         tolerated_grantees=selected_grantees,
+        view_vocabulary_aliases=view_vocabulary_aliases,
     )

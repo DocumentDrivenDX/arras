@@ -427,7 +427,15 @@ def _check_distribution_file(path: str, value: object, problems: list[str]) -> N
         problems.append(f"{path}: distribution: a table")
         return
     table = cast("dict[str, object]", value)
-    allowed = {"mcp_server_name", "mcp_tool_prefix", "brand", "telemetry", "theme_manifest"}
+    allowed = {
+        "mcp_server_name",
+        "mcp_tool_prefix",
+        "brand",
+        "telemetry",
+        "theme_manifest",
+        "view_vocabulary_aliases",
+        "graph_format_aliases",
+    }
     for field_name, field_value in table.items():
         if field_name not in allowed:
             problems.append(f"{path}: distribution.{field_name}: unknown or launcher-only field")
@@ -437,6 +445,10 @@ def _check_distribution_file(path: str, value: object, problems: list[str]) -> N
             "theme_manifest",
         } and not isinstance(field_value, str):
             problems.append(f"{path}: distribution.{field_name}: a string")
+        elif field_name in {"view_vocabulary_aliases", "graph_format_aliases"} and (
+            not _string_array(field_value)
+        ):
+            problems.append(f"{path}: distribution.{field_name}: an array of strings")
         elif field_name == "brand":
             names = {"name", "title", "wordmark", "tagline", "logo"}
             brand_fields = (
@@ -459,6 +471,52 @@ def _check_distribution_file(path: str, value: object, problems: list[str]) -> N
                 or not all(isinstance(v, str) for v in values.values())
             ):
                 problems.append(f"{path}: distribution.telemetry: known string fields only")
+
+
+def _string_array(value: object) -> bool:
+    return isinstance(value, list) and all(
+        type(item) is str for item in cast("list[object]", value)
+    )
+
+
+def _distribution_alias_values(
+    table: dict[str, object], selected: DistributionConfig, problems: list[str]
+) -> dict[str, object]:
+    alias_values: dict[str, object] = {}
+    for field_name in ("view_vocabulary_aliases", "graph_format_aliases"):
+        if field_name in table:
+            field_value = table[field_name]
+            if _string_array(field_value):
+                alias_values[field_name] = tuple(
+                    cast(str, alias) for alias in cast("list[object]", field_value)
+                )
+            else:
+                problems.append(f"distribution.{field_name}: invalid value")
+    if alias_values:
+        candidate_values = {
+            "view_vocabulary_aliases": alias_values.get(
+                "view_vocabulary_aliases", selected.view_vocabulary_aliases
+            ),
+            "graph_format_aliases": alias_values.get(
+                "graph_format_aliases", selected.graph_format_aliases
+            ),
+        }
+        try:
+            replace(selected, **candidate_values)
+        except (TypeError, ValueError) as exc:
+            message = str(exc)
+            field_name = next(
+                (
+                    field
+                    for field in ("view_vocabulary_aliases", "graph_format_aliases")
+                    if field in message
+                ),
+                "view_vocabulary_aliases",
+            )
+            problems.append(f"distribution.{field_name}: invalid value")
+        else:
+            return alias_values
+    return {}
 
 
 def validate_distribution(
@@ -496,6 +554,7 @@ def validate_distribution(
         except (TypeError, ValueError):
             for field_name in cast("dict[object, object]", telemetry_values):
                 problems.append(f"distribution.telemetry.{field_name}: invalid value")
+    values.update(_distribution_alias_values(table, selected, problems))
     try:
         return replace(selected, **values)
     except (TypeError, ValueError):

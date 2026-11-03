@@ -186,6 +186,10 @@ def checked_operator_groups(groups: Sequence[str]) -> tuple[str, ...]:
 
 
 class DevHost:
+    @property
+    def distribution(self) -> DistributionConfig:
+        return self._distribution
+
     def __init__(
         self,
         sandbox: Box,
@@ -198,7 +202,7 @@ class DevHost:
         theme_manifest: Path | None = None,
     ) -> None:
         self.operator_groups = checked_operator_groups(operator_groups)
-        self.distribution = distribution or DistributionConfig()
+        self._distribution = distribution or DistributionConfig()
         self.theme_manifest = (
             theme_manifest
             if theme_manifest is not None
@@ -462,6 +466,7 @@ def build(
     demo: bool = ...,
     records: Path | None = ...,
     also: Sequence[tuple[Path, Path | None]] = ...,
+    distribution: DistributionConfig | None = ...,
 ) -> Sandbox: ...
 @overload
 def build(
@@ -475,6 +480,7 @@ def build(
     truss_url: str | None = ...,
     credential_source: CredentialSource | None = ...,
     truss_reset: bool = ...,
+    distribution: DistributionConfig | None = ...,
 ) -> Box: ...
 def build(
     module: Path | None,
@@ -487,6 +493,7 @@ def build(
     truss_url: str | None = None,
     credential_source: CredentialSource | None = None,
     truss_reset: bool = False,
+    distribution: DistributionConfig | None = None,
 ) -> Box:
     """The box to serve: the one in `module` with the steps in `seed` and the graph in `records`
     (a file the interface's Export wrote), or the sandbox's own (with the richer demo catalog when
@@ -496,14 +503,27 @@ def build(
     `truss_reset` starts clean, and a graph file loads after the seed only then too. A module the
     registry refuses is `Invalid`; a misshapen seed or graph file, or a file for another module, is
     a `ValueError`."""
+    selected = distribution or DistributionConfig()
     if truss:
         from arras.devtruss import TrussBox
 
-        tbox = TrussBox(url=truss_url, credential_source=credential_source, reset=truss_reset)
+        tbox = TrussBox(
+            url=truss_url,
+            credential_source=credential_source,
+            reset=truss_reset,
+            distribution=selected,
+        )
         try:
             if module is not None:
                 steps = read_steps(seed) if seed is not None else []
-                graph = graphfile.loads(records.read_text(encoding="utf-8")) if records else None
+                graph = (
+                    graphfile.loads(
+                        records.read_text(encoding="utf-8"),
+                        graph_format_aliases=selected.graph_format_aliases,
+                    )
+                    if records
+                    else None
+                )
                 tbox.load(module.read_text(encoding="utf-8"), steps, graph)
                 for path, extra_seed in also:
                     more = read_steps(extra_seed) if extra_seed is not None else []
@@ -518,13 +538,22 @@ def build(
         return tbox
     if module is not None:
         steps = read_steps(seed) if seed is not None else []
-        graph = graphfile.loads(records.read_text(encoding="utf-8")) if records else None
-        sandbox = Sandbox().load(module.read_text(encoding="utf-8"), steps, graph)
+        graph = (
+            graphfile.loads(
+                records.read_text(encoding="utf-8"),
+                graph_format_aliases=selected.graph_format_aliases,
+            )
+            if records
+            else None
+        )
+        sandbox = Sandbox(distribution=selected).load(
+            module.read_text(encoding="utf-8"), steps, graph
+        )
         for path, extra_seed in also:  # more modules beside it: the interface offers a choice
             more = read_steps(extra_seed) if extra_seed is not None else []
             sandbox.load(path.read_text(encoding="utf-8"), more)
         return sandbox
-    plain = Sandbox().seed()
+    plain = Sandbox(distribution=selected).seed()
     return seed_demo(plain) if demo else plain
 
 
@@ -843,6 +872,7 @@ def _run_host(
                 truss_url=attach[0] if attach else None,
                 credential_source=credential_source,
                 truss_reset=args.truss_reset,
+                distribution=distribution,
             )
         except Invalid as e:
             lines = [f"  {v.path}: {v.code}: {v.message}" for v in e.violations]

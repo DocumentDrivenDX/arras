@@ -52,6 +52,20 @@ We will define an Arras-owned UMF vocabulary, `arras.view`, whose terms are list
 
 The vocabulary is **closed and data-only**. Strings are plain text or a template of `{property}` placeholders and literal text. Icons, tones and formats are names from fixed sets that Arras owns (the browser maps each name to its own drawing and its own theme-checked colours). The vocabulary has no markup, no script, no stylesheet, no colour value, no URL that is loaded, and no reference to a component. A term outside it is refused.
 
+A host MAY explicitly admit legacy vocabulary names on read through
+`DistributionConfig.view_vocabulary_aliases`. Each alias selects exactly
+`arras.view` version 0.1.0 and this same closed term set. It is compatibility
+for existing documents, not a second vocabulary or a branding-derived name.
+The empty default admits only the canonical name. Configuration is scoped to
+each host and threaded through registration, catalog readback and view resolution;
+no process-global alias table is permitted.
+
+Newly generated view declarations use `arras.view`. Original registered document
+bytes and digests remain unchanged, including aliases and unknown content.
+Declaring the canonical name together with an alias, or multiple configured
+aliases, is ambiguous and MUST refuse before effects. CONTRACT-005 defines
+configuration bounds; CONTRACT-010 defines version, diagnostics and resolution.
+
 Arras **checks it at registration** with the rest of the document, refusing an unknown term, a reference to a property or relationship the type does not have, a format that does not suit the property's type, an unknown icon or tone and a malformed template, each with the path of the fault; the registry is unchanged on refusal.
 
 Arras **resolves it on the server, from the registered document**: it reads the module's registered document (`document`, CONTRACT-001), resolves the view against the module's types, merging the derived defaults for what is not declared, and returns it on the meta schema (`EntityTypeInfo.view`, CONTRACT-010), cached by module and revision. The view is not part of any backend's catalog, `ModuleInfo` or `EntityTypeInfo`, so the backends persist nothing new, the registry's types are equal with and without a view by construction, and every client (the browser, the Operator Console, the MCP binding) shows the same default and none re-implements it.
