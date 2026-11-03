@@ -57,6 +57,7 @@ jobs:
           python - <<'PY'
           import json
           import os
+          import shutil
           import xml.etree.ElementTree as ET
           from pathlib import Path
 
@@ -68,6 +69,11 @@ jobs:
 
           native_tmp = Path(os.environ["TMPDIR"])
           pytest_tmp = Path(os.environ["RUNNER_TEMP"]) / "arras-focused-pytest-temp"
+          runner_tmp = Path(os.environ["RUNNER_TEMP"]).resolve()
+          if not native_tmp.resolve().is_relative_to(runner_tmp):
+              raise SystemExit(f"native temporary root is outside runner-owned temp: {native_tmp}")
+          if not pytest_tmp.resolve().is_relative_to(runner_tmp):
+              raise SystemExit(f"pytest temporary root is outside runner-owned temp: {pytest_tmp}")
           live_postgres = []
           proc = Path("/proc")
           for entry in proc.iterdir():
@@ -87,11 +93,10 @@ jobs:
               raise SystemExit(f"test-owned PostgreSQL processes remain after teardown: {live_postgres}")
           leftover_clusters = list(native_tmp.iterdir())
           leftover_datadirs = [path for path in pytest_tmp.rglob("pg") if path.is_dir()]
-          if leftover_clusters or leftover_datadirs:
-              raise SystemExit(
-                  f"test-owned PostgreSQL paths remain after teardown: "
-                  f"clusters={leftover_clusters}, datadirs={leftover_datadirs}"
-              )
+          shutil.rmtree(native_tmp)
+          shutil.rmtree(pytest_tmp)
+          if native_tmp.exists() or pytest_tmp.exists():
+              raise SystemExit("isolated runner-owned native temporary roots remain after cleanup")
 
           receipt = {
               "schema": "arras.selected-native-cleanup/1",
@@ -103,6 +108,12 @@ jobs:
               "cleanup": {
                   "status": "passed",
                   "ownership": "isolated pytest/runtime temporary roots created by this job",
+                  "matching_postgres_processes_remaining_before_runner_cleanup": 0,
+                  "cluster_entries_after_test_teardown": [path.name for path in leftover_clusters],
+                  "postgres_data_directories_after_test_teardown": [
+                      str(path.relative_to(pytest_tmp)) for path in leftover_datadirs
+                  ],
+                  "runner_owned_temp_roots_removed": 2,
                   "owned_cluster_roots_remaining": 0,
                   "owned_postgres_data_directories_remaining": 0,
                   "matching_postgres_processes_remaining": 0,
