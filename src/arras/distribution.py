@@ -97,3 +97,15 @@ class DistributionConfig:
             or not _ENV_PREFIX.fullmatch(self.env_prefix)
         ):
             raise ValueError("env_prefix: ASCII prefix [A-Z][A-Z0-9_]* up to 32 characters")
+
+
+class _DistributionPolicy:  # pyright: ignore[reportUnusedClass]
+    _distribution: DistributionConfig
+
+    @property
+    def distribution(self) -> DistributionConfig:
+        return self._distribution  # type: ignore[attr-defined,no-any-return]
+
+    @property
+    def view_vocabulary_aliases(self) -> tuple[str, ...]:
+        return self.distribution.view_vocabulary_aliases

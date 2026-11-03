@@ -18,9 +18,10 @@ from typing import Any, cast
 from arras import callscope, gqlschema, telemetry
 from arras._catalogs import Catalogs as _Catalogs
 from arras._catalogs import collect_catalogs
+from arras._legacy_aliases import validate_backend_view_aliases
 from arras.actions import ActionInfo, Effect, Plan, resolve
 from arras.backend import Backend, Migrates, Provider
-from arras.distribution import DistributionConfig
+from arras.distribution import DistributionConfig, _DistributionPolicy  # pyright: ignore[reportPrivateUsage]
 from arras.errors import (
     UNAVAILABLE_REASONS,
     ArrasError,
@@ -97,7 +98,7 @@ class Context:
         return self.ontology.query(module, sql, params, consistency="latest")
 
 
-class Arras:
+class Arras(_DistributionPolicy):
     """One instance per process: the configured backends, and sessions for principals."""
 
     def __init__(
@@ -122,14 +123,7 @@ class Arras:
             raise ValueError(f"unknown metadata profile: {metadata_profile!r}")
         self.backends = dict(backends)
         self._distribution = distribution or DistributionConfig()
-        absent_policy = object()
-        for name, backend in self.backends.items():
-            backend_aliases = getattr(backend, "view_vocabulary_aliases", absent_policy)
-            if (
-                backend_aliases is not absent_policy
-                and backend_aliases != self.view_vocabulary_aliases
-            ):
-                raise ValueError(f"backend {name}: view_vocabulary_aliases mismatch")
+        validate_backend_view_aliases(self.backends, self.view_vocabulary_aliases)
         self.metadata_profile = metadata_profile
         self.placements = dict(placement or {})  # the host's, by module name (CONTRACT-002)
         self.default_placement: Placement | None = default_placement
@@ -144,14 +138,6 @@ class Arras:
         self._announced: dict[
             str, tuple[bool, str | None]
         ] = {}  # the last state each was reported in
-
-    @property
-    def distribution(self) -> DistributionConfig:
-        return self._distribution
-
-    @property
-    def view_vocabulary_aliases(self) -> tuple[str, ...]:
-        return self._distribution.view_vocabulary_aliases
 
     @classmethod
     def start(
@@ -172,10 +158,8 @@ class Arras:
 
         `backends` are named by the host, any number of each kind. `placement` says, by module
         name, which reader is its record store, which others hold replicas and which provider runs
-        which action; `default_placement` is for a
-        module it does not list, and a module with neither is not served. The connection sources
-        belong to the real adapters, which wrap their connections as `Backend`s; `start` installs
-        nothing and has no budget (`migrate` has one).
+        which action; unlisted modules use `default_placement` or are not served. Real adapters own
+        and wrap their connection sources; `start` never installs or needs a budget (`migrate` does).
         """
         return cls(
             backends,

@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import re
-from typing import cast
+from typing import Any, cast
 
 _NAME = re.compile(r"[a-z][a-z0-9_-]*(?:\.[a-z][a-z0-9_-]*)+")
 
@@ -39,3 +39,24 @@ def validate_alias_policy(view: object, graph: object) -> tuple[tuple[str, ...],
     if set(selected_view) & set(selected_graph):
         raise ValueError("view_vocabulary_aliases/graph_format_aliases: aliases must not overlap")
     return selected_view, selected_graph
+
+
+def validate_backend_view_aliases(backends: object, selected: tuple[str, ...]) -> None:
+    absent = object()
+    for name, backend in cast(dict[str, object], backends).items():
+        aliases = getattr(backend, "view_vocabulary_aliases", absent)
+        if aliases is not absent and aliases != selected:
+            raise ValueError(f"backend {name}: view_vocabulary_aliases mismatch")
+
+
+def _read_view_aliases(owner: Any) -> tuple[str, ...]:
+    return owner._view_vocabulary_aliases
+
+
+VIEW_ALIAS_PROPERTY = property(_read_view_aliases)
+
+
+def initialize_view_aliases(owner: Any, value: tuple[str, ...]) -> None:
+    owner._view_vocabulary_aliases = validate_alias_tuple(
+        value, "view_vocabulary_aliases", "arras.view"
+    )

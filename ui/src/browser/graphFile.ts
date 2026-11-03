@@ -9,6 +9,7 @@ import { assertIntegers, NotIntegerError, notAnInteger, parseLossless } from "..
 
 export const GRAPH_FORMAT = "arras.graph";
 export const GRAPH_VERSION = 1;
+const GRAPH_NAMESPACE_PREFIX = `${GRAPH_FORMAT.slice(0, GRAPH_FORMAT.indexOf("."))}.`;
 export interface GraphFileOptions {
   graphFormatAliases?: readonly string[];
 }
@@ -121,7 +122,7 @@ function checkedGraphFormatAliases(aliases: readonly string[] | undefined): read
       !name.test(alias) ||
       name.exec(alias)?.[0] !== alias ||
       alias === GRAPH_FORMAT ||
-      alias.startsWith("arras.") ||
+      alias.startsWith(GRAPH_NAMESPACE_PREFIX) ||
       alias.startsWith("umf.") ||
       seen.has(alias)
     ) {

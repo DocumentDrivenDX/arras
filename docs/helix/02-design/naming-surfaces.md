@@ -62,6 +62,13 @@ protocol and developer diagnostics. The machine-checked public surface remains
 
 ## C. Explicit aliases supplied by the host
 
+`view_vocabulary_aliases` and `graph_format_aliases` are explicit legacy-read
+compatibility lists governed by CONTRACT-005. They admit only the canonical
+`arras.view` 0.1.0 and `arras.graph` version 1 semantics. They do not rename
+canonical exports, stored original source bytes, CSS, protocol identities or
+generated documents. Brand never selects an alias. Empty lists preserve
+canonical-only reading; ambiguity and reserved-name collisions refuse.
+
 | Surface and locations | Alias and precedence rules |
 | --- | --- |
 | Python shim import and CLI command | Downstream-owned package/entry point explicitly imports public Arras symbols. `arras.mcp.launch(argv=None, *, distribution=...)` supplies composition without executing a hard-coded downstream module. Backend objects and action handlers are registered by calls; no display-name-derived plugin imports. |

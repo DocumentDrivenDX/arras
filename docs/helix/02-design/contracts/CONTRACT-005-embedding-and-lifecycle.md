@@ -958,6 +958,98 @@ substitute for the packed themed run.
 
 ## Normative Surface
 
+### Distribution legacy-read aliases
+
+`DistributionConfig` has optional immutable fields
+`view_vocabulary_aliases: tuple[str, ...] = ()` and
+`graph_format_aliases: tuple[str, ...] = ()`. They select read compatibility,
+never canonical identity or branding. The committed `[distribution]` typed
+configuration accepts corresponding arrays and freezes them on construction.
+Constructing the distribution value MUST NOT import plugins, perform host I/O or
+mutate global parser state. The existing process configuration loader owns file I/O.
+
+Each list contains at most 16 distinct names. Each name is 1–64 ASCII characters
+matching `[a-z][a-z0-9_-]*(?:\.[a-z][a-z0-9_-]*)+`. Names under `arras.` or
+`umf.`, the canonical names themselves, whitespace, duplicates and overlap
+between the two lists MUST refuse. Invalid programmatic configuration raises
+`ValueError` identifying the field without echoing source values; the typed
+configuration reader uses its existing configuration diagnostics.
+
+`Arras.start(distribution=...)` and explicit backend construction MUST receive
+the same effective alias policy. A host MUST NOT silently combine conflicting
+policies for one instance. The policy follows document registration, native and
+memory catalog reads, cache interpretation, doctor and browser graph loading.
+Concurrent instances with different policies remain independent. Cache entries
+MUST be scoped to their effective policy or belong to an instance owning it.
+
+CONTRACT-010 governs view aliases; CONTRACT-003 governs graph format aliases.
+Only canonical versions and term/format semantics are admitted. Two names for
+the same view declaration in one document MUST refuse as ambiguous. Alias
+acceptance MUST NOT change backend permissions, native capabilities or admission
+of other vocabularies. Unknown unsupported meaning retains its existing refusal.
+
+Browser graph-file readers receive aliases only as explicit per-call options
+from their caller. Omitted options select no aliases. The stock page exports
+graph files and has no graph-file import control; serving that page MUST NOT
+inject graph alias policy into HTML metadata or a global browser default.
+New output remains canonical; `document()` retains original bytes. The doctor
+reports configured aliases and their exact canonical supported versions without
+claiming native or deployment qualification from configuration alone.
+
+#### Explicit policy plumbing
+
+The immutable carrier is the two validated tuples on `DistributionConfig`;
+no additional policy class, singleton or ambient context is required.
+Programmatic tuple fields MUST be tuples of strings; the typed reader converts
+validated TOML arrays to tuples. Omitted fields retain their prior layer;
+an explicit array replaces the whole corresponding list, including empty arrays.
+
+The following keyword-only additions define policy flow; existing positional
+arguments and return types retain their meanings:
+
+| Entry point | Added keyword | Effect |
+| --- | --- | --- |
+| `Arras.__init__`, `Arras.start` | `distribution: DistributionConfig | None = None` | Freeze effective view alias tuple for registration and instance view cache; None selects empty defaults. |
+| `arras.umf.parse_module(document)` | `view_vocabulary_aliases: tuple[str, ...] = ()` | Validate/interpret only explicitly selected legacy view keys. |
+| `arras.view.parse_view(root, mod)`, `declared_from_text(text, mod)` | `view_vocabulary_aliases: tuple[str, ...] = ()` | Match declaration and extension source keys; retain source-key diagnostics. |
+| `TrussBackend(...)`, `MemoryStore(...)`, `MemoryReplica(...)` | `view_vocabulary_aliases: tuple[str, ...] = ()` | Bind immutable interpretation to this backend's registration and catalog readback. |
+| `ViewCache(...)` | `view_vocabulary_aliases: tuple[str, ...] = ()` | Bind immutable resolution policy; no policy mutation after construction. |
+| `arras.graphfile.loads(text)` | `graph_format_aliases: tuple[str, ...] = ()` | Read alias format as canonical version 1, without changing write format. |
+| Browser `parseGraphFile(text, options = {})` | `options.graphFormatAliases?: readonly string[]` | Explicit bounded browser alias input; omitted is empty. |
+
+`Arras` supplies its frozen tuple to `registration.placed` and `ViewCache`;
+those internal functions need no redundant caller override. Backend registry
+helpers receive the constructor tuple explicitly, including retained catalog
+documents. Built-in backend instances expose a read-only
+`view_vocabulary_aliases` tuple; `Arras.start` MUST refuse a mismatch with its
+effective tuple before starting that instance. It MUST NOT mutate a backend's
+policy to repair a mismatch. Sharing a backend across hosts with different
+policies requires separate backend instances, not changing a shared policy.
+
+Logical resolved-view cache identity is module, exact revision and effective
+view-alias tuple. A fixed-policy instance cache may retain its existing storage
+layout if instance ownership guarantees that identity; shared caches must include
+the tuple in their key. Existing caller access, document revision and freshness
+checks remain mandatory; a policy match never substitutes for them.
+
+Process launchers, devhost and sandbox construction propagate the selected
+distribution to Arras and the same tuple to built-in backends and direct parser
+calls. Doctor uses the same validated tuple. Server/devhost graph-file loaders
+pass effective `distribution.graph_format_aliases` explicitly to `loads`.
+A browser caller that reads a graph file passes its selected aliases explicitly
+as `parseGraphFile(text, {graphFormatAliases})`; this function MUST NOT read DOM
+metadata, ambient distribution state or global policy. No host-bound reader,
+page import control or additional browser API is required by this policy.
+Serving identical pages with different graph-read policies does not require a
+policy-dependent HTML variant or page cache key. File contents cannot set
+policy. Export functions and registered source storage do not receive a rewrite
+policy and remain canonical-output/original-source.
+
+The alias option does not switch `metadata_profile` or add official UMF action,
+constraint or native capability. Selected official admission still receives the
+original bytes and retains its existing unsupported-meaning refusal. Unknown
+document fields are preserved; aliases select only the existing view schema.
+
 ### Embedded API and compiled UI ownership
 
 A host MAY mount `arras.console.create_app`, `arras.operate.create_app` and

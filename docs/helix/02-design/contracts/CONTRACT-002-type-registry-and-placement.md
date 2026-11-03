@@ -65,6 +65,22 @@ document. A Python shim re-exports deliberate public APIs without changing their
 canonical identity. Source bytes and unsupported-meaning refusals remain governed
 by this contract; using an own namespace does not establish a new UMF profile.
 
+**Legacy view read policy.** The host MAY explicitly supply the immutable
+`view_vocabulary_aliases` policy of CONTRACT-005. An alias MUST select the same
+`arras.view` 0.1.0 semantics and checks as CONTRACT-010. Registration,
+validate-only registration, attach, backend catalog readback and view caching
+MUST use the same effective policy for that Arras instance. Pure parsing calls
+default to the empty policy; no ambient configuration or brand lookup is allowed.
+
+Interpret names at the vocabulary and applicable extension-key boundaries;
+MUST NOT rewrite arbitrary JSON keys or reserialize the document for storage.
+The original bytes, digest, unknown content and revision identity remain
+authoritative. Existing stored aliased documents can become readable under an
+explicit policy without re-registration or a new revision. Disabling the policy
+does not mutate those documents or grant their interpretation to another host.
+Unsupported versions, ambiguous declarations, malformed terms and references
+MUST refuse with source-key diagnostic paths and no registration effects.
+
 **Admission and executable capability.** Official UMF model validity, validation
 completeness and a backend's ability to execute a declared profile are separate
 results. `valid` and `complete` MUST NOT alone advertise runtime constraint or

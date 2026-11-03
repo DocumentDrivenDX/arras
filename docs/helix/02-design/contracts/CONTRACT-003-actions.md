@@ -180,6 +180,28 @@ validation, idempotency or authorization checks.
 
 ## Precedence and Compatibility
 
+### Graph format legacy-read aliases
+
+Python `arras.graphfile.loads` and the browser graph reader MAY accept explicitly
+configured `graph_format_aliases` from CONTRACT-005 as alternate input `format`
+values. The format version remains exactly 1, with the same limits, record
+validation, completeness rules and import authorization as `arras.graph`.
+Missing policy keeps canonical-only acceptance. Unknown formats and wrong
+versions retain the existing graph-load refusal; an input file cannot configure
+its own aliases. The browser reader takes explicit per-call
+`parseGraphFile(text, {graphFormatAliases})` options, with omitted options
+remaining canonical-only. It reads no DOM metadata or global policy. The stock
+page offers Export, not graph-file import; this policy adds no import control.
+Server/devhost loaders pass their effective distribution policy explicitly to
+`loads`.
+
+`arras.graphfile.dumps`, server export and browser Export MUST write
+`format:"arras.graph"`, including after loading an alias. This normalization of
+new graph output MUST NOT rewrite any registered UMF document or invent source
+provenance. Python and browser readers MUST share accept/refuse vectors for
+configured and unconfigured aliases. Per-host policy MUST NOT affect another
+instance's reader or cached interpretation.
+
 - Versioning: v2. The contract version is `arras.CONTRACT_VERSIONS["actions"]`.
 - Ordering or precedence: access is the provider's own; preconditions precede effects; effects apply in order within one unit.
 - Backward compatibility: adding an optional element to the declaration, a predicate form, an effect form or a receipt field is compatible. Removing or renaming one, or changing a meaning, is breaking.

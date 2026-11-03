@@ -85,6 +85,15 @@ reader, duplicated Brand, dynamic import path, or global telemetry namespace mut
 is a drift signal. CONTRACT-008 preserves canonical definitions and default output
 while its explicit context-local projection satisfies downstream signal naming.
 
+### Legacy-read policy uses the same reader
+
+The committed `[distribution]` fields `view_vocabulary_aliases` and
+`graph_format_aliases` use the same typed reader and field-by-field precedence.
+They select bounded legacy reads under CONTRACT-005, independently of Brand and
+environment-variable prefix selection. Supplying a list replaces that field's
+list rather than appending aliases from multiple layers; omission retains the
+bootstrap/default value. Values become immutable before runtime composition.
+
 ### Typed telemetry names use the same precedence
 
 `DistributionConfig.telemetry` is the inert `TelemetryNames` value bound by

@@ -20,7 +20,9 @@ const file = resolve(
   dirname(fileURLToPath(import.meta.url)),
   "../../../tests/vectors/graphfile.json",
 );
-const { vectors, rejected, unwritable, invalid_formats } = parseLossless(readFileSync(file, "utf8")) as {
+const { vectors, rejected, unwritable, invalid_formats } = parseLossless(
+  readFileSync(file, "utf8"),
+) as {
   invalid_formats: { name: string; format: unknown }[];
   rejected: { name: string; text: string; path: string; token: string }[];
   unwritable: { name: string; graph: unknown; path: string; token: string }[];

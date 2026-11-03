@@ -18,9 +18,9 @@ from datetime import date, datetime
 from functools import lru_cache
 from typing import Any, cast
 
-from arras._legacy_aliases import validate_alias_tuple
 from arras.errors import Violation
 from arras.model import EntityTypeInfo, ModuleInfo, PropertyInfo
+from arras.view_aliases import select_view_vocabulary
 
 VOCABULARY = "arras.view"
 VERSION = "0.1.0"
@@ -802,57 +802,13 @@ def parse_view(
     `mod` is the module the document defines (`umf.parse_module`'s reading of it). The terms are
     examined only when the document declares the vocabulary; a version this release does not
     support is the one fault then. Every fault carries its document path."""
-    aliases = validate_alias_tuple(view_vocabulary_aliases, "view_vocabulary_aliases", VOCABULARY)
-    names = (VOCABULARY, *aliases)
-    vocabularies = _obj(root.get("vocabularies"))
-    declarations = [(name, f"vocabularies.{name}") for name in names if name in vocabularies]
+    vocabulary, selection_fault = select_view_vocabulary(root, view_vocabulary_aliases, VOCABULARY)
     module = _obj((_list(root.get("modules")) or [None])[0])
-    extension_occurrences: list[tuple[str, str]] = []
-    carriers = (
-        (root, "extensions"),
-        (module, "modules[0].extensions"),
-        *tuple(
-            (_obj(action), f"modules[0].actions[{i}].extensions")
-            for i, action in enumerate(_list(module.get("actions")))
-        ),
-        *tuple(
-            (_obj(element), f"modules[0].elements[{i}].extensions")
-            for i, element in enumerate(_list(module.get("elements")))
-        ),
-        *tuple(
-            (_obj(relationship), f"modules[0].relationships[{i}].extensions")
-            for i, relationship in enumerate(_list(module.get("relationships")))
-        ),
-    )
-    for carrier, path in carriers:
-        ext = _obj(carrier.get("extensions"))
-        extension_occurrences.extend((name, f"{path}.{name}") for name in names if name in ext)
-    occurrences = [*declarations, *extension_occurrences]
-    selected_name = occurrences[0][0] if occurrences else None
-    conflict = next((entry for entry in occurrences[1:] if entry[0] != selected_name), None)
-    if conflict is not None:
-        return DeclaredView(), [
-            Violation(
-                conflict[1],
-                "view_ambiguous_vocabulary",
-                "select one view vocabulary name per document",
-            )
-        ]
-    if not declarations:
-        aliased_extension = next(
-            (entry for entry in extension_occurrences if entry[0] in aliases), None
-        )
-        if aliased_extension is not None:
-            return DeclaredView(), [
-                Violation(
-                    aliased_extension[1],
-                    "view_unknown_term",
-                    "the matching vocabulary must be declared",
-                )
-            ]
+    if selection_fault is not None:
+        return DeclaredView(), [selection_fault]
+    if vocabulary is None:
         return DeclaredView(), []
-    vocabulary = declarations[0][0]
-    vocab = vocabularies[vocabulary]
+    vocab = _obj(root.get("vocabularies"))[vocabulary]
     if _obj(vocab).get("version") != VERSION:
         path = f"vocabularies.{vocabulary}.version"
         v = Violation(path, "view_unsupported_version", f"arras.view {VERSION} is supported")
