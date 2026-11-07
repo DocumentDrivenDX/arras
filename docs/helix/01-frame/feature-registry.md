@@ -79,7 +79,7 @@ ddx:
 | FEAT-008 | [FEAT-008](features/FEAT-008-reference-clients.md) | US-038 to US-044 | CONTRACT-001, CONTRACT-003 | - | - |
 | FEAT-009 | [FEAT-009](features/FEAT-009-mcp-binding.md) | US-050 to US-054 | ADR-016, CONTRACT-007 | - | - |
 | FEAT-010 | [FEAT-010](features/FEAT-010-operator-console.md) | US-060 to US-064 | ADR-021, CONTRACT-009 | - | - |
-| FEAT-011 | [FEAT-011](features/FEAT-011-graph-browser.md) | US-065 to US-072, US-079 to US-083 | ADR-022 to ADR-025, ADR-029, ADR-030, SD-011 to SD-013, CONTRACT-010 | - | - |
+| FEAT-011 | [FEAT-011](features/FEAT-011-graph-browser.md) | US-065 to US-072, US-079 to US-083 | ADR-022 to ADR-025, ADR-029 to ADR-031, SD-011 to SD-013, CONTRACT-010, CONTRACT-012 | - | - |
 
 ## Feature Categories
 

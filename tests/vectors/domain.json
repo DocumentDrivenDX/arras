@@ -1,0 +1,230 @@
+{
+ "note": "What `arras.fakes_domain.stored` holds, or refuses, for a value in a field of each domain (CONTRACT-012). Integers are written as text: they may pass 2^53. Checked in Python by tests/test_static_reads.py and in TypeScript by ui/src/test/static-backend.test.ts.",
+ "domains": {
+  "decimal(12,2)": {
+   "family": "decimal",
+   "precision": 12,
+   "scale": 2
+  },
+  "decimal": {
+   "family": "decimal"
+  },
+  "integer64": {
+   "family": "integer",
+   "bits": 64,
+   "signed": true
+  },
+  "uinteger8": {
+   "family": "integer",
+   "bits": 8,
+   "signed": false
+  }
+ },
+ "vectors": [
+  {
+   "domain": "decimal(12,2)",
+   "value": "12.5",
+   "held": "12.50"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": 7,
+   "held": "7.00"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": "1e1",
+   "held": "10.00"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": "-0.5",
+   "held": "-0.50"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": "0",
+   "held": "0.00"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": "-0",
+   "held": "-0.00"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": ".5",
+   "held": "0.50"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": "5.",
+   "held": "5.00"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": "+3.10",
+   "held": "3.10"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": "1.230",
+   "held": "1.23"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": "12.345",
+   "refused": "a decimal with more than 2 places"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": "12345678901.5",
+   "refused": "a decimal with more than 10 digits before the point"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": "1234567890",
+   "held": "1234567890.00"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": "123456789012",
+   "refused": "a decimal with more than 10 digits before the point"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": "0.00",
+   "held": "0.00"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": "1E+3",
+   "held": "1000.00"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": "007.50",
+   "held": "7.50"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": 10000000000,
+   "refused": "a decimal with more than 10 digits before the point"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": "1e-7",
+   "refused": "a decimal with more than 2 places"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": "0.000001",
+   "refused": "a decimal with more than 2 places"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": "99999999.99",
+   "held": "99999999.99"
+  },
+  {
+   "domain": "decimal(12,2)",
+   "value": "100000000000.00",
+   "refused": "a decimal with more than 10 digits before the point"
+  },
+  {
+   "domain": "decimal",
+   "value": "12.5",
+   "held": "12.5"
+  },
+  {
+   "domain": "decimal",
+   "value": "1e3",
+   "held": "1E+3"
+  },
+  {
+   "domain": "decimal",
+   "value": "+5",
+   "held": "5"
+  },
+  {
+   "domain": "decimal",
+   "value": ".5",
+   "held": "0.5"
+  },
+  {
+   "domain": "decimal",
+   "value": "5.",
+   "held": "5"
+  },
+  {
+   "domain": "decimal",
+   "value": "0.0000001",
+   "held": "1E-7"
+  },
+  {
+   "domain": "decimal",
+   "value": "1E-7",
+   "held": "1E-7"
+  },
+  {
+   "domain": "decimal",
+   "value": "123456789012345678901234567890",
+   "held": "123456789012345678901234567890"
+  },
+  {
+   "domain": "decimal",
+   "value": "-0",
+   "held": "-0"
+  },
+  {
+   "domain": "decimal",
+   "value": "0e5",
+   "held": "0E+5"
+  },
+  {
+   "domain": "integer64",
+   "value": "9223372036854775808",
+   "refused": "an integer outside 64-bit range"
+  },
+  {
+   "domain": "integer64",
+   "value": "9223372036854775807",
+   "held": "9223372036854775807"
+  },
+  {
+   "domain": "integer64",
+   "value": "-9223372036854775808",
+   "held": "-9223372036854775808"
+  },
+  {
+   "domain": "integer64",
+   "value": "-9223372036854775809",
+   "refused": "an integer outside 64-bit range"
+  },
+  {
+   "domain": "integer64",
+   "value": "0",
+   "held": "0"
+  },
+  {
+   "domain": "uinteger8",
+   "value": "255",
+   "held": "255"
+  },
+  {
+   "domain": "uinteger8",
+   "value": "256",
+   "refused": "an integer outside 8-bit range"
+  },
+  {
+   "domain": "uinteger8",
+   "value": "-1",
+   "refused": "an integer outside 8-bit range"
+  },
+  {
+   "domain": "uinteger8",
+   "value": "0",
+   "held": "0"
+  }
+ ]
+}

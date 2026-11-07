@@ -84,6 +84,13 @@ export interface ProviderProps {
   brand?: Brand;
   /** An exclusive Arras cache, cancelled and cleared on scope release; private by default. */
   queryClient?: QueryClient;
+  /**
+   * A client that answers instead of the HTTP one (the static read-only profile, ADR-031). The host owns
+   * it; `operateBase`, `consoleBase` and `getHeaders` then do not apply to it.
+   */
+  client?: ArrasClient;
+  /** The schema surface's client, when `client` is given: a host with no schema surface passes one that is never offered. */
+  schemaApi?: SchemaApi;
   children: ReactNode;
 }
 
@@ -142,10 +149,11 @@ function ProviderScope(props: ProviderProps) {
         if (live.current) revisionChanged.current();
       },
     };
-    return createClient(cfg);
-  }, [operateBase, consoleBase]);
+    return props.client ?? createClient(cfg);
+  }, [props.client, operateBase, consoleBase]);
   const schema = useMemo(
     () =>
+      props.schemaApi ??
       createSchemaApi({
         operateBase,
         consoleBase,
@@ -158,7 +166,7 @@ function ProviderScope(props: ProviderProps) {
           if (live.current) onUnauthorized.current?.();
         },
       }),
-    [operateBase, consoleBase, schemaBase],
+    [props.schemaApi, operateBase, consoleBase, schemaBase],
   );
   const qc = useMemo(() => props.queryClient ?? createQueryClient(), [props.queryClient]);
   useEffect(() => {
@@ -235,6 +243,10 @@ export function ArrasProviderOnce(props: ProviderProps) {
   if (props.getHeaders !== undefined && props.getHeaders !== parent.getHeaders)
     throw new Error(
       "Conflicting Arras getHeaders; configure the enclosing provider or create an independent scope",
+    );
+  if (props.client !== undefined && props.client !== parent.client)
+    throw new Error(
+      "Conflicting Arras client; use an explicit ArrasProvider for an independent scope",
     );
   if (props.queryClient && props.queryClient !== parent.queryClient)
     throw new Error(

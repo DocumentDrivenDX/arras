@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased — static read-only Graph Browser
+
+- Adds the static read-only profile (ADR-031, CONTRACT-012): the Graph Browser runs from
+  static files, in the browser, over a UMF module document and an `arras.graph` file, with
+  no server. `npm run build:static`, `npm run stage:static`, `npm run check:static`.
+  The UI takes the client through a new `client` prop; nothing else in it changes.
+- Adds the read corpus `read_cases.json` (generated from the Python reference by
+  `tools/gen_static_reads.py`), `tests/vectors/domain.json`, and `examples/pizza/pizza.graph.json`;
+  the existing `view_cases.json` and template vectors now also run against the TypeScript reader.
+- Adds `graphql` 16.11.0 as a runtime dependency of the UI, and moves the graph file reader
+  from `browser/` to `api/` (the browser path re-exports it).
+- Known gap: the `prose` view format forbids markup; a sanitized `markdown` format is a
+  separate proposal.
+
 ## 0.7.3 — embedded host, themes, and aliases
 
 - Fixes #49: development-host help now shows the effective configured operator

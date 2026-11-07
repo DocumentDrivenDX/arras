@@ -19,6 +19,8 @@ ddx:
       kind: informed_by
     - id: CONTRACT-005
       kind: informed_by
+    - id: CONTRACT-012
+      kind: informs
 ---
 
 # Contract: Console GraphQL surface
@@ -126,6 +128,8 @@ type InputSpec { name: String!  type: String!  kind: String!  cardinality: Strin
 **Error codes** (`extensions.code`): `REFUSED` (with `reason`: `no_access`, or `token_expired`, which is always answered with HTTP 401), `UNAVAILABLE`, `UNSUPPORTED`, `NOT_YET_CURRENT`, `LIMIT_EXCEEDED`, `DEPTH_EXCEEDED`, `COST_EXCEEDED`, `BAD_QUERY`, `NOT_FOUND` (an unknown path or module), `REVISION_CHANGED` (a backend answered under a revision other than the one the request stated) and `INTERNAL_ERROR` (a fault of Arras's, with no detail).
 
 ## Precedence and Compatibility
+
+- Profiles: the static read-only profile ([CONTRACT-012](CONTRACT-012-static-read-only-profile.md), ADR-031) serves this surface, field for field, from a module document and a graph file in the browser, with one backend named `static`, the same limits, budgets, ordering and error codes, and the few differences CONTRACT-012 D lists (attribution from the file, no guards or effects on actions, graphql-js's validation text). `src/arras/conformance/read_cases.json` holds the two to the same answers: a change to a read here regenerates it (`tools/gen_static_reads.py`).
 
 - Versioning: v2, the shape this contract states. Version in `arras.CONTRACT_VERSIONS["console"]`.
 - Ordering or precedence: a schema is built from the registry revision in force when the request begins and is the same for that whole request; a registration takes effect on the next request. The backends' access decides visibility before any query runs.

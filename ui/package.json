@@ -39,13 +39,19 @@
     "check:umf": "node scripts/umf-schema-browser.ts",
     "check:css": "node scripts/check-scoped-css.ts",
     "check:externals": "node scripts/check-externals.ts dist-lib",
-    "check:public-manifest": "node scripts/check-public-manifest.ts"
+    "check:public-manifest": "node scripts/check-public-manifest.ts",
+    "build:static": "vite build --config vite.static.config.ts",
+    "stage:static": "node scripts/stage-static.ts",
+    "check:static": "vitest run src/test/static-site.test.ts",
+    "e2e:static": "vite build --config vite.static.config.ts && playwright test -c playwright.static.config.ts",
+    "bench:static": "node --expose-gc ./node_modules/vitest/vitest.mjs run src/test/static-bench.test.ts"
   },
   "dependencies": {
     "@documentdrivendx/umf-schema-browser": "2.0.0",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-query": "^5.104.0",
     "@vitejs/plugin-react": "^6.1.1",
+    "graphql": "16.11.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "tailwindcss": "^4.3.3",

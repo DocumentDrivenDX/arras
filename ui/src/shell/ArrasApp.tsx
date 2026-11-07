@@ -320,7 +320,7 @@ function ShellBody(props: ArrasAppProps) {
  * edit-mode lock, the single-key switch, the shortcut help and the palette, shared by both modes.
  */
 export function ArrasApp(props: ArrasAppProps) {
-  const { queryClient, brand, identity, pageEffects } = props;
+  const { queryClient, brand, identity, pageEffects, client, schemaApi } = props;
   const { operateBase, consoleBase, schemaBase, getHeaders, onUnauthorized } = props;
   return (
     <Scope>
@@ -334,6 +334,8 @@ export function ArrasApp(props: ArrasAppProps) {
         onUnauthorized={onUnauthorized}
         brand={brand}
         queryClient={queryClient}
+        client={client}
+        schemaApi={schemaApi}
       >
         <ShellBody {...props} />
       </ArrasProvider>

@@ -29,6 +29,8 @@ ddx:
       kind: informed_by
     - id: CONTRACT-009
       kind: informed_by
+    - id: CONTRACT-012
+      kind: informed_by
 ---
 
 # Contract: Graph Browser view vocabulary, search read, location and modes
@@ -249,6 +251,8 @@ The shell (`<ArrasApp>` in `arras-ui`) offers two modes: **Explore** (id `user`)
 | `<ArrasApp>` | Props as `ArrasConsole` and `GraphBrowser`, plus `defaultMode?: "user" \| "admin"` and `brand?: Brand` (Brand) | yes | Asks `/viewer` once at load. With `admin` absent it renders Explore only and MUST show no control, link or hint to Operate. With it present it shows a mode switch in the top bar (two options, `Explore` and `Operate`, the chosen one `aria-pressed="true"`), remembers the choice for the session in `history.state` and in the fragment prefix, and opens in Explore unless `defaultMode` or the fragment says otherwise. Switching carries what is open both ways: Operate opens Entities on the node's module and type with its entity open, and Explore opens the node page for the entity open in the console, else its type's list, else the module's entry; each switch is a history entry. A fragment naming Operate, opened by a non-operator, shows Explore's entry. |
 | Shared state | | yes | The shell holds what a mode switch must keep: one `QueryClient` (so one invalidation scheme reaches every read of both modes), one meta read (the client's `meta()`), the edit-mode lock, the single-key shortcut switch, the command palette with its shortcut help, and the Query area's session (its draft, consistency and history). All of it is in memory and lives as long as the page; none of it is in browser storage, a URL or a log. A mode given no cross-mode link primitive by the shell shows no cross-mode link, so a standalone `<GraphBrowser>` or `<ArrasConsole>` shows none. |
 | Cross-mode links | | yes | The shell gives each mode a function from a target (`{entity \| type \| module \| group, area?}`) to `{href?, go()}`, offered only where `admin` is present: an anchor where an `href` exists, and `go()` where the host owns the location. A target's type names are qualified; the shell is the only place that converts them to either mode's address (`ui/src/shell/links.ts`), and it hands Explore `links: {toOperate}` and Operate `links: {toExplore}`. **Open in Operate** (Entities, History, Actions) on a node page and **Model** on a type's list are Explore's; **View in Explore** is Operate's. |
+
+A host with no server at all, the static read-only profile ([CONTRACT-012](CONTRACT-012-static-read-only-profile.md), ADR-031), passes the shell a client of its own (`client` on `<ArrasApp>`, `<GraphBrowser>` and `<ArrasProvider>`): `GET /viewer` is answered in the page as `{user: "public", modes: ["user"]}`, so Explore is offered alone, `canEdit` is false, and no control, link or hint to Operate or to a write is drawn. Search (C), the resolved view (B) and the vocabulary (A) are the profile's TypeScript readers of the same rules, held to this contract by `view_cases.json`, the template vectors and the read corpus.
 
 ### F. Edits and instance work
 
