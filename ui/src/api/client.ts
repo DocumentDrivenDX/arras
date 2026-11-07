@@ -102,10 +102,10 @@ export interface ArrasClient {
 
 // A request selects at most 50 fields (CONTRACT-006), so the meta read is two: the registry's modules,
 // types, relationships, actions and status, and each type's resolved view (CONTRACT-010 B).
-const META_QUERY = `{ modules { name record replicas providers revision view { title description } entityTypes { name key properties { name type required cardinality } capabilities } relationships { name source target sourceMultiplicity targetMultiplicity lifecycle inverse } actions { name description inputSpecs { name type kind cardinality } preconditions effects } } status { backend available reason position lag } }`;
+export const META_QUERY = `{ modules { name record replicas providers revision view { title description } entityTypes { name key properties { name type required cardinality } capabilities } relationships { name source target sourceMultiplicity targetMultiplicity lifecycle inverse } actions { name description inputSpecs { name type kind cardinality } preconditions effects } } status { backend available reason position lag } }`;
 const VIEW_FIELDS = `declared label pluralLabel icon tone title summary sections { label properties collapsed } search fields { property label format hideWhenEmpty tones } relationships { field label hideWhenEmpty order }`;
-const VIEWS_QUERY = `{ modules { name revision entityTypes { name view { ${VIEW_FIELDS} } } } }`;
-const STATUS_QUERY = `{ status { backend available reason position lag } }`;
+export const VIEWS_QUERY = `{ modules { name revision entityTypes { name view { ${VIEW_FIELDS} } } } }`;
+export const STATUS_QUERY = `{ status { backend available reason position lag } }`;
 
 async function sendJson(
   config: ClientConfig,
@@ -181,7 +181,7 @@ async function failResponse(config: ClientConfig, res: Response): Promise<never>
     new ApiError(res.status, body, Number.isFinite(retry) ? retry : undefined),
   );
 }
-interface ViewsData {
+export interface ViewsData {
   modules: {
     name: string;
     revision: Revision;
@@ -190,13 +190,13 @@ interface ViewsData {
 }
 
 /** Do the registry read and the views read describe the same revision of every module? */
-function sameRevisions(meta: MetaData, views: ViewsData): boolean {
+export function sameRevisions(meta: MetaData, views: ViewsData): boolean {
   const at = new Map(views.modules.map((m) => [m.name, JSON.stringify(m.revision)]));
   return meta.modules.every((m) => at.get(m.name) === JSON.stringify(m.revision));
 }
 
 /** The views read beside the registry, attached to the types they describe. */
-function mergeViews(meta: MetaData, views: ViewsData): MetaData {
+export function mergeViews(meta: MetaData, views: ViewsData): MetaData {
   const viewOf = (module: string, type: string) =>
     views.modules.find((m) => m.name === module)?.entityTypes.find((t) => t.name === type)?.view;
   return {

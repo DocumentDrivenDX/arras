@@ -26,6 +26,7 @@ const IDENTIFIERS = [
   "arras-ui",
   "arras-schema-catalog",
   "arras.graph",
+  "arras.view",
   "arras:",
   "x-arras-",
 ];

@@ -53,6 +53,10 @@ export interface GraphBrowserProps extends LocationProps {
   brand?: ProviderProps["brand"];
   /** Supply a query client (tests); one is created otherwise. */
   queryClient?: ProviderProps["queryClient"];
+  /** A client that answers instead of the HTTP one (the static read-only profile, ADR-031). */
+  client?: ProviderProps["client"];
+  /** The schema surface's client for that `client`. */
+  schemaApi?: ProviderProps["schemaApi"];
   /**
    * Offer the writes: in-place edits of a property that a declared action updates, Retire, the Actions
    * menu and New (CONTRACT-010 F). The shell sets it for an operator (the viewer's `admin` mode id); the

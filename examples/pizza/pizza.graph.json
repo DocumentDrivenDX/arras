@@ -1,0 +1,125 @@
+{
+  "complete": true,
+  "format": "arras.graph",
+  "module": "pizza",
+  "records": [
+    {
+      "key": "american-hot",
+      "properties": {
+        "description": "Pepperoni, jalapeño and mozzarella",
+        "name": "American Hot",
+        "price": "10.00",
+        "vegetarian": false
+      },
+      "type": "Pizza"
+    },
+    {
+      "key": "margherita",
+      "properties": {
+        "description": "Tomato and mozzarella",
+        "name": "Margherita",
+        "price": "9.00",
+        "vegetarian": true
+      },
+      "type": "Pizza"
+    },
+    {
+      "key": "jalapeno",
+      "properties": {
+        "category": "vegetable",
+        "name": "Jalapeño",
+        "spiciness": "hot"
+      },
+      "type": "Topping"
+    },
+    {
+      "key": "mozzarella",
+      "properties": {
+        "category": "cheese",
+        "name": "Mozzarella",
+        "spiciness": "mild"
+      },
+      "type": "Topping"
+    },
+    {
+      "key": "pepperoni",
+      "properties": {
+        "category": "meat",
+        "name": "Pepperoni",
+        "spiciness": "hot"
+      },
+      "type": "Topping"
+    },
+    {
+      "key": "tomato",
+      "properties": {
+        "category": "vegetable",
+        "name": "Tomato",
+        "spiciness": "mild"
+      },
+      "type": "Topping"
+    },
+    {
+      "key": "deep",
+      "properties": {
+        "name": "Deep pan"
+      },
+      "type": "PizzaBase"
+    },
+    {
+      "key": "thin",
+      "properties": {
+        "name": "Thin and crispy"
+      },
+      "type": "PizzaBase"
+    },
+    {
+      "key": "italy",
+      "properties": {
+        "name": "Italy"
+      },
+      "type": "Country"
+    },
+    {
+      "relationship": "hasTopping",
+      "source": "american-hot",
+      "target": "jalapeno"
+    },
+    {
+      "relationship": "hasTopping",
+      "source": "american-hot",
+      "target": "mozzarella"
+    },
+    {
+      "relationship": "hasTopping",
+      "source": "american-hot",
+      "target": "pepperoni"
+    },
+    {
+      "relationship": "hasTopping",
+      "source": "margherita",
+      "target": "mozzarella"
+    },
+    {
+      "relationship": "hasTopping",
+      "source": "margherita",
+      "target": "tomato"
+    },
+    {
+      "relationship": "hasBase",
+      "source": "american-hot",
+      "target": "deep"
+    },
+    {
+      "relationship": "hasBase",
+      "source": "margherita",
+      "target": "thin"
+    },
+    {
+      "relationship": "countryOfOrigin",
+      "source": "margherita",
+      "target": "italy"
+    }
+  ],
+  "version": 1
+}

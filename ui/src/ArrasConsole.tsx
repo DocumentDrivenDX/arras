@@ -61,6 +61,10 @@ export interface ArrasConsoleProps {
   brand?: ProviderProps["brand"];
   /** A query client the host shares with the Graph Browser, so the two read the registry once. */
   queryClient?: ProviderProps["queryClient"];
+  /** A client that answers instead of the HTTP one (the static read-only profile, ADR-031). */
+  client?: ProviderProps["client"];
+  /** The schema surface's client for that `client`. */
+  schemaApi?: ProviderProps["schemaApi"];
   /** A Query history and draft the host keeps above the console (a shell, across a mode switch); the console holds its own otherwise. */
   querySession?: QuerySession;
   /**

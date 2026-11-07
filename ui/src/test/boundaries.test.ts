@@ -180,7 +180,8 @@ describe("module boundaries (SD-011)", () => {
         !inside(f, join(SRC, "shell")) &&
         !inside(f, join(SRC, "dev")) && // the standalone host's page, like main.tsx, mounts the shell
         !f.endsWith("main.tsx") &&
-        !f.endsWith("embed.tsx"), // the page `arras.ui` serves mounts the shell too
+        !f.endsWith("embed.tsx") && // the page `arras.ui` serves mounts the shell too
+        !f.endsWith("static/host.tsx"), // so does the static read-only host's page (ADR-031)
     );
     expect(rest.flatMap((f) => inboundViolations(f, read(f)))).toEqual([]);
   });

@@ -2,7 +2,7 @@
 // Asks `GET /viewer` once (CONTRACT-010 E). A failure of any kind means Explore only: the shell
 // never assumes the viewer is an operator.
 import { useEffect, useRef, useState } from "react";
-import { createClient } from "../api/client";
+import { type ArrasClient, createClient } from "../api/client";
 import type { Viewer } from "../api/types";
 import type { Mode } from "./modeRoute";
 
@@ -11,6 +11,8 @@ export interface Conn {
   consoleBase?: string;
   getHeaders?: () => Record<string, string>;
   onUnauthorized?: () => void;
+  /** A client that answers instead of the HTTP one (the static read-only profile, ADR-031). */
+  client?: ArrasClient;
 }
 
 export interface ViewerState {
@@ -28,12 +30,14 @@ export function useViewer(conn: Conn): ViewerState {
   useEffect(() => {
     let live = true;
     const c = latest.current;
-    const client = createClient({
-      operateBase: c.operateBase ?? "/api/operate",
-      consoleBase: c.consoleBase ?? "/api/console",
-      getHeaders: () => latest.current.getHeaders?.() ?? {},
-      onUnauthorized: () => latest.current.onUnauthorized?.(),
-    });
+    const client =
+      c.client ??
+      createClient({
+        operateBase: c.operateBase ?? "/api/operate",
+        consoleBase: c.consoleBase ?? "/api/console",
+        getHeaders: () => latest.current.getHeaders?.() ?? {},
+        onUnauthorized: () => latest.current.onUnauthorized?.(),
+      });
     client.viewer().then(
       (v: Viewer) => {
         if (live)

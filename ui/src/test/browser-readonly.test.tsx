@@ -23,8 +23,13 @@ const sourcesIn = (dir: string, prefix: string) =>
   readdirSync(dir)
     .filter((f) => /\.tsx?$/.test(f))
     .map((f) => [`${prefix}${f}`, readFileSync(join(dir, f), "utf8")] as const);
-// What the browser can reach: its own modules and the kit's (ADR-030).
-const sources = [...sourcesIn(SRC, ""), ...sourcesIn(KIT, "kit/")];
+// What the browser can reach: its own modules, the kit's (ADR-030) and the graph file reader its export uses.
+const GRAPH_FILE = "api/graphFile.ts";
+const sources = [
+  ...sourcesIn(SRC, ""),
+  ...sourcesIn(KIT, "kit/"),
+  [GRAPH_FILE, readFileSync(join(import.meta.dirname, "../", GRAPH_FILE), "utf8")] as const,
+];
 
 describe("the browser reads as the viewer, writes only by a declared action and holds no credential (US-071-AC6)", () => {
   it("US-071-AC6: the package exports the component and the location helpers, nothing that writes", () => {
