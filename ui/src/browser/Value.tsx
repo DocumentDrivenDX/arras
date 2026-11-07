@@ -3,6 +3,7 @@
 // rendered as React text: no markup is ever interpreted, and a link is checked before it is one.
 import { useState } from "react";
 import type { FieldView } from "../api/types";
+import { MarkdownText } from "./MarkdownText";
 import { toneClass } from "./tones";
 import {
   formatDate,
@@ -69,6 +70,8 @@ function Scalar({ field, value }: { field: FieldView; value: unknown }) {
   switch (field.format) {
     case "prose":
       return <p className="gb-prose">{text}</p>;
+    case "markdown":
+      return <MarkdownText text={text} />;
     case "code":
       return <code className="gb-code">{text}</code>;
     case "link":

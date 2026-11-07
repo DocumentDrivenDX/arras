@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { gzipSync } from "node:zlib";
+import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
 
 // The static host over a synthetic graph (tools/gen_synthetic_graph.py): 1,000 documents of up to 8 KB, 24 topics,
@@ -93,4 +94,18 @@ test("loads a thousand-node graph and answers a search and the hub's pages", asy
   metrics.hubShowMoreClicks = clicks;
   await expect(list.getByRole("link")).toHaveCount(1000);
   metrics.heapAfterHubMb = await heapMb(page);
+});
+
+test("a Markdown body is drawn as elements, and the page is accessible", async ({ page }) => {
+  await page.goto("/synthetic/#/explore/synthetic/Doc/doc-0001");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Document 0001");
+  const body = page.locator(".gb-md");
+  await expect(body.locator("h5")).toHaveText("Summary");
+  await expect(body.locator("li strong")).toHaveText("Point");
+  await expect(body.locator("table th").first()).toHaveText("Criterion");
+  expect(await body.locator("script, img, iframe").count()).toBe(0);
+  const r = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+    .analyze();
+  expect(r.violations.map((v) => v.id)).toEqual([]);
 });

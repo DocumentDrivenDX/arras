@@ -15,7 +15,7 @@ import {
   obj,
   type RecordTerms,
   type RelationshipTerms,
-  VERSION,
+  VERSIONS,
   VOCABULARY,
 } from "./viewTerms";
 
@@ -130,18 +130,19 @@ export function parseView(
 ): { declared: DeclaredView; faults: Violation[] } {
   const module = obj(list(root.modules)[0]);
   if (!(VOCABULARY in obj(root.vocabularies))) return { declared: emptyView(), faults: [] };
-  if (obj(obj(root.vocabularies)[VOCABULARY]).version !== VERSION)
+  const declaredVersion = obj(obj(root.vocabularies)[VOCABULARY]).version;
+  if (!VERSIONS.includes(declaredVersion as string))
     return {
       declared: emptyView(),
       faults: [
         {
           path: `vocabularies.${VOCABULARY}.version`,
           code: "view_unsupported_version",
-          message: `view vocabulary ${VERSION} is supported`,
+          message: `view vocabulary ${VERSIONS.join(" and ")} are supported`,
         },
       ],
     };
-  const c = new Checker(mod);
+  const c = new Checker(mod, declaredVersion as string);
   const declared = readModule(c, root, module, VOCABULARY);
   const total = size(
     declared.title,

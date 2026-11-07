@@ -55,13 +55,13 @@ Terms. UMF is the metamodel, owned by DocumentDrivenDX, that defines Arras's typ
 
 ## Normative Surface
 
-### A. The `arras.view` vocabulary, version 0.1.0
+### A. The `arras.view` vocabulary, versions 0.1.0 and 0.2.0
 
-A document MUST declare it as `vocabularies["arras.view"] = {"version": "0.1.0"}` to use it. Terms appear in `extensions["arras.view"]` of the module, a record, a field or a relationship; a term at any other place MUST be refused. Every term not listed here MUST be refused (the vocabulary is closed). The vocabulary is presentation only: it MUST NOT change the types, properties, relationships, actions, access or what a read returns.
+A document MUST declare it as `vocabularies["arras.view"] = {"version": "0.1.0"}` or `{"version": "0.2.0"}` to use it. **0.2.0 adds one thing, the `markdown` format (below), and changes nothing else**: a document at 0.2.0 that uses no `markdown` reads exactly as it would at 0.1.0, `markdown` at 0.1.0 is refused as any format that is not in the set (`view_format_mismatch`), and a version this release does not read (including 0.3.0) is `view_unsupported_version`. Terms appear in `extensions["arras.view"]` of the module, a record, a field or a relationship; a term at any other place MUST be refused. Every term not listed here MUST be refused (the vocabulary is closed). The vocabulary is presentation only: it MUST NOT change the types, properties, relationships, actions, access or what a read returns.
 
 An explicit host `view_vocabulary_aliases` policy (CONTRACT-005) MAY substitute
 one configured legacy name at these declaration and extension locations. Its
-declared version MUST still be exactly `0.1.0`; all term, reference, length and
+declared version MUST still be one of `0.1.0` and `0.2.0`; all term, reference, length and
 placement checks remain the same. For example, configured `example.view` reads
 `vocabularies["example.view"] = {"version":"0.1.0"}` and corresponding extension
 keys with canonical meaning, without rewriting original document bytes.
@@ -103,7 +103,7 @@ terms, different versions, markup, executable content or native capabilities.
 | Term | Type | Required | Rules |
 |------|------|----------|-------|
 | `label` | string | no | Plain text, 1 to 60. Default the property name split into words. |
-| `format` | string | no | One of the format set below, and MUST suit the property's type: `text`, `prose`, `code`, `link` and `badge` suit a string, `tags` a list of strings, `date` and `datetime` a timestamp, `number` an integer or decimal, `boolean` a boolean, `json` a structured value or a list of anything else. Default: see Defaults. |
+| `format` | string | no | One of the format set below, and MUST suit the property's type: `text`, `prose`, `code`, `link`, `badge` and (0.2.0) `markdown` suit a string, `tags` a list of strings, `date` and `datetime` a timestamp, `number` an integer or decimal, `boolean` a boolean, `json` a structured value or a list of anything else. Default: see Defaults. |
 | `hideWhenEmpty` | boolean | no | Default `false`: an empty value shows a "not set" marker. |
 | `tones` | map of string to tone | no | Only where the effective format (declared or default) is `badge`; at most 24 entries; maps a value to a tone; a value not in the map uses `slate`. |
 
@@ -122,7 +122,9 @@ terms, different versions, markup, executable content or native capabilities.
 |-----|---------|
 | Icons (24) | `box`, `package`, `puzzle`, `file-text`, `folder`, `user`, `users`, `building`, `tag`, `flag`, `alert`, `check-circle`, `clock`, `calendar`, `link`, `globe`, `wrench`, `scale`, `book`, `chart`, `shield`, `star`, `bolt`, `circle` |
 | Tones (8) | `slate`, `blue`, `teal`, `green`, `amber`, `red`, `violet`, `rose` |
-| Formats | `text` (string), `prose` (string: line breaks kept, never markup), `code` (string, monospace), `link` (string: an `http`, `https` or `mailto` address shown as a link; any other value is shown as text), `badge` (string), `tags` (list of string), `date` (timestamp: date only), `datetime` (timestamp), `number` (integer, decimal), `boolean` (boolean), `json` (structured value) |
+| Formats | `text` (string), `prose` (string: line breaks kept, never markup), `markdown` (string, vocabulary 0.2.0: a closed subset of Markdown, drawn as elements; see **The `markdown` format**), `code` (string, monospace), `link` (string: an `http`, `https` or `mailto` address shown as a link; any other value is shown as text), `badge` (string), `tags` (list of string), `date` (timestamp: date only), `datetime` (timestamp), `number` (integer, decimal), `boolean` (boolean), `json` (structured value) |
+
+**The `markdown` format** (ADR-032). The value is read as this subset and nothing else: ATX headings (`#` to `######`, drawn below the page's own headings), paragraphs, bullet and numbered lists nested by indentation, pipe tables with a header row, fenced code, block quotes, thematic breaks, `` `code` ``, `**strong**`, `*emphasis*` and `_emphasis_` (not inside a word), `[text](address)` and `\` escapes. A client MUST NOT make markup of anything else: raw HTML is shown as the text it is; an image is shown as its alt text (assets are a later version); a link is kept only if its address is `http`, `https` or `mailto` with no user name or password, and is opened with `rel="noopener noreferrer"`, and any other is shown as text, brackets and all. A client MUST NOT build or set an HTML string, MUST bound nesting and input size (this one reads at most 200,000 characters and twelve levels, and shows what exceeds either as text), and a value it cannot read as Markdown is shown as `prose`. Resolution is unchanged: the format is only the declared `format` of a string property; it is never a default. The Browser's reader draws it in `ui/src/browser/MarkdownText.tsx`; the shared cases are `view.markdown-*` in `view_cases.json`.
 
 **Defaults for `format`.** String: `link` when the property name ends in `Url`, `Uri` or `Link` (case-insensitive); else `prose` when the name is one of `summary`, `description`, `statement`, `problem`, `notes`, `prompt`, `workflow`, `caveat`, `rationale`; else `badge` when it is one of `status`, `state`, `kind`, `level`; else `text`. List of strings: `tags`; any other list, and a structured value: `json`. Timestamp: `datetime`. Integer and decimal: `number` (the integer part grouped by the viewer's locale, the stored digits otherwise unchanged). Boolean: `boolean`. Binary: `binary`, which no declared format suits and a client does not show.
 
@@ -288,7 +290,7 @@ The interface's name is configuration, not code (FR-73, SD-013 D11).
 
 ## Precedence and Compatibility
 
-- Versioning: v1; versions in `arras.CONTRACT_VERSIONS["browser"]` (this contract) and `["operate"]` (unchanged, because the additions are additive). The vocabulary has its own version (0.1.0).
+- Versioning: v1; versions in `arras.CONTRACT_VERSIONS["browser"]` (this contract) and `["operate"]` (unchanged, because the additions are additive). The vocabulary has its own version (0.1.0, 0.2.0).
 - Ordering or precedence: a view is read from the document at the request's revision; a declared term overrides its default; a record's `search` overrides the derived search list; an explicit `[]` disables search for the type.
 - Backward-compatibility rules: a document without `arras.view` registers unchanged and resolves to the defaults. The vocabulary is closed: a release refuses a document using a term or version it does not know; a newer term is added by a vocabulary minor version and read only by releases that list it. An operate app built without `authorize_operator` treats every accepted principal as an operator.
 - Deprecation rules: a term is deprecated for a vocabulary major version before removal; a deprecated term still validates and still resolves.

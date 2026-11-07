@@ -606,6 +606,68 @@ label.gb-mod small {
   max-width: 68ch;
   white-space: pre-wrap;
 }
+.gb-md {
+  max-width: 76ch;
+  overflow-wrap: anywhere;
+}
+.gb-md > :first-child {
+  margin-top: 0;
+}
+.gb-md h4,
+.gb-md h5,
+.gb-md h6 {
+  margin: 1.2em 0 0.4em;
+  line-height: 1.3;
+  font-weight: 650;
+}
+.gb-md h4 {
+  font-size: 1.2em;
+}
+.gb-md h5 {
+  font-size: 1.05em;
+}
+.gb-md h6 {
+  font-size: 0.95em;
+}
+.gb-md p,
+.gb-md ul,
+.gb-md ol,
+.gb-md blockquote,
+.gb-md pre {
+  margin: 0 0 0.8em;
+}
+.gb-md blockquote {
+  padding-left: 12px;
+  border-left: 3px solid var(--line);
+  color: var(--fg-muted);
+}
+.gb-md-code {
+  padding: 8px 12px;
+  overflow-x: auto;
+  background: var(--surface-2);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.gb-md-table {
+  max-width: 100%;
+  margin: 0 0 0.8em;
+  overflow-x: auto;
+}
+.gb-md-table table {
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.gb-md-table th,
+.gb-md-table td {
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+.gb-md-table th {
+  background: var(--surface-2);
+}
 .gb-code {
   font-family: var(--font-mono);
   font-size: 13px;
