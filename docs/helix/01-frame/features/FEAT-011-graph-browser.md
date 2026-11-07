@@ -33,6 +33,10 @@ ddx:
       kind: informed_by
     - id: CONTRACT-010
       kind: informed_by
+    - id: ADR-031
+      kind: informed_by
+    - id: CONTRACT-012
+      kind: informed_by
 ---
 
 # Feature Specification: FEAT-011 — Graph Browser
@@ -48,6 +52,8 @@ ddx:
 ## Overview
 
 The Graph Browser (**Explore**, the instance tool) is the interface for people who use the ontology rather than build it. A viewer searches by text, narrows by entity type, opens an entity as a readable page, follows its links to related entities and sees the entity's neighbourhood as a picture. How a type's page looks is declared by its module in the module's UMF document, so a Solution reads differently from a Finding without any code in Arras or the host. It lives in the `arras-ui` package beside the Operator Console (ADR-021), reads through the console's read surface (CONTRACT-006) and the search read (CONTRACT-010), writes only by validating and invoking declared actions as the viewer, and holds no state of its own. One shell offers it as **Explore** (Explore) and the Operator Console as **Operate** (Operate), with a switch that only module builders and administrators see (ADR-025). Explore works on instances: find, read, change, create, retire and see what happened; Operate works on the model and the platform (SD-013).
+
+The Browser can also be published as static files with no server: an in-browser, read-only `ArrasClient` over a module document and an `arras.graph` file ([ADR-031](../../02-design/adr/ADR-031-the-graph-browser-runs-from-static-files-over-a-typescript-read-path-held-to-the-library-by-shared-data.md), [CONTRACT-012](../../02-design/contracts/CONTRACT-012-static-read-only-profile.md)). It offers Explore alone and none of the writes (FR-64 to FR-71 that need an operator are not offered there); reading, search, the node page, the picture and paging past a hub are the same code.
 
 ## Delivery Slices
 

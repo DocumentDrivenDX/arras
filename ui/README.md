@@ -825,6 +825,38 @@ console's areas (Biome `overrides` and `src/test/boundaries.test.ts`). Import `a
 - **Sandbox people for tests.** The operate surface refuses carol and dave, so tests that need an operator with
   less access revoke part of bob's access through `POST /api/dev/control` (`grant`/`revoke`) and grant it back.
 
+## Static read-only host
+
+The Graph Browser can be published as plain files, with no server: `src/static/` is an `ArrasClient` that answers from a
+UMF module document and an `arras.graph` file held in memory (ADR-031, CONTRACT-012). Nothing is written, nothing is sent
+anywhere, and there is no person: Explore alone, no edit controls, no Operate. The page takes the client through the
+`client` prop of `<ArrasApp>`, `<GraphBrowser>` and `<ArrasProvider>` (with `schemaApi: staticSchemaApi()`); a host that
+wants the backend in its own page imports `createStaticClient` and `loadStore` from `src/static`.
+
+```sh
+npm run build:static                                   # the page, in dist-static/ (relative URLs, no inline script)
+STATIC_MODULE=m.umf.json STATIC_GRAPH=m.graph.json npm run check:static   # load the pair as the page will; a bad record fails, named
+npm run stage:static -- site m.umf.json m.graph.json --title "My graph"   # site/: the page, both files, arras-static.json
+```
+
+Serve `site/` with any static file host. `arras-static.json` (`{"module": "m.umf.json", "graph": "m.graph.json"}`, relative
+paths only, an optional `brand`) is the one file that names the data; a weekly republish replaces the graph file (serve the
+data files with `Cache-Control: no-cache`, or name them by content). The page's content security policy allows no request
+but to its own origin. A graph whose text is Markdown shows as text: the `prose` format forbids markup (a sanitized
+`markdown` format is a separate proposal).
+
+| Script | What it does |
+|---|---|
+| `npm run build:static` | builds the host to `dist-static/` |
+| `npm run stage:static` | assembles a site: `node scripts/stage-static.ts OUT MODULE GRAPH [--title T] [--name N]` |
+| `npm run check:static` | loads `STATIC_MODULE` and `STATIC_GRAPH` with the page's code |
+| `npm run e2e:static` | builds, stages the examples and a synthetic 1,024-node graph, runs `e2e-static/` (Playwright and axe) in Chromium |
+| `npm run bench:static` | with `STATIC_BENCH_DIR` set (`uv run python ../tools/gen_synthetic_graph.py DIR`), times the load stages and the Browser's reads in Node |
+
+The TypeScript read path is held to the Python library by shared data: `src/arras/conformance/read_cases.json` (generated
+by `tools/gen_static_reads.py`; `--check` fails on drift), `view_cases.json`, `tests/vectors/template.json` and
+`tests/vectors/domain.json`; `src/test/static-*.test.ts` run them.
+
 ## Branding
 
 The interface's name is configuration (SD-013, FR-73). `ArrasApp`, `GraphBrowser` and `ArrasConsole`
