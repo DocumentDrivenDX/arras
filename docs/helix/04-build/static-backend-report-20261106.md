@@ -102,10 +102,15 @@ The Pyodide alternative on the same graph, in Node (SPIKE-006): 0.6 s to start t
 - **Python's rules are narrower than they look.** Keys are ASCII (`[A-Za-z0-9._:-]`), so Unicode lives in values; the import rejects what the type or domain refuses; export order is by declaration, not by file order, so a fixture written in another order does not round-trip byte for byte (the catalog and pizza files do, because the library wrote them).
 - **A static host's trust boundary is the file.** The load refuses a bad record and the page refuses a configuration that names another origin; nothing a visitor types is sent anywhere.
 
+## What a real Atlas export showed (branch `arras-export` in the Atlas repository, not pushed)
+
+11 documents, 5 external references, 25 links, 116 records: loads in Python (0 rejections, byte-identical re-export) and in the static host; search, node pages, backlinks, neighbourhood, hub paging (an Atlas-shaped 1,000-edge hub: 1,002 links in 14 clicks) and a 63-bit integer shown exactly all pass in Chromium 153.0.8010.12. No defect was found. Three limits, none worked around: Markdown bodies show as raw text; a `Link` record needs one relationship pair per node type (13 on `Link`) because a relationship allows one type per end; three documents are 18 to 30 KB against an assumed 8 KB and load and render without trouble (CONTRACT-012, Known gaps 1 to 3).
+
 ## Follow-ups (not done)
 
 1. A sanitized `markdown` view format for Atlas (ADR-031 decision 8): an upstream proposal with a sanitizer and a golden corpus.
 2. Firefox and WebKit runs, and a throttled-network, mid-range-phone measurement, before a claim beyond Chromium.
 3. A second corpus pass on what the first does not reach: vocabulary aliases, `check_action`, introspection, a many-valued decimal, a self-relationship, a type with no search property.
 4. Decide whether the corpus ships whole in the wheel (584 KB), and whether `arras.ui` offers the static page as a mount.
-5. Atlas's own module: its `Link` record per edge (so the pinned `rev` is kept) is the Atlas design's own and needs the module reader to be run on it before publication (`npm run check:static`).
+5. Multi-type relationship ends (or a supertype), so `Link` needs one pair of relationships, not thirteen.
+6. Atlas's own module: its `Link` record per edge (so the pinned `rev` is kept) is the Atlas design's own and needs the module reader to be run on it before publication (`npm run check:static`).

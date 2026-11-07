@@ -137,9 +137,11 @@ A static file host that serves the page, `arras-static.json`, the module documen
 ## Known gaps
 
 1. **Markdown.** The `arras.view` `prose` format forbids markup (CONTRACT-010 A, US-070-AC5). A graph whose text is Markdown is shown as text. A sanitized `markdown` format is a separate upstream proposal (ADR-031 decision 8).
-2. The behaviours "not carried" in A and D.
-3. Other browsers and larger graphs (Support claims, last row).
-4. The profile is read at load, not refreshed: a visitor with the page open sees the old graph until a reload.
+2. **One type per relationship end (CONTRACT-006, CONTRACT-002).** Found by running a real Atlas export (a `Link` record per edge, so each pinned `rev` stays visible): a `Link`'s source and target may be any of seven node types, and a relationship names one type per end, so the module needs a pair of relationships per type (13 on `Link`). It works and is clumsy. The fix is upstream and not made here: a relationship endpoint naming several types, or a common supertype for entities; it changes CONTRACT-002, CONTRACT-006 and the corpus.
+3. **Long text.** The profile sets no limit on a string value (the interface's own bounds are the 16 KiB per-record and 128 KiB per-document limits on the *view*, not on data). Atlas bodies of 18 to 30 KB (three of its eleven documents, against an assumed 8 KB) load, search and render; a node's whole body is one `prose` value, so a long one is one long block until the `markdown` format gives it structure. No measurement was made beyond the synthetic graph's 6 to 8 KB bodies and Atlas's 30 KB maximum.
+4. The behaviours "not carried" in A and D.
+5. Other browsers and larger graphs (Support claims, last row).
+6. The profile is read at load, not refreshed: a visitor with the page open sees the old graph until a reload.
 
 ## Versioning
 
