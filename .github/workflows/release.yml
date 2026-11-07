@@ -186,7 +186,7 @@ jobs:
               echo '2d48d87f872ec9145a9f6d2f2b7adcae9ebe3154f9b47f7aa8aa2b411200c0dd  dist/arras-0.7.3-py3-none-any.whl' | sha256sum --check --strict -
               ;;
             0.8.0)
-              echo '0000000000000000000000000000000000000000000000000000000000000000  dist/arras-0.8.0-py3-none-any.whl' | sha256sum --check --strict -
+              echo 'ff8311dde28c6c0f8447aeac5732a020b559bb358b437eb9d71723d79cc879c5  dist/arras-0.8.0-py3-none-any.whl' | sha256sum --check --strict -
               ;;
             *) echo 'No exact qualification wheel is selected for this version' >&2; exit 1 ;;
           esac
