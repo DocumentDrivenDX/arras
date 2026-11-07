@@ -12,18 +12,47 @@ from __future__ import annotations
 
 import json
 import re
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from dataclasses import dataclass, field
-from datetime import date, datetime
-from functools import lru_cache
 from typing import Any, cast
 
 from arras.errors import Violation
 from arras.model import EntityTypeInfo, ModuleInfo, PropertyInfo
 from arras.view_aliases import select_view_vocabulary
+from arras.view_template import (
+    Node as Node,
+)
+from arras.view_template import (
+    OptionalGroup as OptionalGroup,
+)
+from arras.view_template import (
+    Placeholder as Placeholder,
+)
+from arras.view_template import (
+    Template as Template,
+)
+from arras.view_template import (
+    TemplateError as TemplateError,
+)
+from arras.view_template import (
+    as_text as as_text,
+)
+from arras.view_template import (
+    evaluate as evaluate,
+)
+from arras.view_template import (
+    parse_template as parse_template,
+)
+from arras.view_template import (
+    placeholders as placeholders,
+)
 
 VOCABULARY = "arras.view"
 VERSION = "0.1.0"
+#: The vocabulary versions this release reads. 0.2.0 adds the `markdown` format and nothing else, so a 0.1.0
+#: document reads as it did and a 0.2.0 document is a 0.1.0 document that may use it.
+VERSIONS = ("0.1.0", "0.2.0")
+MARKDOWN_SINCE = "0.2.0"
 
 ICONS = (
     "box",
@@ -65,6 +94,8 @@ FORMATS = (
     "boolean",
     "json",
 )
+#: Formats a later version adds, with the first version that has each.
+FORMATS_SINCE = {"markdown": MARKDOWN_SINCE}
 
 MODULE_TERMS = ("title", "description")
 RECORD_TERMS = ("label", "pluralLabel", "icon", "tone", "title", "summary", "sections", "search")
@@ -211,141 +242,6 @@ class ResolvedModule:
         return self.types[type_name.rpartition(".")[2]]
 
 
-# -- templates ---------------------------------------------------------------------------------
-
-
-class TemplateError(ValueError):
-    """A template that is malformed."""
-
-
-@dataclass(frozen=True)
-class Placeholder:
-    name: str
-
-
-@dataclass(frozen=True)
-class OptionalGroup:
-    """`[ ... ]`: shown only if every placeholder inside it has a value."""
-
-    nodes: tuple[Node, ...]
-
-
-Node = str | Placeholder | OptionalGroup
-Template = tuple[Node, ...]
-
-_ESCAPABLE = "{}[]\\"
-_PLACEHOLDER = re.compile(r"[A-Za-z][A-Za-z0-9_]*")
-
-
-@lru_cache(maxsize=2048)
-def parse_template(text: str) -> Template:
-    """The template grammar of CONTRACT-010: `{name}`, `[` optional group `]` and escapes
-    `\\{ \\} \\[ \\] \\\\`. Raises `TemplateError` for anything unescaped that is not one of those
-    forms."""
-    nodes, end = _parse(text, 0, nested=False)
-    assert end == len(text)
-    return nodes
-
-
-def _parse(text: str, i: int, *, nested: bool) -> tuple[Template, int]:
-    nodes: list[Node] = []
-    buf: list[str] = []
-
-    def flush() -> None:
-        if buf:
-            nodes.append("".join(buf))
-            buf.clear()
-
-    while i < len(text):
-        c = text[i]
-        if c == "\\" and i + 1 < len(text) and text[i + 1] in _ESCAPABLE:
-            buf.append(text[i + 1])
-            i += 2
-        elif c == "{":
-            end = text.find("}", i)
-            name = text[i + 1 : end] if end > 0 else ""
-            if not _PLACEHOLDER.fullmatch(name):
-                raise TemplateError("a { starts a {name} placeholder; write \\{ for a brace")
-            flush()
-            nodes.append(Placeholder(name))
-            i = end + 1
-        elif c == "[":
-            flush()
-            inner, i = _parse(text, i + 1, nested=True)
-            nodes.append(OptionalGroup(inner))
-        elif c == "]":
-            if not nested:
-                raise TemplateError("a ] closes no [; write \\] for a bracket")
-            flush()
-            return tuple(nodes), i + 1
-        elif c == "}":
-            raise TemplateError("a } closes no {; write \\} for a brace")
-        else:
-            buf.append(c)
-            i += 1
-    if nested:
-        raise TemplateError("a [ is never closed; write \\[ for a bracket")
-    flush()
-    return tuple(nodes), i
-
-
-def placeholders(template: str | Template) -> list[str]:
-    """The property names a template names, in order of first appearance."""
-    nodes = parse_template(template) if isinstance(template, str) else template
-    found: list[str] = []
-    for n in nodes:
-        names = (
-            [n.name]
-            if isinstance(n, Placeholder)
-            else placeholders(n.nodes)
-            if isinstance(n, OptionalGroup)
-            else []
-        )
-        found.extend(x for x in names if x not in found)
-    return found
-
-
-def as_text(value: Any) -> str:
-    """A property's value as the text a template shows."""
-    if value is None:
-        return ""
-    if isinstance(value, bool):
-        return "true" if value else "false"
-    if isinstance(value, datetime | date):
-        return value.isoformat()
-    if isinstance(value, list | tuple):
-        return ", ".join(as_text(v) for v in cast(Sequence[Any], value))
-    return str(value)
-
-
-def _eval(nodes: Template, row: Mapping[str, Any]) -> tuple[str, bool]:
-    """The text and whether every placeholder in it had a value."""
-    out: list[str] = []
-    filled = True
-    for n in nodes:
-        if isinstance(n, str):
-            out.append(n)
-        elif isinstance(n, Placeholder):
-            text = as_text(row.get(n.name))
-            if not text.strip():
-                filled = False
-            else:
-                out.append(text)
-        else:
-            text, ok = _eval(n.nodes, row)
-            filled = filled and ok
-            if ok:
-                out.append(text)
-    return "".join(out), filled
-
-
-def evaluate(template: str | Template, row: Mapping[str, Any]) -> str:
-    """The template over an entity's properties. A placeholder with no value, and an optional
-    group with any, produce no text; the result is text, never markup."""
-    nodes = parse_template(template) if isinstance(template, str) else template
-    return _eval(nodes, row)[0]
-
-
 def title_of(view: ResolvedView, row: Mapping[str, Any], key: str) -> str:
     """An entity's title: its template over the row, or its key when that is empty."""
     return evaluate(view.title, row).strip() or key
@@ -410,7 +306,7 @@ def format_suits(p: PropertyInfo, fmt: str) -> bool:
     if p.cardinality == "many":
         return fmt == "tags" if p.type == "string" else fmt == "json"
     suits = {
-        "string": ("text", "prose", "code", "link", "badge"),
+        "string": ("text", "prose", "code", "link", "badge", "markdown"),
         "timestamp": ("date", "datetime"),
         "integer": ("number",),
         "decimal": ("number",),
@@ -568,8 +464,9 @@ def _list(v: Any) -> list[Any]:
 class _Checker:
     """Reads one document's `arras.view` terms and reports each fault with its document path."""
 
-    def __init__(self, mod: ModuleInfo) -> None:
+    def __init__(self, mod: ModuleInfo, version: str = VERSION) -> None:
         self.mod = mod
+        self.version = version
         self.out: list[Violation] = []
 
     def fault(self, path: str, code: str, message: str) -> None:
@@ -732,8 +629,13 @@ class _Checker:
             tones = self.tones(found["tones"], f"{path}.tones", (fmt or default_format(p)))
         return FieldTerms(label, fmt, hide, tones)
 
+    def known_format(self, v: str) -> bool:
+        """A format of the vocabulary, at the version the document declares."""
+        since = FORMATS_SINCE.get(v)
+        return v in FORMATS or (since is not None and self.version >= since)
+
     def format(self, v: Any, path: str, p: PropertyInfo) -> str | None:
-        if not isinstance(v, str) or v not in FORMATS or not format_suits(p, v):
+        if not isinstance(v, str) or not self.known_format(v) or not format_suits(p, v):
             self.fault(
                 path, "view_format_mismatch", f"{p.name} ({p.type}) cannot be shown as {v!r}"
             )
@@ -809,11 +711,14 @@ def parse_view(
     if vocabulary is None:
         return DeclaredView(), []
     vocab = _obj(root.get("vocabularies"))[vocabulary]
-    if _obj(vocab).get("version") != VERSION:
+    declared_version = _obj(vocab).get("version")
+    if declared_version not in VERSIONS:
         path = f"vocabularies.{vocabulary}.version"
-        v = Violation(path, "view_unsupported_version", f"arras.view {VERSION} is supported")
+        v = Violation(
+            path, "view_unsupported_version", f"arras.view {' and '.join(VERSIONS)} are supported"
+        )
         return DeclaredView(), [v]
-    c = _Checker(mod)
+    c = _Checker(mod, str(declared_version))
     declared = _read_module(c, root, module, vocabulary)
     total = _size(
         declared.title,

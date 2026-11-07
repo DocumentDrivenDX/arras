@@ -76,7 +76,7 @@ export function defaultFormat(p: Prop): string {
 }
 
 const SUITS: Record<string, string[]> = {
-  string: ["text", "prose", "code", "link", "badge"],
+  string: ["text", "prose", "code", "link", "badge", "markdown"],
   timestamp: ["date", "datetime"],
   integer: ["number"],
   decimal: ["number"],

@@ -41,6 +41,7 @@ GROUPS: dict[str, str] = {
     "arras.inputs": "domain",
     "arras.view": "domain",
     "arras.view_aliases": "domain",
+    "arras.view_template": "domain",
     "arras.viewcache": "domain",
     "arras.backend": "contract",
     "arras.adapters": "adapters",

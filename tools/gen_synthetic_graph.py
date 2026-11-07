@@ -62,7 +62,10 @@ def spec() -> dict[str, Any]:
             },
             "Topic": {"label": "Topic", "icon": "tag", "tone": "teal", "title": "{title}"},
         },
-        "fields": {"Doc.kind": {"format": "badge", "tones": {"guide": "green", "note": "slate"}}},
+        "fields": {
+            "Doc.body": {"format": "markdown"},
+            "Doc.kind": {"format": "badge", "tones": {"guide": "green", "note": "slate"}},
+        },
         "relationshipViews": {
             "about": {"label": "About", "inverseLabel": "Covered by", "order": 10},
             "links": {"label": "Links to", "inverseLabel": "Linked from", "order": 20},
@@ -92,7 +95,11 @@ def build(docs: int) -> tuple[dict[str, Any], dict[str, Any]]:
             {"type": "Topic", "key": slug, "properties": {"title": slug.replace("-", " ").title()}}
         )
     for i in range(docs):
-        body = text(rnd, rnd.randint(6000, 8000))
+        body = (
+            "## Summary\n\n- **Point** one, with `code`\n- Point *two*\n\n"
+            "| Criterion | Concern |\n|---|---|\n| Cost | budget |\n\n"
+            + text(rnd, rnd.randint(5800, 7800))
+        )
         marker = f"needle{i % 50:02d}"
         records.append(
             {
@@ -130,7 +137,9 @@ def build(docs: int) -> tuple[dict[str, Any], dict[str, Any]]:
         "complete": True,
         "records": unique,
     }
-    return document(spec()), graph
+    doc = document(spec())
+    doc["vocabularies"]["arras.view"]["version"] = "0.2.0"  # the markdown format
+    return doc, graph
 
 
 def main(argv: list[str]) -> int:

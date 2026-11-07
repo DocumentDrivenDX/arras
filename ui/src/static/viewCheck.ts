@@ -11,6 +11,7 @@ import {
   FIELD_TERMS,
   type FieldTerms,
   FORMATS,
+  FORMATS_SINCE,
   ICONS,
   isObj,
   list,
@@ -31,13 +32,25 @@ import {
   type RelationshipTerms,
   SECTION_TERMS,
   TONES,
+  VERSION,
 } from "./viewTerms";
 
 // -- the checks at registration ----------------------------------------------------------------
 
 export class Checker {
   readonly out: Violation[] = [];
-  constructor(readonly mod: ModuleModel) {}
+  constructor(
+    readonly mod: ModuleModel,
+    readonly version: string = VERSION,
+  ) {}
+
+  /** A format of the vocabulary, at the version the document declares. */
+  knownFormat(v: string): boolean {
+    const since = FORMATS_SINCE[v];
+    return (
+      (FORMATS as readonly string[]).includes(v) || (since !== undefined && this.version >= since)
+    );
+  }
 
   fault(path: string, code: string, message: string): void {
     this.out.push({ path, code, message });
@@ -228,11 +241,7 @@ export class Checker {
   }
 
   format(v: unknown, path: string, p: Prop): string | null {
-    if (
-      typeof v !== "string" ||
-      !(FORMATS as readonly string[]).includes(v) ||
-      !formatSuits(p, v)
-    ) {
+    if (typeof v !== "string" || !this.knownFormat(v) || !formatSuits(p, v)) {
       this.fault(
         path,
         "view_format_mismatch",

@@ -1293,6 +1293,126 @@
      }
     ]
    }
+  },
+  {
+   "id": "view.markdown-from-0.2.0",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "the markdown format, in a document that declares vocabulary 0.2.0",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.2.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      6,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "format": "markdown"
+     }
+    }
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "id": "view.markdown-needs-0.2.0",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "the markdown format, in a document that declares vocabulary 0.1.0",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.1.0"
+     }
+    },
+    {
+     "at": [
+      "modules",
+      0,
+      "elements",
+      6,
+      "extensions",
+      "arras.view"
+     ],
+     "value": {
+      "format": "markdown"
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_format_mismatch",
+      "path": "modules[0].elements[6].extensions.arras.view.format"
+     }
+    ]
+   }
+  },
+  {
+   "id": "view.0.2.0-reads-as-0.1.0",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "a document at 0.2.0 that uses no new term resolves as it would at 0.1.0",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.2.0"
+     }
+    }
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "id": "view.unsupported-later-version",
+   "covers": [
+    "US-070-AC4"
+   ],
+   "description": "a vocabulary version after the ones this release reads",
+   "set": [
+    {
+     "at": [
+      "vocabularies",
+      "arras.view"
+     ],
+     "value": {
+      "version": "0.3.0"
+     }
+    }
+   ],
+   "expect": {
+    "violations": [
+     {
+      "code": "view_unsupported_version",
+      "path": "vocabularies.arras.view.version"
+     }
+    ]
+   }
   }
  ]
 }

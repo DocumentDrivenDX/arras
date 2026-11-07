@@ -4,6 +4,10 @@
 // constants and dataclasses of `arras/view.py`.
 export const VOCABULARY = "arras.view";
 export const VERSION = "0.1.0";
+/** The vocabulary versions read. 0.2.0 adds the `markdown` format and nothing else. */
+export const VERSIONS = ["0.1.0", "0.2.0"];
+/** Formats a later version adds, with the first version that has each. */
+export const FORMATS_SINCE: Record<string, string> = { markdown: "0.2.0" };
 
 export const ICONS = [
   "box",

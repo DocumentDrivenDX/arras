@@ -149,6 +149,7 @@ def _reads_spec() -> dict[str, Any]:
             "Bare": {},
         },
         "fields": {
+            "Note.body": {"format": "markdown"},
             "Note.status": {"format": "badge", "tones": {"open": "green", "closed": "slate"}},
             "Note.seen": {"format": "datetime"},
         },
@@ -159,6 +160,7 @@ def _reads_spec() -> dict[str, Any]:
         "seed": [],
     }
     doc = document(spec)
+    doc["vocabularies"]["arras.view"]["version"] = "0.2.0"  # the `markdown` format needs it
     # a many-valued string property, which the example generator does not write
     mod = doc["modules"][0]
     note = next(e for e in mod["elements"] if e["id"] == "Note" and e["kind"] == "record")
