@@ -14,7 +14,7 @@ const stage = (name, dir, module, graph, title) =>
   run(
     "node",
     [
-      "scripts/stage-static.ts",
+      "scripts/stage-static.mjs",
       join(root, name),
       join(dir, module),
       join(dir, graph),

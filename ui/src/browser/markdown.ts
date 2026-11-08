@@ -235,6 +235,37 @@ const indentOf = (l: string): number => {
   return m ? (m[1] as string).length : -1;
 };
 
+/** Whether `l` is a line of the item at `indent` that carries on its text: indented past it, and no block of its own. */
+const continues = (l: string, indent: number): boolean =>
+  !isBlank(l) &&
+  itemOf(l) === null &&
+  (l.match(/^\s*/) as RegExpMatchArray)[0].length > indent &&
+  !(HEADING.test(l.trim()) || FENCE.test(l.trim()) || RULE.test(l) || QUOTE.test(l));
+
+/** The item at `lines[i]` (a list line at `indent`): its text, its deeper lines, and the line after it. */
+function item(lines: string[], i: number, indent: number): [ListItem, number] {
+  const m = itemOf(lines[i] as string) as RegExpExecArray;
+  const inner: string[] = [];
+  let text = m[2] as string;
+  let j = i + 1;
+  while (j < lines.length) {
+    const l = lines[j] as string;
+    if (indentOf(l) > indent) inner.push(l);
+    else if (!continues(l, indent)) break;
+    // An indented line that starts no block carries on the text before it, as one paragraph.
+    else if (inner.length) inner.push(l);
+    else text += ` ${l.trim()}`;
+    j += 1;
+  }
+  const sub = inner.length
+    ? deeper(
+        () => list(inner, 0)[0],
+        () => null,
+      )
+    : null;
+  return [{ id: nid(), c: parseInline(text), sub }, j];
+}
+
 /** A list starting at `i`: its lines are items at one indent, with deeper lines as the item's own list. */
 function list(lines: string[], i: number): [Block, number] {
   const first = itemOf(lines[i] as string) as RegExpExecArray;
@@ -245,22 +276,9 @@ function list(lines: string[], i: number): [Block, number] {
   while (j < lines.length) {
     const m = itemOf(lines[j] as string);
     if (!m || (m[1] as string).length !== indent) break;
-    const inner: string[] = [];
-    j += 1;
-    while (j < lines.length && indentOf(lines[j] as string) > indent) {
-      inner.push(lines[j] as string);
-      j += 1;
-    }
-    items.push({
-      id: nid(),
-      c: parseInline(m[2] as string),
-      sub: inner.length
-        ? deeper(
-            () => list(inner, 0)[0],
-            () => null,
-          )
-        : null,
-    });
+    const [it, end] = item(lines, j, indent);
+    items.push(it);
+    j = end;
   }
   return [{ id: nid(), t: ordered ? "ol" : "ul", items }, j];
 }

@@ -43,7 +43,13 @@ rmSync(join(UI, ".pack"), { recursive: true, force: true });
 mkdirSync(STAGE, { recursive: true });
 cpSync(DIST, join(STAGE, "dist"), { recursive: true });
 rmSync(join(STAGE, "dist", "styles.js"), { force: true }); // the stylesheet's entry stub
+// The built static host (ADR-031): `static.html` and its assets, with the stage script beside it.
+if (!existsSync(join(UI, "dist-static", "static.html")))
+  throw new Error("run `npm run build:static` first");
+cpSync(join(UI, "dist-static"), join(STAGE, "static-site"), { recursive: true });
+mkdirSync(join(STAGE, "scripts"), { recursive: true });
 for (const file of [
+  "scripts/stage-static.mjs",
   "LICENSE.md",
   "LICENSE-MIT",
   "LICENSE-APACHE",

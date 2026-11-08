@@ -31,6 +31,7 @@ const ENTRY_FILES: Record<string, { runtime: string; types: string }> = {
   ".": { runtime: "index", types: "index" },
   "./browser": { runtime: "browser", types: "browser/index" },
   "./shell": { runtime: "shell", types: "shell/index" },
+  "./static": { runtime: "static", types: "static/index" },
   "./testkit": { runtime: "testkit", types: "testkit/index" },
   "./testkit/host": { runtime: "testkit/host", types: "testkit/host" },
 };

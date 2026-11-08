@@ -427,8 +427,18 @@ jobs:
           GITHUB_OUTPUT=/dev/null python3 .github/scripts/verify_registry_publication.py check-npm \
             --version "$VERSION" --sha256 "$NPM_SHA256" --wait-for-present \
             --visibility-timeout 600 --output npm-postflight.json
-          npm install --prefix "$RUNNER_TEMP/npm-registry-smoke" --ignore-scripts --no-audit --no-fund \
-            --registry https://registry.npmjs.org/ "@documentdrivendx/arras-ui@$VERSION"
+          # The registry can serve the tarball before every edge resolves the new version (ETARGET): wait and retry.
+          installed=0
+          for attempt in $(seq 1 30); do
+            if npm install --prefix "$RUNNER_TEMP/npm-registry-smoke" --ignore-scripts --no-audit --no-fund \
+              --registry https://registry.npmjs.org/ "@documentdrivendx/arras-ui@$VERSION"; then
+              installed=1
+              break
+            fi
+            echo "npm install attempt $attempt did not resolve $VERSION yet; retrying in 20s" >&2
+            sleep 20
+          done
+          test "$installed" = 1
           NPM_SMOKE_NODE_MODULES="$RUNNER_TEMP/npm-registry-smoke/node_modules" node --input-type=module -e '
             import { createRequire } from "node:module";
             import { join } from "node:path";
@@ -439,6 +449,10 @@ jobs:
             if (manifest.version !== process.env.VERSION) throw new Error("installed npm version differs");
             const ui = await import(pathToFileURL(join(root, "dist", "index.js")).href);
             if (Object.keys(ui).length === 0) throw new Error("installed npm package exports are empty");
+            if (!manifest.exports["./static"]) throw new Error("installed npm package has no ./static export");
+            const staticClient = await import(pathToFileURL(join(root, "dist", "static.js")).href);
+            for (const name of ["createStaticClient", "loadStore", "staticSchemaApi", "readConfig"])
+              if (typeof staticClient[name] !== "function") throw new Error(`installed ./static lacks ${name}`);
           '
           python3 - <<'PY'
           import hashlib, json, os

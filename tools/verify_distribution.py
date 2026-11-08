@@ -284,7 +284,13 @@ def verify_npm_package(extracted: dict[str, bytes], version: str, manifest: dict
                 if isinstance(actual, str)
                 else actual.get("import" if kind == "runtime" else kind)
             )
-            if target != expected or spec[kind] not in extracted:
+            prefix, star, _ = spec[kind].partition(
+                "*"
+            )  # a subpath pattern: the package ships files under it
+            present = (
+                any(m.startswith(prefix) for m in extracted) if star else spec[kind] in extracted
+            )
+            if target != expected or not present:
                 fail(f"npm {kind} target for {name} is missing or differs: {target!r}")
     expected_peers = {k: v["version"] for k, v in npm["peer_dependencies"].items()}
     if package.get("peerDependencies", {}) != expected_peers:

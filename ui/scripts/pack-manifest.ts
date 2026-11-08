@@ -32,20 +32,27 @@ export function packedManifest(
     sideEffects: ["**/*.css"],
     files: [
       "dist",
+      "static-site",
+      "scripts/stage-static.mjs",
       "support/acceptance",
       "support/examples",
       "support/src",
       "support/qualify-downstream-theme.mjs",
       "support/QUALIFICATION.md",
     ],
-    bin: { "arras-ui-qualify": "./support/qualify-downstream-theme.mjs" },
+    bin: {
+      "arras-ui-qualify": "./support/qualify-downstream-theme.mjs",
+      "arras-ui-stage-static": "./scripts/stage-static.mjs",
+    },
     exports: {
       ".": entry("index", "index"),
       "./browser": entry("browser", "browser/index"),
       "./shell": entry("shell", "shell/index"),
+      "./static": entry("static", "static/index"),
       "./testkit": entry("testkit", "testkit/index"),
       "./testkit/host": entry("testkit/host", "testkit/host"),
       "./styles.css": "./dist/styles.css",
+      "./static-site/*": "./static-site/*",
       "./package.json": "./package.json",
     },
     dependencies: {
