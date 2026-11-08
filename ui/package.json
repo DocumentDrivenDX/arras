@@ -22,7 +22,7 @@
     "test:packed-browser": "node scripts/packed-browser.mjs",
     "qualify:downstream-theme": "node scripts/qualify-downstream-theme.mjs",
     "qualify:downstream": "node scripts/run-downstream-qualification.mjs",
-    "build:wheel": "npm run build:embed && npm run build:lib && npm run check:public-manifest && npm run check:css -- dist-lib/styles.css && npm run pack:wheel",
+    "build:wheel": "npm run build:embed && npm run build:lib && npm run build:static && npm run check:public-manifest && npm run check:css -- dist-lib/styles.css && npm run pack:wheel",
     "typecheck": "tsc --noEmit",
     "lint": "biome lint .",
     "format": "biome format --write .",
@@ -41,7 +41,7 @@
     "check:externals": "node scripts/check-externals.ts dist-lib",
     "check:public-manifest": "node scripts/check-public-manifest.ts",
     "build:static": "vite build --config vite.static.config.ts",
-    "stage:static": "node scripts/stage-static.ts",
+    "stage:static": "node scripts/stage-static.mjs",
     "check:static": "vitest run src/test/static-site.test.ts",
     "e2e:static": "vite build --config vite.static.config.ts && playwright test -c playwright.static.config.ts",
     "bench:static": "node --expose-gc ./node_modules/vitest/vitest.mjs run src/test/static-bench.test.ts"

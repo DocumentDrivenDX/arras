@@ -28,6 +28,15 @@ describe("the subset", () => {
     expect(c.querySelectorAll("ol > li").length).toBe(2);
   });
 
+  it("reads an indented line after a list item as the same paragraph, not a new one", () => {
+    const c = html("- Scope (18.6 at\n  access) and more\n- b\n  - b1\n    continued\n- c");
+    const items = c.querySelectorAll("ul > li");
+    expect(c.querySelectorAll("p").length).toBe(0);
+    expect(items[0]?.textContent).toBe("Scope (18.6 at access) and more");
+    expect(c.querySelector("ul ul li")?.textContent).toBe("b1 continued");
+    expect(c.querySelectorAll("ul").length).toBe(2);
+  });
+
   it("draws a pipe table with a header, and a pipe escaped in a cell", () => {
     const c = html("| A | B |\n|---|:-:|\n| 1 | x \\| y |\n| 2 | `c` |");
     expect([...c.querySelectorAll("th")].map((t) => t.textContent)).toEqual(["A", "B"]);

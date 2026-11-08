@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.8.1 — the static host ships in the package, and markdown list continuation
+
+- Packaging: `@documentdrivendx/arras-ui` now has a `./static` export (`createStaticClient`, `loadStore`,
+  `staticSchemaApi`, `readConfig`, `digestOf`, `READ_ONLY`, `GraphLoadError`, `InvalidDocument`, and the
+  `StaticConfig` type), so a host can mount `ArrasApp` or `GraphBrowser` over its own bundle. 0.8.0 shipped
+  the declarations but no JavaScript for it.
+- Packaging: the built static host (`static.html` and its assets, relative URLs, the same content security
+  policy) ships in the npm package as `static-site/`, with the stage script as `scripts/stage-static.mjs`
+  (also the `arras-ui-stage-static` command). A downstream site stages a graph without a checkout or a
+  build. The wheel carries this package as its npm tarball.
+- Fix: in the `markdown` format, a list item whose text continues on an indented line is one paragraph, as in
+  CommonMark, not separate paragraphs with a gap mid-sentence.
+- Release: the registry workflow's final fresh-install check waits and retries while the npm registry
+  propagates a new version.
+
 ## 0.8.0 — static read-only Graph Browser and the markdown format
 
 ### Markdown format

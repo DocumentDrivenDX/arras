@@ -212,7 +212,7 @@ def test_publisher_installs_only_the_configured_public_index_and_verifies_post_p
 
 
 @pytest.mark.parametrize(
-    "version", ["0.6.3", "0.6.4", "0.6.5", "0.7.0", "0.7.1", "0.7.2", "0.7.3", "0.8.0"]
+    "version", ["0.6.3", "0.6.4", "0.6.5", "0.7.0", "0.7.1", "0.7.2", "0.7.3", "0.8.0", "0.8.1"]
 )
 @pytest.mark.parametrize("platform", ["linux-x86_64", "macos-arm64"])
 def test_known_releases_retain_their_exact_public_dependency_closure(
@@ -223,7 +223,7 @@ def test_known_releases_retain_their_exact_public_dependency_closure(
     selected = extras.validate_pip_report(
         _report(version), version=version, wheel_sha256=ARRAS_SHA256
     )
-    expected = "0.10.5" if version in ("0.7.0", "0.7.1", "0.7.2", "0.7.3", "0.8.0") else "0.10.0"
+    expected = "0.10.5" if version in ("0.7.0", "0.7.1", "0.7.2", "0.7.3", "0.8.0", "0.8.1") else "0.10.0"
     assert selected["umf-core"]["version"] == expected
     assert (
         selected["umf-core"]["sha256"]
@@ -240,6 +240,7 @@ def test_known_releases_retain_their_exact_public_dependency_closure(
         ("0.7.2", "0.10.0"),
         ("0.7.3", "0.10.0"),
         ("0.8.0", "0.10.0"),
+        ("0.8.1", "0.10.0"),
     ],
 )
 def test_extras_receipt_refuses_cross_release_sdk_substitution(
@@ -253,11 +254,11 @@ def test_extras_receipt_refuses_cross_release_sdk_substitution(
 
 def test_unqualified_future_release_does_not_inherit_current_sdk_pin() -> None:
     with pytest.raises(extras.ExtrasVerificationError, match="no qualified"):
-        extras.qualified_pins("0.8.1")
+        extras.qualified_pins("0.8.2")
 
 
 @pytest.mark.parametrize(
-    "version", ["0.6.3", "0.6.4", "0.6.5", "0.7.0", "0.7.1", "0.7.2", "0.7.3", "0.8.0"]
+    "version", ["0.6.3", "0.6.4", "0.6.5", "0.7.0", "0.7.1", "0.7.2", "0.7.3", "0.8.0", "0.8.1"]
 )
 def test_doctor_smoke_targets_verified_release_without_dropping_other_expectations(
     tmp_path: Path,
@@ -282,7 +283,7 @@ def test_doctor_smoke_targets_verified_release_without_dropping_other_expectatio
     assert json.loads(path.read_text()) == request
 
 
-@pytest.mark.parametrize("version", ["0.6.5", "0.7.0", "0.7.1", "0.7.2", "0.7.3", "0.8.0"])
+@pytest.mark.parametrize("version", ["0.6.5", "0.7.0", "0.7.1", "0.7.2", "0.7.3", "0.8.0", "0.8.1"])
 def test_verify_reports_the_selected_historical_or_native_pin_shape(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -317,7 +318,7 @@ def test_verify_reports_the_selected_historical_or_native_pin_shape(
     )
     result = extras.verify(args)
     sdk_pin = result["qualified_github_dependency_sha256"]["umf-core"]
-    if version in ("0.7.0", "0.7.1", "0.7.2", "0.7.3", "0.8.0"):
+    if version in ("0.7.0", "0.7.1", "0.7.2", "0.7.3", "0.8.0", "0.8.1"):
         assert sdk_pin == {
             k: p["sha256"] for k, p in extras.qualified_pins(version)["umf-core"]["assets"].items()
         }
@@ -330,8 +331,8 @@ def test_successor_report_rejects_changed_qualified_sdk_bytes(
     platform: str, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(extras, "_current_weft_platform", lambda: platform)
-    report = _report("0.8.0")
+    report = _report("0.8.1")
     sdk = next(row for row in report["install"] if row["metadata"]["name"] == "umf-core")
     sdk["download_info"]["archive_info"]["hashes"]["sha256"] = "f" * 64
     with pytest.raises(extras.ExtrasVerificationError, match="qualified GitHub pin"):
-        extras.validate_pip_report(report, version="0.8.0", wheel_sha256=ARRAS_SHA256)
+        extras.validate_pip_report(report, version="0.8.1", wheel_sha256=ARRAS_SHA256)

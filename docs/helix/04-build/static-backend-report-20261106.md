@@ -29,7 +29,7 @@ Date: 2026-11-06. Scope: ADR-031 and CONTRACT-012. Nothing here is released; no 
 |---|---|---|
 | The backend: module reader, `arras.view` reader and resolver, template grammar, numeric domains, store, GraphQL schema and budgets, search, export, the `ArrasClient` | `ui/src/static/` (23 files) | about 3,800 lines |
 | The `client` and `schemaApi` props, threaded through the provider, the Browser, the console and the shell; `useViewer` takes the client | `ui/src/api/context.tsx`, `ArrasConsole.tsx`, `browser/GraphBrowser.tsx`, `shell/` | 30 lines |
-| The host page, its configuration reader, the staging and test-server scripts, the Vite and Playwright configs | `ui/static.html`, `src/static/host.tsx`, `config.ts`, `scripts/stage-static.ts`, `serve-static-sites.mjs`, `vite.static.config.ts`, `playwright.static.config.ts` | |
+| The host page, its configuration reader, the staging and test-server scripts, the Vite and Playwright configs | `ui/static.html`, `src/static/host.tsx`, `config.ts`, `scripts/stage-static.mjs`, `serve-static-sites.mjs`, `vite.static.config.ts`, `playwright.static.config.ts` | |
 | The shared data: `read_cases.json` (253 requests), `domain.json` (41 vectors); the reference generator and drift gate | `src/arras/conformance/`, `tests/vectors/`, `tools/gen_static_reads.py`, `tests/test_static_reads.py` | corpus 584 KB |
 | Tests | `ui/src/test/static-*.test.ts` (view cases, read corpus, backend, site check, bench); `ui/e2e-static/` (Playwright and axe) | |
 | Fixtures and tools | `examples/pizza/pizza.graph.json` (the Export of the pizza module); `tools/gen_synthetic_graph.py` | |

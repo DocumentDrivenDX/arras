@@ -7,5 +7,6 @@ export {
   READ_ONLY,
   staticSchemaApi,
 } from "./backend";
+export { readConfig, type StaticConfig } from "./config";
 export { InvalidDocument } from "./model";
 export { GraphLoadError } from "./store";

@@ -842,13 +842,50 @@ npm run stage:static -- site m.umf.json m.graph.json --title "My graph"   # site
 Serve `site/` with any static file host. `arras-static.json` (`{"module": "m.umf.json", "graph": "m.graph.json"}`, relative
 paths only, an optional `brand`) is the one file that names the data; a weekly republish replaces the graph file (serve the
 data files with `Cache-Control: no-cache`, or name them by content). The page's content security policy allows no request
-but to its own origin. A graph whose text is Markdown shows as text: the `prose` format forbids markup (a sanitized
-`markdown` format is a separate proposal).
+but to its own origin. Text declared `format: markdown` is drawn as a closed, sanitized subset of Markdown (ADR-032); `prose`
+still forbids markup.
+
+### What each package ships (0.8.1 and later)
+
+| You have | It ships |
+|---|---|
+| `@documentdrivendx/arras-ui` (npm) | the `./static` export (`createStaticClient`, `loadStore`, `staticSchemaApi`, `readConfig`, `digestOf`, `READ_ONLY`, `GraphLoadError`, `InvalidDocument`, type `StaticConfig`); the built host as `static-site/` (`static.html` and its assets, relative URLs, the page's content security policy); the stage script as `scripts/stage-static.mjs`, also the `arras-ui-stage-static` command |
+| the `arras` wheel (PyPI) | the same npm package, as the tarball under `arras/ui/npm/`; the wheel's own `arras/ui/static/embed.html` is the server-backed Browser, not the static host |
+
+0.8.0 shipped only the declarations for `./static`, and nothing built; use 0.8.1 or later.
+
+**Stage a site without a checkout or a build.** Install the package, then give the stage script a module and a graph:
+
+```sh
+npm install @documentdrivendx/arras-ui
+npx arras-ui-stage-static site m.umf.json m.graph.json --title "My graph"
+```
+
+`site/` is `index.html`, the assets, both files and `arras-static.json`; serve it from any static file host. Or copy
+`node_modules/@documentdrivendx/arras-ui/static-site/` yourself, rename `static.html` to `index.html` and add your own
+`arras-static.json`. The `static-site/*` files are also importable paths (`@documentdrivendx/arras-ui/static-site/static.html`).
+
+**Mount the browser over your own bundle.** Your bundler provides `react`, `react-dom`, `@tanstack/react-query` and
+`@documentdrivendx/umf-schema-browser`; the package leaves them external:
+
+```tsx
+import { ArrasApp } from "@documentdrivendx/arras-ui/shell";
+import "@documentdrivendx/arras-ui/styles.css";
+import { createStaticClient, loadStore, readConfig, staticSchemaApi } from "@documentdrivendx/arras-ui/static";
+
+const text = async (url: string) => (await fetch(url, { credentials: "omit" })).text();
+const config = readConfig(await text("arras-static.json"));
+const [moduleText, graphText] = await Promise.all([text(config.module), text(config.graph)]);
+const store = await loadStore(moduleText, graphText);
+// <ArrasApp client={createStaticClient(store, moduleText)} schemaApi={staticSchemaApi()} brand={config.brand} />
+```
+
+`src/static/host.tsx` is the reference for loading the two files and wiring the providers.
 
 | Script | What it does |
 |---|---|
 | `npm run build:static` | builds the host to `dist-static/` |
-| `npm run stage:static` | assembles a site: `node scripts/stage-static.ts OUT MODULE GRAPH [--title T] [--name N]` |
+| `npm run stage:static` | assembles a site: `node scripts/stage-static.mjs OUT MODULE GRAPH [--title T] [--name N]` |
 | `npm run check:static` | loads `STATIC_MODULE` and `STATIC_GRAPH` with the page's code |
 | `npm run e2e:static` | builds, stages the examples and a synthetic 1,024-node graph, runs `e2e-static/` (Playwright and axe) in Chromium |
 | `npm run bench:static` | with `STATIC_BENCH_DIR` set (`uv run python ../tools/gen_synthetic_graph.py DIR`), times the load stages and the Browser's reads in Node |

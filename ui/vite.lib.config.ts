@@ -34,6 +34,7 @@ export default defineConfig({
         index: resolve(import.meta.dirname, "src/index.ts"),
         browser: resolve(import.meta.dirname, "src/browser/index.ts"),
         shell: resolve(import.meta.dirname, "src/shell/index.ts"),
+        static: resolve(import.meta.dirname, "src/static/index.ts"),
         testkit: resolve(import.meta.dirname, "src/testkit/index.ts"),
         "testkit/host": resolve(import.meta.dirname, "src/testkit/host.tsx"),
         styles: resolve(import.meta.dirname, "src/styles-entry.ts"),
