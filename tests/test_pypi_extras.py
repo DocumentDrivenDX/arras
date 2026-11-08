@@ -223,7 +223,9 @@ def test_known_releases_retain_their_exact_public_dependency_closure(
     selected = extras.validate_pip_report(
         _report(version), version=version, wheel_sha256=ARRAS_SHA256
     )
-    expected = "0.10.5" if version in ("0.7.0", "0.7.1", "0.7.2", "0.7.3", "0.8.0", "0.8.1") else "0.10.0"
+    expected = (
+        "0.10.5" if version in ("0.7.0", "0.7.1", "0.7.2", "0.7.3", "0.8.0", "0.8.1") else "0.10.0"
+    )
     assert selected["umf-core"]["version"] == expected
     assert (
         selected["umf-core"]["sha256"]
