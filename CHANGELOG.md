@@ -1,13 +1,15 @@
 # Changelog
 
-## Unreleased — markdown format
+## 0.8.0 — static read-only Graph Browser and the markdown format
+
+### Markdown format
 
 - Adds `arras.view` vocabulary 0.2.0 with one new format, `markdown` (ADR-032, CONTRACT-010 A): a closed
   subset of Markdown drawn as React elements in the Graph Browser, with no HTML string built, images shown as
   alt text and links limited to `http`, `https` and `mailto`. 0.1.0 documents read as before; both versions are
   read by the Python library and the static profile.
 
-## Unreleased — static read-only Graph Browser
+### Static read-only Graph Browser
 
 - Adds the static read-only profile (ADR-031, CONTRACT-012): the Graph Browser runs from
   static files, in the browser, over a UMF module document and an `arras.graph` file, with

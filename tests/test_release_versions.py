@@ -51,7 +51,15 @@ def test_each_stale_active_version_refuses(candidate: Path, name: str) -> None:
     path = candidate / name
     text = path.read_text()
     assert VERSION in text
-    path.write_text(text.replace(VERSION, "0.0.0", 1))
+    # a lock file lists other packages, one of which may share this version: stale Arras's own entry
+    own = f'name = "arras"\nversion = "{VERSION}"'
+    stale = (
+        text.replace(own, own.replace(VERSION, "0.0.0"), 1)
+        if name == "uv.lock"
+        else text.replace(VERSION, "0.0.0", 1)
+    )
+    assert stale != text
+    path.write_text(stale)
     assert versions.check(candidate)
 
 
