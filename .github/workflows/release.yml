@@ -32,6 +32,7 @@ jobs:
   # Resolve the payload identity from a separately recorded workflow driver before payload jobs run.
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     outputs:
       version: ${{ steps.version.outputs.version }}
       tag: ${{ steps.version.outputs.tag }}
@@ -105,6 +106,7 @@ jobs:
   build:
     needs: [check, truss]
     runs-on: ubuntu-24.04
+    timeout-minutes: 45
     outputs:
       wheel_name: ${{ steps.release-bundle.outputs.wheel_name }}
       wheel_sha256: ${{ steps.release-bundle.outputs.wheel_sha256 }}
@@ -423,6 +425,7 @@ jobs:
   assemble-evidence:
     needs: [check, build, umf-admission, umf-actions, installed-native, ui-qualification]
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     outputs:
       sums_sha256: ${{ steps.sums.outputs.sha256 }}
     steps:
@@ -496,6 +499,7 @@ jobs:
   github-release:
     needs: [check, truss, build, umf-admission, umf-actions, ui-qualification, installed-native, assemble-evidence]
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: write
     steps:

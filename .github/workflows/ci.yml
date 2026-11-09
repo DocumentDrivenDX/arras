@@ -1,11 +1,10 @@
 name: CI
 
 # The checks a change must pass before it merges. release.yml runs the same gate on a tag.
+# No push-to-main re-run: the PR already ran it and nothing deploys from main here.
 
 on:
   pull_request:
-  push:
-    branches: [main]
   workflow_dispatch:
     inputs:
       full_qualification:
@@ -29,7 +28,7 @@ concurrency:
 jobs:
   routine:
     name: Lean Linux PR checks
-    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -48,6 +47,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && inputs.full_qualification
     name: Lint, types and build
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     outputs:
       source_sha: ${{ steps.candidate.outputs.source_sha }}
       source_tree_sha: ${{ steps.candidate.outputs.source_tree_sha }}
@@ -617,6 +617,7 @@ jobs:
     name: Tests on Python ${{ matrix.python }}
     needs: check
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:

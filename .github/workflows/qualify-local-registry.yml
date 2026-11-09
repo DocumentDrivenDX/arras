@@ -15,6 +15,7 @@ env:
 jobs:
   admit:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
@@ -195,6 +196,7 @@ jobs:
   qualified:
     needs: [admit, source, installed, ui, downstream]
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
