@@ -74,6 +74,7 @@ jobs:
   installed:
     name: Install verified wheel and run explicit qualification stages
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     outputs:
       native_qualification: ${{ steps.native.outputs.status }}
       theme_qualification: ${{ steps.theme.outputs.status }}

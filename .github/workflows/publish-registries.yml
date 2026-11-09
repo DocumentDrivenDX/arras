@@ -79,6 +79,7 @@ jobs:
        (needs.qualify-hosted-recovery.result == 'success' && needs.verify-hosted-release.result == 'skipped' && needs.qualify-local.result == 'skipped'))
     needs: [verify-hosted-release, qualify-local, qualify-hosted-recovery]
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     outputs:
       target: ${{ steps.identity.outputs.target }}
       version: ${{ steps.identity.outputs.version }}
@@ -120,6 +121,7 @@ jobs:
   verify-hosted-release:
     if: (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' && inputs.origin == 'hosted')
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     outputs:
       target: ${{ steps.identity.outputs.target }}
       version: ${{ steps.identity.outputs.version }}
@@ -319,6 +321,7 @@ jobs:
     if: ${{ !cancelled() && needs.verify-release.result == 'success' && needs.verify-release.outputs.target != 'pypi' }}
     needs: [verify-release]
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: read
       actions: read
@@ -491,6 +494,7 @@ jobs:
     if: ${{ !cancelled() && needs.verify-release.result == 'success' && needs.verify-release.outputs.target != 'npm' }}
     needs: [verify-release]
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: read
       actions: read
@@ -550,6 +554,7 @@ jobs:
     if: ${{ !cancelled() && needs.verify-release.result == 'success' && needs.verify-release.outputs.target != 'npm' && needs.pypi-preflight.result == 'success' }}
     needs: [verify-release, pypi-preflight]
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     environment: pypi
     permissions:
       contents: read
