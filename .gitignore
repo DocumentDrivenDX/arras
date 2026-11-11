@@ -13,6 +13,9 @@ __pycache__/
 
 # Build output
 dist/
+/site/
+/docs/site/changelog.md
+/docs/site/demo/
 /artifacts/
 .hypothesis/
 

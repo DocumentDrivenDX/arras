@@ -11,7 +11,7 @@ import subprocess
 import sys
 
 MAX_FILE_BYTES = 1_000_000
-MAX_TREE_BYTES = 26_000_000
+MAX_TREE_BYTES = 15_000_000
 ALLOWLIST = frozenset(
     {
         "tests/fixtures/umf-core-reference/current-conformance.json",
