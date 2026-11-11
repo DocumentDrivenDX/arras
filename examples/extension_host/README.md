@@ -27,21 +27,6 @@ separately because it is needed before typed TOML configuration is loaded. The
 example's data-loading path remains an explicit Python choice and does not
 implicitly read this configuration.
 
-After building Arras, verify the installed consumer and fixed memory corpus with
-the repository's artifact probe:
-
-```sh
-python tools/verify_extension_host.py --wheel /path/to/arras-0.6.3-py3-none-any.whl \
-    --output-json /tmp/extension-host-receipt.json --fresh-dependencies
-```
-
-The probe builds this example with its declared backend and installs both wheels
-in a fresh temporary environment, resolving dependencies from public PyPI. It
-records actual artifact digests, installed imports and dependency versions. Without
-`--fresh-dependencies`, the development convenience mode explicitly reuses the
-invoking environment's dependency directory; its receipt is not fresh-install
-evidence. Neither mode establishes native backend qualification.
-
 ## Installed corpus and custom factories
 
 Run both built-in memory profiles from the installed package, outside this
