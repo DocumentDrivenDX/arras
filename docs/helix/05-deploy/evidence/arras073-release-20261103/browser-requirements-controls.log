@@ -1,9 +1,0 @@
-
- RUN  v5.0.3 /private/tmp/arras-final-candidate-isolated/ui
-
-
- Test Files  1 passed (1)
-      Tests  2 passed (2)
-   Start at  23:28:45
-   Duration  4.25s (tests 58%, environment 19%, import 17%, setup 5%, transform 1%)
-
