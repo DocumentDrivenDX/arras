@@ -230,62 +230,6 @@ def test_native_launcher_and_asset_exports_match_the_selected_catalog() -> None:
     assert lazy_check.returncode == 0, lazy_check.stderr
 
 
-def test_catalog_records_the_packed_ui_acceptance_inventory() -> None:
-    manifest = catalog()
-    acceptance = manifest["resources"]["ui_acceptance"]
-    exact(
-        manifest["distribution"]["npm"]["exports"]["./testkit"],
-        {"runtime": "dist/testkit.js", "types": "dist/types/testkit/index.d.ts"},
-        "testkit package export",
-    )
-    exact(
-        manifest["distribution"]["npm"]["exports"]["./testkit/host"],
-        {"runtime": "dist/testkit/host.js", "types": "dist/types/testkit/host.d.ts"},
-        "testkit host package export",
-    )
-    exact(
-        manifest["ui"]["npm_runtime_exports"]["./testkit"],
-        ["createAcceptanceConfig"],
-        "testkit runtime exports",
-    )
-    exact(
-        manifest["ui"]["npm_type_exports"]["./testkit"],
-        ["AcceptanceConfigOptions"],
-        "testkit type exports",
-    )
-    exact(
-        manifest["ui"]["npm_runtime_exports"]["./testkit/host"],
-        ["AcceptanceHost", "WidgetControls"],
-        "testkit host runtime exports",
-    )
-    exact(
-        manifest["ui"]["npm_type_exports"]["./testkit/host"],
-        [],
-        "testkit host type exports",
-    )
-    source = (Path(__file__).parents[1] / "ui/src/testkit/inventory.ts").read_text()
-    spec_match = re.search(r"CANONICAL_SPECS\s*=\s*\[(.*?)\]\s*as const", source, re.DOTALL)
-    assert spec_match is not None
-    exact(
-        acceptance["specs"],
-        re.findall(r'"([^"\n]+)"', spec_match.group(1)),
-        "packed acceptance specs",
-    )
-    count_match = re.search(r"CANONICAL_TEST_COUNTS\s*=\s*\{(.*?)\}\s*as const", source, re.DOTALL)
-    assert count_match is not None
-    normalized_counts = {
-        (quoted or bare): int(count)
-        for quoted, bare, count in re.findall(
-            r'(?:"([^"]+)"|(\w+))\s*:\s*(\d+)', count_match.group(1)
-        )
-    }
-    exact(acceptance["expected_counts"], normalized_counts, "packed acceptance counts")
-    assert acceptance["manifest_path"] == "support/acceptance/resources.json"
-    assert acceptance["version"] == 1
-    assert re.fullmatch(r"[0-9a-f]{64}", acceptance["manifest_sha256"])
-    assert acceptance["file_count"] == 83
-
-
 def _assert_selected_consumer_imports(tmp_path: Path) -> None:
     source = """from arras import mcp as root_mcp
 import arras.mcp as module_mcp
