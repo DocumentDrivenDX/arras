@@ -24,9 +24,15 @@ from arras.adapters.truss.connection import Connections
 from arras.errors import UNAVAILABLE_REASONS, ArrasError, Refused, Unavailable
 from arras.model import COLUMN_SCALARS, Capabilities, EntityTypeInfo, ModuleInfo
 from arras.results import BackendInfo, BackendStatus, Reason, WeftSupport
+from arras.versions import version_in_range
 
-WEFT_DISTRIBUTION = "weft-sql"
-WEFT_VERSION = "0.4.51"  # the Weft release Truss's compiled queries are qualified with
+# Weft ships as `umf-weft` (earlier releases as `weft-sql`). Any release in the range serves Truss's
+# compiled queries; the dialect string below is what Truss compiles to.
+WEFT_DISTRIBUTIONS = ("umf-weft", "weft-sql")
+WEFT_DISTRIBUTION = WEFT_DISTRIBUTIONS[1]  # deprecated alias
+WEFT_MIN_VERSION = "0.4.51"
+WEFT_MAX_VERSION = "0.5"  # exclusive
+WEFT_VERSION = WEFT_MIN_VERSION  # deprecated alias: the lowest accepted release
 WEFT_DIALECT = "weft-sql/0.2.0"  # the dialect Truss compiles (its backend 0.4.40, interface 0.2.6)
 
 # The read profiles `query` proves against Truss (the read corpus passes): Truss serves joins and
@@ -36,13 +42,16 @@ PROFILES = ("entity-page", "related-entity-page", "count-summary", "general")
 
 
 def weft_support() -> WeftSupport | None:
-    """The dialect and the read profiles `query` serves, when the Weft release Truss's queries need is
-    the installed one."""
-    try:
-        found = metadata.version(WEFT_DISTRIBUTION)
-    except metadata.PackageNotFoundError:
-        return None
-    return WeftSupport(WEFT_DIALECT, PROFILES) if found == WEFT_VERSION else None
+    """The dialect and the read profiles `query` serves, when an installed Weft release is in the
+    accepted range."""
+    for distribution in WEFT_DISTRIBUTIONS:
+        try:
+            found = metadata.version(distribution)
+        except metadata.PackageNotFoundError:
+            continue
+        if version_in_range(found, WEFT_MIN_VERSION, WEFT_MAX_VERSION):
+            return WeftSupport(WEFT_DIALECT, PROFILES)
+    return None
 
 
 def capabilities(t: EntityTypeInfo, module: ModuleInfo) -> Capabilities:

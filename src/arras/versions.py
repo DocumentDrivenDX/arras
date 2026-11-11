@@ -14,3 +14,16 @@ CONTRACT_VERSIONS = {
     "mcp": 2,
     "browser": 1,
 }
+
+
+def version_in_range(found: str, low: str, high: str) -> bool:
+    """Whether the release `found` satisfies `low <= found < high` (plain `N.N.N` releases).
+
+    A version with a pre-release or local suffix, or a non-numeric part, is outside every range."""
+    try:
+        parts = tuple(int(p) for p in found.split("."))
+        floor = tuple(int(p) for p in low.split("."))
+        ceiling = tuple(int(p) for p in high.split("."))
+    except ValueError:
+        return False
+    return floor <= parts < ceiling

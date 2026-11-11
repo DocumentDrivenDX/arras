@@ -1770,6 +1770,7 @@ def test_safe_projection_requires_feed_empty_interval_drain() -> None:
 
 
 def test_foreign_transaction_handle_requires_typed_refusal() -> None:
+    pytest.importorskip("truss", reason="install arras[truss] to run this test")
     from truss import Error, ExecutionFailure, Ok, QueryRefused, QueryUnavailable
 
     lifecycle = importlib.import_module("_lakebase_managed_lifecycle")
@@ -1785,6 +1786,7 @@ def test_foreign_transaction_handle_requires_typed_refusal() -> None:
 
 
 def test_ended_session_requires_no_rows_and_broken_connection() -> None:
+    pytest.importorskip("truss", reason="install arras[truss] to run this test")
     from truss import Error, ExecutionFailure, Ok, QueryRows
 
     lifecycle = importlib.import_module("_lakebase_managed_lifecycle")

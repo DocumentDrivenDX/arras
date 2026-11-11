@@ -22,3 +22,8 @@ src/arras/ui/npm/
 ui/dist-lib/
 ui/.pack/
 .ruff_cache/
+
+# Run output and evidence stay out of git; CI uploads it as workflow artifacts.
+**/evidence/
+test-results/
+*.receipt.json
