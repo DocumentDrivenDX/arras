@@ -19,9 +19,18 @@ from arras.model import (
     PropertyInfo,
 )
 from arras.types import Revision
+from arras.versions import version_in_range
 
 _ENGINE_DISTRIBUTION = "umf-core"
-_ENGINE_VERSIONS = frozenset({"0.10.0", "0.10.1", "0.10.5"})
+# Any umf-core release in this range is accepted (a compatible range, not an exact list).
+_ENGINE_MIN_VERSION = "0.10.0"
+_ENGINE_MAX_VERSION = "0.11"  # exclusive
+
+
+def _engine_version_accepted(version: str) -> bool:
+    return version_in_range(version, _ENGINE_MIN_VERSION, _ENGINE_MAX_VERSION)
+
+
 _BASELINE_ENGINE_VERSION = "0.10.0"
 _PROFILE = "umf-core-empty-registry/1"
 _METADATA_PROFILE = "umf-core-metadata/1"
@@ -70,7 +79,7 @@ class AdmissionReport:
             raise ValueError("source_sha256 does not match source")
         if (
             self.engine_distribution != _ENGINE_DISTRIBUTION
-            or self.engine_version not in _ENGINE_VERSIONS
+            or not _engine_version_accepted(self.engine_version)
             or self.validation_profile != _PROFILE
         ):
             raise ValueError("admission engine identity is not recognized")
@@ -191,7 +200,7 @@ def admit_document(document: bytes | str) -> AdmissionReport:
             ],
         ) from None
 
-    if result.distribution != _ENGINE_DISTRIBUTION or result.version not in _ENGINE_VERSIONS:
+    if result.distribution != _ENGINE_DISTRIBUTION or not _engine_version_accepted(result.version):
         raise RuntimeError("the loaded UMF engine does not match the selected released profile")
     if isinstance(result, ReaderRefusal):
         return _not_run(source, "source_profile", engine_version=result.version)

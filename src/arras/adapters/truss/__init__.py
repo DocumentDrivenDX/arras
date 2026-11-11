@@ -61,15 +61,21 @@ from arras.results import (
 )
 from arras.searchplan import TextMatch
 from arras.types import Principal, Revision, Statement
+from arras.versions import version_in_range
 
-# The pinned release (the optional extra `truss` in pyproject.toml names the same).
+# The toolkit the optional extra `truss` in pyproject.toml names, and the releases the adapter
+# accepts: a compatible range, not one exact version.
 TOOLKIT_DISTRIBUTION = "truss-toolkit"
-TOOLKIT_VERSION = "0.0.50"
+TOOLKIT_MIN_VERSION = "0.0.50"
+TOOLKIT_MAX_VERSION = "0.1"  # exclusive
+TOOLKIT_VERSION = TOOLKIT_MIN_VERSION  # deprecated alias: the lowest accepted release
 EXTRA = "truss"
 
 __all__ = [
     "EXTRA",
     "TOOLKIT_DISTRIBUTION",
+    "TOOLKIT_MAX_VERSION",
+    "TOOLKIT_MIN_VERSION",
     "TOOLKIT_VERSION",
     "Call",
     "CommitUnknown",
@@ -85,17 +91,18 @@ __all__ = [
 
 
 def require_toolkit() -> str:
-    """The installed toolkit version, when it is the pinned one; `ImportError` naming the extra
-    when the toolkit is absent or another release is installed."""
+    """The installed toolkit version, when it is in the accepted range; `ImportError` naming the
+    extra when the toolkit is absent or a release outside the range is installed."""
+    accepted = f">={TOOLKIT_MIN_VERSION},<{TOOLKIT_MAX_VERSION}"
     try:
         found = metadata.version(TOOLKIT_DISTRIBUTION)
     except metadata.PackageNotFoundError:
         raise ImportError(
-            f"{TOOLKIT_DISTRIBUTION} {TOOLKIT_VERSION} is not installed: install arras[{EXTRA}]"
+            f"{TOOLKIT_DISTRIBUTION} {accepted} is not installed: install arras[{EXTRA}]"
         ) from None
-    if found != TOOLKIT_VERSION:
+    if not version_in_range(found, TOOLKIT_MIN_VERSION, TOOLKIT_MAX_VERSION):
         raise ImportError(
-            f"{TOOLKIT_DISTRIBUTION} {found} is installed but {TOOLKIT_VERSION} is pinned: "
+            f"{TOOLKIT_DISTRIBUTION} {found} is installed but {accepted} is required: "
             f"install arras[{EXTRA}]"
         )
     return found

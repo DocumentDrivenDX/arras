@@ -24,18 +24,17 @@ from arras.backend import Provider
 from arras.errors import ArrasError, Unavailable, Unsupported
 
 ROOT = Path(__file__).resolve().parent.parent
-WEFT_VERSION = "0.4.51"
 
 
 def _pyproject() -> dict[str, object]:
     return tomllib.loads((ROOT / "pyproject.toml").read_text())
 
 
-def test_the_extra_pins_the_toolkit_the_adapter_names() -> None:
+def test_the_extra_names_the_toolkit_the_adapter_checks() -> None:
     project = _pyproject()["project"]
     assert isinstance(project, dict)
     extra: list[str] = project["optional-dependencies"]["truss"]  # pyright: ignore[reportUnknownVariableType]
-    assert extra == [f"{TOOLKIT_DISTRIBUTION}[native,query]=={TOOLKIT_VERSION}"]
+    assert [item.split("[")[0].split("=")[0] for item in extra] == [TOOLKIT_DISTRIBUTION]
     assert "truss-toolkit" not in " ".join(project["dependencies"])  # pyright: ignore[reportUnknownArgumentType]
 
 
@@ -53,14 +52,14 @@ def _collected(*args: str) -> str:
 
     done = subprocess.run(
         [sys.executable, "-m", "pytest", "--collect-only", "-q", "-p", "no:cacheprovider", *args,
-         "tests/test_truss_toolkit.py"],
+         "tests/test_conformance_truss.py"],
         capture_output=True, text=True, cwd=ROOT,
     )  # fmt: skip
     return done.stdout
 
 
 def test_a_default_run_collects_no_truss_test_and_the_marker_selects_it() -> None:
-    name = "test_the_installed_extra_is_the_pinned_tuple"
+    name = "test_owned_harness_registers_and_issues_a_real_foreign_receipt"
     assert name not in _collected()
     assert name in _collected("-m", "truss")
 
@@ -158,8 +157,10 @@ def test_a_missing_or_other_toolkit_names_the_extra(monkeypatch: pytest.MonkeyPa
     monkeypatch.setattr(metadata, "version", absent)
     with pytest.raises(ImportError, match=r"arras\[truss\]"):
         require_toolkit()
-    monkeypatch.setattr(metadata, "version", lambda name: "0.0.2")
-    with pytest.raises(ImportError, match="0.0.2 is installed but 0.0.50 is pinned"):
-        require_toolkit()
-    monkeypatch.setattr(metadata, "version", lambda name: TOOLKIT_VERSION)
-    assert require_toolkit() == TOOLKIT_VERSION
+    for outside in ("0.0.2", "0.1.0"):
+        monkeypatch.setattr(metadata, "version", lambda name, v=outside: v)
+        with pytest.raises(ImportError, match=f"{outside} is installed but >=0.0.50,<0.1"):
+            require_toolkit()
+    for inside in (TOOLKIT_VERSION, "0.0.56"):
+        monkeypatch.setattr(metadata, "version", lambda name, v=inside: v)
+        assert require_toolkit() == inside

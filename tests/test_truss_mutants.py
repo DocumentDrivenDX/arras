@@ -26,6 +26,8 @@ from pathlib import Path
 
 import pytest
 
+pytestmark = pytest.mark.slow
+
 ROOT = Path(__file__).resolve().parent.parent
 PACKAGE = ROOT / "src" / "arras"
 ADAPTER = "adapters/truss/"
@@ -34,7 +36,7 @@ SUITE = [
         f"tests/test_truss_{name}.py"
         for name in (
             "plan", "batch", "connection", "reached", "query", "registry",
-            "import", "audit", "apply", "toolkit", "harness",
+            "import", "audit", "apply", "extra", "harness",
         )
     ),
     "tests/test_conformance.py",

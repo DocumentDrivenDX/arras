@@ -130,7 +130,7 @@ def test_reader_refusal_is_not_reported_as_official_invalidity(source: bytes, co
     assert "source=" not in repr(report)
 
 
-@pytest.mark.parametrize("version", ["0.10.0", "0.10.1"])
+@pytest.mark.parametrize("version", ["0.10.0", "0.10.1", "0.10.11", "0.10.99"])
 def test_completed_report_preserves_supported_distribution_version(
     monkeypatch: pytest.MonkeyPatch, version: str
 ) -> None:
@@ -150,7 +150,12 @@ def test_completed_report_preserves_supported_distribution_version(
 
 @pytest.mark.parametrize(
     ("distribution", "version"),
-    [("other", "0.10.0"), ("umf-core", "0.10.2"), ("umf-core", "0.11.0")],
+    [
+        ("other", "0.10.0"),
+        ("umf-core", "0.9.9"),
+        ("umf-core", "0.11.0"),
+        ("umf-core", "0.10.5rc1"),
+    ],
 )
 def test_unknown_engine_identity_is_refused(
     monkeypatch: pytest.MonkeyPatch, distribution: str, version: str
