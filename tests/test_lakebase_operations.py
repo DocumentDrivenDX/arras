@@ -233,6 +233,7 @@ def _assert_follow_up_cancellation(
 
 
 def test_fixed_document_reaches_public_truss_preparation_without_a_database() -> None:
+    pytest.importorskip("truss", reason="install arras[truss] to run this test")
     import truss
 
     prepared = truss.prepare_catalog(
@@ -497,6 +498,7 @@ def test_public_write_requires_exact_tuple_readback_and_value() -> None:
 def test_strict_probe_classifies_actual_public_typed_grant_refusal(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    pytest.importorskip("truss", reason="install arras[truss] to run this test")
     import truss
 
     refusal = truss.InstallRefused(
@@ -578,6 +580,7 @@ def test_strict_probe_classifies_actual_public_typed_grant_refusal(
 def test_strict_success_requires_public_pending_installation_type_and_unknown_ok_rolls_back(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    pytest.importorskip("truss", reason="install arras[truss] to run this test")
     import truss
 
     pending = truss.PendingCatalogInstallation(
@@ -657,6 +660,7 @@ def test_strict_success_requires_public_pending_installation_type_and_unknown_ok
 def test_strict_probe_detach_failure_stops_caller_queries_and_marks_state_unknown(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    pytest.importorskip("truss", reason="install arras[truss] to run this test")
     import truss
 
     class Connection:

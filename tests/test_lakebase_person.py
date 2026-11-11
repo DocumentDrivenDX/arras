@@ -630,6 +630,7 @@ def test_snapshot_comparison_rejects_sequence_regression() -> None:
 
 
 def test_validation_sequence_allowance_requires_actual_selected_artifact_evidence() -> None:
+    pytest.importorskip("truss", reason="install arras[truss] to run this test")
     artifacts = {
         "truss_version": person_tool._VALIDATION_ALLOCATOR_TRUSS_VERSION,
         "truss_wheel_sha256": person_tool._VALIDATION_ALLOCATOR_WHEEL_SHA256,
