@@ -91,7 +91,10 @@ testpaths = ["tests"]
 # Tests marked `truss` need a real Truss on PostgreSQL 18.6: `pytest -m truss` selects them (a
 # command-line -m replaces this one), and a bare `pytest` leaves them out.
 addopts = "-m 'not truss'"
-markers = ["truss: needs a real Truss on PostgreSQL 18.6 (uv run --extra truss pytest -m truss)"]
+markers = [
+    "truss: needs a real Truss on PostgreSQL 18.6 (uv run --extra truss pytest -m truss)",
+    "slow: takes minutes; CI runs it nightly (pytest -m slow)",
+]
 
 [tool.ruff]
 line-length = 100

@@ -53,7 +53,7 @@ jobs:
         working-directory: ui
       - run: npm run check && npm run typecheck && npm test
         working-directory: ui
-      - run: npm run test:integration
+      - run: npm run build && npm run test:integration
         working-directory: ui
 
   size-guard:
