@@ -14,7 +14,6 @@ const config = createAcceptanceConfig({
     light: "rgb(246, 247, 249)",
     dark: "rgb(15, 19, 26)",
   },
-  ...(process.platform === "darwin" ? { baselineDir: resolve("e2e/__screenshots__") } : {}),
 });
 
 const host = (url: string) => ({

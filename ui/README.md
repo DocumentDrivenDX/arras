@@ -127,13 +127,11 @@ statement; the serving backend refuses one that writes, and the grid has no edit
 | `npm run format` | Biome: apply the formatting |
 | `npm run lint` | Biome: lint only |
 | `npm test` | The unit tier: Vitest with a fetch double (`src/test/fake.ts`); fast, no Python |
-| `npm run test:packed-browser` | Build a separate host from the packed public package and verify session/page isolation in Chromium against a real local API |
+| `npm run test:smoke-npm-browser` | Build a separate host from the packed public package and verify session/page isolation in Chromium against a real local API |
 | `npm run test:integration` | The integration tier: the real components and client against the real dev host (needs `uv` and a prior `npm run build`) |
 | `npm run test:all` | Both tiers in one run |
 | `npm run coverage` | Both tiers with merged V8 coverage (`coverage/`) |
 | `npm run e2e` | Playwright whole-stack tests, four projects in order (one worker, no `dependencies` chain, so a failing project does not skip the next) on dev hosts (port 8123, and 8124 for `schema-admin.spec.ts`, which registers a revision of `catalog`; both serve `ui/dist`): `chromium` (every spec except those of the other projects: the console, the shell, the cross-mode links and Explore's New, Retire and Actions), `schema-admin`, `browser` (the Graph Browser's `browser.spec.ts`, `browse-history.spec.ts` and `routes.spec.ts`) and `visual` (screenshots). Run `npm run build` and `npx playwright install chromium` first |
-| `npm run e2e:visual` | The screenshots alone, against the baselines in `e2e/__screenshots__` (0.5% pixel threshold) |
-| `npm run e2e:visual:update` | Rewrite the baselines; review each changed PNG against the mockup in `docs/helix/02-design/graph-browser-mockup/` before committing |
 
 ### Packed public API catalog
 
@@ -254,20 +252,12 @@ no gradient, image or opacity behind the focus rings. The runner names the first
 contract is the section "Host-build fixture contract" of that file, and `WidgetControls` from
 `@documentdrivendx/arras-ui/testkit/host` renders the region from the design system in context.
 
-### Visual baselines
+### Visual comparison
 
-`e2e/visual.spec.ts` screenshots every screen (light and dark, 1280 and 390 wide) and compares each with a
-baseline in `e2e/__screenshots__/<screen>-visual-darwin.png` at a 0.5% pixel threshold. **The baselines are
-macOS only**: the design is reviewed and maintained on a Mac, and Linux rendering is not a goal. CI runs on
-Linux, so it runs `playwright test --project=chromium --project=schema-admin --project=browser` and leaves the visual project out;
-on failure it uploads `ui/test-results` (screenshots, traces) as the `playwright-results` artifact.
-
-- **Review.** After a visual change run `npm run build && npm run e2e:visual` on a Mac; a failure leaves
-  `test-results/<test>/` with the expected, actual and diff PNGs. Open each and judge it against the mockup in
-  `docs/helix/02-design/graph-browser-mockup/`; a difference is either a bug or a deliberate change recorded
-  in DESIGN-GB.
-- **Update.** `npm run e2e:visual:update` rewrites the baselines. Look at every changed PNG
-  (`git diff --stat` lists them) before committing; never accept a rewrite unread.
+`e2e/visual.spec.ts` screenshots every screen and compares it with a baseline directory passed as
+`baselineDir` to `createAcceptanceConfig`. No baselines are committed: screenshots are platform specific, and
+the `visual` project runs only on macOS, so CI (Linux) leaves it out. To use it, generate baselines locally
+with `playwright test --project=visual --update-snapshots` and keep them outside the repository.
 
 Wire types are written by hand in `src/api/types.ts` from `openapi.json` and `src/arras/operate/`; there is
 no generation step. The drift guard (below) is what keeps them, and the fake, honest.
@@ -357,7 +347,7 @@ import "@documentdrivendx/arras-ui/styles.css";
 The export map is closed: imports from `src/`, `dist/` internals, `kit/`, `ds/`,
 `dev/` and private API/context hooks are unsupported. Add a deliberate public
 export upstream when a host needs another reusable capability. The reviewed
-`arras/public-api.json` catalog and packed-consumer checks enforce the surface.
+`arras/public-api.json` catalog and smoke-npm-consumer checks enforce the surface.
 
 | Prop | Ownership |
 | --- | --- |
@@ -707,7 +697,7 @@ built-in widgets read the same tokens, so a host that replaces only some widgets
 The package root explicitly exports `DesignSystemProvider`, `useDesignSystem`,
 `defaultDesignSystem`, `ROLE_TOKENS` and the contract's twelve types; no design-system
 subpath or second context is needed. After `npm run build:lib` and `npm run pack:wheel`,
-`npm run test:packed-consumer` checks the actual tarball's public TypeScript and runtime
+`npm run test:smoke-npm-consumer` checks the actual tarball's public TypeScript and runtime
 imports from a temporary consumer, using the workspace's exact installed dependencies.
 Its render proves a root-hook host widget and built-in fallback beneath the public browser's
 palette slot; a structural check proves all three entrypoints reach the shared context chunk.
