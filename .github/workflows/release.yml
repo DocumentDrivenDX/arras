@@ -1,977 +1,227 @@
 name: Release
 
-# On a matching vX.Y.Z tag, keep the Truss and build checks mandatory, then attach the exact
-# verified Python and UI artifacts to GitHub. Registry publication runs separately only after all
-# release gates and anonymous public-download qualification have succeeded.
+# Tag-driven release: push a tag vX.Y.Z whose version matches pyproject.toml and ui/package version
+# metadata. The same tests as pull requests run first (ci.yml), then the wheel, sdist and npm
+# package are built, installed into fresh environments and smoke-tested, and only then published:
+# PyPI by trusted publishing (environment `pypi`), npm with provenance (environment `npm`), then a
+# GitHub Release carrying the artifacts and SHA256SUMS. A failed release is fixed and re-tagged as
+# the next patch version.
 #
-# The wheel and npm tarball carry the UI build. A git install builds the Python package from the tag
-# without it, because main never carries build output: use the wheel for the console.
+# `workflow_dispatch` is a dry run: it builds and smoke-tests the current ref but never publishes.
 
 on:
   push:
     tags: ["v[0-9]+.[0-9]+.[0-9]+"]
   workflow_dispatch:
     inputs:
-      release_tag:
-        description: Existing, unpublished vX.Y.Z tag to qualify from scratch.
-        required: true
-        type: string
-      expected_source_sha:
-        description: Exact 40-hex commit currently named by that immutable tag.
-        required: true
-        type: string
+      dry_run:
+        description: Build and smoke-test only; this workflow never publishes from a dispatch.
+        type: boolean
+        default: true
 
 permissions:
   contents: read
 
 concurrency:
-  group: release
+  group: release-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  # Resolve the payload identity from a separately recorded workflow driver before payload jobs run.
-  check:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-      tag: ${{ steps.version.outputs.tag }}
-      source_sha: ${{ steps.version.outputs.source_sha }}
-      tag_object_sha: ${{ steps.version.outputs.tag_object_sha }}
-      driver_sha: ${{ steps.version.outputs.driver_sha }}
-      workflow_ref: ${{ steps.version.outputs.workflow_ref }}
-      umf_admission_required: ${{ steps.version.outputs.umf_admission_required }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.workflow_sha }}
-          fetch-depth: 0
-      - id: version
-        name: Validate event, immutable tag, expected source, and tagged version
-        env:
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
-          GITHUB_REF: ${{ github.ref }}
-          GITHUB_REF_NAME: ${{ github.ref_name }}
-          GITHUB_SHA: ${{ github.sha }}
-          GITHUB_WORKFLOW_SHA: ${{ github.workflow_sha }}
-          GITHUB_WORKFLOW_REF: ${{ github.workflow_ref }}
-          GITHUB_RUN_ID: ${{ github.run_id }}
-          GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
-          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-          RELEASE_TAG: ${{ inputs.release_tag }}
-          EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
-          PROVENANCE_DIR: artifacts
-        run: |
-          python3 .github/scripts/release_target.py validate
-      - name: Checkout the exact validated payload source
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ steps.version.outputs.source_sha }}
-          path: payload
-      - name: Assert validated payload HEAD before use
-        env:
-          ARRAS_SOURCE_SHA: ${{ steps.version.outputs.source_sha }}
-        run: test "$(git -C payload rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
-      - name: Refuse stale active release and consumer pins before qualification
-        run: python3 payload/tools/check_release_versions.py --require-release-pin
-      - uses: actions/upload-artifact@v4
-        with:
-          name: release-driver-provenance
-          path: artifacts/release-driver-provenance.json
-          if-no-files-found: error
-
-  # The Truss adapter on the pinned release and PostgreSQL 18.6, as ci.yml runs it: a release is held
-  # to the same evidence as a change.
-  truss:
-    name: Truss adapter on PostgreSQL 18.6
-    needs: check
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.check.outputs.source_sha }}
-      - name: Assert validated payload HEAD before use
-        env:
-          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
-        run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
-      - uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-      - run: uv sync --locked --extra truss --group truss-test
-      - run: uv run --no-sync pytest -m truss -q
-        env:
-          ARRAS_REQUIRE_TRUSS: "1"
+  test:
+    name: Tests
+    uses: ./.github/workflows/ci.yml
 
   build:
-    needs: [check, truss]
+    name: Build wheel, sdist and npm package
+    needs: test
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
     outputs:
-      wheel_name: ${{ steps.release-bundle.outputs.wheel_name }}
-      wheel_sha256: ${{ steps.release-bundle.outputs.wheel_sha256 }}
-      umf_actions_required: ${{ steps.release-bundle.outputs.umf_actions_required }}
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.check.outputs.source_sha }}
-      - name: Assert validated payload HEAD before use
-        env:
-          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
-        run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
+      - id: version
+        name: Read the version and, on a tag, check it matches
+        run: |
+          version=$(python3 - <<'PY'
+          import re, tomllib
+          print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])
+          PY
+          )
+          if [ "${GITHUB_EVENT_NAME}" = "push" ] && [ "${GITHUB_REF_NAME}" != "v${version}" ]; then
+            echo "tag ${GITHUB_REF_NAME} does not match pyproject version ${version}" >&2
+            exit 1
+          fi
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ] && [ "${{ inputs.dry_run }}" != "true" ]; then
+            echo "a dispatch is always a dry run; publish by pushing a version tag" >&2
+            exit 1
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-          version: "0.13.6"
-          python-version: "3.11.18"
-      - run: uv sync --locked --extra truss --extra umf
-      - name: Install Weft parser (weft-sql 0.4.51)
-        env:
-          WEFT_VERSION: "0.4.51"
-          WEFT_SUMS_SHA256: 62c9d8082eb2f446446d7b94ff7ef7f48769e3cd836e5641c2951069302a6c75
-        run: |
-          set -euo pipefail
-          cd "$RUNNER_TEMP"
-          base="https://github.com/DocumentDrivenDX/weft/releases/download/v${WEFT_VERSION}"
-          wheel="weft_sql-${WEFT_VERSION}-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
-          curl -fsSL --retry 3 -o SHA256SUMS "$base/SHA256SUMS"
-          echo "${WEFT_SUMS_SHA256}  SHA256SUMS" | sha256sum -c -
-          curl -fsSL --retry 3 -o "$wheel" "$base/$wheel"
-          grep -E "^[0-9a-f]{64}  ${wheel}\$" SHA256SUMS | sha256sum -c -
-          uv pip install --python "$GITHUB_WORKSPACE/.venv/bin/python" "$wheel"
-      - run: uv run --no-sync ruff check . && uv run --no-sync ruff format --check .
-      - run: uv run --no-sync pyright
-      - name: Compare every official UMF conformance vector
-        run: uv run --no-sync pytest -q tests/test_umf_admission.py::test_official_current_conformance_vectors_and_empty_registry_admission
-        env:
-          ARRAS_REQUIRE_UMF: "1"
-          ARRAS_REQUIRE_UMF_ACTIONS: "1"
-      - run: uv run --no-sync pytest -q
-        env:
-          ARRAS_REQUIRE_WEFT: "1"
-          ARRAS_REQUIRE_UMF: "1"
-          ARRAS_REQUIRE_UMF_ACTIONS: "1"
-      # The wheel carries the UI: the page and the npm tarball built from ui/ (ADR-027).
       - uses: actions/setup-node@v4
         with:
-          node-version: "24.22.1"
+          node-version: 24
           cache: npm
           cache-dependency-path: ui/package-lock.json
-      - name: Require the qualified npm producer
-        run: test "$(npm --version)" = "11.19.1"
-      - run: npm ci && npm run build:wheel
+      - name: Build the UI package carried by the wheel
         working-directory: ui
-      - name: Verify emitted page and scoped npm version coupling
-        run: uv run --no-sync python tools/check_release_versions.py --require-release-pin --built-assets
-      - run: uv build --wheel && uv build --sdist
-      - name: Require PyPI-compatible wheel and sdist metadata before publishing a release
         run: |
-          python .github/scripts/verify_registry_publication.py pypi-metadata \
-            --wheel dist/arras-*.whl \
-            --sdist dist/arras-*.tar.gz
-      - name: Require the exact wheel selected for this release cohort
+          npm ci
+          npm run build:wheel
+      - name: Build the wheel and sdist
+        run: uv build
+      - name: Collect the artifacts
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
-          case '${{ needs.check.outputs.version }}' in
-            0.6.5)
-              echo 'beed68b94567699313a44c5f8865ecfb6e1f34842d7c5ba5055ac866a664a98b  dist/arras-0.6.5-py3-none-any.whl' | sha256sum --check --strict -
-              ;;
-            0.7.0)
-              echo 'b20f2b0c8a8f54b86abfca886dc555bb16faedd277c1e132c3c58dfc7aa17ad6  dist/arras-0.7.0-py3-none-any.whl' | sha256sum --check --strict -
-              ;;
-            0.7.1)
-              echo '1ef8396a487cf737b81918df6f792d57474dadaa397ae9c7729a847defa5100f  dist/arras-0.7.1-py3-none-any.whl' | sha256sum --check --strict -
-              ;;
-            0.7.2)
-              echo '5cc8bd18799590406501c58c34be5cd17e32bb0813daaf512fa7b0f493cc2db1  dist/arras-0.7.2-py3-none-any.whl' | sha256sum --check --strict -
-              ;;
-            0.7.3)
-              echo '2d48d87f872ec9145a9f6d2f2b7adcae9ebe3154f9b47f7aa8aa2b411200c0dd  dist/arras-0.7.3-py3-none-any.whl' | sha256sum --check --strict -
-              ;;
-            0.8.0)
-              echo 'ff8311dde28c6c0f8447aeac5732a020b559bb358b437eb9d71723d79cc879c5  dist/arras-0.8.0-py3-none-any.whl' | sha256sum --check --strict -
-              ;;
-            0.8.1)
-              echo '65e0ce87642afd427a2704f31cb4967072186ac2bd7d0d5d3bd812edb3fe6ede  dist/arras-0.8.1-py3-none-any.whl' | sha256sum --check --strict -
-              ;;
-            *) echo 'No exact qualification wheel is selected for this version' >&2; exit 1 ;;
-          esac
-      - name: Verify exact source and sdist-rebuilt artifacts
-        run: python tools/verify_distribution.py --output artifacts/distribution-verification.json dist/*.whl dist/*.tar.gz
-      - name: Qualify the offline doctor from the installed release wheel
-        run: uv run --no-sync python tools/verify_doctor.py --wheel dist/arras-*.whl --output-json artifacts/doctor-installed.json
-      - name: The wheel installs on a clean interpreter and carries the UI
-        run: |
-          uv run --no-project --isolated --with dist/*.whl python -c "import importlib.util, arras, arras.ui, arras.adapters.truss; assert importlib.util.find_spec('truss') is None, 'the base wheel must not need Truss'; print(arras.CONTRACT_VERSIONS, arras.ui.npm_package().name); assert (arras.ui.STATIC / arras.ui.PAGE).is_file()"
-      # This is an early current-run transport only. A later job joins it to successful
-      # native/UI receipts and creates the separate final public bundle.
+          mkdir -p release/pypi
+          cp dist/* release/pypi/
+          cp "src/arras/ui/npm/documentdrivendx-arras-ui-${VERSION}.tgz" release/
+          (cd release && sha256sum pypi/* documentdrivendx-arras-ui-*.tgz > SHA256SUMS)
+          cat release/SHA256SUMS
+      - uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            release/pypi/*
+            release/*.tgz
       - uses: actions/upload-artifact@v4
         with:
-          name: python-distributions
-          path: |
-            dist/*.whl
-            dist/*.tar.gz
+          name: release
+          path: release/
           if-no-files-found: error
 
-      - name: Prepare verified build inputs for release assembly
-        run: |
-          mkdir -p artifacts/release-build-inputs
-          cp dist/*.whl dist/*.tar.gz artifacts/release-build-inputs/
-          cp artifacts/distribution-verification.json artifacts/doctor-installed.json artifacts/release-build-inputs/
-          unzip -j -d artifacts/release-build-inputs dist/*.whl 'arras/ui/npm/*.tgz'
-          cd artifacts/release-build-inputs
-          sha256sum *.whl *.tar.gz *.tgz distribution-verification.json doctor-installed.json > SHA256SUMS
-          sha256sum -c SHA256SUMS
-      - id: release-bundle
-        name: Publish exact wheel identity for the downstream consumer
-        run: |
-          wheel="$(find dist -maxdepth 1 -name 'arras-*.whl' -type f -print -quit)"
-          actions_required="$(python tools/verify_umf_actions.py --wheel "$wheel" --check-requirement)"
-          case "$actions_required" in
-            true|false) printf 'umf_actions_required=%s\n' "$actions_required" >> "$GITHUB_OUTPUT" ;;
-            *) printf '%s\n' 'release wheel action capability was not classified' >&2; exit 1 ;;
-          esac
-          python - <<'PY' >> "$GITHUB_OUTPUT"
-          import hashlib
-          from pathlib import Path
-
-          wheels = list(Path("dist").glob("arras-*.whl"))
-          if len(wheels) != 1:
-              raise SystemExit("release requires exactly one Arras wheel")
-          wheel = wheels[0]
-          print(f"wheel_name={wheel.name}")
-          print(f"wheel_sha256={hashlib.sha256(wheel.read_bytes()).hexdigest()}")
-          PY
-      - uses: actions/upload-artifact@v4
-        with:
-          name: release-build-inputs
-          path: artifacts/release-build-inputs/*
-          if-no-files-found: error
-
-  # On 0.6.0 and later, install the exact built wheel in fresh base/extra environments and prove the
-  # fixed official UMF admission parity profile before the release bundle can be assembled.
-  umf-admission:
-    name: Fresh installed UMF admission proof on exact wheel
-    needs: [check, build]
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    outputs:
-      required: ${{ steps.requirement.outputs.required }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.check.outputs.source_sha }}
-      - name: Assert validated source identity
-        env:
-          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
-        run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
-      - id: requirement
-        name: Require proof for the selected release version
-        env:
-          REQUIRED: ${{ needs.check.outputs.umf_admission_required }}
-        run: |
-          case "$REQUIRED" in
-            true|false) printf 'required=%s\n' "$REQUIRED" >> "$GITHUB_OUTPUT" ;;
-            *) printf '%s\n' 'release target omitted the UMF admission requirement decision' >&2; exit 1 ;;
-          esac
-      - uses: astral-sh/setup-uv@v5
-        if: steps.requirement.outputs.required == 'true'
-        with:
-          enable-cache: true
-          python-version: "3.11"
-      - uses: actions/download-artifact@v4
-        if: steps.requirement.outputs.required == 'true'
-        with:
-          name: release-build-inputs
-          path: release-build-inputs
-      - name: Verify official UMF admission on the exact release wheel
-        if: steps.requirement.outputs.required == 'true'
-        run: |
-          mkdir -p artifacts
-          uv run --no-project --python 3.11 python tools/verify_umf_admission.py \
-            --wheel "release-build-inputs/${{ needs.build.outputs.wheel_name }}" \
-            --qualification-phase release-build \
-            --output-json artifacts/umf-admission-installed.json
-      - uses: actions/upload-artifact@v4
-        if: steps.requirement.outputs.required == 'true'
-        with:
-          name: umf-admission-qualification
-          path: artifacts/umf-admission-installed.json
-          if-no-files-found: error
-
-  # Derive the generated-action gate from every verified public SDK declaration in the exact wheel.
-  umf-actions:
-    name: Fresh installed generated-action proof when the wheel requires it
-    needs: [check, build]
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    outputs:
-      required: ${{ needs.build.outputs.umf_actions_required }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.check.outputs.source_sha }}
-      - name: Assert validated source identity
-        env:
-          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
-        run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
-      - name: Validate generated-action requirement decision
-        env:
-          REQUIRED: ${{ needs.build.outputs.umf_actions_required }}
-        run: |
-          case "$REQUIRED" in
-            true|false) printf 'required=%s\n' "$REQUIRED" >> "$GITHUB_OUTPUT" ;;
-            *) printf '%s\n' 'release wheel omitted its action capability decision' >&2; exit 1 ;;
-          esac
-        id: requirement
-      - uses: astral-sh/setup-uv@v5
-        if: steps.requirement.outputs.required == 'true'
-        with:
-          enable-cache: true
-          python-version: "3.11"
-      - uses: actions/download-artifact@v4
-        if: steps.requirement.outputs.required == 'true'
-        with:
-          name: release-build-inputs
-          path: release-build-inputs
-      - name: Verify generated actions from the exact release wheel
-        if: steps.requirement.outputs.required == 'true'
-        run: |
-          mkdir -p artifacts
-          uv run --no-project --python 3.11 python tools/verify_umf_actions.py \
-            --wheel "release-build-inputs/${{ needs.build.outputs.wheel_name }}" \
-            --qualification-phase release-build \
-            --output-json artifacts/umf-actions-installed.json
-      - uses: actions/upload-artifact@v4
-        if: steps.requirement.outputs.required == 'true'
-        with:
-          name: umf-actions-qualification
-          path: artifacts/umf-actions-installed.json
-          if-no-files-found: error
-
-  # Bind the actual verified Arras wheel to the reviewed Linux cohort and qualify its native adapter.
-  installed-native:
-    name: Installed native adapter on Linux x86_64
-    needs: [check, build]
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.check.outputs.source_sha }}
-      - name: Assert validated payload HEAD before use
-        env:
-          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
-        run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - uses: actions/download-artifact@v4
-        with:
-          name: python-distributions
-          path: dist
-      - name: Initialize retained native qualification evidence
-        run: |
-          mkdir -p artifacts
-          printf '%s\n' '{"schema_version":1,"status":"not_started"}' > artifacts/native-verification.json
-          : > artifacts/native-verifier.stdout.log
-          : > artifacts/native-verifier.stderr.log
-      - name: Bind only the actual Arras wheel identity
-        run: |
-          python .github/scripts/bind_native_cohort.py \
-            --template tests/downstream/native-cohorts/linux-x86_64.json \
-            --find-links tests/downstream/native-cohorts/linux-x86_64.find-links.html \
-            --wheel "dist/${{ needs.build.outputs.wheel_name }}" \
-            --expected-version "${{ needs.check.outputs.version }}" \
-            --expected-sha256 "${{ needs.build.outputs.wheel_sha256 }}" \
-            --output-json artifacts/native-cohort.bound.json \
-            --receipt-json artifacts/native-cohort-binding.json
-      - name: Run the complete installed-native verifier
-        run: |
-          set +e
-          python tools/verify_native.py \
-            --wheel "dist/${{ needs.build.outputs.wheel_name }}" \
-            --cohort artifacts/native-cohort.bound.json \
-            --find-links tests/downstream/native-cohorts/linux-x86_64.find-links.html \
-            --output-json artifacts/native-verification.json \
-            --python "$(command -v python)" \
-            > artifacts/native-verifier.stdout.log \
-            2> artifacts/native-verifier.stderr.log
-          status=$?
-          set -e
-          if [ "$status" -ne 0 ]; then
-            if ! python .github/scripts/ensure_native_receipt_failure.py \
-              --receipt artifacts/native-verification.json \
-              --exit-code "$status"; then
-              printf '%s\n' 'native receipt normalization failed; see retained logs' >&2 || :
-            fi
-          fi
-          exit "$status"
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: installed-native-qualification
-          path: |
-            tests/downstream/native-cohorts/linux-x86_64.json
-            tests/downstream/native-cohorts/linux-x86_64.find-links.html
-            artifacts/native-cohort.bound.json
-            artifacts/native-cohort-binding.json
-            artifacts/native-verification.json
-            artifacts/native-verifier.stdout.log
-            artifacts/native-verifier.stderr.log
-          if-no-files-found: ignore
-
-  # Link only successful current-run receipts to the exact verified build inputs. This job has no
-  # publishing credentials and creates a fresh final public bundle.
-  assemble-evidence:
-    needs: [check, build, umf-admission, umf-actions, installed-native, ui-qualification]
-    runs-on: ubuntu-latest
+  smoke:
+    name: Install the built artifacts in fresh environments
+    needs: build
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
-    outputs:
-      sums_sha256: ${{ steps.sums.outputs.sha256 }}
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: actions/setup-node@v4
         with:
-          ref: ${{ needs.check.outputs.source_sha }}
-      - name: Assert validated payload HEAD before use
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - uses: actions/download-artifact@v4
+        with:
+          name: release
+          path: release
+      - name: Fresh install with the devhost extra, doctor and dev host
         env:
-          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
-        run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
-      - uses: actions/download-artifact@v4
-        with:
-          name: release-build-inputs
-          path: release-build-inputs
-      - uses: actions/download-artifact@v4
-        with:
-          name: installed-native-qualification
-          path: native-qualification
-      - uses: actions/download-artifact@v4
-        with:
-          name: exact-tag-ui-qualification
-          path: ui-qualification
-      - uses: actions/download-artifact@v4
-        if: needs.umf-admission.outputs.required == 'true'
-        with:
-          name: umf-admission-qualification
-          path: umf-admission
-      - uses: actions/download-artifact@v4
-        if: needs.umf-actions.outputs.required == 'true'
-        with:
-          name: umf-actions-qualification
-          path: umf-actions
-      - name: Assemble release evidence from exact successful receipts
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          uv venv --python 3.11 "$RUNNER_TEMP/v"
+          uv pip install --python "$RUNNER_TEMP/v/bin/python" "$(ls release/pypi/arras-*.whl)[devhost]"
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/v/bin/python" -I "$GITHUB_WORKSPACE/scripts/smoke_installed.py" \
+            --version "$VERSION" --examples "$GITHUB_WORKSPACE/examples/catalog"
+      - name: Fresh install of the sdist
         env:
-          UMF_ADMISSION_REQUIRED: ${{ needs.umf-admission.outputs.required }}
-          UMF_ACTIONS_REQUIRED: ${{ needs.umf-actions.outputs.required }}
+          VERSION: ${{ needs.build.outputs.version }}
         run: |
-          args=(
-            --build-bundle release-build-inputs \
-            --native-receipt native-qualification/artifacts/native-verification.json \
-            --native-binding native-qualification/artifacts/native-cohort-binding.json \
-            --native-cohort native-qualification/artifacts/native-cohort.bound.json \
-            --native-index native-qualification/tests/downstream/native-cohorts/linux-x86_64.find-links.html \
-            --ui-receipt ui-qualification/tests/downstream/evidence/linux/qualification-linux.json \
-            --consumer-receipt ui-qualification/artifacts/extension-host-fresh-dependencies.json \
-            --expected-version "${{ needs.check.outputs.version }}" \
-            --expected-wheel "${{ needs.build.outputs.wheel_name }}" \
-            --expected-wheel-sha256 "${{ needs.build.outputs.wheel_sha256 }}" \
-            --output-dir release-assets
-          )
-          if [ "$UMF_ADMISSION_REQUIRED" = true ]; then
-            args+=(--umf-admission-receipt umf-admission/umf-admission-installed.json)
-          fi
-          if [ "$UMF_ACTIONS_REQUIRED" = true ]; then
-            args+=(--umf-actions-receipt umf-actions/umf-actions-installed.json)
-          fi
-          python .github/scripts/assemble_release_evidence.py "${args[@]}"
-      - id: sums
-        name: Publish final release bundle checksum identity
+          uv venv --python 3.11 "$RUNNER_TEMP/s"
+          uv pip install --python "$RUNNER_TEMP/s/bin/python" "$(ls release/pypi/arras-*.tar.gz)[devhost]"
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/s/bin/python" -I "$GITHUB_WORKSPACE/scripts/smoke_installed.py" --version "$VERSION"
+      - name: Fresh install with the truss and umf extras resolves from PyPI
         run: |
-          (cd release-assets && sha256sum -c SHA256SUMS)
-          digest="$(sha256sum release-assets/SHA256SUMS | cut -d ' ' -f 1)"
-          printf 'sha256=%s\n' "$digest" >> "$GITHUB_OUTPUT"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: release-assets
-          path: release-assets/*
-          if-no-files-found: error
+          uv venv --python 3.11 "$RUNNER_TEMP/x"
+          uv pip install --python "$RUNNER_TEMP/x/bin/python" "$(ls release/pypi/arras-*.whl)[truss,umf]"
+          uv pip check --python "$RUNNER_TEMP/x/bin/python"
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/x/bin/python" -I -c "import arras, truss, umf, importlib.metadata as m; print(m.version(\"arras\"))"
+      - name: The npm package compiles and renders in an isolated consumer
+        working-directory: ui
+        run: |
+          npm ci
+          node scripts/smoke-npm-consumer.mjs ../release/documentdrivendx-arras-ui-*.tgz ../src/arras/public-api.json
 
-  # GitHub assets are released after the required source/native gates, regardless of registry setup.
+  integration:
+    name: Real Truss on PostgreSQL 18.6
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --locked --extra truss --extra umf --extra devhost --group truss-test
+      - run: uv run --no-sync pytest -q -m truss
+
+  publish-pypi:
+    name: Publish to PyPI
+    if: github.event_name == 'push'
+    needs: [test, build, smoke, integration]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release
+          path: release
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: release/pypi/
+
+  publish-npm:
+    name: Publish to npm
+    if: github.event_name == 'push'
+    needs: [test, build, smoke, integration]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release
+          path: release
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: npm publish release/documentdrivendx-arras-ui-*.tgz --provenance --access public
+
   github-release:
-    needs: [check, truss, build, umf-admission, umf-actions, ui-qualification, installed-native, assemble-evidence]
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
+    name: GitHub Release
+    if: github.event_name == 'push'
+    needs: [publish-pypi, publish-npm]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.check.outputs.driver_sha }}
-          path: driver
-          fetch-depth: 0
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.check.outputs.source_sha }}
-          path: source
-      - name: Assert driver and payload identities, then recheck immutable tag
-        env:
-          TARGET_TAG: ${{ needs.check.outputs.tag }}
-          TARGET_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
-          TARGET_TAG_OBJECT_SHA: ${{ needs.check.outputs.tag_object_sha }}
-          EXPECTED_DRIVER_SHA: ${{ needs.check.outputs.driver_sha }}
-        run: |
-          set -euo pipefail
-          test "$(git -C driver rev-parse HEAD)" = "$EXPECTED_DRIVER_SHA"
-          test "$(git -C source rev-parse HEAD)" = "$TARGET_SOURCE_SHA"
-          cd driver
-          python3 .github/scripts/release_target.py recheck
       - uses: actions/download-artifact@v4
         with:
-          name: release-assets
-          path: release-assets
-      - name: Verify release bundle checksums
-        run: cd release-assets && sha256sum -c SHA256SUMS
+          name: release
+          path: release
       - name: Create the release
         env:
           GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          ARRAS_TAG: ${{ needs.check.outputs.tag }}
-          ARRAS_TARGET_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
-          ARRAS_DRIVER_SHA: ${{ needs.check.outputs.driver_sha }}
-          ARRAS_WORKFLOW_REF: ${{ needs.check.outputs.workflow_ref }}
-          ARRAS_RUN_ID: ${{ github.run_id }}
-          ARRAS_RUN_ATTEMPT: ${{ github.run_attempt }}
         run: |
-          set -euo pipefail
-          cp source/docs/helix/05-deploy/release-notes.md release-notes.md
-          python3 - <<'PY'
-          import os
-          from pathlib import Path
-          with Path("release-notes.md").open("a", encoding="utf-8") as notes:
-              notes.write(
-                  "\n## Build provenance\n\n"
-                  f"- Driver commit: `{os.environ['ARRAS_DRIVER_SHA']}`\n"
-                  f"- Driver workflow: `{os.environ['ARRAS_WORKFLOW_REF']}`\n"
-                  f"- Target tag: `{os.environ['ARRAS_TAG']}`\n"
-                  f"- Target source commit: `{os.environ['ARRAS_TARGET_SOURCE_SHA']}`\n"
-                  f"- Workflow run: `{os.environ['ARRAS_RUN_ID']}` attempt `{os.environ['ARRAS_RUN_ATTEMPT']}`\n"
-              )
-          PY
-          gh release create "$ARRAS_TAG" release-assets/* \
-            --title "$ARRAS_TAG" --generate-notes --verify-tag \
-            --notes-file release-notes.md
+          python3 scripts/changelog_section.py "$GITHUB_REF_NAME" > release-notes.md
+          gh release create "$GITHUB_REF_NAME" release/pypi/* release/*.tgz release/SHA256SUMS \
+            --verify-tag --title "$GITHUB_REF_NAME" --notes-file release-notes.md
 
-  # Exact-tag UI and packed-theme qualification, using the same verified wheel that is released.
-  ui-qualification:
-    name: UI and packed-theme release qualification
-    needs: [check, truss, build]
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.check.outputs.source_sha }}
-      - name: Assert validated payload HEAD before use
-        env:
-          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
-        run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.workflow_sha }}
-          path: release-driver
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: ui/package-lock.json
-      - name: Assert recovery driver and self-test the wheel-cohort theme binder
-        env:
-          EXPECTED_DRIVER_SHA: ${{ github.workflow_sha }}
-          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
-        run: >-
-          node release-driver/ui/scripts/bind-downstream-theme.mjs --self-test
-          --driver-dir release-driver --expected-driver-sha "$EXPECTED_DRIVER_SHA"
-          --payload-source-sha "$ARRAS_SOURCE_SHA"
-          --receipt artifacts/ui-qualification-driver-provenance.json
-      - uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-          python-version: "3.11"
-      - run: uv sync --locked --extra devhost
-      - name: Verify declared public origins and fixture provenance
-        run: uv run python tools/check_public_content.py
-      - run: npm ci
-        working-directory: ui
-      - run: npm audit --audit-level=high --omit=dev
-        working-directory: ui
-      - run: npm run check:umf -- --download
-        working-directory: ui
-      - run: npm run check && npm run typecheck && npm test && npm run build && npm run test:integration
-        working-directory: ui
-      - run: npm run check:umf -- --dist dist
-        working-directory: ui
-      - run: npm run build:lib && npm run check:css -- dist-lib/styles.css && npm run check:externals
-        working-directory: ui
-      - name: Configure bounded Ubuntu apt access for Playwright
-        working-directory: ui
-        run: |
-          set -euo pipefail
-          python ../.github/scripts/configure_ubuntu_apt_sources.py --self-test
-          sudo python ../.github/scripts/configure_ubuntu_apt_sources.py --apply
-          if ! apt_main_config="$(sudo apt-config shell ARRAS_MAIN Dir::Etc::main/f 2>/dev/null)"; then
-            printf '%s\n' "$apt_main_config" >&2
-            exit 1
-          fi
-          if [ "$apt_main_config" != "ARRAS_MAIN='/etc/apt/apt.conf'" ]; then
-            printf '%s\n' "$apt_main_config" >&2
-            exit 1
-          fi
-          apt_main_path=/etc/apt/apt.conf
-          if sudo test -e "$apt_main_path" || sudo test -L "$apt_main_path"; then
-            if ! sudo test -f "$apt_main_path" || sudo test -L "$apt_main_path"; then
-              printf '%s\n' "$apt_main_config" >&2
-              exit 1
-            fi
-          fi
-          sudo tee -a "$apt_main_path" >/dev/null <<'EOF'
-
-          Acquire {
-            Retries "2";
-            http::Timeout "20";
-            https::Timeout "20";
-          };
-          Binary::apt-get::Acquire {
-            Retries "2";
-            http::Timeout "20";
-            https::Timeout "20";
-          };
-          EOF
-          if ! apt_config="$(sudo apt-config shell ARRAS_RETRIES Acquire::Retries ARRAS_HTTP_TIMEOUT Acquire::http::Timeout ARRAS_HTTPS_TIMEOUT Acquire::https::Timeout ARRAS_APTGET_RETRIES Binary::apt-get::Acquire::Retries ARRAS_APTGET_HTTP_TIMEOUT Binary::apt-get::Acquire::http::Timeout ARRAS_APTGET_HTTPS_TIMEOUT Binary::apt-get::Acquire::https::Timeout 2>/dev/null)"; then
-            printf '%s\n' "$apt_config" >&2
-            exit 1
-          fi
-          expected_apt_config="$(printf "ARRAS_RETRIES='2'\nARRAS_HTTP_TIMEOUT='20'\nARRAS_HTTPS_TIMEOUT='20'\nARRAS_APTGET_RETRIES='2'\nARRAS_APTGET_HTTP_TIMEOUT='20'\nARRAS_APTGET_HTTPS_TIMEOUT='20'")"
-          if [ "$apt_config" != "$expected_apt_config" ]; then
-            printf '%s\n' "$apt_config" >&2
-            exit 1
-          fi
-          timeout --signal=TERM --kill-after=30s 5m sudo apt-get update
-          timeout --signal=TERM --kill-after=30s 15m npx --no-install playwright install-deps chromium
-          timeout --signal=TERM --kill-after=30s 15m npx --no-install playwright install chromium
-          timeout --signal=TERM --kill-after=10s 60s node --input-type=module <<'JS'
-          import { chromium } from "@playwright/test";
-
-          const browser = await chromium.launch({ headless: true });
-          await browser.close();
-          JS
-      # Visual screenshot baselines are macOS-specific; all nonvisual browser projects remain mandatory.
-      - run: npm run e2e -- --project=chromium --project=schema-admin --project=browser
-        working-directory: ui
-      - uses: actions/download-artifact@v4
-        with:
-          name: release-build-inputs
-          path: release-assets
-      - name: Qualify embedding through the exact release npm tarball
-        working-directory: ui
-        run: |
-          (cd ../release-assets && sha256sum --check SHA256SUMS)
-          npm run test:packed-browser -- ../release-assets/documentdrivendx-arras-ui-${{ needs.check.outputs.version }}.tgz
-      - name: Verify exact wheel identity and installed extension host
-        env:
-          WHEEL_NAME: ${{ needs.build.outputs.wheel_name }}
-          WHEEL_SHA256: ${{ needs.build.outputs.wheel_sha256 }}
-        run: |
-          python - <<'PY'
-          import hashlib
-          import os
-          from pathlib import Path
-
-          wheel = Path("release-assets") / os.environ["WHEEL_NAME"]
-          if not wheel.is_file() or hashlib.sha256(wheel.read_bytes()).hexdigest() != os.environ["WHEEL_SHA256"]:
-              raise SystemExit("downloaded wheel differs from the verified release wheel")
-          PY
-          uv run --no-sync python tools/verify_extension_host.py \
-            --wheel "release-assets/${WHEEL_NAME}" \
-            --output-json artifacts/extension-host-fresh-dependencies.json --fresh-dependencies
-      - name: Qualify downstream host and packed theme from the exact release wheel
-        env:
-          ARRAS_DOWNSTREAM_UI_DIR: ${{ github.workspace }}/ui
-        run: |
-          set -euo pipefail
-          mkdir -p scripts/release-driver
-          cp ../release-driver/ui/scripts/run-downstream-qualification.mjs scripts/release-driver/
-          cp ../release-driver/ui/scripts/bind-downstream-theme.mjs scripts/release-driver/
-          node scripts/release-driver/run-downstream-qualification.mjs \
-            ../release-assets/${{ needs.build.outputs.wheel_name }}
-        working-directory: ui
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: exact-tag-ui-qualification
-          path: |
-            ui/test-results
-            ui/playwright-report
-            tests/downstream/evidence/linux
-            artifacts/extension-host-fresh-dependencies.json
-            artifacts/ui-qualification-driver-provenance.json
-            release-assets/distribution-verification.json
-          if-no-files-found: ignore
-
-  # Prove that the public GitHub URL and digest install into a fresh downstream project.
-  installed-downstream:
-    needs: [check, build, github-release]
-    uses: ./.github/workflows/downstream.yml
-    with:
-      python_version: "3.11"
-      wheel_url: https://github.com/${{ github.repository }}/releases/download/${{ needs.check.outputs.tag }}/${{ needs.build.outputs.wheel_name }}
-      wheel_sha256: ${{ needs.build.outputs.wheel_sha256 }}
-      source_sha: ${{ needs.check.outputs.source_sha }}
-      consumer_project_path: examples/extension_host
-      consumer_test_path: examples/extension_host/tests/test_installed.py
-
-  # Re-download every public GitHub asset anonymously and verify the complete published bundle
-  # against the trusted assembled stage before running consumers on those public bytes.
-  downloaded-release:
-    name: Verify anonymous public release bundle
-    needs: [check, build, assemble-evidence, github-release, installed-downstream]
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
+  pages:
+    name: Documentation site
+    needs: github-release
     permissions:
       contents: read
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.check.outputs.source_sha }}
-      - name: Assert validated payload HEAD before use
-        env:
-          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
-        run: test "$(git rev-parse HEAD)" = "$ARRAS_SOURCE_SHA"
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.workflow_sha }}
-          path: release-driver
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: ui/package-lock.json
-      - name: Assert public qualification driver and self-test theme binder
-        env:
-          EXPECTED_DRIVER_SHA: ${{ github.workflow_sha }}
-          ARRAS_SOURCE_SHA: ${{ needs.check.outputs.source_sha }}
-        run: >-
-          node release-driver/ui/scripts/bind-downstream-theme.mjs --self-test
-          --driver-dir release-driver --expected-driver-sha "$EXPECTED_DRIVER_SHA"
-          --payload-source-sha "$ARRAS_SOURCE_SHA"
-          --receipt artifacts/public-ui-qualification-driver-provenance.json
-      - uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-          python-version: "3.11"
-      - run: uv sync --locked --extra devhost
-      - run: npm ci
-        working-directory: ui
-      - uses: actions/download-artifact@v4
-        with:
-          name: release-assets
-          path: trusted-release-assets
-      - name: Initialize public-download evidence
-        run: |
-          mkdir -p public-release-assets artifacts
-          : > artifacts/public-download.stdout.log
-          : > artifacts/public-download.stderr.log
-      - name: Download and verify anonymous public release assets
-        env:
-          TRUSTED_RELEASE_ASSETS: trusted-release-assets
-          PUBLIC_RELEASE_ASSETS: public-release-assets
-          RELEASE_URL: https://github.com/${{ github.repository }}/releases/download/${{ needs.check.outputs.tag }}
-          EXPECTED_VERSION: ${{ needs.check.outputs.version }}
-          EXPECTED_WHEEL: ${{ needs.build.outputs.wheel_name }}
-          EXPECTED_WHEEL_SHA256: ${{ needs.build.outputs.wheel_sha256 }}
-          EXPECTED_SUMS_SHA256: ${{ needs.assemble-evidence.outputs.sums_sha256 }}
-        run: |
-          set -euo pipefail
-          curl --disable --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --retry 2 --max-time 60 \
-            --output "$PUBLIC_RELEASE_ASSETS/SHA256SUMS" "$RELEASE_URL/SHA256SUMS" \
-            >> artifacts/public-download.stdout.log 2>> artifacts/public-download.stderr.log
-          python release-driver/.github/scripts/verify_public_release_assets.py plan \
-            --trusted-dir "$TRUSTED_RELEASE_ASSETS" \
-            --public-dir "$PUBLIC_RELEASE_ASSETS" \
-            --expected-version "$EXPECTED_VERSION" \
-            --expected-wheel "$EXPECTED_WHEEL" \
-            --expected-wheel-sha256 "$EXPECTED_WHEEL_SHA256" \
-            --expected-sums-sha256 "$EXPECTED_SUMS_SHA256" \
-            --output "$RUNNER_TEMP/public-release-plan.txt" \
-            >> artifacts/public-download.stdout.log 2>> artifacts/public-download.stderr.log
-          while IFS= read -r asset; do
-            test -n "$asset"
-            curl --disable --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --retry 2 --max-time 60 \
-              --output "$PUBLIC_RELEASE_ASSETS/$asset" "$RELEASE_URL/$asset" \
-              >> artifacts/public-download.stdout.log 2>> artifacts/public-download.stderr.log
-          done < "$RUNNER_TEMP/public-release-plan.txt"
-          python release-driver/.github/scripts/verify_public_release_assets.py verify \
-            --trusted-dir "$TRUSTED_RELEASE_ASSETS" \
-            --public-dir "$PUBLIC_RELEASE_ASSETS" \
-            --expected-version "$EXPECTED_VERSION" \
-            --expected-wheel "$EXPECTED_WHEEL" \
-            --expected-wheel-sha256 "$EXPECTED_WHEEL_SHA256" \
-            --expected-sums-sha256 "$EXPECTED_SUMS_SHA256" \
-            --output artifacts/public-input-verification.json \
-            >> artifacts/public-download.stdout.log 2>> artifacts/public-download.stderr.log
-      - name: Verify the public Python distributions and packed npm payload
-        run: |
-          python tools/verify_distribution.py \
-            --output artifacts/public-distribution-verification.json \
-            "public-release-assets/${{ needs.build.outputs.wheel_name }}" \
-            "public-release-assets/arras-${{ needs.check.outputs.version }}.tar.gz" \
-            > artifacts/public-distribution.stdout.log \
-            2> artifacts/public-distribution.stderr.log
-      - name: Verify the offline doctor from the public wheel
-        run: |
-          uv run --no-sync python tools/verify_doctor.py \
-            --wheel "public-release-assets/${{ needs.build.outputs.wheel_name }}" \
-            --output-json artifacts/public-doctor-installed.json \
-            > artifacts/public-doctor.stdout.log \
-            2> artifacts/public-doctor.stderr.log
-      - name: Verify a fresh installed extension consumer from the public wheel
-        run: |
-          uv run --no-sync python tools/verify_extension_host.py \
-            --wheel "public-release-assets/${{ needs.build.outputs.wheel_name }}" \
-            --output-json artifacts/public-extension-host-fresh-dependencies.json \
-            --fresh-dependencies \
-            > artifacts/public-extension-host.stdout.log \
-            2> artifacts/public-extension-host.stderr.log
-      - name: Repeat UMF admission proof from the anonymous public wheel
-        if: needs.check.outputs.umf_admission_required == 'true'
-        run: |
-          uv run --no-project --python 3.11 python tools/verify_umf_admission.py \
-            --wheel "public-release-assets/${{ needs.build.outputs.wheel_name }}" \
-            --qualification-phase public-download \
-            --output-json artifacts/public-umf-admission-installed.json
-      - name: Repeat generated-action proof from the anonymous public wheel
-        if: needs.build.outputs.umf_actions_required == 'true'
-        run: |
-          uv run --no-project --python 3.11 python tools/verify_umf_actions.py \
-            --wheel "public-release-assets/${{ needs.build.outputs.wheel_name }}" \
-            --qualification-phase public-download \
-            --output-json artifacts/public-umf-actions-installed.json
-      - name: Configure bounded Ubuntu apt access for the public theme suite
-        working-directory: ui
-        run: |
-          set -euo pipefail
-          python ../.github/scripts/configure_ubuntu_apt_sources.py --self-test
-          sudo python ../.github/scripts/configure_ubuntu_apt_sources.py --apply
-          if ! apt_main_config="$(sudo apt-config shell ARRAS_MAIN Dir::Etc::main/f 2>/dev/null)"; then
-            printf '%s\n' "$apt_main_config" >&2
-            exit 1
-          fi
-          if [ "$apt_main_config" != "ARRAS_MAIN='/etc/apt/apt.conf'" ]; then
-            printf '%s\n' "$apt_main_config" >&2
-            exit 1
-          fi
-          apt_main_path=/etc/apt/apt.conf
-          if sudo test -e "$apt_main_path" || sudo test -L "$apt_main_path"; then
-            if ! sudo test -f "$apt_main_path" || sudo test -L "$apt_main_path"; then
-              printf '%s\n' "$apt_main_config" >&2
-              exit 1
-            fi
-          fi
-          sudo tee -a "$apt_main_path" >/dev/null <<'EOF'
-
-          Acquire {
-            Retries "2";
-            http::Timeout "20";
-            https::Timeout "20";
-          };
-          Binary::apt-get::Acquire {
-            Retries "2";
-            http::Timeout "20";
-            https::Timeout "20";
-          };
-          EOF
-          if ! apt_config="$(sudo apt-config shell ARRAS_RETRIES Acquire::Retries ARRAS_HTTP_TIMEOUT Acquire::http::Timeout ARRAS_HTTPS_TIMEOUT Acquire::https::Timeout ARRAS_APTGET_RETRIES Binary::apt-get::Acquire::Retries ARRAS_APTGET_HTTP_TIMEOUT Binary::apt-get::Acquire::http::Timeout ARRAS_APTGET_HTTPS_TIMEOUT Binary::apt-get::Acquire::https::Timeout 2>/dev/null)"; then
-            printf '%s\n' "$apt_config" >&2
-            exit 1
-          fi
-          expected_apt_config="$(printf "ARRAS_RETRIES='2'\nARRAS_HTTP_TIMEOUT='20'\nARRAS_HTTPS_TIMEOUT='20'\nARRAS_APTGET_RETRIES='2'\nARRAS_APTGET_HTTP_TIMEOUT='20'\nARRAS_APTGET_HTTPS_TIMEOUT='20'")"
-          if [ "$apt_config" != "$expected_apt_config" ]; then
-            printf '%s\n' "$apt_config" >&2
-            exit 1
-          fi
-          timeout --signal=TERM --kill-after=30s 5m sudo apt-get update
-          timeout --signal=TERM --kill-after=30s 15m npx --no-install playwright install-deps chromium
-          timeout --signal=TERM --kill-after=30s 15m npx --no-install playwright install chromium
-          timeout --signal=TERM --kill-after=10s 60s node --input-type=module <<'JS'
-          import { chromium } from "@playwright/test";
-
-          const browser = await chromium.launch({ headless: true });
-          await browser.close();
-          JS
-      - name: Qualify the packed public wheel and complete themed suite
-        working-directory: ui
-        env:
-          ARRAS_DOWNSTREAM_UI_DIR: ${{ github.workspace }}/ui
-        run: |
-          set -euo pipefail
-          mkdir -p scripts/release-driver
-          cp ../release-driver/ui/scripts/run-downstream-qualification.mjs scripts/release-driver/
-          cp ../release-driver/ui/scripts/bind-downstream-theme.mjs scripts/release-driver/
-          node scripts/release-driver/run-downstream-qualification.mjs \
-            ../public-release-assets/${{ needs.build.outputs.wheel_name }} \
-            > ../artifacts/public-theme.stdout.log \
-            2> ../artifacts/public-theme.stderr.log
-      - name: Record completed public-download qualification
-        run: |
-          python - <<'PY'
-          import hashlib
-          import json
-          from pathlib import Path
-
-          outputs = [
-              "public-input-verification.json",
-              "public-distribution-verification.json",
-              "public-doctor-installed.json",
-              "public-extension-host-fresh-dependencies.json",
-              "tests/downstream/evidence/linux/qualification-linux.json",
-          ]
-          if "${{ needs.check.outputs.umf_admission_required }}" == "true":
-              outputs.append("public-umf-admission-installed.json")
-          if "${{ needs.build.outputs.umf_actions_required }}" == "true":
-              outputs.append("public-umf-actions-installed.json")
-          records = []
-          for name in outputs:
-              path = Path("artifacts") / name if not name.startswith("tests/") else Path(name)
-              if not path.is_file() or path.stat().st_size == 0:
-                  raise SystemExit(f"required public qualification receipt is missing: {name}")
-              records.append({"filename": name, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
-          Path("artifacts/public-download-qualification.json").write_text(
-              json.dumps(
-                  {
-                      "schema_version": 1,
-                      "status": "passed",
-                      "version": "${{ needs.check.outputs.version }}",
-                      "wheel": {
-                          "filename": "${{ needs.build.outputs.wheel_name }}",
-                          "sha256": "${{ needs.build.outputs.wheel_sha256 }}",
-                      },
-                      "receipts": records,
-                  },
-                  indent=2,
-                  sort_keys=True,
-              )
-              + "\n",
-              encoding="utf-8",
-          )
-          PY
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: public-release-qualification
-          path: |
-            artifacts/public-*.json
-            artifacts/public-*.log
-            tests/downstream/evidence/linux
-            ui/test-results
-            ui/playwright-report
-          if-no-files-found: ignore
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages.yml

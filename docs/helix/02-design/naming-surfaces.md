@@ -91,7 +91,7 @@ its carried npm SHA-256 is
 `460e1b1037d4965d17af8b3e689c364c22b51a09cc9d3d64c8ddf0296e34c943`.
 It passed 20 doctor cases, eight SDK phases and three false-pass controls on
 Darwin arm64/27.0.0, CPython 3.13.16 and OpenTelemetry API/SDK 1.45.1. The
-[final SDK review](../04-build/evidence/arras-0.5.1-sdk-example-review-20261022.json) matches
+final SDK review matches
 receipt SHA-256 `baa9334e26936908bc1fabe6e6e6b3e630c92e1bd9cede907ceb1a6341527b2f`,
 verifier SHA-256 `9aa379d1f2b333f855aa9886da7b6e93dcf930bc789a3721e0862ee174c08455`
 and generated probe SHA-256
@@ -104,6 +104,6 @@ Selected structured operation/query records witness events; these are not SDK
 not qualify native behavior; public Truss 0.0.48/Weft 0.4.51 evidence is separate.
 The delivered 17d wheel/76fc npm cohort also passes the actual Linux
 Python 3.11.17/OpenTelemetry 1.45.1 doctor/SDK repetition after anonymous download
-in run `39883764998`. The [final review](../04-build/evidence/arras-0.5.1-public-verification-review-20261023.json)
+in run `39883764998`. The final review
 retains this separate cohort and the original Mac receipts; no native or live
 server claim follows from the mocked development forwarding checks.

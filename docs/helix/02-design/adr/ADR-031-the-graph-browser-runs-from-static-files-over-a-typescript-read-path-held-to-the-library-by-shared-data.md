@@ -95,7 +95,7 @@ Proposed records the direction under review. The implementation named here exist
 
 ## Validation
 
-Section "Verification" of the [build report](../../04-build/static-backend-report-20261106.md) records every run, its environment and result: the corpora, the unit suite (1,830 existing and new tests), the lint and type checks, the Playwright and axe runs on `examples/catalog`, `examples/pizza` and the synthetic graph, and the measurements. Re-validation triggers: a change to `gqlschema.py`, `view.py`, `search*.py`, `entityread.py` or the in-memory evaluator (regenerate the corpus), a new graphql-js or Pyodide major, a new `arras.view` vocabulary version, a graph past 5,000 nodes.
+Section "Verification" of the build report records every run, its environment and result: the corpora, the unit suite (1,830 existing and new tests), the lint and type checks, the Playwright and axe runs on `examples/catalog`, `examples/pizza` and the synthetic graph, and the measurements. Re-validation triggers: a change to `gqlschema.py`, `view.py`, `search*.py`, `entityread.py` or the in-memory evaluator (regenerate the corpus), a new graphql-js or Pyodide major, a new `arras.view` vocabulary version, a graph past 5,000 nodes.
 
 ## Open questions
 

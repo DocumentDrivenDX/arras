@@ -1,0 +1,18 @@
+site_name: Arras
+site_description: An open-source interface to an ontology, defined in UMF.
+site_url: https://documentdrivendx.github.io/arras/
+repo_url: https://github.com/DocumentDrivenDX/arras
+docs_dir: docs/site
+site_dir: site
+strict: true
+theme:
+  name: material
+  features: [navigation.sections, content.code.copy]
+copyright: MIT OR Apache-2.0
+extra:
+  version: !ENV [ARRAS_VERSION, dev]
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Architecture: architecture.md
+  - Changelog: changelog.md

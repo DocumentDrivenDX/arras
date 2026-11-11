@@ -72,7 +72,7 @@ This architecture covers Arras, the interface through which applications read an
 - Truss, an open-source, UMF-driven property-graph engine on SQL databases. It runs on Lakebase (Databricks managed Postgres), holds the mutable modules and is a reader and provider (the Truss adapter).
 - Ashlar, an open-source toolkit for property-graph ontologies on a warehouse. It holds the full ontology in gold Delta tables on Unity Catalog (Databricks' governance layer for tables and access) and is a reader fed from the providers' stores (the Ashlar adapter).
 
-The current package implements the Truss adapter and in-memory store/replica backends. The memory backends serve tests, the sandbox and the dev host. The Ashlar reader adapter and its integration/feed qualification remain planned.
+The current package implements the Truss adapter and in-memory store/replica backends. The memory backends serve tests, the sandbox and the dev host. The Ashlar reader adapter is experimental and not CI-tested; the feed from Truss to it is not built.
 
 UMF (the metamodel, owned by DocumentDrivenDX, that defines Arras's types and actions) defines every type and action.
 
@@ -234,7 +234,7 @@ keyword to the constructor/start. The 926 physical-line ceiling stays unchanged;
 no compression or unrelated cleanup creates space.
 
 The bounded implementation passed source and fresh installed-wheel checks on an
-unreleased 0.5.1 candidate, as recorded in the [A2 execution checkpoint](../04-build/arras-integration-plan-20261022.md#bounded-a2-execution-checkpoint).
+unreleased 0.5.1 candidate, as recorded in the A2 execution checkpoint.
 It supports explicit memory metadata registration/readback and authorized
 empty-graph reads; its descriptor enables no value or action execution. Truss
 refuses the profile before acceptance, and its native parser remains unchanged.

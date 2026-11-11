@@ -1,0 +1,66 @@
+name: Pages
+
+# The documentation microsite, built from source and stamped with the released version. It deploys
+# when a GitHub Release is published, from release.yml after it creates the release (a release created
+# with the workflow token does not trigger `release: published`), and on manual dispatch. Without a
+# release tag the site is stamped with the pyproject version.
+# Pull requests build the same site with --strict in ci.yml but do not deploy.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || github.ref }}
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - run: uv sync --locked --group docs
+      - run: npm ci && npm run build:static
+        working-directory: ui
+      - name: Build the site
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          version="${TAG#v}"
+          if [ -z "$version" ]; then
+            version=$(python3 -c 'import tomllib; print(tomllib.load(open("pyproject.toml","rb"))["project"]["version"])')
+          fi
+          scripts/build_site.sh "$version"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
