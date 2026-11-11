@@ -54,7 +54,7 @@ consumer orchestration failed. Reviewed verification-only run
 then passed the fixed reusable installed consumer and complete anonymous
 public-download qualification. These are separate runs; original receipts and
 `not_run_at_assembly` remain unchanged. See the
-[final independent review](../04-build/evidence/arras-0.5.1-public-verification-review-20261023.json).
+final independent review.
 
 The delivered wheel is
 `17d50dedeaf9d4f7d27e0eb30cb16539bfa75de3a138dc9351284c2e2f390d4b`, carrying npm
@@ -73,12 +73,12 @@ The separate Mac component wheel `59827644e2e423980afed1047f75c7130dc5d8c542778d
 and npm `460e1b1037d4965d17af8b3e689c364c22b51a09cc9d3d64c8ddf0296e34c943`
 retain their original receipts: 272 ordinary themed cases, unchanged 67 canonical
 and eight narrow reviewed baselines, and the named installed SDK/native cohorts.
-The [reviewed payload bridge](../04-build/evidence/arras-0.5.1-binary-bridge-peer-review-20261023.json)
+The reviewed payload bridge
 proves identical decompressed npm payloads; compressed container bytes differ.
 This is not Mac execution of the delivered Linux-built wheel. Native annotations,
 official UMF adoption and managed deployments retain their explicit limits below.
 PyPI/npm uploads are deferred under the human instruction; GitHub assets are the
-delivery route. The [build plan](../04-build/arras-integration-plan-20261022.md)
+delivery route. The build plan
 retains failed attempts and all scoped evidence; the
 [naming inventory](naming-surfaces.md) keeps canonical identity separate from host presentation.
 
@@ -226,7 +226,7 @@ matching host-owned provider Resource. Existing allowlists/redaction precede
 projection; no global provider mutation or fallback is permitted. Executor
 submissions carry fresh copied context and diagnostics retain class-only errors.
 
-The [0.5.1 SDK review](../04-build/evidence/arras-0.5.1-sdk-example-review-20261022.json)
+The 0.5.1 SDK review
 qualifies the current wheel on Darwin arm64/27.0.0, Python 3.13.16 and OpenTelemetry
 API/SDK 1.45.1: 20 cases, eight phases and three false-pass controls. The phases
 cover direct calls, MCP, worker-backed console/Operate, concurrent/nested hosts,
@@ -279,22 +279,22 @@ expected Brand/surfaces, output and per-theme baseline directories remove checko
 and fixed-origin assumptions. Neither Arras nor the checker requires a private
 theme registry, application data, copied tests or implicit browser installation.
 
-The [real theme package](../../../tests/downstream/theme-package/package.json)
+The real theme package
 exports compiled JS/declarations, CSS and favicon. The two installed routes use
 its exact packed bytes with one React. On the historical 0.5.0 07b wheel, all four narrower
 Explore/Operate routes compare against eight
-[reviewed macOS images](../04-build/evidence/arras-narrow-eight-visual-review-20261022.json).
+reviewed macOS images.
 Their token/contrast/axe/focus/provider/palette controls remain intact. The full
 portable capture then passed 272/272 (132 Chromium, three schema-administration,
 70 browser, 67 visual), with zero failures/skips and four successful negative
-controls. Sol [reviewed all 67 canonical images](../04-build/evidence/arras-neutral-theme-67-visual-review-20261022.json).
+controls. Sol reviewed all 67 canonical images.
 The capture receipt reports `updated-unreviewed`. After review, the ordinary run
 with updates disabled passed 272/272 and compared all 67 unchanged baselines; its
 receipt SHA-256 is `91f1a5af1c2b78b187d1726d66c96a3682251e189abd2834f9c2531beb17a819`. Existing volatile-content masks
 qualify the visual review's coverage. The fresh 0.5.1 ordinary comparison also
 passes 272/272 and all four routes, with unchanged baseline hashes; its receipt
 SHA-256 is `2538efc8242bec4390865953e6d575b00439fff7134bc566f07a880374071b78`.
-[Sol's current review](../04-build/evidence/arras-0.5.1-ui-review-20261022.json)
+Sol's current review
 binds the exact wheel/npm/theme and successful negative controls. Comparison
 approval does not imply byte identity of volatile output screenshots.
 
@@ -360,13 +360,13 @@ need upstream vocabulary versioning; independent host screens remain host-owned.
 
 **Gate/cost:** explicit-content delivery is complete against downloaded artifacts;
 official semantic adoption remains a separate medium/high-cost workstream. The fresh 0.5.1
-[installed example proof](../04-build/arras-integration-plan-20261022.md)
+installed example proof
 passed four tests including the public launcher, custom graph/seed console
 composition and all 72 applicable memory corpus cases, with seven replica-only
 cases inapplicable and no limits/errors. Dependencies came from the public index
 in a new venv; imports were isolated outside the checkout, with no shared site or
 source-referencing PTH files. Earlier
-[consumer receipts](../04-build/evidence/ex05-ex07-20261022/fresh-installed-consumer.json)
+consumer receipts
 retain their older snapshot scope. Preserve explicit attribution, no-default demo
 loading, unsupported-profile refusal and consumer-owned resource provenance.
 
@@ -378,16 +378,16 @@ configured class. ConnectionSource, installing connection, module roles, wheel
 supply/pins, credentials and deployment timing belong to the host. The packaged
 corpus/runner and explicit memory/native conformance helpers now have source;
 installed native helper/cohort proof is tracked by EX-07/A7.
-The [installed native verifier](../../../tools/verify_native.py) has completed
+The installed native verifier has completed
 source review and 17 offline controls. Those controls qualify verifier preparation
 and failure/report behavior only. Current Linux source passes all 199 native tests on public Truss 0.0.48/Weft
 0.4.51/pgserver-pg18 18.6.1. The prior Mac source 199-test result is retained with
-[explicit source equivalence](../04-build/evidence/arras-0.5.1-native-source-final-delta-20261022.json).
+explicit source equivalence.
 The fresh installed 0.5.1 helper passes its CLI/corpus gate: 64 passes,
 eight exact declared limits and seven replica-only cases inapplicable, with no
 failures/harness errors. Receipt SHA-256 is
 `026a935e4bb39323db13e56dff0ce4837e0062675497efb8e9b677d4ad43ca72`.
-[Independent Sol review](../04-build/evidence/arras-0.5.1-installed-native-review-20261022.json)
+Independent Sol review
 checks the actual receipt, binding, ordered outcomes and cleanup.
 All seven selected native distributions and 92 installed runtime payload files
 match verified archives on Darwin arm64/CPython 3.11. This is not a system
@@ -414,8 +414,8 @@ installed native receipt is distinct from source passes and static package check
 ## 7. Downstream testing and CI — exists for the recorded 0.5.1 subset
 
 **Current state:** upstream source/native/UI pipelines, a reusable
-[downstream workflow](../../../.github/workflows/downstream.yml), explicit Python
-and theme fixtures, and a [generic public-content gate](../../../tools/check_public_content.py)
+downstream workflow, explicit Python
+and theme fixtures, and a generic public-content gate
 with dependency/fixture provenance policy now have source. Named downstream prose/fixtures have been generalized under retained artifact
 identities; the gate does not embed customer names as a deny-list. The final cohort passed the content and provenance checks.
 Reviewed CI/release source uses the official HTTPS APT helper, checked effective
@@ -449,9 +449,9 @@ integrated default-source checkpoint above, including strict input, bounded
 regular-file reads, redacted CLI errors and unavailable-capability controls. The fresh 0.5.1 installed doctor proof passes 20 cases, including positive function/
 CLI, breaking/no-I/O, public launcher help/refusal, alias blank fallback/override/
 identical-value/conflict and mocked development forwarding/banner controls.
-[Sol's review](../04-build/evidence/arras-0.5.1-sdk-example-review-20261022.json) binds the
+Sol's review binds the
 current verifier, generated probe, wheel and carried npm hashes. Earlier
-[19-case receipts](../../../tests/downstream/evidence/doctor-installed.json) remain
+19-case receipts remain
 historical. Static checks and mocked forwarding do not qualify live servers,
 native writes or development argparse value redaction.
 
@@ -513,8 +513,8 @@ delivered API inferred from this design.
 | Closed subset | EX-06 host safety | Credential/grant regression retained and selected Truss 0.0.48/Weft 0.4.51 native cohort qualified |
 | Separate next work | A1/A2/A7 | Official admission/projection/action and additional adapter/deployment capabilities remain separately governed |
 
-The canonical [EX queue](../04-build/arras-integration-plan-20261022.md#extensibility-queue)
-owns execution. [Release acceptance](../05-deploy/deployment-checklist.md) requires
+The canonical EX queue
+owns execution. Release acceptance requires
 all selected rows, final source freeze and downloaded-artifact evidence. This
 note records completed scoped delivery and preserves the unqualified boundaries.
 
@@ -548,8 +548,8 @@ example-distribution/
 ```
 
 The real [Python fixture](../../../examples/extension_host/README.md) demonstrates
-the explicit module/resource half; the [theme package](../../../tests/downstream/theme-package/package.json)
-and [browser fixture](../../../tests/downstream/README.md) demonstrate packed
+the explicit module/resource half; the theme package
+and browser fixture demonstrate packed
 appearance and the two UI routes. Together they define the integrated external
 proof target; the released 17d/76fc cohort now passes both public consumer routes.
 Runtime manifests are explicit UI arguments, not an invented TOML theme schema.

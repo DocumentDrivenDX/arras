@@ -287,8 +287,8 @@ qualification against the exact public-download wheel in a fresh environment.
 Keep these results separate from the historical 0.5.1 source/wheel proof. The
 139 rows compare admission results, not 139 metadata execution cases.
 
-**Execution checkpoint.** The [bounded A2 execution record](../04-build/arras-integration-plan-20261022.md#bounded-a2-execution-checkpoint)
-and [safe installed receipt](../04-build/evidence/umf-admission-projection-20261023/installed-proof.json)
+**Execution checkpoint.** The bounded A2 execution record
+and safe installed receipt
 bind the unreleased source candidate `11c3dd0711ff6d556fed4fbea99cff1951506588`.
 The required source suite passes 3,031 tests with 199 Truss tests deselected;
 configured strict source/test typing, Ruff, formatting and content checks pass.
@@ -415,7 +415,7 @@ registry, managed-host, official UMF or native PostgreSQL behavior.
 
 ### EX-05/EX-07 external overlay and provenance
 
-The [bounded execution plan](../04-build/ex05-ex07-external-overlay-20261022.md)
+The bounded execution plan
 requires an own-namespace Python consumer installed outside the Arras checkout,
 using only declared public imports and explicitly selected module/seed/graph
 resources. Assert empty startup, absence of bundled modules, exact document bytes,
@@ -667,7 +667,7 @@ not already covered. Repeat the full campaign when changes or unresolved
 correspondence require its scope. Current-target identity, TLS, credentials,
 privileges and resource custody remain deployment admission checks.
 
-The [0.7.0 correspondence review](../05-deploy/evidence/managed070-impact-20261102/README.md)
+The 0.7.0 correspondence review
 records unchanged adapter/harness/runtime behavior, existing exact-wheel native
 and Truss regression evidence, and no required fresh Lakebase execution. The
 historical PR 9 exact-wheel dual-campaign rule below remains its original
@@ -708,7 +708,7 @@ target evidence. Caller-owned cases use public Truss directly and are not
 advertised as Arras active-transaction support. Missing provider restart/refresh
 controls or observation privileges remain blocked/not_run; no zero-case, skipped
 or partial receipt can pass the full managed scope. Campaigns require separately
-coordinated resource slots. The [local qualification](../04-build/evidence/truss049-adoption-20261023/local-qualification.json)
+coordinated resource slots. The local qualification
 records source `40ed2481507f11a61ed81260fbfffbfc8ff91eba`: 199 local adapter
 cases and two local strict-probe transaction-mode cases passed. The latter
 characterize strict-install success and owned cleanup; they do not exercise a
@@ -775,7 +775,7 @@ durable-row change fail. Invalid/denied/revoked and restored-state controls reta
 exact sequence equality. This rule requires new source/behavior review for any
 future selected runtime; version labels alone cannot carry it forward.
 
-MP-06 uses the reviewed [exact-0.0.49 extension requirements](../04-build/evidence/truss049-adoption-20261023/extension-requirements.json)
+MP-06 uses the reviewed exact-0.0.49 extension requirements
 as an input, separately from actual target qualification. Source and local
 catalog closure require `plpgsql` 1.0 for this ordinary native profile; the
 provider's `databricks_auth` OAuth bootstrap prerequisite is observed separately.

@@ -52,7 +52,7 @@ Terms. UMF is the metamodel, owned by DocumentDrivenDX, that defines Arras's typ
 is Arras's legacy declaration subset, not that canonical vocabulary. Accepting
 the core version or a legacy declaration MUST NOT advertise support for canonical
 recipes, selectors or rule versions. Canonical adoption and generated transport
-qualification follow the [Arras integration plan](../../04-build/arras-integration-plan-20261022.md);
+qualification follow the Arras integration plan;
 unsupported meaning must be named and refused before effects. This clarification
 does not add a second evaluator or change existing legacy invocation semantics.
 

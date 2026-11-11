@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+- Release: `release.yml` is rewritten. A version tag runs the same tests as pull requests, builds the wheel,
+  sdist and npm package, installs them in fresh environments (`arras doctor`, the dev host and an isolated npm
+  consumer), then publishes to PyPI by trusted publishing and to npm with provenance, and creates the GitHub
+  Release. A manual dispatch is a dry run that never publishes. There is no committed wheel hash pin.
+- CI: one Linux workflow (`ci.yml`) with a nightly job for the real-Truss, slow and browser tests, and a tree
+  size guard; `pages.yml` publishes a documentation microsite stamped with the release version.
+- Removed the Lakebase acceptance tooling and its tests, the downstream qualification runner, the committed
+  darwin screenshot baselines and the committed evidence and release-receipt documents. They remain in git
+  history. Screenshot baselines are no longer committed; the `visual` project runs on macOS only.
+- Docs: the README is rewritten around install and a quickstart that CI runs; the Ashlar adapter is labelled
+  experimental and not CI-tested; `AGENTS.md` is short; `ROADMAP.md` lists open work.
+- Renamed the npm package checks `test:packed-consumer` and `test:packed-browser` to
+  `test:smoke-npm-consumer` and `test:smoke-npm-browser`.
+
 ## 0.8.1 — the static host ships in the package, and markdown list continuation
 
 - Packaging: `@documentdrivendx/arras-ui` now has a `./static` export (`createStaticClient`, `loadStore`,
@@ -172,7 +188,7 @@ ASGI hosting and compiled public npm entrypoints. Native/UMF pins and HTTP
 contract versions are unchanged. Published as [v0.6.4](https://github.com/DocumentDrivenDX/arras/releases/tag/v0.6.4)
 on PyPI and npm. All ten release gates, public-byte checks, fresh installs and
 public PyPI extras checks on Linux x86_64/macOS arm64 passed; the
-[publication record](docs/helix/05-deploy/evidence/embedding064-20261029/registry-publication.safe.json)
+publication record
 retains exact hashes and npm visibility-retry history.
 
 ## 0.6.1 — release candidate
@@ -256,9 +272,9 @@ The following records the qualified candidate feature scope. The tag workflow
 stopped before artifact creation or publication; it did not deliver a release.
 
 The first public distribution supplies generic Python/UI seams and installed
-consumer qualification. The [release notes](docs/helix/05-deploy/release-notes.md)
+consumer qualification. The release notes
 record qualified cohorts and limits; the
-[release checklist](docs/helix/05-deploy/deployment-checklist.md) governs delivery.
+release checklist governs delivery.
 
 ### Distribution and public API
 
