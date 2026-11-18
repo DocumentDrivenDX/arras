@@ -1,11 +1,13 @@
 # Quickstart
 
-These steps run in CI against every built wheel (`scripts/smoke_installed.py`).
+Use Python 3.11, the version tested in CI. The release workflow checks the installed wheel with `scripts/smoke_installed.py`.
+
+To explore a sample graph in your browser, start with the [Graph Browser walkthrough](graph-browser.md).
 
 ```bash
-python -m venv .venv && . .venv/bin/activate
+python3.11 -m venv .venv && . .venv/bin/activate
 pip install "arras[devhost]"
-arras --version              # arras @VERSION@
+arras --version
 arras doctor                 # prints a JSON report with "ok": true
 arras devhost --port 8765    # open http://127.0.0.1:8765
 ```

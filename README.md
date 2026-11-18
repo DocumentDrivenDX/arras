@@ -1,6 +1,6 @@
 # Arras
 
-[Explore Novirhyza](https://documentdrivendx.github.io/novirhyza/)
+[Arras microsite](https://documentdrivendx.github.io/arras/) · [Explore Novirhyza](https://documentdrivendx.github.io/novirhyza/)
 
 Arras is an open-source interface to an ontology. Types and actions are defined in UMF; every read states its freshness; a backend contract lets one module span a record store and its replicas. It is a Python library that a host application embeds, and it ships a React operator console and Graph Browser.
 

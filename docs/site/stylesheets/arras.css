@@ -1,0 +1,113 @@
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #45233b;
+  --md-accent-fg-color: #7a315d;
+  --md-typeset-a-color: #783259;
+}
+
+.arras-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+  gap: clamp(1.25rem, 4vw, 3rem);
+  align-items: center;
+  margin: 0 0 2rem;
+  padding: clamp(1.25rem, 4vw, 2.8rem);
+  background: radial-gradient(ellipse at 100% 0, #5a3047, #241324 75%);
+  border-radius: .55rem;
+  color: #f8edf1;
+}
+
+.md-typeset .arras-hero h1 {
+  margin: .35em 0;
+  color: inherit;
+  font: 400 clamp(2rem, 4.5vw, 3.6rem) / 1.03 Georgia, serif;
+  letter-spacing: -.04em;
+}
+
+.arras-kicker {
+  font-weight: 700;
+  color: #fbd2a7;
+}
+
+.arras-kicker span {
+  margin-inline: .2em;
+}
+
+.arras-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: 1rem;
+}
+
+.md-typeset .arras-hero .md-button {
+  color: #fbd2a7;
+  border-color: currentColor;
+}
+
+.md-typeset .arras-hero .md-button--primary {
+  background: #fbd2a7;
+  border-color: #fbd2a7;
+  color: #241324;
+}
+
+.md-typeset .arras-hero .md-button:hover {
+  background: #fff0df;
+  border-color: #fff0df;
+  color: #241324;
+}
+
+.arras-hero a:focus-visible {
+  outline: 2px solid #fbd2a7;
+  outline-offset: 4px;
+}
+
+.md-typeset .arras-example {
+  display: block;
+  margin: 0;
+  padding: 1rem;
+  background: #2b192a;
+  border: 1px solid #80566f;
+  border-radius: .45rem;
+  text-align: left;
+}
+
+.md-typeset .arras-example figcaption {
+  margin: 0 0 .7rem;
+  color: #e8ccdf;
+  font-style: normal;
+}
+
+.arras-node {
+  display: grid;
+  gap: .15rem;
+  padding: .65rem .8rem;
+  background: #41263d;
+  border: 1px solid #926682;
+  border-radius: .3rem;
+}
+
+.arras-node span {
+  color: #fbd2a7;
+}
+
+.arras-edge {
+  width: max-content;
+  margin-inline-start: 1rem;
+  padding: .2rem .6rem;
+  border-inline-start: 2px solid #fbd2a7;
+  color: #fbd2a7;
+}
+
+.md-typeset .arras-example a {
+  display: inline-block;
+  margin-top: .8rem;
+  color: #fbd2a7;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+
+@media (max-width: 48rem) {
+  .arras-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

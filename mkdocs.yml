@@ -7,12 +7,19 @@ site_dir: site
 strict: true
 theme:
   name: material
+  palette:
+    scheme: default
   features: [navigation.sections, content.code.copy]
+extra_css:
+  - stylesheets/arras.css
+markdown_extensions:
+  - md_in_html
 copyright: MIT OR Apache-2.0
 extra:
   version: !ENV [ARRAS_VERSION, dev]
 nav:
   - Home: index.md
+  - Graph Browser: graph-browser.md
   - Quickstart: quickstart.md
   - Architecture: architecture.md
   - Changelog: changelog.md
